@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Orin Ayo</title>
+    <link rel="stylesheet" href="bootstrap.css">
+</head>
+
+<body>
+  <div>
+    <h2 id="statusMsg"></h2>
+	<table>	
+    <tr><td>Input MIDI Device</td><td><select id="midiInSel" type="text" class="form-control input"></select></td></tr>
+    <tr><td>Output MIDI Device</td><td><select id="midiOutSel" type="text" class="form-control input"></select></td></tr>
+    <tr><td>Control MIDI Device</td><td><select id="midiFwdSel" type="text" class="form-control input"></select></td></tr>
+	<tr><td>Strum MIDI Device</td><td><select id="midiStrumSel" type="text" class="form-control input"></select></td></tr>
+	</table>
+  </div>
+  <div>
+      <center><h1 style="font-size: 72px;" id="orinayo">C</h1></center>
+      <canvas id="gameCanvas" width="800" height="900">
+      </canvas>
+  </div>
+
+  <script src="controllers/mainCntl.js"></script>
+  <script src="controllers/guitarCntl.js"></script>
+  <script src="drawables/note.js"></script>
+  <script src="drawables/hitBar.js"></script>
+  <script src="drawables/noteRow.js"></script>
+  <script src="drawables/gameBoard.js"></script>
+  <script src="gameModel/gameNote.js"></script>
+  <script src="gameModel/noteRowStream.js"></script>
+  <script src="gameModel/hitRegion.js"></script>
+  <script src="gameModel/gameBoardState.js"></script>
+  <script src="webmidi.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
