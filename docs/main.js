@@ -53,12 +53,7 @@ function onloadHandler()
 	window.addEventListener("gamepadconnected", connectHandler);
 	window.addEventListener("gamepaddisconnected", disconnectHandler);
 
-
-	chrome.storage.local.get(null, function(config)
-	{
-	  console.debug("config data", config);
-	  letsGo(config);
-	});
+	letsGo();
 }
 
 function connectHandler(e) 
@@ -145,8 +140,13 @@ function updateStatus()
 	window.setTimeout(updateStatus);
 }
 
-function letsGo(config)
+function letsGo()
 {
+	let data = localStorage.getItem("orin.ayo.config");
+	if (!data) data = "{}";
+	
+	const config = JSON.parse(data);
+	
     WebMidi.enable(function (err)
     {
       if (err) {
@@ -291,7 +291,7 @@ function saveConfig()
 	config.strum = strum ? strum.name : null;
     config.input = input ? input.name : null;
 
-    chrome.storage.local.set(config);
+    localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }
 
 function playChord(chord)
