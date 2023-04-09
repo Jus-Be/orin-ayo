@@ -370,7 +370,7 @@ function playSectionCheck()
 	{
 		if (pad.buttons[STARPOWER]) {
 			sectionChange++;
-			if (sectionChange > 3) sectionChange = 3;	
+			if (sectionChange > 3) sectionChange = 0;	
 		} else {
 			sectionChange--;
 			if (sectionChange < 0) sectionChange = 0;
