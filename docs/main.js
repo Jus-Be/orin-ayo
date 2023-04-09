@@ -335,6 +335,17 @@ function sendSysex(code) {
 	}	
 }
 
+function pressFootSwitch(code) {
+    if (output) { 
+        console.debug("pressFootSwitch", code)	
+		output.sendSysex(0x26, [0x7C, 0x05, 0x01, 0x55 + code, 0x7F]);
+		
+		setTimeout(() => {
+			output.sendSysex(0x26, [0x7C, 0x05, 0x01, 0x55 + code, 0x00]);	
+		}, 500);		
+	}	
+}
+
 function stopChord()
 {
    if (activeChord && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN))
@@ -601,15 +612,13 @@ function toggleStartStop()
 		if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) 
 		{
 			if (started) {			
-				console.debug("stop key pressed");
-				if (output) output.sendStop();
-				if (strum) strum.sendStop();  
+				console.debug("stop arr pressed");
+ 				pressFootSwitch(6);	
 				started = false;				
 			}
 			else {
-				console.debug("start key ressed");
-				if (output) output.sendStart();       
-				if (strum) strum.sendStart();        
+				console.debug("start arr pressed");
+ 				pressFootSwitch(6);	
 				started = true;
 			}			
 		} else {
