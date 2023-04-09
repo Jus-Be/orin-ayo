@@ -17,6 +17,7 @@ const START = 9;
 
 const STRUM = 9;
 const TOUCH = 5;
+const LOGO = 12;
 
 var output = null;
 var input = null;
@@ -110,7 +111,7 @@ function updateStatus()
 			}
 		  
 			if (pad.buttons[i] != touched) {
-				console.debug("button " + i, touched);									
+				//console.debug("button " + i, touched);									
 				pad.buttons[i] = touched;
 				updated = updated || true;
 			}
@@ -294,27 +295,49 @@ function saveConfig()
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }
 
+function checkForFillOrBreak()
+{
+	console.debug("checkForFillOrBreak");
+	
+	if (output) {
+		
+		if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) {
+			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x0B);
+			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x07);	
+		}				
+	}
+}
+
 function playChord(chord)
 {
-   if (pad.axis[STRUM] != STRUM_NEUTRAL && !activeChord)
+   if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord)
    {
         console.debug("playChord", chord);
 		
-        if (output) {
+        if (output) {			
 			if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});	// up
-			if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   // down			
+			if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   // down					
 		}
-		
-		
+				
         if (strum) strum.playNote(chord, [4], {velocity: 0.5});        
         activeChord = chord;
    }
+}
 
+function sendSysex(code) {
+    if (output) { 
+        console.debug("sendSysex", code)	
+		output.sendSysex(0x26, [0x79, 0x05, 0x00, code, 0x7F]);
+		
+		setTimeout(() => {
+			output.sendSysex(0x26, [0x79, 0x05, 0x00, code, 0x00]);	
+		}, 500);		
+	}	
 }
 
 function stopChord()
 {
-   if (activeChord && pad.axis[STRUM] == STRUM_NEUTRAL)
+   if (activeChord && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN))
    {
         console.debug("stopChord", pad)
         if (output) output.stopNote(activeChord, [4], {velocity: 0.5});
@@ -325,14 +348,20 @@ function stopChord()
 
 function playSectionCheck()
 {
-  if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN])
-  {
-	sectionChange++;	  
-	sectionChange = sectionChange % 4;
+	if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN])
+	{
+		if (pad.buttons[STARPOWER]) {
+			sectionChange++;
+			if (sectionChange > 3) sectionChange = 3;	
+		} else {
+			sectionChange--;
+			if (sectionChange < 0) sectionChange = 0;
+		}
+	}
+	
 	console.debug("playSectionCheck pressed " + sectionChange);
-    if (output) output.sendSysex(0x26, [0x79, 0x05, 0x00, 3 + sectionChange, 0x7F]);  
+	sendSysex(3 + sectionChange);
 
-  }
 }
 var activeStyle = -1;
 
@@ -362,7 +391,7 @@ function dokeyChange()
 
 function doChord()
 {
-  console.debug("doChord", pad)
+  //console.debug("doChord", pad)
   stopChord();
 
   if (pad.axis[STRUM] == STRUM_LEFT && !pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN])
@@ -384,8 +413,16 @@ function doChord()
     playSectionCheck()
   }
 
+  if (pad.buttons[LOGO])
+  {
+	toggleStartStop();
+  }  
 
-  if (pad.axis[STRUM] == STRUM_NEUTRAL) return;
+   if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN)) {
+		checkForFillOrBreak();
+   }
+
+  if ((pad.axis[STRUM] != STRUM_UP && pad.axis[STRUM] != STRUM_DOWN)) return;
 
   // --- F/C
 
@@ -556,29 +593,39 @@ function doChord()
     playChord([base + 9, base + 12, base + 16]);
     orinayo.innerHTML = key + " - " + "6m";
   }
-
-
-  if ( GuitarCntl.buttonMap.strum.state != 15)  // up or down
-  {
-    //toggleStartStop();
-  }
 }
 
 function toggleStartStop()
 {
-    if (started)
-    {
-        console.debug("stop key pressed");
-        if (output) output.sendStop();
-        if (strum) strum.sendStop();        
-        started = false;
-    }
-    else {
-        console.debug("start key ressed");
-        if (output) output.sendStart();       
-        if (strum) strum.sendStart();        
-        started = true;
-    }
+
+		if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) 
+		{
+			if (started) {			
+				console.debug("stop key pressed");
+				if (output) output.sendStop();
+				if (strum) strum.sendStop();  
+				started = false;				
+			}
+			else {
+				console.debug("start key ressed");
+				if (output) output.sendStart();       
+				if (strum) strum.sendStart();        
+				started = true;
+			}			
+		} else {
+			let endType = 0x0F;
+			
+			if (output) { 
+				if (pad.buttons[GREEN]) endType = 0x10;
+				if (pad.buttons[RED]) endType = 0x11;				
+				if (pad.buttons[BLUE]) endType = 0x12;	
+				if (pad.buttons[ORANGE]) endType = 0x35;					
+				
+				sendSysex(endType);	
+			}
+			console.debug("toggel start/stop", endType);
+			started = !started;			
+		}
 }
 
 function updateGame()
