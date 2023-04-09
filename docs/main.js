@@ -1,5 +1,6 @@
 const BASE = 48;
 const KEYS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+const SECTIONS = ["Arr A", "Arr B", "Arr C", "Arr D"];
 
 const STRUM_NEUTRAL =  1.2857;
 const STRUM_UP = -1.0000;
@@ -24,6 +25,7 @@ var input = null;
 var forward = null;
 var strum = null;
 var orinayo = null;
+var orinayo_section
 var statusMsg = null;
 var base = BASE;
 var key = "C"
@@ -49,6 +51,7 @@ function onloadHandler()
 	console.debug("onloadHandler");
   
 	orinayo = document.querySelector('#orinayo');
+	orinayo_section = document.querySelector('#orinayo-section');
 	statusMsg = document.querySelector('#statusMsg');
 
 	window.addEventListener("gamepadconnected", connectHandler);
@@ -345,7 +348,8 @@ function pressFootSwitch(code) {
 		}, 500);	
 
 		sectionChange = 0;
-		sendSysex(3 + sectionChange);		
+		sendSysex(3 + sectionChange);
+		orinayo_section.innerHTML = SECTIONS[sectionChange];
 	}	
 }
 
@@ -375,6 +379,7 @@ function playSectionCheck()
 	
 	console.debug("playSectionCheck pressed " + sectionChange);
 	sendSysex(3 + sectionChange);
+	orinayo_section.innerHTML = SECTIONS[sectionChange];	
 
 }
 var activeStyle = -1;
@@ -611,33 +616,34 @@ function doChord()
 
 function toggleStartStop()
 {
-
-		if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) 
-		{
-			if (started) {			
-				console.debug("stop arr pressed");
- 				pressFootSwitch(6);	
-				started = false;				
-			}
-			else {
-				console.debug("start arr pressed");
- 				pressFootSwitch(6);	
-				started = true;
-			}			
-		} else {
-			let endType = 0x0F;
-			
-			if (output) { 
-				if (pad.buttons[GREEN]) endType = 0x10;
-				if (pad.buttons[RED]) endType = 0x11;				
-				if (pad.buttons[BLUE]) endType = 0x12;	
-				if (pad.buttons[ORANGE]) endType = 0x35;					
-				
-				sendSysex(endType);	
-			}
-			console.debug("toggel start/stop", endType);
-			started = !started;			
+	if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) 
+	{
+		if (started) {			
+			console.debug("stop arr pressed");
+			sendSysex(0x07);				
+			pressFootSwitch(6);	
+			started = false;				
 		}
+		else {
+			console.debug("start arr pressed");
+			sendSysex(0x07);				
+			pressFootSwitch(6);	
+			started = true;
+		}			
+	} else {
+		let endType = 0x0F;
+		
+		if (output) { 
+			if (pad.buttons[GREEN]) endType = 0x10;
+			if (pad.buttons[RED]) endType = 0x11;				
+			if (pad.buttons[BLUE]) endType = 0x12;	
+			if (pad.buttons[ORANGE]) endType = 0x35;					
+			
+			sendSysex(endType);	
+		}
+		console.debug("toggel start/stop", endType);
+		started = !started;			
+	}
 }
 
 function updateGame()
@@ -663,10 +669,10 @@ function setup()
   canvas.gameWidth = gameCanvas.width;
   canvas.gameHeight = gameCanvas.height;
 
-  var noteHeight = canvas.gameHeight/10;
+  var noteHeight = canvas.gameHeight/8;
 
   var hitRegion = new HitRegion(
-    35,
+    70,
     noteHeight);
 
   game = new GameBoardState(3, noteHeight, hitRegion, canvas.gameHeight);
