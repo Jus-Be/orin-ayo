@@ -342,7 +342,10 @@ function pressFootSwitch(code) {
 		
 		setTimeout(() => {
 			output.sendSysex(0x26, [0x7C, 0x05, 0x01, 0x55 + code, 0x00]);	
-		}, 500);		
+		}, 500);	
+
+		sectionChange = 0;
+		sendSysex(3 + sectionChange);		
 	}	
 }
 
