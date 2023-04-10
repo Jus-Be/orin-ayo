@@ -20,6 +20,7 @@ const STRUM = 9;
 const TOUCH = 5;
 const LOGO = 12;
 
+var arranger = "ketron";
 var output = null;
 var input = null;
 var forward = null;
@@ -33,6 +34,8 @@ var keyChange = 0;
 var sectionChange = 0;
 var started = false;
 var activeChord = null;
+var activeStyle = -1;
+
 
 var canvas = {
   context : null,
@@ -157,15 +160,31 @@ function letsGo()
         statusMsg.innerHTML = "WebMidi could not be enabled.";
       } else {
         statusMsg.innerHTML = "Orin Ayo Ready";
-        console.debug("WebMidi enabled!", WebMidi);
+        console.debug("WebMidi enabled!", config, WebMidi);
 
         if (WebMidi.outputs.length > 0 && WebMidi.inputs.length > 0)
         {
+			const arrangerType =  document.getElementById("arrangerType");
             const midiIn = document.getElementById("midiInSel");
             const midiOut = document.getElementById("midiOutSel");
             const midiFwd = document.getElementById("midiFwdSel");
         	const midiStrum = document.getElementById("midiStrumSel");
 
+			if (config.arranger) {
+				arranger = config.arranger;
+				
+				if (config.arranger == "ketron") {
+					arrangerType.options[0] = new Option("Ketron SD/Event", "ketron", true);
+					arrangerType.options[1] = new Option("Yamaha Montage/MODX", "modx", false);
+				} else {
+					arrangerType.options[0] = new Option("Yamaha Montage/MODX", "modx", true);	
+					arrangerType.options[1] = new Option("Ketron SD/Event", "ketron", false);					
+				}
+			} else {
+				arrangerType.options[0] = new Option("Ketron SD/Event", "ketron", true);
+				arrangerType.options[1] = new Option("Yamaha Montage/MODX", "modx", false);				
+			}
+		   
             midiOut.options[0] = new Option("Midi Out **UNUSED**", "midiOutSel");
             midiFwd.options[0] = new Option("Midi Forward **UNUSED**", "midiFwdSel");
             midiStrum.options[0] = new Option("Midi Strum **UNUSED**", "midiStrumSel");
@@ -236,6 +255,13 @@ function letsGo()
                 }
                 saveConfig();
             });
+			
+            arrangerType.addEventListener("click", function()
+            {
+                arranger = arrangerType.value;
+                console.debug("selected arranger type", arranger, arrangerType.value);				
+                saveConfig();
+            });
 
             midiFwd.addEventListener("click", function()
             {
@@ -294,6 +320,7 @@ function saveConfig()
     config.forward = forward ? forward.name : null;
 	config.strum = strum ? strum.name : null;
     config.input = input ? input.name : null;
+	config.arranger = arranger;
 
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }
@@ -413,11 +440,25 @@ function playSectionCheck()
 	}
 	
 	console.debug("playSectionCheck pressed " + sectionChange);
-	sendSysex(3 + sectionChange);
+	changeArrSection();
 	orinayo_section.innerHTML = SECTIONS[sectionChange];	
 
 }
-var activeStyle = -1;
+
+function changeArrSection() {
+	
+	if (arranger == "ketron") {
+		sendSysex(3 + sectionChange);	
+	} 	
+	else 
+	
+	if (arranger == "modx") {
+		if (sectionChange == 0) output.sendSysex(0x43, [0x10, 0x7F, 0x1C, 0x02, 0x30, 0x4C, 0x00, 0x00, 0x7F]); //  F0 43 10 7F 1C 02 30 4C 00 00 F7
+		if (sectionChange == 1) output.sendSysex(0x43, [0x10, 0x7F, 0x1C, 0x02, 0x30, 0x4C, 0x00, 0x02, 0x7F]); //  F0 43 10 7F 1C 02 30 4C 00 02 F7
+		if (sectionChange == 2) output.sendSysex(0x43, [0x10, 0x7F, 0x1C, 0x02, 0x30, 0x4C, 0x00, 0x04, 0x7F]); //  F0 43 10 7F 1C 02 30 4C 00 04 F7
+		if (sectionChange == 3) output.sendSysex(0x43, [0x10, 0x7F, 0x1C, 0x02, 0x30, 0x4C, 0x00, 0x06, 0x7F]); //  F0 43 10 7F 1C 02 30 4C 00 06 F7
+	}
+}
 
 function dokeyChange()
 {
