@@ -313,31 +313,33 @@ function checkForFillOrBreak()
 		if (pad.axis[TOUCH] == -0.4 || pad.axis[TOUCH] == -0.3) { 
 			console.debug("RED Touch");		
 
-			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x6D);	// DRUM ON/OFF
-			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x6D);	// DRUM ON/OFF
+			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x6A);	// VARIATION-1
+			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x6B);	// VARIATION-2
 		}
 		else
-/*			
+			
 		if (pad.axis[TOUCH] == 0.2 || pad.axis[TOUCH] == 0.1) { 
 			console.debug("YELLOW Touch");		
 
-			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x56);	// SNARE OFF
-			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x57);	// RIMSHOT OFF
+			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x6A);	// VARIATION-1
+			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x6C);	// VARIATION-3
 		}		
 		else
 			
 		if (pad.axis[TOUCH] == 0.4 || pad.axis[TOUCH] == 0.5) { 
 			console.debug("BLUE Touch");		
 
-			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x58);	// HI-HAT OFF
-			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x59);	// CYMBAL OFF
+			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x6E);	// TEXT PAGE UP
+			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x6F);	// TEXT PAGE DOWN
 		}		
 		else
-*/			
+			
 		if (pad.axis[TOUCH] == 1.0) { 
-			console.debug("ORANGE Touch");			
-			sendSysex(0x07);	// FILL-1				
-			pressFootSwitch(6);	// ARR OFF	
+			console.debug("ORANGE Touch");	
+			sendSysex(0x07);	// FILL-1	
+				
+			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x6D);	// DRUM ON/OFF
+			if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(6);	// ARR OFF	
 		}			
 	}
 }
