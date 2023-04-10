@@ -122,15 +122,15 @@ function updateStatus()
 		if (guitar.axes.length > STRUM) 
 		{			
 			if (pad.axis[STRUM] != guitar.axes[STRUM].toFixed(4)) {
-				console.debug("strum", guitar.axes[STRUM].toFixed(4));							
+				//console.debug("strum", guitar.axes[STRUM].toFixed(4));							
 				pad.axis[STRUM] = guitar.axes[STRUM].toFixed(4);
 				updated = updated || true;
 			}
 
-			if (pad.axis[TOUCH] != guitar.axes[TOUCH].toFixed(4)) {
-				//console.debug("touch", guitar.axes[TOUCH].toFixed(4));							
-				pad.axis[TOUCH] = guitar.axes[TOUCH].toFixed(4);
-				//updated = updated || true;				
+			if (pad.axis[TOUCH] != guitar.axes[TOUCH].toFixed(1)) {
+				//console.debug("touch", guitar.axes[TOUCH].toFixed(1));							
+				pad.axis[TOUCH] = guitar.axes[TOUCH].toFixed(1);
+				updated = updated || true;				
 			}			
 		}
 		
@@ -300,14 +300,45 @@ function saveConfig()
 
 function checkForFillOrBreak()
 {
-	console.debug("checkForFillOrBreak");
-	
 	if (output) {
 		
-		if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) {
-			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x0B);
-			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x07);	
-		}				
+		if (pad.axis[TOUCH] == -0.7 || pad.axis[TOUCH] == -0.8) { 
+			console.debug("GREEN Touch");		
+
+			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x0B);	// BREAK
+			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x07);	// FILL
+		}
+		else
+			
+		if (pad.axis[TOUCH] == -0.4 || pad.axis[TOUCH] == -0.3) { 
+			console.debug("RED Touch");		
+
+			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x5A);	// TOM OFF
+			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x55);	// KICK OFF
+		}
+		else
+			
+		if (pad.axis[TOUCH] == 0.2 || pad.axis[TOUCH] == 0.1) { 
+			console.debug("YELLOW Touch");		
+
+			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x56);	// SNARE OFF
+			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x57);	// RIMSHOT OFF
+		}		
+		else
+			
+		if (pad.axis[TOUCH] == 0.4 || pad.axis[TOUCH] == 0.5) { 
+			console.debug("BLUE Touch");		
+
+			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x58);	// HI-HAT OFF
+			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x59);	// CYMBAL OFF
+		}		
+		else
+			
+		if (pad.axis[TOUCH] == 1.0) { 
+			console.debug("ORANGE Touch");			
+			sendSysex(0x07);	// FILL-1				
+			pressFootSwitch(6);	// ARR OFF	
+		}			
 	}
 }
 
@@ -615,35 +646,20 @@ function doChord()
 }
 
 function toggleStartStop()
-{
-	if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) 
-	{
-		if (started) {			
-			console.debug("stop arr pressed");
-			sendSysex(0x07);				
-			pressFootSwitch(6);	
-			started = false;				
-		}
-		else {
-			console.debug("start arr pressed");
-			sendSysex(0x07);				
-			pressFootSwitch(6);	
-			started = true;
-		}			
-	} else {
+{	
+	if (output) { 
 		let endType = 0x0F;
+	
+		if (pad.buttons[YELLOW]) endType = 0x0F;	
+		if (pad.buttons[GREEN]) endType = 0x10;
+		if (pad.buttons[RED]) endType = 0x11;				
+		if (pad.buttons[BLUE]) endType = 0x12;	
+		if (pad.buttons[ORANGE]) endType = 0x35;					
 		
-		if (output) { 
-			if (pad.buttons[GREEN]) endType = 0x10;
-			if (pad.buttons[RED]) endType = 0x11;				
-			if (pad.buttons[BLUE]) endType = 0x12;	
-			if (pad.buttons[ORANGE]) endType = 0x35;					
-			
-			sendSysex(endType);	
-		}
+		sendSysex(endType);
 		console.debug("toggel start/stop", endType);
-		started = !started;			
-	}
+		started = !started;				
+	}	
 }
 
 function updateGame()
