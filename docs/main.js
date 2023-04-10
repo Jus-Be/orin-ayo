@@ -313,33 +313,33 @@ function checkForFillOrBreak()
 		if (pad.axis[TOUCH] == -0.4 || pad.axis[TOUCH] == -0.3) { 
 			console.debug("RED Touch");		
 
-			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x6A);	// VARIATION-1
-			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x6B);	// VARIATION-2
+			if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(9);	// FSW 9
+			if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(8);	// FSW-8
 		}
 		else
 			
 		if (pad.axis[TOUCH] == 0.2 || pad.axis[TOUCH] == 0.1) { 
 			console.debug("YELLOW Touch");		
 
-			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x6A);	// VARIATION-1
-			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x6C);	// VARIATION-3
+			if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(11);	// FSW 11
+			if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(10);	// FSW-10
 		}		
 		else
 			
 		if (pad.axis[TOUCH] == 0.4 || pad.axis[TOUCH] == 0.5) { 
 			console.debug("BLUE Touch");		
 
-			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x6E);	// TEXT PAGE UP
-			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x6F);	// TEXT PAGE DOWN
+			if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(13);	// FSW 13
+			if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(12);	// FSW-12
 		}		
 		else
 			
 		if (pad.axis[TOUCH] == 1.0) { 
 			console.debug("ORANGE Touch");	
-			sendSysex(0x07);	// FILL-1	
+			//sendSysex(0x07);	// FILL-1	
 				
-			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x6D);	// DRUM ON/OFF
-			if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(6);	// ARR OFF	
+			if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(7);	// FSW 7
+			if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(6);	// FSW-6
 		}			
 	}
 }
