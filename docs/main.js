@@ -301,6 +301,7 @@ function saveConfig()
 function checkForFillOrBreak()
 {
 	if (output) {
+		//console.debug("GREEN Touch", pad.axis[TOUCH]);	
 		
 		if (pad.axis[TOUCH] == -0.7 || pad.axis[TOUCH] == -0.8) { 
 			console.debug("GREEN Touch");		

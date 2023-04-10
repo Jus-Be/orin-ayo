@@ -1,0 +1,25 @@
+{
+	"manifest_version": 3,
+	"name": "OrinAyo",  
+	"short_name": "OrinAyo",
+	"description": "Convert a Logitech Guitar Hero controller into an arranger controller for Ketron SD9 Series or Event keyboard",
+	"version": "0.0.2",
+
+	"background": {
+		"service_worker": "background.js"
+	}, 
+	"permissions": [
+		"storage",   
+		"unlimitedStorage"
+	],	
+	"action": {
+      "default_icon": {
+		"16": "assets/icon_16.png",
+		"128": "assets/icon_128.png"
+      }   
+	},		
+	"icons": {
+		"16": "assets/icon_16.png",
+		"128": "assets/icon_128.png"
+	}
+}
