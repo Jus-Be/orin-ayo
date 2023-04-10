@@ -336,7 +336,6 @@ function checkForFillOrBreak()
 			
 		if (pad.axis[TOUCH] == 1.0) { 
 			console.debug("ORANGE Touch");	
-			//sendSysex(0x07);	// FILL-1	
 				
 			if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(7);	// FSW 7
 			if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(6);	// FSW-6
@@ -378,12 +377,14 @@ function pressFootSwitch(code) {
 		
 		setTimeout(() => {
 			output.sendSysex(0x26, [0x7C, 0x05, 0x01, 0x55 + code, 0x00]);	
-		}, 500);	
-
-		sectionChange = 0;
-		sendSysex(3 + sectionChange);
-		orinayo_section.innerHTML = SECTIONS[sectionChange];
+		}, 500);		
 	}	
+}
+
+function resetArrToA() {
+	sectionChange = 0;
+	sendSysex(3 + sectionChange);
+	orinayo_section.innerHTML = SECTIONS[sectionChange];	
 }
 
 function stopChord()
@@ -406,7 +407,7 @@ function playSectionCheck()
 			if (sectionChange > 3) sectionChange = 0;	
 		} else {
 			sectionChange--;
-			if (sectionChange < 0) sectionChange = 0;
+			if (sectionChange < 0) sectionChange = 3;
 		}
 	}
 	
