@@ -313,11 +313,11 @@ function checkForFillOrBreak()
 		if (pad.axis[TOUCH] == -0.4 || pad.axis[TOUCH] == -0.3) { 
 			console.debug("RED Touch");		
 
-			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x5A);	// TOM OFF
-			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x55);	// KICK OFF
+			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x6D);	// DRUM ON/OFF
+			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x6D);	// DRUM ON/OFF
 		}
 		else
-			
+/*			
 		if (pad.axis[TOUCH] == 0.2 || pad.axis[TOUCH] == 0.1) { 
 			console.debug("YELLOW Touch");		
 
@@ -333,7 +333,7 @@ function checkForFillOrBreak()
 			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x59);	// CYMBAL OFF
 		}		
 		else
-			
+*/			
 		if (pad.axis[TOUCH] == 1.0) { 
 			console.debug("ORANGE Touch");			
 			sendSysex(0x07);	// FILL-1				
@@ -648,13 +648,13 @@ function doChord()
 function toggleStartStop()
 {	
 	if (output) { 
-		let endType = 0x0F;
+		let endType = 0x12; // default start/stop
 	
-		if (pad.buttons[YELLOW]) endType = 0x0F;	
-		if (pad.buttons[GREEN]) endType = 0x10;
-		if (pad.buttons[RED]) endType = 0x11;				
-		if (pad.buttons[BLUE]) endType = 0x12;	
-		if (pad.buttons[ORANGE]) endType = 0x35;					
+		if (pad.buttons[YELLOW]) endType = 0x0F;	// INTRO/END-1
+		if (pad.buttons[GREEN]) endType = 0x10;		// INTRO/END-2
+		if (pad.buttons[RED]) endType = 0x11;		// INTRO/END-3		
+		if (pad.buttons[BLUE]) endType = 0x17;		// TO END
+		if (pad.buttons[ORANGE]) endType = 0x35;	// FADE			
 		
 		sendSysex(endType);
 		console.debug("toggel start/stop", endType);
