@@ -469,7 +469,7 @@ function changeArrSection(arrChanged) {
 	
 	if (arranger == "modx") {
 		if (sectionChange == 0) {
-			output.sendControlChange (92, 0, 4); 			
+			output.sendControlChange (92, 32, 4); 			
 			setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
 		}
 		if (sectionChange == 1) {
@@ -720,19 +720,41 @@ function doChord()
 
 function toggleStartStop()
 {	
-	if (output) { 
-		let endType = 0x12; // default start/stop
-	
-		if (pad.buttons[YELLOW]) endType = 0x0F;	// INTRO/END-1
-		if (pad.buttons[GREEN]) endType = 0x10;		// INTRO/END-2
-		if (pad.buttons[RED]) endType = 0x11;		// INTRO/END-3		
-		if (pad.buttons[BLUE]) endType = 0x17;		// TO END
-		if (pad.buttons[ORANGE]) endType = 0x35;	// FADE			
+	if (output) 
+	{ 
+		if (arranger == "ketron") {		
+			let endType = 0x12; // default start/stop
 		
-		sendSysex(endType);
-		console.debug("toggel start/stop", endType);
-		started = !started;				
-	}	
+			if (pad.buttons[YELLOW]) endType = 0x0F;	// INTRO/END-1
+			if (pad.buttons[GREEN]) endType = 0x10;		// INTRO/END-2
+			if (pad.buttons[RED]) endType = 0x11;		// INTRO/END-3		
+			if (pad.buttons[BLUE]) endType = 0x17;		// TO END
+			if (pad.buttons[ORANGE]) endType = 0x35;	// FADE			
+			
+			sendSysex(endType);
+			console.debug("toggel start/stop", endType);
+			started = !started;				
+		}
+		else
+
+		if (arranger == "modx") 
+		{		
+			if (started)
+			{
+				console.debug("stop key pressed");
+				output.sendStop();
+				if (strum) strum.sendStop();        
+				started = false;
+			}
+			else {
+				console.debug("start key ressed");
+				output.sendStart();       
+				if (strum) strum.sendStart();        
+				started = true;
+			}
+		}			
+		
+	}		
 }
 
 function updateGame()
