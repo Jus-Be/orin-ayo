@@ -470,19 +470,19 @@ function changeArrSection(arrChanged) {
 	if (arranger == "modx") {
 		if (sectionChange == 0) {
 			output.sendControlChange (92, 32, 4); 			
-			output.sendControlChange (92, 16, 4); 
+			if (arrChanged) setTimeout(() => output.sendControlChange (92, 16, 4), 1000); 
 		}
 		if (sectionChange == 1) {
 			output.sendControlChange (92, 64, 4); 	
-			output.sendControlChange (92, 48, 4); 			
+			if (arrChanged) setTimeout(() => output.sendControlChange (92, 48, 4), 1000);  			
 		}
 		if (sectionChange == 2) {
 			output.sendControlChange (92, 96, 4); 			
-			output.sendControlChange (92, 80, 4); 
+			if (arrChanged) setTimeout(() => output.sendControlChange (92, 80, 4), 1000);  
 		}		
 		if (sectionChange == 3) {
 			output.sendControlChange (92, 96, 4); 			
-			output.sendControlChange (92, 80, 4); 
+			if (arrChanged) setTimeout(() => output.sendControlChange (92, 80, 4), 1000); 
 		}
 		console.debug("changeArrSection modx " + sectionChange);			
 	}
