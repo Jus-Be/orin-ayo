@@ -333,8 +333,19 @@ function checkForFillOrBreak()
 		if (pad.axis[TOUCH] == -0.7 || pad.axis[TOUCH] == -0.8) { 
 			console.debug("GREEN Touch");		
 
-			if (pad.axis[STRUM] == STRUM_UP) sendSysex(0x0B);	// BREAK
-			if (pad.axis[STRUM] == STRUM_DOWN) sendSysex(0x07);	// FILL
+			if (pad.axis[STRUM] == STRUM_UP) {
+				if (sectionChange == 0) sendSysex(0x0B);	// BREAK-A
+				if (sectionChange == 1) sendSysex(0x0C);	// BREAK-B
+				if (sectionChange == 2) sendSysex(0x0D);	// BREAK-C
+				if (sectionChange == 3) sendSysex(0x0E);	// BREAK-D				
+
+			}
+			if (pad.axis[STRUM] == STRUM_DOWN) {
+				if (sectionChange == 0) sendSysex(0x07);	// FILL-A
+				if (sectionChange == 1) sendSysex(0x08);	// FILL-B
+				if (sectionChange == 2) sendSysex(0x09);	// FILL-C
+				if (sectionChange == 3) sendSysex(0x0A);	// FILL-D
+			}
 		}
 		else
 			
@@ -428,6 +439,8 @@ function stopChord()
 
 function playSectionCheck()
 {
+	let arrChanged = false;
+	
 	if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN])
 	{
 		if (pad.buttons[STARPOWER]) {
@@ -437,15 +450,16 @@ function playSectionCheck()
 			sectionChange--;
 			if (sectionChange < 0) sectionChange = 3;
 		}
+		arrChanged = true;
 	}
 	
 	console.debug("playSectionCheck pressed " + sectionChange);
-	changeArrSection();
+	changeArrSection(arrChanged);
 	orinayo_section.innerHTML = SECTIONS[sectionChange];	
 
 }
 
-function changeArrSection() {
+function changeArrSection(arrChanged) {
 	
 	if (arranger == "ketron") {
 		sendSysex(3 + sectionChange);	
@@ -454,10 +468,22 @@ function changeArrSection() {
 	else 
 	
 	if (arranger == "modx") {
-		if (sectionChange == 0) output.sendControlChange (92, 16, 4); 
-		if (sectionChange == 1) output.sendControlChange (92, 48, 4); 
-		if (sectionChange == 2) output.sendControlChange (92, 80, 4); 
-		if (sectionChange == 3) output.sendControlChange (92, 112, 4); 
+		if (sectionChange == 0) {
+			output.sendControlChange (92, 32, 4); 			
+			output.sendControlChange (92, 16, 4); 
+		}
+		if (sectionChange == 1) {
+			output.sendControlChange (92, 64, 4); 	
+			output.sendControlChange (92, 48, 4); 			
+		}
+		if (sectionChange == 2) {
+			output.sendControlChange (92, 96, 4); 			
+			output.sendControlChange (92, 80, 4); 
+		}		
+		if (sectionChange == 3) {
+			output.sendControlChange (92, 96, 4); 			
+			output.sendControlChange (92, 80, 4); 
+		}
 		console.debug("changeArrSection modx " + sectionChange);			
 	}
 }
