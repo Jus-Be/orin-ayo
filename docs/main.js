@@ -449,14 +449,16 @@ function changeArrSection() {
 	
 	if (arranger == "ketron") {
 		sendSysex(3 + sectionChange);	
+		console.debug("changeArrSection ketron " + sectionChange);		
 	} 	
 	else 
 	
 	if (arranger == "modx") {
-		if (sectionChange == 0) output.sendSysex(0x43, [0x10, 0x7F, 0x1C, 0x02, 0x30, 0x4C, 0x00, 0x00, 0x7F]); //  F0 43 10 7F 1C 02 30 4C 00 00 F7
-		if (sectionChange == 1) output.sendSysex(0x43, [0x10, 0x7F, 0x1C, 0x02, 0x30, 0x4C, 0x00, 0x02, 0x7F]); //  F0 43 10 7F 1C 02 30 4C 00 02 F7
-		if (sectionChange == 2) output.sendSysex(0x43, [0x10, 0x7F, 0x1C, 0x02, 0x30, 0x4C, 0x00, 0x04, 0x7F]); //  F0 43 10 7F 1C 02 30 4C 00 04 F7
-		if (sectionChange == 3) output.sendSysex(0x43, [0x10, 0x7F, 0x1C, 0x02, 0x30, 0x4C, 0x00, 0x06, 0x7F]); //  F0 43 10 7F 1C 02 30 4C 00 06 F7
+		if (sectionChange == 0) output.sendControlChange (92, 0, 4); 
+		if (sectionChange == 1) output.sendControlChange (92, 2, 4); 
+		if (sectionChange == 2) output.sendControlChange (92, 4, 4); 
+		if (sectionChange == 3) output.sendControlChange (92, 6, 4); 
+		console.debug("changeArrSection modx " + sectionChange);			
 	}
 }
 
