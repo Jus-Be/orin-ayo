@@ -454,10 +454,10 @@ function changeArrSection() {
 	else 
 	
 	if (arranger == "modx") {
-		if (sectionChange == 0) output.sendControlChange (92, 0, 4); 
-		if (sectionChange == 1) output.sendControlChange (92, 32, 4); 
-		if (sectionChange == 2) output.sendControlChange (92, 64, 4); 
-		if (sectionChange == 3) output.sendControlChange (92, 96, 4); 
+		if (sectionChange == 0) output.sendControlChange (92, 16, 4); 
+		if (sectionChange == 1) output.sendControlChange (92, 48, 4); 
+		if (sectionChange == 2) output.sendControlChange (92, 80, 4); 
+		if (sectionChange == 3) output.sendControlChange (92, 112, 4); 
 		console.debug("changeArrSection modx " + sectionChange);			
 	}
 }
