@@ -325,6 +325,23 @@ function saveConfig()
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }
 
+function doBreakOrFill(fill) {
+	
+	if (arranger == "ketron") {
+		sendSysex(fill);	
+		console.debug("doBreakOrFill ketron " + fill);		
+	} 	
+	else 
+	
+	if (arranger == "modx") {
+		if (sectionChange == 0) output.sendControlChange (92, 32, 4); 
+		if (sectionChange == 1) output.sendControlChange (92, 32, 4); 
+		if (sectionChange == 2) output.sendControlChange (92, 64, 4); 
+		if (sectionChange == 3) output.sendControlChange (92, 96, 4); 
+		console.debug("doBreakOrFill modx " + fill);			
+	}
+}
+
 function checkForFillOrBreak()
 {
 	if (output) {
@@ -334,17 +351,19 @@ function checkForFillOrBreak()
 			console.debug("GREEN Touch");		
 
 			if (pad.axis[STRUM] == STRUM_UP) {
-				if (sectionChange == 0) sendSysex(0x0B);	// BREAK-A
-				if (sectionChange == 1) sendSysex(0x0C);	// BREAK-B
-				if (sectionChange == 2) sendSysex(0x0D);	// BREAK-C
-				if (sectionChange == 3) sendSysex(0x0E);	// BREAK-D				
+				if (sectionChange == 0) doBreakOrFill(0x0B);	// BREAK-A
+				if (sectionChange == 1) doBreakOrFill(0x0C);	// BREAK-B
+				if (sectionChange == 2) doBreakOrFill(0x0D);	// BREAK-C
+				if (sectionChange == 3) doBreakOrFill(0x0E);	// BREAK-D				
 
 			}
+			else
+				
 			if (pad.axis[STRUM] == STRUM_DOWN) {
-				if (sectionChange == 0) sendSysex(0x07);	// FILL-A
-				if (sectionChange == 1) sendSysex(0x08);	// FILL-B
-				if (sectionChange == 2) sendSysex(0x09);	// FILL-C
-				if (sectionChange == 3) sendSysex(0x0A);	// FILL-D
+				if (sectionChange == 0) doBreakOrFill(0x07);	// FILL-A
+				if (sectionChange == 1) doBreakOrFill(0x08);	// FILL-B
+				if (sectionChange == 2) doBreakOrFill(0x09);	// FILL-C
+				if (sectionChange == 3) doBreakOrFill(0x0A);	// FILL-D
 			}
 		}
 		else
@@ -732,7 +751,7 @@ function toggleStartStop()
 			if (pad.buttons[ORANGE]) endType = 0x35;	// FADE			
 			
 			sendSysex(endType);
-			console.debug("toggel start/stop", endType);
+			console.debug("toggle start/stop", endType);
 			started = !started;				
 		}
 		else
@@ -742,13 +761,13 @@ function toggleStartStop()
 			if (started)
 			{
 				console.debug("stop key pressed");
-				output.sendStop();
+				output.sendControlChange (92, 112, 4); 	
 				if (strum) strum.sendStop();        
 				started = false;
 			}
 			else {
 				console.debug("start key ressed");
-				output.sendStart();       
+				output.sendControlChange (92, 0, 4); 	  
 				if (strum) strum.sendStart();        
 				started = true;
 			}
