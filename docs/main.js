@@ -416,11 +416,11 @@ function doKorgFill() {
 	
 	if (tempArr == 0) {
 		if (output) output.sendProgramChange(86, 4);
-		setTimeout(() => output.sendProgramChange(80 + sectionChange, 4), 2000);			
+		setTimeout(() => output.sendProgramChange(80 + sectionChange, 4), 1000);			
 		console.debug("doKorgFill A");		
 	} else {
 		if (output) output.sendProgramChange(87, 4);
-		setTimeout(() => output.sendProgramChange(80 + sectionChange, 4), 2000);			
+		setTimeout(() => output.sendProgramChange(80 + sectionChange, 4), 1000);			
 		console.debug("doKorgFill B");					
 	}		
 }
@@ -656,14 +656,6 @@ function dokeyChange() {
     base = BASE + keyChange;
 
     if (forward) forward.playNote(84 + keyChange, 1, {velocity: 0.5, duration: 1000});
-        
-    if (output)
-    {
-        //output.sendControlChange(0, 32);
-        //output.sendControlChange(32, 0);        
-        //output.sendProgramChange(activeStyle, [4]);
-	}
-    
 }
 
 function doChord() {
