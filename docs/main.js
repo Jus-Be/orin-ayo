@@ -32,7 +32,7 @@ var base = BASE;
 var key = "C"
 var keyChange = 0;
 var sectionChange = 0;
-var started = false;
+var stopPressed = false;
 var activeChord = null;
 var activeStyle = -1;
 
@@ -334,10 +334,7 @@ function doBreakOrFill(fill) {
 	else 
 	
 	if (arranger == "modx") {
-		if (sectionChange == 0) output.sendControlChange (92, 32, 4); 
-		if (sectionChange == 1) output.sendControlChange (92, 32, 4); 
-		if (sectionChange == 2) output.sendControlChange (92, 64, 4); 
-		if (sectionChange == 3) output.sendControlChange (92, 96, 4); 
+		doModxFill();
 		console.debug("doBreakOrFill modx " + fill);			
 	}
 }
@@ -478,6 +475,28 @@ function playSectionCheck()
 
 }
 
+function doModxFill() {
+	console.debug("doModxFill " + sectionChange);	
+		
+	if (sectionChange == 0) {
+		output.sendControlChange (92, 32, 4); 			
+		setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
+	}
+	if (sectionChange == 1) {
+		output.sendControlChange (92, 32, 4); 	
+		setTimeout(() => output.sendControlChange (92, 48, 4), 2000);  			
+	}
+	if (sectionChange == 2) {
+		output.sendControlChange (92, 64, 4); 			
+		setTimeout(() => output.sendControlChange (92, 80, 4), 2000);  
+	}		
+	if (sectionChange == 3) {
+		output.sendControlChange (92, 96, 4); 			
+		setTimeout(() => output.sendControlChange (92, 80, 4), 2000); 
+	}	
+}
+
+
 function changeArrSection(arrChanged) {
 	
 	if (arranger == "ketron") {
@@ -487,22 +506,7 @@ function changeArrSection(arrChanged) {
 	else 
 	
 	if (arranger == "modx") {
-		if (sectionChange == 0) {
-			output.sendControlChange (92, 32, 4); 			
-			setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
-		}
-		if (sectionChange == 1) {
-			output.sendControlChange (92, 32, 4); 	
-			setTimeout(() => output.sendControlChange (92, 48, 4), 2000);  			
-		}
-		if (sectionChange == 2) {
-			output.sendControlChange (92, 64, 4); 			
-			setTimeout(() => output.sendControlChange (92, 80, 4), 2000);  
-		}		
-		if (sectionChange == 3) {
-			output.sendControlChange (92, 96, 4); 			
-			setTimeout(() => output.sendControlChange (92, 80, 4), 2000); 
-		}
+		doModxFill();
 		console.debug("changeArrSection modx " + sectionChange);			
 	}
 }
@@ -752,24 +756,27 @@ function toggleStartStop()
 			
 			sendSysex(endType);
 			console.debug("toggle start/stop", endType);
-			started = !started;				
+			stopPressed = !stopPressed;				
 		}
 		else
 
 		if (arranger == "modx") 
 		{		
-			if (started)
+			if (stopPressed)
 			{
-				console.debug("stop key pressed");
-				output.sendControlChange (92, 112, 4); 	
+				console.debug("stop key pressed");  				
+				output.sendControlChange (92, 0, 4);  
+				output.sendStart();				
+				
 				if (strum) strum.sendStop();        
-				started = false;
+				stopPressed = false;
 			}
 			else {
 				console.debug("start key ressed");
-				output.sendControlChange (92, 0, 4); 	  
+				output.sendControlChange (92, 112, 4); 	
+				setTimeout(() => output.sendStop(), 3000); 					
 				if (strum) strum.sendStart();        
-				started = true;
+				stopPressed = true;
 			}
 		}			
 		
