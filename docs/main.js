@@ -830,7 +830,7 @@ function toggleStartStop() {
 			{
 				console.debug("start key pressed");  				
 				output.sendControlChange (92, 0, 4);  
-				setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 					
+				//setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 					
 				
 				if (strum) strum.sendStart();        
 				stopPressed = false;
@@ -852,7 +852,7 @@ function toggleStartStop() {
 			{
 				console.debug("start key pressed");  				
 				sendYamahaSysex(0x08);	
-				setTimeout(() => sendYamahaSysex(0x09), 2000); 				
+				//setTimeout(() => sendYamahaSysex(0x09), 2000); 				
 				
 				if (strum) strum.sendStart();        
 				stopPressed = false;
