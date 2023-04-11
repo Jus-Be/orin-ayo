@@ -326,7 +326,7 @@ function doBreak(code) {
 	else 
 		
 	if (arranger == "qy100") {
-		sendYamahaSysex(0x18);		
+		sendYamahaSysex(0x0C);		
 	} 	
 	else 	
 	
@@ -344,7 +344,7 @@ function doFill(code) {
 	else 
 		
 	if (arranger == "qy100") {
-		sendYamahaSysex(0x10 + code);		
+		sendYamahaSysex(0x0B);		
 	}	
 	else 
 	
@@ -549,8 +549,17 @@ function changeArrSection(arrChanged) {
 	else 
 		
 	if (arranger == "qy100") {
-		sendYamahaSysex(0x08 + sectionChange);	
-		console.debug("changeArrSection ketron " + sectionChange);		
+		const tempArr = sectionChange % 2;
+		
+		if (tempArr == 0) {
+			sendYamahaSysex(0x0B);
+			setTimeout(() => sendYamahaSysex(0x09), 2000);			
+			console.debug("changeArrSection qy100 A");		
+		} else {
+			sendYamahaSysex(0x0C);	
+			setTimeout(() => sendYamahaSysex(0x0A), 2000);				
+			console.debug("changeArrSection qy100 B");					
+		}
 	} 	
 	else	
 	
@@ -834,28 +843,14 @@ function toggleStartStop() {
 			if (stopPressed)
 			{
 				console.debug("start key pressed");  				
-				let startType = 0x00; // default start
-			
-				if (pad.buttons[YELLOW]) startType = 0x00;	
-				if (pad.buttons[GREEN]) startType = 0x01;		
-				if (pad.buttons[RED]) startType = 0x02;			
-				if (pad.buttons[BLUE]) startType = 0x03;		
-				if (pad.buttons[ORANGE]) startType = 0x00;	
-				sendYamahaSysex(startType);				
+				sendYamahaSysex(0x08);				
 				
 				if (strum) strum.sendStart();        
 				stopPressed = false;
 			}
 			else {
 				console.debug("stop key pressed");				
-				let endType = 0x20; // default stop
-			
-				if (pad.buttons[YELLOW]) endType = 0x20;	
-				if (pad.buttons[GREEN]) endType = 0x21;		
-				if (pad.buttons[RED]) endType = 0x22;			
-				if (pad.buttons[BLUE]) endType = 0x23;		
-				if (pad.buttons[ORANGE]) endType = 0x20;	
-				sendYamahaSysex(endType);	
+				sendYamahaSysex(0x0D);		
 				
 				if (strum) strum.sendStop();        
 				stopPressed = true;
