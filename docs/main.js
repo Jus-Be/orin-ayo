@@ -764,7 +764,7 @@ function toggleStartStop()
 		{		
 			if (stopPressed)
 			{
-				console.debug("stop key pressed");  				
+				console.debug("start key pressed");  				
 				output.sendControlChange (92, 0, 4);  
 				setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 					
 				
@@ -772,9 +772,14 @@ function toggleStartStop()
 				stopPressed = false;
 			}
 			else {
-				console.debug("start key ressed");
-				output.sendControlChange (92, 96, 4); 			
-				setTimeout(() => output.sendControlChange (92, 112, 4), 2000); 
+				console.debug("stop key pressed");
+				
+				if (pad.buttons[YELLOW]) {
+					output.sendControlChange (92, 96, 4); 			
+					setTimeout(() => output.sendControlChange (92, 112, 4), 2000); 
+				} else {
+					output.sendStop(); 
+				}
 				
 				if (strum) strum.sendStop();        
 				stopPressed = true;
