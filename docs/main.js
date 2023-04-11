@@ -579,18 +579,25 @@ function changeArrSection(arrChanged) {
 	
 	if (arranger == "ketron") {
 		sendKetronSysex(3 + sectionChange);	
-		console.debug("changeArrSection ketron " + sectionChange);		
+		console.debug("changeArrSection Ketron " + sectionChange);		
 	} 	
 	else 
 		
 	if (arranger == "qy100") {
-		doYamahaFill()
+		doYamahaFill();
+		console.debug("changeArrSection QY100 " + sectionChange);			
+	} 	
+	else 
+		
+	if (arranger == "microarranger") {
+		doKorgFill();
+		console.debug("changeArrSection Micro Arranger " + sectionChange);			
 	} 	
 	else	
 	
 	if (arranger == "modx" || arranger == "montage") {
 		doModxFill();
-		console.debug("changeArrSection modx " + sectionChange);			
+		console.debug("changeArrSection MODX " + sectionChange);			
 	}
 }
 
@@ -889,6 +896,8 @@ function toggleStartStop() {
 				if (output) {
 					if (pad.buttons[YELLOW]) {
 						output.sendProgramChange(84, 4);
+					} else if (pad.buttons[ORANGE]) {
+						output.sendProgramChange(91, 4);							
 					} else {
 						output.sendProgramChange(85, 4);						
 					}
@@ -902,6 +911,8 @@ function toggleStartStop() {
 				if (output) {
 					if (pad.buttons[YELLOW]) {
 						output.sendProgramChange(88, 4);
+					} else if (pad.buttons[ORANGE]) {
+						output.sendProgramChange(91, 4);						
 					} else {
 						output.sendProgramChange(89, 4);						
 					}
