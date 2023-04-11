@@ -541,6 +541,7 @@ function pressFootSwitch(code) {
 
 function resetArrToA() {
 	sectionChange = 0;
+	changeArrSection();
 	orinayo_section.innerHTML = SECTIONS[sectionChange];	
 }
 
@@ -569,13 +570,13 @@ function playSectionCheck() {
 		arrChanged = true;
 	}
 	
-	console.debug("playSectionCheck pressed " + sectionChange);
-	changeArrSection(arrChanged);
+	console.debug("playSectionCheck pressed " + arrChanged);
+	changeArrSection();
 	orinayo_section.innerHTML = SECTIONS[sectionChange];	
 
 }
 
-function changeArrSection(arrChanged) {
+function changeArrSection() {
 	
 	if (arranger == "ketron") {
 		sendKetronSysex(3 + sectionChange);	
@@ -895,12 +896,15 @@ function toggleStartStop() {
 				
 				if (output) {
 					if (pad.buttons[YELLOW]) {
-						output.sendProgramChange(84, 4);
+						output.sendProgramChange(85, 4);
 					} else if (pad.buttons[ORANGE]) {
 						output.sendProgramChange(91, 4);							
+					} else if (pad.buttons[GREEN]){
+						output.sendProgramChange(84, 4);						
 					} else {
-						output.sendProgramChange(85, 4);						
+						output.sendStart();
 					}
+					
 				}
 				if (strum) strum.sendStart();        
 				stopPressed = false;
@@ -910,11 +914,13 @@ function toggleStartStop() {
 				
 				if (output) {
 					if (pad.buttons[YELLOW]) {
-						output.sendProgramChange(88, 4);
+						output.sendProgramChange(89, 4);
 					} else if (pad.buttons[ORANGE]) {
 						output.sendProgramChange(91, 4);						
+					} else  if (pad.buttons[GREEN]) {
+						output.sendProgramChange(88, 4);
 					} else {
-						output.sendProgramChange(89, 4);						
+						output.sendStop();						
 					}
 				}	
 				
