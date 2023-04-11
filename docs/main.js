@@ -326,17 +326,7 @@ function doBreak(code) {
 	else 
 		
 	if (arranger == "qy100") {
-		const tempArr = code % 2;
-		
-		if (tempArr == 0) {
-			sendYamahaSysex(0x0C);
-			setTimeout(() => sendYamahaSysex(0x09), 2000);			
-			console.debug("doFill qy100 A");		
-		} else {
-			sendYamahaSysex(0x0B);	
-			setTimeout(() => sendYamahaSysex(0x0A), 2000);				
-			console.debug("doFill qy100 B");					
-		}	
+		doYamahaFill(code);		
 	} 	
 	else 	
 	
@@ -354,23 +344,28 @@ function doFill(code) {
 	else 
 		
 	if (arranger == "qy100") {		
-		const tempArr = code % 2;
-		
-		if (tempArr == 0) {
-			sendYamahaSysex(0x0B);
-			setTimeout(() => sendYamahaSysex(0x09), 2000);			
-			console.debug("doFill qy100 A");		
-		} else {
-			sendYamahaSysex(0x0C);	
-			setTimeout(() => sendYamahaSysex(0x0A), 2000);				
-			console.debug("doFill qy100 B");					
-		}		
+		doYamahaFill(code);		
 	}	
 	else 
 	
 	if (arranger == "modx" || arranger == "montage") {
 		doModxFill();		
 	}
+}
+
+function doYamahaFill(code) {
+	console.debug("doYamahaFill " + arranger + " " + code);			
+	const tempArr = code % 2;
+	
+	if (tempArr == 0) {
+		sendYamahaSysex(0x0C);
+		setTimeout(() => sendYamahaSysex(0x09), 2000);			
+		console.debug("doYamahaFill qy100 A");		
+	} else {
+		sendYamahaSysex(0x0B);	
+		setTimeout(() => sendYamahaSysex(0x0A), 2000);				
+		console.debug("doYamahaFill qy100 B");					
+	}		
 }
 
 function checkForFillOrBreak() {
@@ -856,7 +851,8 @@ function toggleStartStop() {
 			if (stopPressed)
 			{
 				console.debug("start key pressed");  				
-				sendYamahaSysex(0x08);				
+				sendYamahaSysex(0x08);	
+				setTimeout(() => sendYamahaSysex(0x09), 2000); 				
 				
 				if (strum) strum.sendStart();        
 				stopPressed = false;
