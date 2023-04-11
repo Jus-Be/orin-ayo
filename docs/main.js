@@ -541,7 +541,48 @@ function pressFootSwitch(code) {
 
 function resetArrToA() {
 	sectionChange = 0;
-	changeArrSection();
+	
+	if (arranger == "ketron") {
+		sendKetronSysex(3 + sectionChange);	
+		console.debug("resetArrToA Ketron " + sectionChange);		
+	} 	
+	else 
+		
+	if (arranger == "qy100") {
+		const tempArr = sectionChange % 2;
+	
+		if (tempArr == 0) {
+			sendYamahaSysex(0x09);				
+		} else {
+			sendYamahaSysex(0x0A);								
+		}
+		console.debug("resetArrToA QY100 " + sectionChange);			
+	} 	
+	else 
+		
+	if (arranger == "microarranger") {
+		if (output) output.sendProgramChange(80 + sectionChange, 4);	
+		console.debug("resetArrToA Micro Arranger " + sectionChange);			
+	} 	
+	else	
+	
+	if (arranger == "modx") {
+		if (sectionChange == 0) output.sendControlChange (92, 16, 4);
+		if (sectionChange == 1) output.sendControlChange (92, 48, 4);
+		if (sectionChange == 2) output.sendControlChange (92, 80, 4);		
+		if (sectionChange == 3) output.sendControlChange (92, 80, 4);
+		console.debug("resetArrToA MODX " + sectionChange);			
+	}
+	else
+		
+	if (arranger == "montage") {
+		if (sectionChange == 0) output.sendControlChange (92, 16, 4);
+		if (sectionChange == 1) output.sendControlChange (92, 32, 4);
+		if (sectionChange == 2) output.sendControlChange (92, 48, 4);		
+		if (sectionChange == 3) output.sendControlChange (92, 48, 4);
+		console.debug("resetArrToA Montage " + sectionChange);			
+	}
+	
 	orinayo_section.innerHTML = SECTIONS[sectionChange];	
 }
 
