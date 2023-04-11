@@ -49,8 +49,7 @@ var pad = {buttons: [], axis: []};
 
 window.addEventListener("load", onloadHandler);
 
-function onloadHandler()
-{
+function onloadHandler() {
 	console.debug("onloadHandler");
   
 	orinayo = document.querySelector('#orinayo');
@@ -63,8 +62,7 @@ function onloadHandler()
 	letsGo();
 }
 
-function connectHandler(e) 
-{
+function connectHandler(e) {
   console.debug("connectHandler", e);	
   
   if (e.gamepad.id.indexOf("Guitar") > -1)
@@ -78,16 +76,14 @@ function connectHandler(e)
   }
 }
 
-function disconnectHandler(e) 
-{
+function disconnectHandler(e) {
   if (e.gamepad.id.indexOf("Guitar ") > -1)
   {
 	  console.debug("removing guitar");	  
   }
 }
 
-function updateStatus() 
-{
+function updateStatus() {
 	var guitar = null
 	var gamepads = navigator.getGamepads();	
 	  
@@ -147,10 +143,9 @@ function updateStatus()
 	window.setTimeout(updateStatus);
 }
 
-function letsGo()
-{
+function letsGo() {
 	let data = localStorage.getItem("orin.ayo.config");
-	if (!data) data = "{}";
+	if (!data) data = '{"arranger": "ketron"}';
 	
 	const config = JSON.parse(data);
 	
@@ -169,21 +164,19 @@ function letsGo()
             const midiOut = document.getElementById("midiOutSel");
             const midiFwd = document.getElementById("midiFwdSel");
         	const midiStrum = document.getElementById("midiStrumSel");
+			
+			arrangerType.options[0] = new Option("Ketron SD/Event", "ketron", config.arranger == "ketron");
+			arrangerType.options[1] = new Option("Yamaha MODX", "modx", config.arranger == "modx");
+			arrangerType.options[2] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
+			arrangerType.options[3] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");	
 
-			if (config.arranger) {
-				arranger = config.arranger;
-				
-				if (config.arranger == "ketron") {
-					arrangerType.options[0] = new Option("Ketron SD/Event", "ketron", true);
-					arrangerType.options[1] = new Option("Yamaha Montage/MODX", "modx", false);
-				} else {
-					arrangerType.options[0] = new Option("Yamaha Montage/MODX", "modx", true);	
-					arrangerType.options[1] = new Option("Ketron SD/Event", "ketron", false);					
-				}
-			} else {
-				arrangerType.options[0] = new Option("Ketron SD/Event", "ketron", true);
-				arrangerType.options[1] = new Option("Yamaha Montage/MODX", "modx", false);				
-			}
+			let selectedIndex = 0;
+			selectedIndex = config.arranger == "modx" ? 1 : selectedIndex;
+			selectedIndex = config.arranger == "montage" ? 2 : selectedIndex;
+			selectedIndex = config.arranger == "qy100" ? 3 : selectedIndex;			
+			arrangerType.selectedIndex = selectedIndex;
+			
+			arranger = config.arranger;					
 		   
             midiOut.options[0] = new Option("Midi Out **UNUSED**", "midiOutSel");
             midiFwd.options[0] = new Option("Midi Forward **UNUSED**", "midiFwdSel");
@@ -313,8 +306,7 @@ function letsGo()
     }, true);
 };
 
-function saveConfig()
-{
+function saveConfig() {
     let config = {};
     config.output = output ? output.name : null;
     config.forward = forward ? forward.name : null;
@@ -325,22 +317,43 @@ function saveConfig()
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }
 
-function doBreakOrFill(fill) {
-	
+function doBreak(code) {
+	console.debug("doBreak " + arranger + " " + code);	
+		
 	if (arranger == "ketron") {
-		sendSysex(fill);	
-		console.debug("doBreakOrFill ketron " + fill);		
+		sendKetronSysex(0x0B + code);		
 	} 	
 	else 
+		
+	if (arranger == "qy100") {
+		sendYamahaSysex(0x18);		
+	} 	
+	else 	
 	
-	if (arranger == "modx") {
-		doModxFill();
-		console.debug("doBreakOrFill modx " + fill);			
+	if (arranger == "modx" || arranger == "montage") {
+		doModxFill();		
 	}
 }
 
-function checkForFillOrBreak()
-{
+function doFill(code) {
+	console.debug("doFill " + arranger + " " + code);		
+	
+	if (arranger == "ketron") {
+		sendKetronSysex(0x07 + code);		
+	} 	
+	else 
+		
+	if (arranger == "qy100") {
+		sendYamahaSysex(0x10 + code);		
+	}	
+	else 
+	
+	if (arranger == "modx" || arranger == "montage") {
+		doModxFill();		
+	}
+}
+
+function checkForFillOrBreak() {
 	if (output) {
 		//console.debug("GREEN Touch", pad.axis[TOUCH]);	
 		
@@ -348,19 +361,19 @@ function checkForFillOrBreak()
 			console.debug("GREEN Touch");		
 
 			if (pad.axis[STRUM] == STRUM_UP) {
-				if (sectionChange == 0) doBreakOrFill(0x0B);	// BREAK-A
-				if (sectionChange == 1) doBreakOrFill(0x0C);	// BREAK-B
-				if (sectionChange == 2) doBreakOrFill(0x0D);	// BREAK-C
-				if (sectionChange == 3) doBreakOrFill(0x0E);	// BREAK-D				
+				if (sectionChange == 0) doBreak(0);	// BREAK-A
+				if (sectionChange == 1) doBreak(1);	// BREAK-B
+				if (sectionChange == 2) doBreak(2);	// BREAK-C
+				if (sectionChange == 3) doBreak(3);	// BREAK-D				
 
 			}
 			else
 				
 			if (pad.axis[STRUM] == STRUM_DOWN) {
-				if (sectionChange == 0) doBreakOrFill(0x07);	// FILL-A
-				if (sectionChange == 1) doBreakOrFill(0x08);	// FILL-B
-				if (sectionChange == 2) doBreakOrFill(0x09);	// FILL-C
-				if (sectionChange == 3) doBreakOrFill(0x0A);	// FILL-D
+				if (sectionChange == 0) doFill(0);	// FILL-A
+				if (sectionChange == 1) doFill(1);	// FILL-B
+				if (sectionChange == 2) doFill(2);	// FILL-C
+				if (sectionChange == 3) doFill(3);	// FILL-D
 			}
 		}
 		else
@@ -398,8 +411,7 @@ function checkForFillOrBreak()
 	}
 }
 
-function playChord(chord)
-{
+function playChord(chord) {
    if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord)
    {
         console.debug("playChord", chord);
@@ -414,9 +426,20 @@ function playChord(chord)
    }
 }
 
-function sendSysex(code) {
+function sendYamahaSysex(code) {
     if (output) { 
-        console.debug("sendSysex", code)	
+        console.debug("sendYamahaSysex", code)	
+		output.sendSysex(0x43, [0x7E, 0x00, code, 0x7F]);	
+		
+		setTimeout(() => {
+			output.sendSysex(0x43, [0x7E, 0x00, code, 0x00]);	
+		}, 500);		
+	}	
+}
+
+function sendKetronSysex(code) {
+    if (output) { 
+        console.debug("sendKetronSysex", code)	
 		output.sendSysex(0x26, [0x79, 0x05, 0x00, code, 0x7F]);
 		
 		setTimeout(() => {
@@ -441,8 +464,7 @@ function resetArrToA() {
 	orinayo_section.innerHTML = SECTIONS[sectionChange];	
 }
 
-function stopChord()
-{
+function stopChord() {
    if (activeChord && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN))
    {
         console.debug("stopChord", pad)
@@ -452,8 +474,7 @@ function stopChord()
    }
 }
 
-function playSectionCheck()
-{
+function playSectionCheck() {
 	let arrChanged = false;
 	
 	if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN])
@@ -476,42 +497,70 @@ function playSectionCheck()
 
 function doModxFill() {
 	console.debug("doModxFill " + sectionChange);	
+	
+	if (arranger == "modx") 
+	{
+		if (sectionChange == 0) {
+			output.sendControlChange (92, 32, 4); 			
+			setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
+		}
+		if (sectionChange == 1) {
+			output.sendControlChange (92, 32, 4); 	
+			setTimeout(() => output.sendControlChange (92, 48, 4), 2000);  			
+		}
+		if (sectionChange == 2) {
+			output.sendControlChange (92, 64, 4); 			
+			setTimeout(() => output.sendControlChange (92, 80, 4), 2000);  
+		}		
+		if (sectionChange == 3) {
+			output.sendControlChange (92, 96, 4); 			
+			setTimeout(() => output.sendControlChange (92, 80, 4), 2000); 
+		}	
+	} 
+	
+	else 
 		
-	if (sectionChange == 0) {
-		output.sendControlChange (92, 32, 4); 			
-		setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
+	if (arranger == "montage") 	{	
+		if (sectionChange == 0) {
+			output.sendControlChange (92, 64, 4); 			
+			setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
+		}
+		if (sectionChange == 1) {
+			output.sendControlChange (92, 64, 4); 	
+			setTimeout(() => output.sendControlChange (92, 32, 4), 2000);  			
+		}
+		if (sectionChange == 2) {
+			output.sendControlChange (92, 80, 4); 			
+			setTimeout(() => output.sendControlChange (92, 48, 4), 2000);  
+		}		
+		if (sectionChange == 3) {
+			output.sendControlChange (92, 96, 4); 			
+			setTimeout(() => output.sendControlChange (92, 48, 4), 2000); 
+		}		
 	}
-	if (sectionChange == 1) {
-		output.sendControlChange (92, 32, 4); 	
-		setTimeout(() => output.sendControlChange (92, 48, 4), 2000);  			
-	}
-	if (sectionChange == 2) {
-		output.sendControlChange (92, 64, 4); 			
-		setTimeout(() => output.sendControlChange (92, 80, 4), 2000);  
-	}		
-	if (sectionChange == 3) {
-		output.sendControlChange (92, 96, 4); 			
-		setTimeout(() => output.sendControlChange (92, 80, 4), 2000); 
-	}	
 }
-
 
 function changeArrSection(arrChanged) {
 	
 	if (arranger == "ketron") {
-		sendSysex(3 + sectionChange);	
+		sendKetronSysex(3 + sectionChange);	
 		console.debug("changeArrSection ketron " + sectionChange);		
 	} 	
 	else 
+		
+	if (arranger == "qy100") {
+		sendYamahaSysex(0x08 + sectionChange);	
+		console.debug("changeArrSection ketron " + sectionChange);		
+	} 	
+	else	
 	
-	if (arranger == "modx") {
+	if (arranger == "modx" || arranger == "montage") {
 		doModxFill();
 		console.debug("changeArrSection modx " + sectionChange);			
 	}
 }
 
-function dokeyChange()
-{
+function dokeyChange() {
     keyChange = (keyChange % 12);
 
     activeStyle++;
@@ -534,8 +583,7 @@ function dokeyChange()
     
 }
 
-function doChord()
-{
+function doChord() {
   //console.debug("doChord", pad)
   stopChord();
 
@@ -740,27 +788,26 @@ function doChord()
   }
 }
 
-function toggleStartStop()
-{	
+function toggleStartStop() {	
 	if (output) { 
 		resetArrToA();
 		
 		if (arranger == "ketron") {		
-			let endType = 0x12; // default start/stop
+			let startEndType = 0x12; // default start/stop
 		
-			if (pad.buttons[YELLOW]) endType = 0x0F;	// INTRO/END-1
-			if (pad.buttons[GREEN]) endType = 0x10;		// INTRO/END-2
-			if (pad.buttons[RED]) endType = 0x11;		// INTRO/END-3		
-			if (pad.buttons[BLUE]) endType = 0x17;		// TO END
-			if (pad.buttons[ORANGE]) endType = 0x35;	// FADE			
+			if (pad.buttons[YELLOW]) startEndType = 0x0F;	// INTRO/END-1
+			if (pad.buttons[GREEN]) startEndType = 0x10;	// INTRO/END-2
+			if (pad.buttons[RED]) startEndType = 0x11;		// INTRO/END-3		
+			if (pad.buttons[BLUE]) startEndType = 0x17;		// TO END
+			if (pad.buttons[ORANGE]) startEndType = 0x35;	// FADE			
 			
-			sendSysex(endType);
-			console.debug("toggle start/stop", endType);
+			sendKetronSysex(startEndType);
+			console.debug("toggle start/stop", startEndType);
 			stopPressed = !stopPressed;				
 		}
 		else
 
-		if (arranger == "modx") 
+		if (arranger == "modx" || arranger == "montage") 
 		{		
 			if (stopPressed)
 			{
@@ -780,12 +827,44 @@ function toggleStartStop()
 				stopPressed = true;
 			}
 		}			
-		
+		else
+
+		if (arranger == "qy100") 
+		{		
+			if (stopPressed)
+			{
+				console.debug("start key pressed");  				
+				let startType = 0x00; // default start
+			
+				if (pad.buttons[YELLOW]) startType = 0x00;	
+				if (pad.buttons[GREEN]) startType = 0x01;		
+				if (pad.buttons[RED]) startType = 0x02;			
+				if (pad.buttons[BLUE]) startType = 0x03;		
+				if (pad.buttons[ORANGE]) startType = 0x00;	
+				sendYamahaSysex(startType);				
+				
+				if (strum) strum.sendStart();        
+				stopPressed = false;
+			}
+			else {
+				console.debug("stop key pressed");				
+				let endType = 0x20; // default stop
+			
+				if (pad.buttons[YELLOW]) endType = 0x20;	
+				if (pad.buttons[GREEN]) endType = 0x21;		
+				if (pad.buttons[RED]) endType = 0x22;			
+				if (pad.buttons[BLUE]) endType = 0x23;		
+				if (pad.buttons[ORANGE]) endType = 0x20;	
+				sendYamahaSysex(endType);	
+				
+				if (strum) strum.sendStop();        
+				stopPressed = true;
+			}
+		}		
 	}		
 }
 
-function updateGame()
-{
+function updateGame() {
   game.update();
 }
 
@@ -799,9 +878,7 @@ function updateCanvas() {
   }
 }
 
-
-function setup()
-{
+function setup() {
   var gameCanvas = document.getElementById('gameCanvas');
   canvas.context = gameCanvas.getContext('2d');
   canvas.gameWidth = gameCanvas.width;
