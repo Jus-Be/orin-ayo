@@ -326,7 +326,17 @@ function doBreak(code) {
 	else 
 		
 	if (arranger == "qy100") {
-		sendYamahaSysex(0x0C);		
+		const tempArr = code % 2;
+		
+		if (tempArr == 0) {
+			sendYamahaSysex(0x0C);
+			setTimeout(() => sendYamahaSysex(0x09), 2000);			
+			console.debug("doFill qy100 A");		
+		} else {
+			sendYamahaSysex(0x0B);	
+			setTimeout(() => sendYamahaSysex(0x0A), 2000);				
+			console.debug("doFill qy100 B");					
+		}	
 	} 	
 	else 	
 	
@@ -343,8 +353,18 @@ function doFill(code) {
 	} 	
 	else 
 		
-	if (arranger == "qy100") {
-		sendYamahaSysex(0x0B);		
+	if (arranger == "qy100") {		
+		const tempArr = code % 2;
+		
+		if (tempArr == 0) {
+			sendYamahaSysex(0x0B);
+			setTimeout(() => sendYamahaSysex(0x09), 2000);			
+			console.debug("doFill qy100 A");		
+		} else {
+			sendYamahaSysex(0x0C);	
+			setTimeout(() => sendYamahaSysex(0x0A), 2000);				
+			console.debug("doFill qy100 B");					
+		}		
 	}	
 	else 
 	
@@ -361,19 +381,12 @@ function checkForFillOrBreak() {
 			console.debug("GREEN Touch");		
 
 			if (pad.axis[STRUM] == STRUM_UP) {
-				if (sectionChange == 0) doBreak(0);	// BREAK-A
-				if (sectionChange == 1) doBreak(1);	// BREAK-B
-				if (sectionChange == 2) doBreak(2);	// BREAK-C
-				if (sectionChange == 3) doBreak(3);	// BREAK-D				
-
+				doBreak(sectionChange);			
 			}
 			else
 				
 			if (pad.axis[STRUM] == STRUM_DOWN) {
-				if (sectionChange == 0) doFill(0);	// FILL-A
-				if (sectionChange == 1) doFill(1);	// FILL-B
-				if (sectionChange == 2) doFill(2);	// FILL-C
-				if (sectionChange == 3) doFill(3);	// FILL-D
+				doFill(sectionChange);
 			}
 		}
 		else
