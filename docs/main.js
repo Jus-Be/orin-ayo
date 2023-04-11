@@ -169,11 +169,13 @@ function letsGo() {
 			arrangerType.options[1] = new Option("Yamaha MODX", "modx", config.arranger == "modx");
 			arrangerType.options[2] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
 			arrangerType.options[3] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");	
+			arrangerType.options[4] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
 
 			let selectedIndex = 0;
 			selectedIndex = config.arranger == "modx" ? 1 : selectedIndex;
 			selectedIndex = config.arranger == "montage" ? 2 : selectedIndex;
 			selectedIndex = config.arranger == "qy100" ? 3 : selectedIndex;			
+			selectedIndex = config.arranger == "microarranger" ? 4 : selectedIndex;				
 			arrangerType.selectedIndex = selectedIndex;
 			
 			arranger = config.arranger;					
@@ -317,16 +319,21 @@ function saveConfig() {
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }
 
-function doBreak(code) {
-	console.debug("doBreak " + arranger + " " + code);	
+function doBreak() {
+	console.debug("doBreak " + arranger);	
 		
 	if (arranger == "ketron") {
-		sendKetronSysex(0x0B + code);		
+		sendKetronSysex(0x0B + sectionChange);		
+	} 	
+	else 
+		
+	if (arranger == "microarranger") {
+        if (output) output.sendProgramChange(90, 4);
 	} 	
 	else 
 		
 	if (arranger == "qy100") {
-		doYamahaFill(code);		
+		doYamahaFill();		
 	} 	
 	else 	
 	
@@ -335,16 +342,21 @@ function doBreak(code) {
 	}
 }
 
-function doFill(code) {
-	console.debug("doFill " + arranger + " " + code);		
+function doFill() {
+	console.debug("doFill " + arranger);		
 	
 	if (arranger == "ketron") {
-		sendKetronSysex(0x07 + code);		
+		sendKetronSysex(0x07 + sectionChange);		
+	}
+	else 
+		
+	if (arranger == "microarranger") {
+		doKorgFill();	
 	} 	
 	else 
 		
 	if (arranger == "qy100") {		
-		doYamahaFill(code);		
+		doYamahaFill();		
 	}	
 	else 
 	
@@ -353,9 +365,69 @@ function doFill(code) {
 	}
 }
 
-function doYamahaFill(code) {
-	console.debug("doYamahaFill " + arranger + " " + code);			
-	const tempArr = code % 2;
+function doModxFill() {
+	console.debug("doModxFill " + sectionChange);	
+	
+	if (arranger == "modx") 
+	{
+		if (sectionChange == 0) {
+			output.sendControlChange (92, 32, 4); 			
+			setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
+		}
+		if (sectionChange == 1) {
+			output.sendControlChange (92, 32, 4); 	
+			setTimeout(() => output.sendControlChange (92, 48, 4), 2000);  			
+		}
+		if (sectionChange == 2) {
+			output.sendControlChange (92, 64, 4); 			
+			setTimeout(() => output.sendControlChange (92, 80, 4), 2000);  
+		}		
+		if (sectionChange == 3) {
+			output.sendControlChange (92, 96, 4); 			
+			setTimeout(() => output.sendControlChange (92, 80, 4), 2000); 
+		}	
+	} 
+	
+	else 
+		
+	if (arranger == "montage") 	{	
+		if (sectionChange == 0) {
+			output.sendControlChange (92, 64, 4); 			
+			setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
+		}
+		if (sectionChange == 1) {
+			output.sendControlChange (92, 64, 4); 	
+			setTimeout(() => output.sendControlChange (92, 32, 4), 2000);  			
+		}
+		if (sectionChange == 2) {
+			output.sendControlChange (92, 80, 4); 			
+			setTimeout(() => output.sendControlChange (92, 48, 4), 2000);  
+		}		
+		if (sectionChange == 3) {
+			output.sendControlChange (92, 96, 4); 			
+			setTimeout(() => output.sendControlChange (92, 48, 4), 2000); 
+		}		
+	}
+}
+
+function doKorgFill() {
+	console.debug("doKorgFill " + arranger);			
+	const tempArr = sectionChange % 2;
+	
+	if (tempArr == 0) {
+		if (output) output.sendProgramChange(86, 4);
+		setTimeout(() => output.sendProgramChange(80 + sectionChange, 4), 2000);			
+		console.debug("doKorgFill A");		
+	} else {
+		if (output) output.sendProgramChange(87, 4);
+		setTimeout(() => output.sendProgramChange(80 + sectionChange, 4), 2000);			
+		console.debug("doKorgFill B");					
+	}		
+}
+
+function doYamahaFill() {
+	console.debug("doYamahaFill " + arranger);			
+	const tempArr = sectionChange % 2;
 	
 	if (tempArr == 0) {
 		sendYamahaSysex(0x0C);
@@ -376,12 +448,12 @@ function checkForFillOrBreak() {
 			console.debug("GREEN Touch");		
 
 			if (pad.axis[STRUM] == STRUM_UP) {
-				doBreak(sectionChange);			
+				doBreak();			
 			}
 			else
 				
 			if (pad.axis[STRUM] == STRUM_DOWN) {
-				doFill(sectionChange);
+				doFill();
 			}
 		}
 		else
@@ -503,51 +575,6 @@ function playSectionCheck() {
 
 }
 
-function doModxFill() {
-	console.debug("doModxFill " + sectionChange);	
-	
-	if (arranger == "modx") 
-	{
-		if (sectionChange == 0) {
-			output.sendControlChange (92, 32, 4); 			
-			setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
-		}
-		if (sectionChange == 1) {
-			output.sendControlChange (92, 32, 4); 	
-			setTimeout(() => output.sendControlChange (92, 48, 4), 2000);  			
-		}
-		if (sectionChange == 2) {
-			output.sendControlChange (92, 64, 4); 			
-			setTimeout(() => output.sendControlChange (92, 80, 4), 2000);  
-		}		
-		if (sectionChange == 3) {
-			output.sendControlChange (92, 96, 4); 			
-			setTimeout(() => output.sendControlChange (92, 80, 4), 2000); 
-		}	
-	} 
-	
-	else 
-		
-	if (arranger == "montage") 	{	
-		if (sectionChange == 0) {
-			output.sendControlChange (92, 64, 4); 			
-			setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
-		}
-		if (sectionChange == 1) {
-			output.sendControlChange (92, 64, 4); 	
-			setTimeout(() => output.sendControlChange (92, 32, 4), 2000);  			
-		}
-		if (sectionChange == 2) {
-			output.sendControlChange (92, 80, 4); 			
-			setTimeout(() => output.sendControlChange (92, 48, 4), 2000);  
-		}		
-		if (sectionChange == 3) {
-			output.sendControlChange (92, 96, 4); 			
-			setTimeout(() => output.sendControlChange (92, 48, 4), 2000); 
-		}		
-	}
-}
-
 function changeArrSection(arrChanged) {
 	
 	if (arranger == "ketron") {
@@ -557,17 +584,7 @@ function changeArrSection(arrChanged) {
 	else 
 		
 	if (arranger == "qy100") {
-		const tempArr = sectionChange % 2;
-		
-		if (tempArr == 0) {
-			sendYamahaSysex(0x0B);
-			setTimeout(() => sendYamahaSysex(0x09), 2000);			
-			console.debug("changeArrSection qy100 A");		
-		} else {
-			sendYamahaSysex(0x0C);	
-			setTimeout(() => sendYamahaSysex(0x0A), 2000);				
-			console.debug("changeArrSection qy100 B");					
-		}
+		doYamahaFill()
 	} 	
 	else	
 	
@@ -829,9 +846,7 @@ function toggleStartStop() {
 			if (stopPressed)
 			{
 				console.debug("start key pressed");  				
-				output.sendControlChange (92, 0, 4);  
-				//setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 					
-				
+				output.sendControlChange (92, 0, 4);  				
 				if (strum) strum.sendStart();        
 				stopPressed = false;
 			}
@@ -843,7 +858,7 @@ function toggleStartStop() {
 				if (strum) strum.sendStop();        
 				stopPressed = true;
 			}
-		}			
+		}	
 		else
 
 		if (arranger == "qy100") 
@@ -851,15 +866,46 @@ function toggleStartStop() {
 			if (stopPressed)
 			{
 				console.debug("start key pressed");  				
-				sendYamahaSysex(0x08);	
-				//setTimeout(() => sendYamahaSysex(0x09), 2000); 				
-				
+				sendYamahaSysex(0x08);					
 				if (strum) strum.sendStart();        
 				stopPressed = false;
 			}
 			else {
 				console.debug("stop key pressed");				
 				sendYamahaSysex(0x0D);		
+				
+				if (strum) strum.sendStop();        
+				stopPressed = true;
+			}
+		}		
+		else
+
+		if (arranger == "microarranger") 
+		{		
+			if (stopPressed)
+			{
+				console.debug("start key pressed");  
+				
+				if (output) {
+					if (pad.buttons[YELLOW]) {
+						output.sendProgramChange(84, 4);
+					} else {
+						output.sendProgramChange(85, 4);						
+					}
+				}
+				if (strum) strum.sendStart();        
+				stopPressed = false;
+			}
+			else {
+				console.debug("stop key pressed");
+				
+				if (output) {
+					if (pad.buttons[YELLOW]) {
+						output.sendProgramChange(88, 4);
+					} else {
+						output.sendProgramChange(89, 4);						
+					}
+				}	
 				
 				if (strum) strum.sendStop();        
 				stopPressed = true;
