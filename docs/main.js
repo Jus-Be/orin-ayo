@@ -59,6 +59,31 @@ function onloadHandler() {
 	window.addEventListener("gamepadconnected", connectHandler);
 	window.addEventListener("gamepaddisconnected", disconnectHandler);
 
+	document.querySelector('#giglad').addEventListener("click", () => {		
+		setTimeout(() => output.sendControlChange (102, 127, 4), 10000);
+		setTimeout(() => output.sendControlChange (103, 127, 4), 20000);
+		setTimeout(() => output.sendControlChange (104, 127, 4), 30000);
+		
+		setTimeout(() => output.sendControlChange (105, 127, 4), 40000);
+		setTimeout(() => output.sendControlChange (106, 127, 4), 50000);
+		setTimeout(() => output.sendControlChange (107, 127, 4), 60000);
+
+		setTimeout(() => output.sendControlChange (108, 127, 4), 70000);
+		setTimeout(() => output.sendControlChange (109, 127, 4), 80000);
+		setTimeout(() => output.sendControlChange (110, 127, 4), 90000);
+		setTimeout(() => output.sendControlChange (111, 127, 4), 100000);
+		
+		setTimeout(() => output.sendControlChange (112, 127, 4), 110000);
+		setTimeout(() => output.sendControlChange (113, 127, 4), 120000);
+		setTimeout(() => output.sendControlChange (114, 127, 4), 130000);
+		setTimeout(() => output.sendControlChange (115, 127, 4), 140000);
+		setTimeout(() => output.sendControlChange (116, 127, 4), 150000);
+		setTimeout(() => output.sendControlChange (117, 127, 4), 160000);
+		setTimeout(() => output.sendControlChange (118, 127, 4), 170000);
+		setTimeout(() => output.sendControlChange (119, 127, 4), 180000);		
+	});
+
+	
 	letsGo();
 }
 
@@ -170,12 +195,14 @@ function letsGo() {
 			arrangerType.options[2] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
 			arrangerType.options[3] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");	
 			arrangerType.options[4] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
-
+			arrangerType.options[5] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");	
+			
 			let selectedIndex = 0;
 			selectedIndex = config.arranger == "modx" ? 1 : selectedIndex;
 			selectedIndex = config.arranger == "montage" ? 2 : selectedIndex;
 			selectedIndex = config.arranger == "qy100" ? 3 : selectedIndex;			
 			selectedIndex = config.arranger == "microarranger" ? 4 : selectedIndex;				
+			selectedIndex = config.arranger == "giglad" ? 5 : selectedIndex;				
 			arrangerType.selectedIndex = selectedIndex;
 			
 			arranger = config.arranger;					
@@ -329,11 +356,16 @@ function doBreak() {
 		
 	if (arranger == "microarranger") {
         if (output) output.sendProgramChange(90, 4);
-	} 	
+	} 
 	else 
 		
 	if (arranger == "qy100") {
 		doYamahaFill();		
+	}	
+	else 
+		
+	if (arranger == "giglad") {
+		doGigladFill();  			
 	} 	
 	else 	
 	
@@ -359,10 +391,36 @@ function doFill() {
 		doYamahaFill();		
 	}	
 	else 
+		
+	if (arranger == "giglad") {
+		doGigladFill(); 		
+	} 	
+	else 
 	
 	if (arranger == "modx" || arranger == "montage") {
 		doModxFill();		
 	}
+}
+
+function doGigladFill() {
+	console.debug("doGigladFill " + sectionChange);	
+
+	if (sectionChange == 0) {
+		output.sendControlChange (112, 127, 4); 			
+		setTimeout(() => output.sendControlChange (108, 127, 4), 2000); 
+	}
+	if (sectionChange == 1) {
+		output.sendControlChange (113, 127, 4); 	
+		setTimeout(() => output.sendControlChange (109, 127, 4), 2000);  			
+	}
+	if (sectionChange == 2) {
+		output.sendControlChange (114, 127, 4); 			
+		setTimeout(() => output.sendControlChange (110, 127, 4), 2000);  
+	}		
+	if (sectionChange == 3) {
+		output.sendControlChange (115, 127, 4); 			
+		setTimeout(() => output.sendControlChange (111, 127, 4), 2000); 
+	}	
 }
 
 function doModxFill() {
@@ -549,37 +607,31 @@ function resetArrToA() {
 	else 
 		
 	if (arranger == "qy100") {
-		const tempArr = sectionChange % 2;
-	
-		if (tempArr == 0) {
-			sendYamahaSysex(0x09);				
-		} else {
-			sendYamahaSysex(0x0A);								
-		}
+		sendYamahaSysex(0x09);	
 		console.debug("resetArrToA QY100 " + sectionChange);			
 	} 	
 	else 
 		
 	if (arranger == "microarranger") {
-		if (output) output.sendProgramChange(80 + sectionChange, 4);	
+		if (output) output.sendProgramChange(80, 4);	
 		console.debug("resetArrToA Micro Arranger " + sectionChange);			
 	} 	
 	else	
 	
+	if (arranger == "giglad") {
+		if (output) output.sendControlChange (108, 127, 4);
+		console.debug("resetArrToA MODX " + sectionChange);			
+	}	
+	else	
+	
 	if (arranger == "modx") {
-		if (sectionChange == 0) output.sendControlChange (92, 16, 4);
-		if (sectionChange == 1) output.sendControlChange (92, 48, 4);
-		if (sectionChange == 2) output.sendControlChange (92, 80, 4);		
-		if (sectionChange == 3) output.sendControlChange (92, 80, 4);
+		if (output) output.sendControlChange (92, 16, 4);
 		console.debug("resetArrToA MODX " + sectionChange);			
 	}
 	else
 		
 	if (arranger == "montage") {
-		if (sectionChange == 0) output.sendControlChange (92, 16, 4);
-		if (sectionChange == 1) output.sendControlChange (92, 32, 4);
-		if (sectionChange == 2) output.sendControlChange (92, 48, 4);		
-		if (sectionChange == 3) output.sendControlChange (92, 48, 4);
+		if (output) output.sendControlChange (92, 16, 4);
 		console.debug("resetArrToA Montage " + sectionChange);			
 	}
 	
@@ -628,6 +680,12 @@ function changeArrSection() {
 	if (arranger == "qy100") {
 		doYamahaFill();
 		console.debug("changeArrSection QY100 " + sectionChange);			
+	} 	
+	else 
+		
+	if (arranger == "giglad") {
+		doGigladFill();
+		console.debug("changeArrSection Giglad " + sectionChange);			
 	} 	
 	else 
 		
@@ -900,6 +958,48 @@ function toggleStartStop() {
 				stopPressed = true;
 			}
 		}	
+		else
+
+		if (arranger == "giglad") 
+		{		
+			if (stopPressed)
+			{
+				console.debug("start key pressed");  
+				
+				if (output) {
+					if (pad.buttons[YELLOW]) {
+						output.sendControlChange (102, 127, 4); 
+					} else if (pad.buttons[ORANGE]) {
+						output.sendControlChange (103, 127, 4); 							
+					} else if (pad.buttons[GREEN]){
+						output.sendControlChange (104, 127, 4); 						
+					} else {
+						output.sendStart();
+					}
+					
+				}
+				if (strum) strum.sendStart();        
+				stopPressed = false;
+			}
+			else {
+				console.debug("stop key pressed");
+				
+				if (output) {
+					if (pad.buttons[YELLOW]) {
+						output.sendControlChange (105, 127, 4); 
+					} else if (pad.buttons[ORANGE]) {
+						output.sendControlChange (106, 127, 4); 						
+					} else  if (pad.buttons[GREEN]) {
+						output.sendControlChange (107, 127, 4); 
+					} else {
+						output.sendStop();						
+					}
+				}	
+				
+				if (strum) strum.sendStop();        
+				stopPressed = true;
+			}
+		}		
 		else
 
 		if (arranger == "qy100") 
