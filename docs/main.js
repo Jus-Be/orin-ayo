@@ -59,28 +59,29 @@ function onloadHandler() {
 	window.addEventListener("gamepadconnected", connectHandler);
 	window.addEventListener("gamepaddisconnected", disconnectHandler);
 
-	document.querySelector('#giglad').addEventListener("click", () => {		
-		setTimeout(() => output.sendControlChange (102, 127, 4), 10000);
+	document.querySelector('#giglad').addEventListener("click", () => {			
+		setTimeout(() => output.sendControlChange (102, 127, 4), 10000);	// intro
 		setTimeout(() => output.sendControlChange (103, 127, 4), 20000);
 		setTimeout(() => output.sendControlChange (104, 127, 4), 30000);
 		
-		setTimeout(() => output.sendControlChange (105, 127, 4), 40000);
-		setTimeout(() => output.sendControlChange (106, 127, 4), 50000);
-		setTimeout(() => output.sendControlChange (107, 127, 4), 60000);
+		setTimeout(() => output.sendControlChange (108, 127, 4), 40000);	// Main
+		setTimeout(() => output.sendControlChange (109, 127, 4), 50000);
+		setTimeout(() => output.sendControlChange (110, 127, 4), 60000);
+		setTimeout(() => output.sendControlChange (111, 127, 4), 70000);		
+			
+		setTimeout(() => output.sendControlChange (112, 127, 4), 80000);	// Fill/Break
+		setTimeout(() => output.sendControlChange (113, 127, 4), 90000);
+		setTimeout(() => output.sendControlChange (114, 127, 4), 100000);
+		setTimeout(() => output.sendControlChange (115, 127, 4), 110000);
+		setTimeout(() => output.sendControlChange (116, 127, 4), 120000);
+		setTimeout(() => output.sendControlChange (117, 127, 4), 130000);
+		setTimeout(() => output.sendControlChange (118, 127, 4), 140000);
+		setTimeout(() => output.sendControlChange (119, 127, 4), 150000);	
 
-		setTimeout(() => output.sendControlChange (108, 127, 4), 70000);
-		setTimeout(() => output.sendControlChange (109, 127, 4), 80000);
-		setTimeout(() => output.sendControlChange (110, 127, 4), 90000);
-		setTimeout(() => output.sendControlChange (111, 127, 4), 100000);
-		
-		setTimeout(() => output.sendControlChange (112, 127, 4), 110000);
-		setTimeout(() => output.sendControlChange (113, 127, 4), 120000);
-		setTimeout(() => output.sendControlChange (114, 127, 4), 130000);
-		setTimeout(() => output.sendControlChange (115, 127, 4), 140000);
-		setTimeout(() => output.sendControlChange (116, 127, 4), 150000);
-		setTimeout(() => output.sendControlChange (117, 127, 4), 160000);
-		setTimeout(() => output.sendControlChange (118, 127, 4), 170000);
-		setTimeout(() => output.sendControlChange (119, 127, 4), 180000);		
+		setTimeout(() => output.sendControlChange (105, 127, 4), 160000);	// End
+		setTimeout(() => output.sendControlChange (106, 127, 4), 170000);
+		setTimeout(() => output.sendControlChange (107, 127, 4), 180000);
+			
 	});
 
 	
@@ -620,7 +621,7 @@ function resetArrToA() {
 	
 	if (arranger == "giglad") {
 		if (output) output.sendControlChange (108, 127, 4);
-		console.debug("resetArrToA MODX " + sectionChange);			
+		console.debug("resetArrToA Giglad " + sectionChange);			
 	}	
 	else	
 	
