@@ -974,11 +974,14 @@ function toggleStartStop() {
 				
 				if (output) {
 					if (pad.buttons[YELLOW]) {
-						output.sendControlChange (102, 127, 4); 
+						output.sendControlChange (102, 127, 4); 	// INTRO 1
+						sectionChange = 0;						
 					} else if (pad.buttons[RED]) {
-						output.sendControlChange (103, 127, 4); 							
+						output.sendControlChange (103, 127, 4); 	// INTRO 2	
+						sectionChange = 1;							
 					} else if (pad.buttons[GREEN]){
-						output.sendControlChange (104, 127, 4); 	
+						output.sendControlChange (104, 127, 4); 	// INTRO 3
+						sectionChange = 2;							
 					} else if (pad.buttons[ORANGE]){
 						output.sendControlChange (85, 127, 4); 		// FADE IN				
 					}					
