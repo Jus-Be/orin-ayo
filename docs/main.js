@@ -935,8 +935,8 @@ function toggleStartStop() {
 			let startEndType = 0x12; // default start/stop
 		
 			if (pad.buttons[YELLOW]) startEndType = 0x0F;	// INTRO/END-1
-			if (pad.buttons[GREEN]) startEndType = 0x10;	// INTRO/END-2
-			if (pad.buttons[RED]) startEndType = 0x11;		// INTRO/END-3		
+			if (pad.buttons[RED]) startEndType = 0x10;		// INTRO/END-2
+			if (pad.buttons[GREEN]) startEndType = 0x11;	// INTRO/END-3		
 			if (pad.buttons[BLUE]) startEndType = 0x17;		// TO END
 			if (pad.buttons[ORANGE]) startEndType = 0x35;	// FADE			
 			
@@ -984,7 +984,8 @@ function toggleStartStop() {
 						sectionChange = 2;							
 					} else if (pad.buttons[ORANGE]){
 						output.sendControlChange (85, 127, 4); 		// FADE IN				
-					}					
+					}
+					orinayo_section.innerHTML = SECTIONS[sectionChange];						
 					output.sendControlChange (87, 127, 4);			// START
 					
 				}
