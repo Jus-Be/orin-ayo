@@ -32,7 +32,7 @@ var base = BASE;
 var key = "C"
 var keyChange = 0;
 var sectionChange = 0;
-var stopPressed = false;
+var styleStarted = false;
 var activeChord = null;
 var activeStyle = -1;
 
@@ -60,27 +60,32 @@ function onloadHandler() {
 	window.addEventListener("gamepaddisconnected", disconnectHandler);
 
 	document.querySelector('#giglad').addEventListener("click", () => {			
-		setTimeout(() => output.sendControlChange (102, 127, 4), 10000);	// intro
-		setTimeout(() => output.sendControlChange (103, 127, 4), 20000);
-		setTimeout(() => output.sendControlChange (104, 127, 4), 30000);
+		setTimeout(() => output.sendControlChange (85, 127, 4), 10000);	// FADE IN
+		setTimeout(() => output.sendControlChange (86, 127, 4), 20000);	// FADE OUT
+		setTimeout(() => output.sendControlChange (87, 127, 4), 30000);	// PLAY
+		setTimeout(() => output.sendControlChange (88, 127, 4), 40000);	// STOP		
 		
-		setTimeout(() => output.sendControlChange (108, 127, 4), 40000);	// Main
-		setTimeout(() => output.sendControlChange (109, 127, 4), 50000);
-		setTimeout(() => output.sendControlChange (110, 127, 4), 60000);
-		setTimeout(() => output.sendControlChange (111, 127, 4), 70000);		
+		setTimeout(() => output.sendControlChange (102, 127, 4), 50000);	// intro
+		setTimeout(() => output.sendControlChange (103, 127, 4), 60000);
+		setTimeout(() => output.sendControlChange (104, 127, 4), 70000);
+		
+		setTimeout(() => output.sendControlChange (108, 127, 4), 80000);	// Main
+		setTimeout(() => output.sendControlChange (109, 127, 4), 90000);
+		setTimeout(() => output.sendControlChange (110, 127, 4), 100000);
+		setTimeout(() => output.sendControlChange (111, 127, 4), 110000);		
 			
-		setTimeout(() => output.sendControlChange (112, 127, 4), 80000);	// Fill/Break
-		setTimeout(() => output.sendControlChange (113, 127, 4), 90000);
-		setTimeout(() => output.sendControlChange (114, 127, 4), 100000);
-		setTimeout(() => output.sendControlChange (115, 127, 4), 110000);
-		setTimeout(() => output.sendControlChange (116, 127, 4), 120000);
-		setTimeout(() => output.sendControlChange (117, 127, 4), 130000);
-		setTimeout(() => output.sendControlChange (118, 127, 4), 140000);
-		setTimeout(() => output.sendControlChange (119, 127, 4), 150000);	
+		setTimeout(() => output.sendControlChange (112, 127, 4), 120000);	// Fill/Break
+		setTimeout(() => output.sendControlChange (113, 127, 4), 130000);
+		setTimeout(() => output.sendControlChange (114, 127, 4), 140000);
+		setTimeout(() => output.sendControlChange (115, 127, 4), 150000);
+		setTimeout(() => output.sendControlChange (116, 127, 4), 160000);
+		setTimeout(() => output.sendControlChange (117, 127, 4), 170000);
+		setTimeout(() => output.sendControlChange (118, 127, 4), 180000);
+		setTimeout(() => output.sendControlChange (119, 127, 4), 190000);	
 
-		setTimeout(() => output.sendControlChange (105, 127, 4), 160000);	// End
-		setTimeout(() => output.sendControlChange (106, 127, 4), 170000);
-		setTimeout(() => output.sendControlChange (107, 127, 4), 180000);
+		setTimeout(() => output.sendControlChange (105, 127, 4), 200000);	// End
+		setTimeout(() => output.sendControlChange (106, 127, 4), 210000);
+		setTimeout(() => output.sendControlChange (107, 127, 4), 220000);
 			
 	});
 
@@ -937,18 +942,18 @@ function toggleStartStop() {
 			
 			sendKetronSysex(startEndType);
 			console.debug("toggle start/stop", startEndType);
-			stopPressed = !stopPressed;				
+			styleStarted = !styleStarted;				
 		}
 		else
 
 		if (arranger == "modx" || arranger == "montage") 
 		{		
-			if (stopPressed)
+			if (!styleStarted)
 			{
 				console.debug("start key pressed");  				
 				output.sendControlChange (92, 0, 4);  				
 				if (strum) strum.sendStart();        
-				stopPressed = false;
+				styleStarted = true;
 			}
 			else {
 				console.debug("stop key pressed");				
@@ -956,31 +961,32 @@ function toggleStartStop() {
 				setTimeout(() => output.sendControlChange (92, 112, 4), 2000); 
 				
 				if (strum) strum.sendStop();        
-				stopPressed = true;
+				styleStarted = false;
 			}
 		}	
 		else
 
 		if (arranger == "giglad") 
 		{		
-			if (stopPressed)
+			if (!styleStarted)
 			{
 				console.debug("start key pressed");  
 				
 				if (output) {
 					if (pad.buttons[YELLOW]) {
 						output.sendControlChange (102, 127, 4); 
-					} else if (pad.buttons[ORANGE]) {
+					} else if (pad.buttons[RED]) {
 						output.sendControlChange (103, 127, 4); 							
 					} else if (pad.buttons[GREEN]){
-						output.sendControlChange (104, 127, 4); 						
-					} else {
-						output.sendStart();
-					}
+						output.sendControlChange (104, 127, 4); 	
+					} else if (pad.buttons[ORANGE]){
+						output.sendControlChange (85, 127, 4); 		// FADE IN				
+					}					
+					output.sendControlChange (87, 127, 4);			// START
 					
 				}
-				if (strum) strum.sendStart();        
-				stopPressed = false;
+				if (strum) strum.sendStart();       
+				styleStarted = true;
 			}
 			else {
 				console.debug("stop key pressed");
@@ -988,43 +994,45 @@ function toggleStartStop() {
 				if (output) {
 					if (pad.buttons[YELLOW]) {
 						output.sendControlChange (105, 127, 4); 
-					} else if (pad.buttons[ORANGE]) {
+					} else if (pad.buttons[RED]) {
 						output.sendControlChange (106, 127, 4); 						
 					} else  if (pad.buttons[GREEN]) {
-						output.sendControlChange (107, 127, 4); 
+						output.sendControlChange (107, 127, 4); 	
+					} else if (pad.buttons[ORANGE]){
+						output.sendControlChange (86, 127, 4); 		// FADE OUT						
 					} else {
-						output.sendStop();						
-					}
+						output.sendControlChange (88, 127, 4);		// STOP
+					}				
 				}	
 				
 				if (strum) strum.sendStop();        
-				stopPressed = true;
+				styleStarted = false;
 			}
 		}		
 		else
 
 		if (arranger == "qy100") 
 		{		
-			if (stopPressed)
+			if (!styleStarted)
 			{
 				console.debug("start key pressed");  				
 				sendYamahaSysex(0x08);					
 				if (strum) strum.sendStart();        
-				stopPressed = false;
+				styleStarted = true;
 			}
 			else {
 				console.debug("stop key pressed");				
 				sendYamahaSysex(0x0D);		
 				
 				if (strum) strum.sendStop();        
-				stopPressed = true;
+				styleStarted = false;
 			}
 		}		
 		else
 
 		if (arranger == "microarranger") 
 		{		
-			if (stopPressed)
+			if (!styleStarted)
 			{
 				console.debug("start key pressed");  
 				
@@ -1041,7 +1049,7 @@ function toggleStartStop() {
 					
 				}
 				if (strum) strum.sendStart();        
-				stopPressed = false;
+				styleStarted = true;
 			}
 			else {
 				console.debug("stop key pressed");
@@ -1059,7 +1067,7 @@ function toggleStartStop() {
 				}	
 				
 				if (strum) strum.sendStop();        
-				stopPressed = true;
+				styleStarted = false;
 			}
 		}		
 	}		
