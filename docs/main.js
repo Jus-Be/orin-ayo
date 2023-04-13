@@ -21,6 +21,7 @@ const TOUCH = 5;
 const LOGO = 12;
 
 var arranger = "ketron";
+var realGuitarStyle = "none";
 var output = null;
 var input = null;
 var forward = null;
@@ -32,10 +33,33 @@ var base = BASE;
 var key = "C"
 var keyChange = 0;
 var sectionChange = 0;
+var rgIndex = 0;
 var styleStarted = false;
 var activeChord = null;
 var activeStyle = -1;
 
+var currentPlayNote;
+var tempoCanvas = null;
+var playStartTime = 0;
+var audioContext = null;
+var unlocked = false;
+var isPlaying = false;      // Are we currently playing?
+var startTime;              // The start time of the entire sequence.
+var current16thNote;        // What note is currently last scheduled?
+var tempo = 100.0;          // tempo (in beats per minute)
+var lookahead = 25.0;       // How frequently to call scheduling function 
+                            //(in milliseconds)
+var scheduleAheadTime = 0.1;    // How far ahead to schedule audio (sec)
+                            // This is calculated from lookahead, and overlaps 
+                            // with next interval (in case the timer is late)
+var nextNoteTime = 0.0;     // when the next note is due.
+var noteResolution = 0;     // 0 == 16th, 1 == 8th, 2 == quarter note
+var noteLength = 0.05;      // length of "beep" (in seconds)
+var canvasContext;          // canvasContext is the canvas' context 2D
+var last16thNoteDrawn = -1; // the last "box" we drew on the screen
+var notesInQueue = [];      // the notes that have been put into the web audio,
+                            // and may or may not have played yet. {note, time}
+var timerWorker = null;     // The Web Worker used to fire timer messages
 
 var canvas = {
   context : null,
@@ -47,11 +71,13 @@ var content = [];
 var game = null;
 var pad = {buttons: [], axis: []};
 
+window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
 
 function onloadHandler() {
 	console.debug("onloadHandler");
   
+	tempoCanvas = orinayo = document.querySelector('#tempoCanvas');	
 	orinayo = document.querySelector('#orinayo');
 	orinayo_section = document.querySelector('#orinayo-section');
 	statusMsg = document.querySelector('#statusMsg');
@@ -88,7 +114,22 @@ function onloadHandler() {
 		setTimeout(() => output.sendControlChange (107, 127, 4), 220000);
 			
 	});
+	
+	document.querySelector(".play").addEventListener("click", function() {
+		if (output) { 		
+			this.innerText = styleStarted ? "Play" : "Stop";
+			toggleStartStop();
+		}
+	});	
 
+	document.querySelector("#selectResolution").addEventListener("change", function() {
+		noteResolution = this.selectedIndex;
+	});	
+	
+	document.querySelector("#tempo").addEventListener("input", function() {
+		tempo = event.target.value; 
+		document.getElementById('showTempo').innerText = tempo;
+	});
 	
 	letsGo();
 }
@@ -185,32 +226,38 @@ function letsGo() {
       if (err) {
         statusMsg.innerHTML = "WebMidi could not be enabled.";
       } else {
-        statusMsg.innerHTML = "Orin Ayo Ready";
+        statusMsg.innerHTML = "Orin Ayo";
         console.debug("WebMidi enabled!", config, WebMidi);
 
         if (WebMidi.outputs.length > 0 && WebMidi.inputs.length > 0)
         {
-			const arrangerType =  document.getElementById("arrangerType");
             const midiIn = document.getElementById("midiInSel");
             const midiOut = document.getElementById("midiOutSel");
             const midiFwd = document.getElementById("midiFwdSel");
         	const midiStrum = document.getElementById("midiStrumSel");
 			
+			const realguitar = document.getElementById("realguitar");
+			realguitar.options[0] = new Option("None", "none", config.realguitar == "none");			
+			realguitar.options[1] = new Option("Funk3_S_16th_90_120", "Funk3_S_16th_90_120", config.realguitar == "Funk3_S_16th_90_120");
+			let realGuitarIndex = 0;
+			realGuitarIndex = config.realGuitarStyle == "Funk3_S_16th_90_120" ? 1 : realGuitarIndex;				
+			realguitar.selectedIndex = realGuitarIndex;			
+			realGuitarStyle = config.realGuitarStyle;				
+
+			const arrangerType =  document.getElementById("arrangerType");			
 			arrangerType.options[0] = new Option("Ketron SD/Event", "ketron", config.arranger == "ketron");
 			arrangerType.options[1] = new Option("Yamaha MODX", "modx", config.arranger == "modx");
 			arrangerType.options[2] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
 			arrangerType.options[3] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");	
 			arrangerType.options[4] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
-			arrangerType.options[5] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");	
-			
-			let selectedIndex = 0;
-			selectedIndex = config.arranger == "modx" ? 1 : selectedIndex;
-			selectedIndex = config.arranger == "montage" ? 2 : selectedIndex;
-			selectedIndex = config.arranger == "qy100" ? 3 : selectedIndex;			
-			selectedIndex = config.arranger == "microarranger" ? 4 : selectedIndex;				
-			selectedIndex = config.arranger == "giglad" ? 5 : selectedIndex;				
-			arrangerType.selectedIndex = selectedIndex;
-			
+			arrangerType.options[5] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");				
+			let arrangerIndex = 0;
+			arrangerIndex = config.arranger == "modx" ? 1 : arrangerIndex;
+			arrangerIndex = config.arranger == "montage" ? 2 : arrangerIndex;
+			arrangerIndex = config.arranger == "qy100" ? 3 : arrangerIndex;			
+			arrangerIndex = config.arranger == "microarranger" ? 4 : arrangerIndex;				
+			arrangerIndex = config.arranger == "giglad" ? 5 : arrangerIndex;				
+			arrangerType.selectedIndex = arrangerIndex;			
 			arranger = config.arranger;					
 		   
             midiOut.options[0] = new Option("Midi Out **UNUSED**", "midiOutSel");
@@ -283,21 +330,30 @@ function letsGo() {
                 }
                 saveConfig();
             });
-			
+
             arrangerType.addEventListener("click", function()
             {
                 arranger = arrangerType.value;
                 console.debug("selected arranger type", arranger, arrangerType.value);				
                 saveConfig();
             });
+			
+            realguitar.addEventListener("click", function()
+            {
+                realGuitarStyle = realguitar.value;
+                console.debug("selected realguitar style", realGuitarStyle, realguitar.value);				
+                saveConfig();
+            });
 
             midiFwd.addEventListener("click", function()
             {
                 forward = null;
+				enableSequencer(false);
 
                 if (midiFwd.value != "midiFwdSel")
                 {
                     forward = WebMidi.getOutputByName(midiFwd.value);
+					enableSequencer(true);
                     console.debug("selected forward midi port", forward, midiFwd.value);
                 }
                 saveConfig();
@@ -332,6 +388,8 @@ function letsGo() {
                   console.debug("Received 'controlchange' message", e);
                 });
             }
+			
+			enableSequencer(!!forward);
         }
         else {
             statusMsg.innerHTML = "NO MIDI devices available";
@@ -348,6 +406,7 @@ function saveConfig() {
 	config.strum = strum ? strum.name : null;
     config.input = input ? input.name : null;
 	config.arranger = arranger;
+	config.realGuitarStyle = realGuitarStyle;
 
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }
@@ -661,10 +720,14 @@ function playSectionCheck() {
 	{
 		if (pad.buttons[STARPOWER]) {
 			sectionChange++;
+			rgIndex++;
+			if (rgIndex ==  window[realGuitarStyle][rgIndex].length) rgIndex = 0;
 			if (sectionChange > 3) sectionChange = 0;	
 		} else {
 			sectionChange--;
+			rgIndex++;			
 			if (sectionChange < 0) sectionChange = 3;
+			if (rgIndex < 0) rgIndex = window[realGuitarStyle][rgIndex].length;			
 		}
 		arrChanged = true;
 	}
@@ -931,6 +994,10 @@ function toggleStartStop() {
 	if (output) { 
 		resetArrToA();
 		
+		if (forward && realGuitarStyle != "none" && window[realGuitarStyle]) {			
+			startStopSequencer();
+		}
+		
 		if (arranger == "ketron") {		
 			let startEndType = 0x12; // default start/stop
 		
@@ -1112,3 +1179,130 @@ function setup() {
     canvas.gameWidth / 2, canvas.gameHeight));
 }
 
+function enableSequencer(flag) {
+	document.querySelector("#sequencer").style.display = flag ? "" : "none";
+	document.querySelector("#tempoCanvas").style.display = flag ? "" : "none";
+
+	if (!canvasContext) {
+		canvasContext = tempoCanvas.getContext( '2d' );    
+		canvasContext.strokeStyle = "#ffffff";
+		canvasContext.lineWidth = 2;
+
+		window.onorientationchange = resetCanvas;
+		window.onresize = resetCanvas;
+
+		requestAnimFrame(draw);    // start the drawing loop.
+
+		timerWorker = new Worker("metronomeworker.js");
+
+		timerWorker.onmessage = function(e) {
+			if (e.data == "tick") {
+				// console.log("tick!");
+				scheduler();
+			}
+			else
+				console.log("message: " + e.data);
+		};
+		timerWorker.postMessage({"interval":lookahead});	
+	}
+}
+
+function startStopSequencer() {
+
+    if (!audioContext) audioContext = new AudioContext();	
+	
+    if (!unlocked) {
+      // play silent buffer to unlock the audio
+      var buffer = audioContext.createBuffer(1, 1, 22050);
+      var node = audioContext.createBufferSource();
+      node.buffer = buffer;
+      node.start(0);
+      unlocked = true;
+    }	
+	
+	if (!styleStarted) 	{	
+        current16thNote = 0;
+		currentPlayNote = 0;
+        nextNoteTime = audioContext.currentTime;
+		playStartTime = nextNoteTime;		
+        timerWorker.postMessage("start");	
+	} else {
+        timerWorker.postMessage("stop");		
+	}
+}
+
+function resetCanvas (e) {
+    // resize the canvas - but remember - this clears the canvas too.
+    tempoCanvas.width = 800;
+    tempoCanvas.height = 100;
+
+    //make sure we scroll to the top left.
+    window.scrollTo(0,0); 
+}
+
+function draw() {
+    var currentNote = last16thNoteDrawn;
+    if (audioContext) {
+        var currentTime = audioContext.currentTime;
+
+        while (notesInQueue.length && notesInQueue[0].time < currentTime) {
+            currentNote = notesInQueue[0].note;
+            notesInQueue.splice(0,1);   // remove note from queue
+        }
+
+        // We only need to draw if the note has moved.
+        if (last16thNoteDrawn != currentNote) {
+            var x = Math.floor( tempoCanvas.width / 18 );
+            canvasContext.clearRect(0,0,tempoCanvas.width, tempoCanvas.height); 
+            for (var i=0; i<16; i++) {
+                canvasContext.fillStyle = ( currentNote == i ) ? 
+                    ((currentNote%4 === 0)?"red":"blue") : "black";
+                canvasContext.fillRect( x * (i+1), x, x/2, x/2 );
+            }
+            last16thNoteDrawn = currentNote;
+        }
+    }
+    // set up to draw again
+    requestAnimFrame(draw);
+}
+
+function nextNote() {		
+    current16thNote++;    // Advance the beat number, wrap to zero
+	const tempRatio = tempo / window[realGuitarStyle][rgIndex].header.bpm ;
+
+    if (current16thNote == 16) {
+        current16thNote = 0;
+    }	
+	
+	currentPlayNote++;
+	
+    if (currentPlayNote == window[realGuitarStyle][rgIndex].tracks[1].notes.length) {
+        currentPlayNote = 0;
+		playStartTime = playStartTime + (window[realGuitarStyle][rgIndex].tracks[1].duration / tempRatio);		
+    }
+	
+	const timestamp = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].time / tempRatio;
+	nextNoteTime = playStartTime + timestamp;		
+}
+
+function scheduleNote( beatNumber, time ) {
+	console.debug("scheduleNote",  currentPlayNote, audioContext.currentTime, nextNoteTime);
+    // push the note on the queue, even if we're not playing.
+    notesInQueue.push( { note: beatNumber, time: time } );
+
+	if (forward) {
+		const velocity = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].velocity;
+		const duration = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].duration * 1000;
+		
+		forward.playNote(window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].midi, 1, {velocity, duration});
+	}
+}
+
+function scheduler() {
+    // while there are notes that will need to play before the next interval, 
+    // schedule them and advance the pointer.
+    while (nextNoteTime < audioContext.currentTime + scheduleAheadTime ) {
+        scheduleNote( current16thNote, nextNoteTime );
+        nextNote();
+    }
+}

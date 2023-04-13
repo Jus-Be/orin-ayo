@@ -4,23 +4,26 @@
     <meta charset="utf-8">
     <title>Orin Ayo</title>
     <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="main.css">	
 </head>
 
 <body>
   <div>
-    <h2 id="statusMsg"></h2>
 	<table>	
+	<tr><td><h2 id="statusMsg"></h2></td><td><a class="play">Play</a><span style="display:none" id="sequencer">Tempo: <span id="showTempo">100</span>BPM <input id="tempo" type="range" min="30.0" max="160.0" step="1" value="100" style="height: 20px; width: 200px">Resolution:<select id="selectResolution"><option>16th notes<option>8th notes<option>Quarter notes</select></span></td></tr>		
 	<tr><td>Arranger Type</td><td><select id="arrangerType" type="text" class="form-control input"></select></td></tr>	
-    <tr><td>Input MIDI Device</td><td><select id="midiInSel" type="text" class="form-control input"></select></td></tr>
-    <tr><td>Output MIDI Device</td><td><select id="midiOutSel" type="text" class="form-control input"></select></td></tr>
-    <tr><td>Control MIDI Device</td><td><select id="midiFwdSel" type="text" class="form-control input"></select></td></tr>
-	<tr><td>Strum MIDI Device</td><td><select id="midiStrumSel" type="text" class="form-control input"></select></td></tr>
+    <tr><td>Arranger MIDI Device</td><td><select id="midiOutSel" type="text" class="form-control input"></select></td></tr>
+    <tr><td>Transpose MIDI Device</td><td><select id="midiInSel" type="text" class="form-control input"></select></td></tr>	
+    <tr><td>RealGuitar MIDI Device</td><td><select id="midiFwdSel" type="text" class="form-control input"></select></td></tr>
+    <tr><td>RealGuitar Styles</td><td><select id="realguitar" type="text" class="form-control input"></select></td></tr>	
+	<tr><td>ChordTracker MIDI Device</td><td><select id="midiStrumSel" type="text" class="form-control input"></select></td></tr>
 	</table>
   </div>
   <div>	
       <span style="font-size: 72px;margin-left: 50px;" id="orinayo">C</span>
       <span style="font-size: 72px;margin-left: 75px;" id="orinayo-section">Arr A</span>
-  </div>	  
+  </div>
+  <canvas id="tempoCanvas" width="800" height="100" style="display:none"></canvas>
   <canvas id="gameCanvas" width="800" height="900"></canvas>
   <br/>
   <button id="giglad">Giglad Learn</button>&nbsp;Use this button to send style control CC to Giglad (5 sec interval)<br/>
@@ -38,6 +41,7 @@
   <script src="gameModel/hitRegion.js"></script>
   <script src="gameModel/gameBoardState.js"></script>
   <script src="webmidi.min.js"></script>
-  <script src="main.js"></script>
+  <script src="loops.js"></script>
+  <script src="main.js"></script>  
 </body>
 </html>
