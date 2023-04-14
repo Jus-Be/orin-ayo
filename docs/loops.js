@@ -1,3 +1,3407 @@
+var Basic_P44_16T_50_90 = [
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 26,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7480314960629921,
+          "duration": 1.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.125,
+          "velocity": 0.5433070866141733,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.25,
+          "velocity": 0.5511811023622047,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.375,
+          "velocity": 0.6692913385826772,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.5,
+          "velocity": 0.5433070866141733,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.625,
+          "velocity": 0.5196850393700787,
+          "duration": 0.375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.75,
+          "velocity": 0.7401574803149606,
+          "duration": 1.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.75,
+          "velocity": 0.7401574803149606,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.875,
+          "velocity": 0.5590551181102362,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1,
+          "velocity": 0.5669291338582677,
+          "duration": 0.375
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.125,
+          "velocity": 0.7244094488188977,
+          "duration": 0.75
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.25,
+          "velocity": 0.5039370078740157,
+          "duration": 0.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.375,
+          "velocity": 0.5039370078740157,
+          "duration": 0.25
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.5,
+          "velocity": 0.7244094488188977,
+          "duration": 1.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.625,
+          "velocity": 0.5118110236220472,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.75,
+          "velocity": 0.5275590551181102,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.875,
+          "velocity": 0.6456692913385826,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2,
+          "velocity": 0.5275590551181102,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.125,
+          "velocity": 0.5196850393700787,
+          "duration": 0.375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.25,
+          "velocity": 0.7480314960629921,
+          "duration": 0.75
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.25,
+          "velocity": 0.7480314960629921,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.375,
+          "velocity": 0.5590551181102362,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.5,
+          "velocity": 0.5748031496062992,
+          "duration": 0.375
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.625,
+          "velocity": 0.7007874015748031,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.75,
+          "velocity": 0.5196850393700787,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.875,
+          "velocity": 0.5275590551181102,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P56_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 26,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7480314960629921,
+          "duration": 1.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.125,
+          "velocity": 0.5433070866141733,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.25,
+          "velocity": 0.5511811023622047,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.375,
+          "velocity": 0.6692913385826772,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.5,
+          "velocity": 0.5433070866141733,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.625,
+          "velocity": 0.5196850393700787,
+          "duration": 0.375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.75,
+          "velocity": 0.7401574803149606,
+          "duration": 1.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.75,
+          "velocity": 0.7401574803149606,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.875,
+          "velocity": 0.5590551181102362,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1,
+          "velocity": 0.5669291338582677,
+          "duration": 0.375
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.125,
+          "velocity": 0.7244094488188977,
+          "duration": 0.75
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.25,
+          "velocity": 0.5039370078740157,
+          "duration": 0.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.375,
+          "velocity": 0.5039370078740157,
+          "duration": 0.25
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.5,
+          "velocity": 0.7244094488188977,
+          "duration": 1.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.625,
+          "velocity": 0.5118110236220472,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.75,
+          "velocity": 0.5275590551181102,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.875,
+          "velocity": 0.6456692913385826,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2,
+          "velocity": 0.5275590551181102,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.125,
+          "velocity": 0.5196850393700787,
+          "duration": 0.375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.25,
+          "velocity": 0.7480314960629921,
+          "duration": 0.75
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.25,
+          "velocity": 0.7480314960629921,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.375,
+          "velocity": 0.5590551181102362,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.5,
+          "velocity": 0.5748031496062992,
+          "duration": 0.375
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.625,
+          "velocity": 0.7007874015748031,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.75,
+          "velocity": 0.5196850393700787,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.875,
+          "velocity": 0.5275590551181102,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P57_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 24,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7007874015748031,
+          "duration": 1.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.125,
+          "velocity": 0.6456692913385826,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.25,
+          "velocity": 0.5511811023622047,
+          "duration": 0.375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.375,
+          "velocity": 0.6692913385826772,
+          "duration": 0.75
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.5,
+          "velocity": 0.5748031496062992,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.625,
+          "velocity": 0.5275590551181102,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.75,
+          "velocity": 0.7086614173228346,
+          "duration": 1.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.875,
+          "velocity": 0.6377952755905512,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1,
+          "velocity": 0.5354330708661418,
+          "duration": 0.375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.125,
+          "velocity": 0.6220472440944882,
+          "duration": 0.75
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.25,
+          "velocity": 0.5748031496062992,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.375,
+          "velocity": 0.5039370078740157,
+          "duration": 0.375
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.5,
+          "velocity": 0.7322834645669292,
+          "duration": 1.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.625,
+          "velocity": 0.6692913385826772,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.75,
+          "velocity": 0.5275590551181102,
+          "duration": 0.375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.875,
+          "velocity": 0.6456692913385826,
+          "duration": 0.75
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2,
+          "velocity": 0.5590551181102362,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.125,
+          "velocity": 0.5039370078740157,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.25,
+          "velocity": 0.7007874015748031,
+          "duration": 0.75
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.375,
+          "velocity": 0.6614173228346457,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.5,
+          "velocity": 0.5748031496062992,
+          "duration": 0.375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.625,
+          "velocity": 0.6692913385826772,
+          "duration": 0.375
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.75,
+          "velocity": 0.5905511811023622,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.875,
+          "velocity": 0.5669291338582677,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P58_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 24,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7401574803149606,
+          "duration": 1.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.125,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.25,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.375,
+          "velocity": 0.6456692913385826,
+          "duration": 0.75
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.5,
+          "velocity": 0.6377952755905512,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.625,
+          "velocity": 0.6299212598425197,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.75,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.875,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1,
+          "velocity": 0.6220472440944882,
+          "duration": 1.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.125,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.25,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.375,
+          "velocity": 0.6377952755905512,
+          "duration": 0.75
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.5,
+          "velocity": 0.7401574803149606,
+          "duration": 1.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.625,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.75,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.875,
+          "velocity": 0.6456692913385826,
+          "duration": 0.75
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2,
+          "velocity": 0.6377952755905512,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.125,
+          "velocity": 0.6299212598425197,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.25,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.375,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.5,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.625,
+          "velocity": 0.6220472440944882,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.75,
+          "velocity": 0.6220472440944882,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.875,
+          "velocity": 0.6377952755905512,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P59_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 24,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7401574803149606,
+          "duration": 1.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.125,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.25,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.375,
+          "velocity": 0.6456692913385826,
+          "duration": 0.75
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.5,
+          "velocity": 0.6377952755905512,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.625,
+          "velocity": 0.6299212598425197,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.75,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.875,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1,
+          "velocity": 0.6220472440944882,
+          "duration": 1.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.125,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.25,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.375,
+          "velocity": 0.6377952755905512,
+          "duration": 0.75
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.5,
+          "velocity": 0.7401574803149606,
+          "duration": 1.125
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.625,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.75,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.875,
+          "velocity": 0.6456692913385826,
+          "duration": 1.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2,
+          "velocity": 0.6377952755905512,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.125,
+          "velocity": 0.6299212598425197,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.25,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.375,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.5,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 2.625,
+          "velocity": 0.6220472440944882,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.75,
+          "velocity": 0.6220472440944882,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.875,
+          "velocity": 0.6377952755905512,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P60_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 26,
+      "notes": [
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0,
+          "velocity": 0.5826771653543307,
+          "duration": 0.25
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7559055118110236,
+          "duration": 1.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.125,
+          "velocity": 0.5196850393700787,
+          "duration": 1.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.25,
+          "velocity": 0.5905511811023622,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.375,
+          "velocity": 0.6062992125984252,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.5,
+          "velocity": 0.6141732283464567,
+          "duration": 0.75
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.625,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.75,
+          "velocity": 0.7244094488188977,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.875,
+          "velocity": 0.6377952755905512,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1,
+          "velocity": 0.6220472440944882,
+          "duration": 1.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.125,
+          "velocity": 0.5905511811023622,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.25,
+          "velocity": 0.5826771653543307,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.375,
+          "velocity": 0.5354330708661418,
+          "duration": 0.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.5,
+          "velocity": 0.5826771653543307,
+          "duration": 0.25
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.5,
+          "velocity": 0.7559055118110236,
+          "duration": 1.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.625,
+          "velocity": 0.5196850393700787,
+          "duration": 1.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.75,
+          "velocity": 0.5905511811023622,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.875,
+          "velocity": 0.6062992125984252,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2,
+          "velocity": 0.6141732283464567,
+          "duration": 0.75
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.125,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.25,
+          "velocity": 0.7244094488188977,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.375,
+          "velocity": 0.6377952755905512,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.5,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.625,
+          "velocity": 0.5905511811023622,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.75,
+          "velocity": 0.5826771653543307,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.875,
+          "velocity": 0.5354330708661418,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P61_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 26,
+      "notes": [
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0,
+          "velocity": 0.5826771653543307,
+          "duration": 0.25
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7559055118110236,
+          "duration": 1.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.125,
+          "velocity": 0.5196850393700787,
+          "duration": 1.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.25,
+          "velocity": 0.5905511811023622,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.375,
+          "velocity": 0.6062992125984252,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.5,
+          "velocity": 0.6141732283464567,
+          "duration": 0.75
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.625,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.75,
+          "velocity": 0.7244094488188977,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.875,
+          "velocity": 0.6377952755905512,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1,
+          "velocity": 0.6220472440944882,
+          "duration": 1.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.125,
+          "velocity": 0.5905511811023622,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.25,
+          "velocity": 0.5826771653543307,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.375,
+          "velocity": 0.5354330708661418,
+          "duration": 0.5
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.5,
+          "velocity": 0.7559055118110236,
+          "duration": 1.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.5,
+          "velocity": 0.5826771653543307,
+          "duration": 0.25
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.625,
+          "velocity": 0.5196850393700787,
+          "duration": 1.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.75,
+          "velocity": 0.5905511811023622,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.875,
+          "velocity": 0.6062992125984252,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2,
+          "velocity": 0.6141732283464567,
+          "duration": 0.75
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.125,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.25,
+          "velocity": 0.7244094488188977,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.375,
+          "velocity": 0.6377952755905512,
+          "duration": 0.25
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.5,
+          "velocity": 0.6220472440944882,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.625,
+          "velocity": 0.5905511811023622,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.75,
+          "velocity": 0.5826771653543307,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.875,
+          "velocity": 0.5354330708661418,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P62_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 26,
+      "notes": [
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0,
+          "velocity": 0.6220472440944882,
+          "duration": 0.125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7322834645669292,
+          "duration": 1.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.125,
+          "velocity": 0.5826771653543307,
+          "duration": 0.125
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.25,
+          "velocity": 0.6141732283464567,
+          "duration": 2.75
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.375,
+          "velocity": 0.6377952755905512,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.5,
+          "velocity": 0.6062992125984252,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.625,
+          "velocity": 0.5433070866141733,
+          "duration": 2
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.75,
+          "velocity": 0.6692913385826772,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.875,
+          "velocity": 0.6062992125984252,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1,
+          "velocity": 0.6062992125984252,
+          "duration": 0.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.125,
+          "velocity": 0.6614173228346457,
+          "duration": 0.125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.25,
+          "velocity": 0.5905511811023622,
+          "duration": 0.125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.375,
+          "velocity": 0.6141732283464567,
+          "duration": 0.5
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.5,
+          "velocity": 0.6692913385826772,
+          "duration": 1.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.5,
+          "velocity": 0.6771653543307087,
+          "duration": 0.11250000000000004
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.625,
+          "velocity": 0.6299212598425197,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.75,
+          "velocity": 0.5669291338582677,
+          "duration": 0.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.875,
+          "velocity": 0.6377952755905512,
+          "duration": 0.125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2,
+          "velocity": 0.6692913385826772,
+          "duration": 0.125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.125,
+          "velocity": 0.6141732283464567,
+          "duration": 0.875
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.25,
+          "velocity": 0.6377952755905512,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.375,
+          "velocity": 0.5984251968503937,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.5,
+          "velocity": 0.6062992125984252,
+          "duration": 0.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.625,
+          "velocity": 0.6692913385826772,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.75,
+          "velocity": 0.6062992125984252,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.875,
+          "velocity": 0.5984251968503937,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P63_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 26,
+      "notes": [
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0,
+          "velocity": 0.6220472440944882,
+          "duration": 0.125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7322834645669292,
+          "duration": 1.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.125,
+          "velocity": 0.5826771653543307,
+          "duration": 0.125
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.25,
+          "velocity": 0.6141732283464567,
+          "duration": 2.75
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.375,
+          "velocity": 0.6377952755905512,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.5,
+          "velocity": 0.6062992125984252,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.625,
+          "velocity": 0.5433070866141733,
+          "duration": 2
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.75,
+          "velocity": 0.6692913385826772,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.875,
+          "velocity": 0.6062992125984252,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1,
+          "velocity": 0.6062992125984252,
+          "duration": 0.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.125,
+          "velocity": 0.6614173228346457,
+          "duration": 0.125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.25,
+          "velocity": 0.5905511811023622,
+          "duration": 0.125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.375,
+          "velocity": 0.6141732283464567,
+          "duration": 0.5
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.5,
+          "velocity": 0.7086614173228346,
+          "duration": 1.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.5,
+          "velocity": 0.7086614173228346,
+          "duration": 0.10624999999999996
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.625,
+          "velocity": 0.6299212598425197,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.75,
+          "velocity": 0.5669291338582677,
+          "duration": 0.5
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.875,
+          "velocity": 0.6377952755905512,
+          "duration": 0.125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2,
+          "velocity": 0.6692913385826772,
+          "duration": 0.125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.125,
+          "velocity": 0.6141732283464567,
+          "duration": 0.875
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.25,
+          "velocity": 0.6377952755905512,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.375,
+          "velocity": 0.5984251968503937,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.5,
+          "velocity": 0.6062992125984252,
+          "duration": 0.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.625,
+          "velocity": 0.6692913385826772,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.75,
+          "velocity": 0.6062992125984252,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.875,
+          "velocity": 0.5984251968503937,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P64_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 23,
+      "notes": [
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0,
+          "velocity": 0.8031496062992126,
+          "duration": 1.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.125,
+          "velocity": 0.7086614173228346,
+          "duration": 0.5
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.25,
+          "velocity": 0.6850393700787402,
+          "duration": 0.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.375,
+          "velocity": 0.5748031496062992,
+          "duration": 0.5
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 0.5,
+          "velocity": 0.5669291338582677,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.625,
+          "velocity": 0.5511811023622047,
+          "duration": 0.625
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.75,
+          "velocity": 0.7716535433070866,
+          "duration": 0.625
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.875,
+          "velocity": 0.7007874015748031,
+          "duration": 0.625
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1,
+          "velocity": 0.6850393700787402,
+          "duration": 0.625
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.125,
+          "velocity": 0.6141732283464567,
+          "duration": 0.625
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.25,
+          "velocity": 0.5590551181102362,
+          "duration": 0.625
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.375,
+          "velocity": 0.5433070866141733,
+          "duration": 0.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.5,
+          "velocity": 0.7559055118110236,
+          "duration": 0.5
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.625,
+          "velocity": 0.6929133858267716,
+          "duration": 0.5
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.75,
+          "velocity": 0.6614173228346457,
+          "duration": 0.78125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.875,
+          "velocity": 0.5905511811023622,
+          "duration": 0.5625
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2,
+          "velocity": 0.5590551181102362,
+          "duration": 0.25
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 2.125,
+          "velocity": 0.5433070866141733,
+          "duration": 0.3125
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.25,
+          "velocity": 0.7559055118110236,
+          "duration": 0.5
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 2.375,
+          "velocity": 0.6929133858267716,
+          "duration": 0.5
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 2.5,
+          "velocity": 0.6614173228346457,
+          "duration": 0.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.75,
+          "velocity": 0.5590551181102362,
+          "duration": 0.25
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 2.875,
+          "velocity": 0.5433070866141733,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P65_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 48,
+      "notes": [
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 0,
+          "velocity": 0.7637795275590551,
+          "duration": 0.125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7637795275590551,
+          "duration": 1.125
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.125,
+          "velocity": 0.4330708661417323,
+          "duration": 0.125
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 0.125,
+          "velocity": 0.4330708661417323,
+          "duration": 0.90625
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.25,
+          "velocity": 0.4566929133858268,
+          "duration": 0.125
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.25,
+          "velocity": 0.4566929133858268,
+          "duration": 0.6875
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.375,
+          "velocity": 0.5196850393700787,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.375,
+          "velocity": 0.5196850393700787,
+          "duration": 0.375
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.5,
+          "velocity": 0.5590551181102362,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.5,
+          "velocity": 0.5590551181102362,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.625,
+          "velocity": 0.6929133858267716,
+          "duration": 0.125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.625,
+          "velocity": 0.6929133858267716,
+          "duration": 1.0625
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.75,
+          "velocity": 0.6771653543307087,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.75,
+          "velocity": 0.6771653543307087,
+          "duration": 0.75
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.875,
+          "velocity": 0.5905511811023622,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.875,
+          "velocity": 0.5905511811023622,
+          "duration": 0.5
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1,
+          "velocity": 0.5354330708661418,
+          "duration": 0.125
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1,
+          "velocity": 0.5354330708661418,
+          "duration": 0.3125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.125,
+          "velocity": 0.48031496062992124,
+          "duration": 0.125
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.125,
+          "velocity": 0.48031496062992124,
+          "duration": 1.03125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.25,
+          "velocity": 0.7559055118110236,
+          "duration": 0.125
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.25,
+          "velocity": 0.7559055118110236,
+          "duration": 0.8125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.375,
+          "velocity": 0.5039370078740157,
+          "duration": 0.125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.375,
+          "velocity": 0.5039370078740157,
+          "duration": 0.875
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.5,
+          "velocity": 0.5748031496062992,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.5,
+          "velocity": 0.5748031496062992,
+          "duration": 0.375
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.625,
+          "velocity": 0.6141732283464567,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.625,
+          "velocity": 0.6141732283464567,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.75,
+          "velocity": 0.7165354330708661,
+          "duration": 0.125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.75,
+          "velocity": 0.7165354330708661,
+          "duration": 1.0625
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.875,
+          "velocity": 0.6614173228346457,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.875,
+          "velocity": 0.6614173228346457,
+          "duration": 0.75
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2,
+          "velocity": 0.6062992125984252,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2,
+          "velocity": 0.6062992125984252,
+          "duration": 0.53125
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 2.125,
+          "velocity": 0.5511811023622047,
+          "duration": 0.125
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.125,
+          "velocity": 0.5511811023622047,
+          "duration": 0.3125
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 2.25,
+          "velocity": 0.7637795275590551,
+          "duration": 0.125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 2.25,
+          "velocity": 0.7637795275590551,
+          "duration": 0.75
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.375,
+          "velocity": 0.4251968503937008,
+          "duration": 0.125
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 2.375,
+          "velocity": 0.4251968503937008,
+          "duration": 0.625
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.5,
+          "velocity": 0.48031496062992124,
+          "duration": 0.125
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.5,
+          "velocity": 0.48031496062992124,
+          "duration": 0.5
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.625,
+          "velocity": 0.5590551181102362,
+          "duration": 0.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.625,
+          "velocity": 0.5590551181102362,
+          "duration": 0.375
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.75,
+          "velocity": 0.6299212598425197,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.75,
+          "velocity": 0.6299212598425197,
+          "duration": 0.125
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.875,
+          "velocity": 0.6850393700787402,
+          "duration": 0.125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.875,
+          "velocity": 0.6850393700787402,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P66_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 24,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.7637795275590551,
+          "duration": 0.125
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 0.125,
+          "velocity": 0.6062992125984252,
+          "duration": 0.125
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.25,
+          "velocity": 0.48031496062992124,
+          "duration": 0.125
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 0.375,
+          "velocity": 0.7086614173228346,
+          "duration": 1.125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.5625,
+          "velocity": 0.7086614173228346,
+          "duration": 0.4375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.5625,
+          "velocity": 0.7086614173228346,
+          "duration": 0.8125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0.75,
+          "velocity": 0.7952755905511811,
+          "duration": 0.75
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.875,
+          "velocity": 0.7086614173228346,
+          "duration": 0.25
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1,
+          "velocity": 0.6614173228346457,
+          "duration": 0.25
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.125,
+          "velocity": 0.7086614173228346,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.25,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.375,
+          "velocity": 0.6141732283464567,
+          "duration": 0.125
+        },
+        {
+          "name": "A#0",
+          "midi": 22,
+          "time": 1.5,
+          "velocity": 0.6692913385826772,
+          "duration": 1.5
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.625,
+          "velocity": 0.6535433070866141,
+          "duration": 0.25
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.75,
+          "velocity": 0.6299212598425197,
+          "duration": 0.25
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.875,
+          "velocity": 0.6299212598425197,
+          "duration": 0.46875
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 2,
+          "velocity": 0.5748031496062992,
+          "duration": 0.53125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 2.125,
+          "velocity": 0.5826771653543307,
+          "duration": 0.78125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.25,
+          "velocity": 0.6692913385826772,
+          "duration": 0.75
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.375,
+          "velocity": 0.5669291338582677,
+          "duration": 0.25
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 2.5,
+          "velocity": 0.5590551181102362,
+          "duration": 0.25
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.625,
+          "velocity": 0.5984251968503937,
+          "duration": 0.375
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 2.75,
+          "velocity": 0.4881889763779528,
+          "duration": 0.25
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 2.875,
+          "velocity": 0.5118110236220472,
+          "duration": 0.125
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P67_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 32,
+      "notes": [
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.9375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.09375,
+          "velocity": 0.7401574803149606,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.1875,
+          "velocity": 0.6771653543307087,
+          "duration": 0.375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.28125,
+          "velocity": 0.6299212598425197,
+          "duration": 0.375
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 0.375,
+          "velocity": 0.5984251968503937,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.46875,
+          "velocity": 0.7637795275590551,
+          "duration": 0.9375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.5625,
+          "velocity": 0.6771653543307087,
+          "duration": 0.375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.65625,
+          "velocity": 0.6220472440944882,
+          "duration": 0.375
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 0.75,
+          "velocity": 0.5826771653543307,
+          "duration": 0.375
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0.84375,
+          "velocity": 0.5275590551181102,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.9375,
+          "velocity": 0.7401574803149606,
+          "duration": 0.65625
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.03125,
+          "velocity": 0.6850393700787402,
+          "duration": 0.28125
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.125,
+          "velocity": 0.6377952755905512,
+          "duration": 0.28125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.21875,
+          "velocity": 0.6062992125984252,
+          "duration": 0.28125
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.3125,
+          "velocity": 0.5748031496062992,
+          "duration": 0.75
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.40625,
+          "velocity": 0.5354330708661418,
+          "duration": 0.28125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.5,
+          "velocity": 0.49606299212598426,
+          "duration": 0.28125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.59375,
+          "velocity": 0.7401574803149606,
+          "duration": 0.375
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.6875,
+          "velocity": 0.7165354330708661,
+          "duration": 0.46875
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.78125,
+          "velocity": 0.6299212598425197,
+          "duration": 1.21875
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.875,
+          "velocity": 0.5511811023622047,
+          "duration": 0.46875
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.96875,
+          "velocity": 0.7637795275590551,
+          "duration": 0.46875
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.0625,
+          "velocity": 0.6692913385826772,
+          "duration": 0.46875
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 2.15625,
+          "velocity": 0.5984251968503937,
+          "duration": 0.46875
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.25,
+          "velocity": 0.8582677165354331,
+          "duration": 0.75
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.34375,
+          "velocity": 0.7401574803149606,
+          "duration": 0.375
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.4375,
+          "velocity": 0.6771653543307087,
+          "duration": 0.375
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.53125,
+          "velocity": 0.6299212598425197,
+          "duration": 0.375
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 2.625,
+          "velocity": 0.5984251968503937,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.71875,
+          "velocity": 0.7637795275590551,
+          "duration": 0.28125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.8125,
+          "velocity": 0.6771653543307087,
+          "duration": 0.1875
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.90625,
+          "velocity": 0.6220472440944882,
+          "duration": 0.09375
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P68_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 120,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 80,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 80
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3,
+      "length": 25,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7874015748031497,
+          "duration": 0.65625
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 0.1875,
+          "velocity": 0.6614173228346457,
+          "duration": 0.46875
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 0.375,
+          "velocity": 0.7007874015748031,
+          "duration": 0.65625
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 0.46875,
+          "velocity": 0.7007874015748031,
+          "duration": 0.65625
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.5625,
+          "velocity": 0.7007874015748031,
+          "duration": 0.375
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0.75,
+          "velocity": 0.6771653543307087,
+          "duration": 0.46875
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 0.9375,
+          "velocity": 0.6456692913385826,
+          "duration": 0.28125
+        },
+        {
+          "name": "F#-1",
+          "midi": 6,
+          "time": 1.125,
+          "velocity": 0.6692913385826772,
+          "duration": 0.1875
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.3125,
+          "velocity": 0.7007874015748031,
+          "duration": 0.1875
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 1.5,
+          "velocity": 0.7874015748031497,
+          "duration": 0.1875
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.5,
+          "velocity": 0.7874015748031497,
+          "duration": 0.28125
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.59375,
+          "velocity": 0.7874015748031497,
+          "duration": 0.1875
+        },
+        {
+          "name": "G-1",
+          "midi": 7,
+          "time": 1.6875,
+          "velocity": 0.6692913385826772,
+          "duration": 0.1875
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 1.78125,
+          "velocity": 0.7874015748031497,
+          "duration": 0.46875
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 1.875,
+          "velocity": 0.6692913385826772,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 1.96875,
+          "velocity": 0.6692913385826772,
+          "duration": 0.28125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 2.0625,
+          "velocity": 0.7086614173228346,
+          "duration": 0.1875
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.25,
+          "velocity": 0.7874015748031497,
+          "duration": 0.28125
+        },
+        {
+          "name": "C#0",
+          "midi": 13,
+          "time": 2.25,
+          "velocity": 0.7874015748031497,
+          "duration": 0.1875
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.34375,
+          "velocity": 0.7874015748031497,
+          "duration": 0.1875
+        },
+        {
+          "name": "G-1",
+          "midi": 7,
+          "time": 2.4375,
+          "velocity": 0.6692913385826772,
+          "duration": 0.1875
+        },
+        {
+          "name": "A#-1",
+          "midi": 10,
+          "time": 2.53125,
+          "velocity": 0.7874015748031497,
+          "duration": 0.46875
+        },
+        {
+          "name": "B-1",
+          "midi": 11,
+          "time": 2.625,
+          "velocity": 0.6692913385826772,
+          "duration": 0.375
+        },
+        {
+          "name": "C0",
+          "midi": 12,
+          "time": 2.71875,
+          "velocity": 0.6692913385826772,
+          "duration": 0.28125
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 2.8125,
+          "velocity": 0.7086614173228346,
+          "duration": 0.1875
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "P69_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+}
+]
 var Funk3_S_16th_90_120 = [
 {
   "header": {
@@ -4344,6 +7748,1246 @@ var Funk3_S_16th_90_120 = [
       "controlChanges": {},
       "id": 1,
       "name": "S20_Funk3",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+}
+]
+var Basic_B44_8th_100_200 = [
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.4,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.4,
+      "length": 5,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.8503937007874016,
+          "duration": 0.3
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.6,
+          "velocity": 0.7874015748031497,
+          "duration": 0.29999999999999993
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 0.8999999999999999,
+          "velocity": 0.7559055118110236,
+          "duration": 0.135
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.2,
+          "velocity": 0.8110236220472441,
+          "duration": 0.30000000000000004
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 1.8,
+          "velocity": 0.8188976377952756,
+          "duration": 0.13000000000000012
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B10_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 4.799999999999999,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 4.799999999999999,
+      "length": 10,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7952755905511811,
+          "duration": 1.2
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.6,
+          "velocity": 0.7952755905511811,
+          "duration": 0.29999999999999993
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 0.8999999999999999,
+          "velocity": 0.7322834645669292,
+          "duration": 0.8999999999999999
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.2,
+          "velocity": 0.7952755905511811,
+          "duration": 1.2
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 1.7999999999999998,
+          "velocity": 0.8031496062992126,
+          "duration": 1.2000000000000002
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 2.4,
+          "velocity": 0.8188976377952756,
+          "duration": 1.1999999999999997
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 3,
+          "velocity": 0.8110236220472441,
+          "duration": 0.2999999999999998
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 3.3,
+          "velocity": 0.7480314960629921,
+          "duration": 0.8999999999999995
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 3.5999999999999996,
+          "velocity": 0.8110236220472441,
+          "duration": 1.1999999999999993
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 4.199999999999999,
+          "velocity": 0.8188976377952756,
+          "duration": 0.5999999999999996
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B08_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 4.799999999999999,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 4.799999999999999,
+      "length": 10,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.8346456692913385,
+          "duration": 1.2
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.6,
+          "velocity": 0.7952755905511811,
+          "duration": 0.29999999999999993
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 0.8999999999999999,
+          "velocity": 0.7401574803149606,
+          "duration": 0.8999999999999999
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.2,
+          "velocity": 0.8110236220472441,
+          "duration": 1.2
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 1.7999999999999998,
+          "velocity": 0.8031496062992126,
+          "duration": 1.2000000000000002
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 2.4,
+          "velocity": 0.8188976377952756,
+          "duration": 1.1999999999999997
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 3,
+          "velocity": 0.8031496062992126,
+          "duration": 0.2999999999999998
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 3.3,
+          "velocity": 0.7559055118110236,
+          "duration": 0.8999999999999995
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 3.5999999999999996,
+          "velocity": 0.8346456692913385,
+          "duration": 1.1999999999999993
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 4.199999999999999,
+          "velocity": 0.8188976377952756,
+          "duration": 0.5999999999999996
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B09_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.4,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.4,
+      "length": 5,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.84251968503937,
+          "duration": 0.13999999999999999
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.6,
+          "velocity": 0.7874015748031497,
+          "duration": 0.29999999999999993
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 0.8999999999999999,
+          "velocity": 0.7559055118110236,
+          "duration": 0.135
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.2,
+          "velocity": 0.8110236220472441,
+          "duration": 0.1399999999999999
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 1.7999999999999998,
+          "velocity": 0.84251968503937,
+          "duration": 0.1299999999999999
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B11_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.4,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.4,
+      "length": 5,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7874015748031497,
+          "duration": 1.2
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.6,
+          "velocity": 0.7795275590551181,
+          "duration": 0.29999999999999993
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 0.8999999999999999,
+          "velocity": 0.7086614173228346,
+          "duration": 0.8999999999999999
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.2,
+          "velocity": 0.7401574803149606,
+          "duration": 0.7649999999999999
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 1.7999999999999998,
+          "velocity": 0.7795275590551181,
+          "duration": 0.15500000000000003
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B12_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.4,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.4,
+      "length": 5,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7874015748031497,
+          "duration": 1.2
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.6,
+          "velocity": 0.7716535433070866,
+          "duration": 0.29999999999999993
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 0.8999999999999999,
+          "velocity": 0.7165354330708661,
+          "duration": 0.8999999999999999
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.2,
+          "velocity": 0.7401574803149606,
+          "duration": 0.7649999999999999
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 1.7999999999999998,
+          "velocity": 0.7795275590551181,
+          "duration": 0.15500000000000003
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B13_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.4,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.4,
+      "length": 7,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.8188976377952756,
+          "duration": 1.0499999999999998
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 0.3,
+          "velocity": 0.8503937007874016,
+          "duration": 0.5999999999999999
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 0.8999999999999999,
+          "velocity": 0.8031496062992126,
+          "duration": 0.06499999999999995
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.1999999999999997,
+          "velocity": 0.7874015748031497,
+          "duration": 0.3400000000000001
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 1.4999999999999998,
+          "velocity": 0.7952755905511811,
+          "duration": 0.06499999999999995
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.7999999999999998,
+          "velocity": 0.8110236220472441,
+          "duration": 0.33999999999999986
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 2.0999999999999996,
+          "velocity": 0.8110236220472441,
+          "duration": 0.06499999999999995
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B14_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.4,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.4,
+      "length": 7,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.8188976377952756,
+          "duration": 1.0499999999999998
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 0.3,
+          "velocity": 0.84251968503937,
+          "duration": 0.5999999999999999
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 0.8999999999999999,
+          "velocity": 0.8031496062992126,
+          "duration": 0.06499999999999995
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.1999999999999997,
+          "velocity": 0.7874015748031497,
+          "duration": 0.3400000000000001
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 1.4999999999999998,
+          "velocity": 0.7952755905511811,
+          "duration": 0.06499999999999995
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.7999999999999998,
+          "velocity": 0.8110236220472441,
+          "duration": 0.33999999999999986
+        },
+        {
+          "name": "F-1",
+          "midi": 5,
+          "time": 2.0999999999999996,
+          "velocity": 0.8110236220472441,
+          "duration": 0.06499999999999995
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B15_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.4,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.4,
+      "length": 8,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7874015748031497,
+          "duration": 0.6
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.3,
+          "velocity": 0.7716535433070866,
+          "duration": 0.5999999999999999
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0.6,
+          "velocity": 0.7874015748031497,
+          "duration": 0.6
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.8999999999999999,
+          "velocity": 0.7637795275590551,
+          "duration": 0.6000000000000001
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.2,
+          "velocity": 0.7874015748031497,
+          "duration": 0.6000000000000001
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 1.5,
+          "velocity": 0.7559055118110236,
+          "duration": 0.6000000000000001
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.8,
+          "velocity": 0.7874015748031497,
+          "duration": 0.5999999999999999
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 2.1,
+          "velocity": 0.7716535433070866,
+          "duration": 0.2999999999999998
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B16_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.4,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.4,
+      "length": 8,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.7874015748031497,
+          "duration": 0.6
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.3,
+          "velocity": 0.7716535433070866,
+          "duration": 0.5999999999999999
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 0.6,
+          "velocity": 0.7795275590551181,
+          "duration": 0.6
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.8999999999999999,
+          "velocity": 0.7637795275590551,
+          "duration": 0.6000000000000001
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.2,
+          "velocity": 0.7874015748031497,
+          "duration": 0.6000000000000001
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 1.5,
+          "velocity": 0.7559055118110236,
+          "duration": 0.6000000000000001
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.8,
+          "velocity": 0.7559055118110236,
+          "duration": 0.5999999999999999
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 2.1,
+          "velocity": 0.7716535433070866,
+          "duration": 0.2999999999999998
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B17_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.4,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.4,
+      "length": 8,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.8110236220472441,
+          "duration": 0.44999999999999996
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.3,
+          "velocity": 0.7716535433070866,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0.6,
+          "velocity": 0.7480314960629921,
+          "duration": 0.44999999999999984
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.8999999999999999,
+          "velocity": 0.7952755905511811,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.1999999999999997,
+          "velocity": 0.8031496062992126,
+          "duration": 0.44999999999999996
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 1.4999999999999998,
+          "velocity": 0.8188976377952756,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.7999999999999996,
+          "velocity": 0.7795275590551181,
+          "duration": 0.44999999999999996
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 2.0999999999999996,
+          "velocity": 0.7952755905511811,
+          "duration": 0.1499999999999999
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B18_Basic_4'4",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.4,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.4,
+      "length": 8,
+      "notes": [
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 0,
+          "velocity": 0.8031496062992126,
+          "duration": 0.44999999999999996
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.3,
+          "velocity": 0.7401574803149606,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 0.6,
+          "velocity": 0.7559055118110236,
+          "duration": 0.44999999999999984
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 0.8999999999999999,
+          "velocity": 0.7637795275590551,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "A-1",
+          "midi": 9,
+          "time": 1.1999999999999997,
+          "velocity": 0.8110236220472441,
+          "duration": 0.44999999999999996
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 1.4999999999999998,
+          "velocity": 0.7795275590551181,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#-1",
+          "midi": 8,
+          "time": 1.7999999999999996,
+          "velocity": 0.7716535433070866,
+          "duration": 0.44999999999999996
+        },
+        {
+          "name": "E-1",
+          "midi": 4,
+          "time": 2.0999999999999996,
+          "velocity": 0.7716535433070866,
+          "duration": 0.1499999999999999
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "B19_Basic_4'4",
       "channelNumber": 0,
       "isPercussion": false
     }

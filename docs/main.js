@@ -235,10 +235,16 @@ function letsGo() {
         	const midiChordTracker = document.getElementById("midiChordTrackerSel");
 			
 			const realguitar = document.getElementById("realguitar");
-			realguitar.options[0] = new Option("None", "none", config.realguitar == "none");			
-			realguitar.options[1] = new Option("Funk3_S_16th_90_120", "Funk3_S_16th_90_120", config.realguitar == "Funk3_S_16th_90_120");
 			let realGuitarIndex = 0;
+			
+			realguitar.options[0] = new Option("None", "none", config.realguitar == "none");			
+			realguitar.options[1] = new Option("Funk3 - 16th (90-120 BPM)", "Funk3_S_16th_90_120", config.realguitar == "Funk3_S_16th_90_120");
+			realguitar.options[2] = new Option("4'4 Basic Strum 8th (100-200 BPM)", "Basic_B44_8th_100_200", config.realguitar == "Basic_B44_8th_100_200");
+			realguitar.options[3] = new Option("4'4 Basic Picking 16th (50-90 BPM)", "Basic_P44_16T_50_90", config.realguitar == "Basic_P44_16T_50_90");
+
 			realGuitarIndex = config.realGuitarStyle == "Funk3_S_16th_90_120" ? 1 : realGuitarIndex;				
+			realGuitarIndex = config.realGuitarStyle == "Basic_B44_8th_100_200" ? 2 : realGuitarIndex;			
+			realGuitarIndex = config.realGuitarStyle == "Basic_P44_16T_50_90" ? 3 : realGuitarIndex;			
 			realguitar.selectedIndex = realGuitarIndex;			
 			realGuitarStyle = config.realGuitarStyle;				
 
@@ -666,6 +672,7 @@ function pressFootSwitch(code) {
 function resetArrToA() {
 	sectionChange = 0;
 	rgIndex = 0;
+	nextRgIndex = 0;
 	
 	if (arranger == "ketron") {
 		sendKetronSysex(3 + sectionChange);	
@@ -703,7 +710,7 @@ function resetArrToA() {
 	}
 	
 	orinayo_section.innerHTML = SECTIONS[sectionChange];
-	orinayo_strum.innerHTML = "Strum " + (rgIndex + 1);	
+	orinayo_strum.innerHTML = "Strum " + (rgIndex + 1) + "/" + window[realGuitarStyle].length;	
 	
 	document.querySelector(".play").innerText = styleStarted ? "Play" : "Stop";	
 		
@@ -732,7 +739,7 @@ function playSectionCheck() {
 			sectionChange--;
 			nextRgIndex--;			
 			if (sectionChange < 0) sectionChange = 3;
-			if (nextRgIndex < 0) nextRgIndex = window[realGuitarStyle].length;			
+			if (nextRgIndex < 0) nextRgIndex = window[realGuitarStyle].length - 1;			
 		}
 		arrChanged = true;
 	}
@@ -740,7 +747,7 @@ function playSectionCheck() {
 	console.debug("playSectionCheck pressed " + arrChanged);
 	changeArrSection();
 	orinayo_section.innerHTML = SECTIONS[sectionChange];
-	orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1);	
+	orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;	
 
 }
 
@@ -1277,7 +1284,7 @@ function nextNote() {
 
 		if (rgIndex != nextRgIndex) {
 			rgIndex = nextRgIndex;
-			orinayo_strum.innerHTML = "Strum " + (nextRgIndex + 1);				
+			orinayo_strum.innerHTML = "Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;				
 		}		
     }
 	
@@ -1286,7 +1293,7 @@ function nextNote() {
 }
 
 function scheduleNote( beatNumber, time ) {
-	//console.debug("scheduleNote",  currentPlayNote, audioContext.currentTime, nextNoteTime);
+	console.debug("scheduleNote",  currentPlayNote, audioContext.currentTime, nextNoteTime);
     // push the note on the queue, even if we're not playing.
     notesInQueue.push( { note: beatNumber, time: time } );
 
