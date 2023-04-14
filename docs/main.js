@@ -629,56 +629,61 @@ function playChord(chord, root, type, bass) {
 			if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   // down					
 		}
 				
-        if (chordTracker) {
-			
-			if (keyChange == 1) {
-				if (root == 0x31) root = 0x41;
-				if (root == 0x32) root = 0x42;		
-				if (root == 0x33) root = 0x34;
-				if (root == 0x34) root = 0x44;	
-				if (root == 0x35) root = 0x45;
-				if (root == 0x36) root = 0x46;	
-				if (root == 0x37) root = 0x31;
-				
-				if (root == 0x23) root = 0x33;	
-				if (root == 0x26) root = 0x36;
-				if (root == 0x27) root = 0x37;					
-			}
-			else
-			if (keyChange == 2) {
-				if (root == 0x31) root = 0x32;
-				if (root == 0x32) root = 0x33;		
-				if (root == 0x33) root = 0x44;
-				if (root == 0x34) root = 0x35;	
-				if (root == 0x35) root = 0x36;
-				if (root == 0x36) root = 0x37;	
-				if (root == 0x37) root = 0x41;
-				
-				if (root == 0x23) root = 0x34;	
-				if (root == 0x26) root = 0x46;
-				if (root == 0x27) root = 0x31;					
-			}			
-			else
-			if (keyChange == 3) {
-				if (root == 0x31) root = 0x42;
-				if (root == 0x32) root = 0x34;		
-				if (root == 0x33) root = 0x35;
-				if (root == 0x34) root = 0x45;	
-				if (root == 0x35) root = 0x46;
-				if (root == 0x36) root = 0x47;	
-				if (root == 0x37) root = 0x32;
-				
-				if (root == 0x23) root = 0x44;	
-				if (root == 0x26) root = 0x37;
-				if (root == 0x27) root = 0x32;					
-			}
-// TODO			
-			
-			chordTracker.sendSysex(0x43, [0x7E, 0x02, root, type, bass, type]);				
+        if (chordTracker) {		
+			const trasposedRoot = transposeNote(root);
+			const transposedBass = transposeNote(bass);
+			chordTracker.sendSysex(0x43, [0x7E, 0x02, trasposedRoot, type, transposedBass, type]);				
 		}
 		
         activeChord = chord;
    }
+}
+
+function transposeNote(root) {
+	// TODO	
+	
+	if (keyChange == 1) {
+		if (root == 0x31) root = 0x41;
+		if (root == 0x32) root = 0x42;		
+		if (root == 0x33) root = 0x34;
+		if (root == 0x34) root = 0x44;	
+		if (root == 0x35) root = 0x45;
+		if (root == 0x36) root = 0x46;	
+		if (root == 0x37) root = 0x31;
+		
+		if (root == 0x23) root = 0x33;	
+		if (root == 0x26) root = 0x36;
+		if (root == 0x27) root = 0x37;					
+	}
+	else
+	if (keyChange == 2) {
+		if (root == 0x31) root = 0x32;
+		if (root == 0x32) root = 0x33;		
+		if (root == 0x33) root = 0x44;
+		if (root == 0x34) root = 0x35;	
+		if (root == 0x35) root = 0x36;
+		if (root == 0x36) root = 0x37;	
+		if (root == 0x37) root = 0x41;
+		
+		if (root == 0x23) root = 0x34;	
+		if (root == 0x26) root = 0x46;
+		if (root == 0x27) root = 0x31;					
+	}			
+	else
+	if (keyChange == 3) {
+		if (root == 0x31) root = 0x42;
+		if (root == 0x32) root = 0x34;		
+		if (root == 0x33) root = 0x35;
+		if (root == 0x34) root = 0x45;	
+		if (root == 0x35) root = 0x46;
+		if (root == 0x36) root = 0x47;	
+		if (root == 0x37) root = 0x32;
+		
+		if (root == 0x23) root = 0x44;	
+		if (root == 0x26) root = 0x37;
+		if (root == 0x27) root = 0x32;					
+	}	
+	return root;
 }
 
 function sendYamahaSysex(code) {
