@@ -25,7 +25,7 @@ var realGuitarStyle = "none";
 var output = null;
 var input = null;
 var forward = null;
-var strum = null;
+var chordTracker = null;
 var orinayo = null;
 var orinayo_section = null;
 var orinayo_strum = null;
@@ -232,7 +232,7 @@ function letsGo() {
             const midiIn = document.getElementById("midiInSel");
             const midiOut = document.getElementById("midiOutSel");
             const midiFwd = document.getElementById("midiFwdSel");
-        	const midiStrum = document.getElementById("midiStrumSel");
+        	const midiChordTracker = document.getElementById("midiChordTrackerSel");
 			
 			const realguitar = document.getElementById("realguitar");
 			realguitar.options[0] = new Option("None", "none", config.realguitar == "none");			
@@ -258,10 +258,10 @@ function letsGo() {
 			arrangerType.selectedIndex = arrangerIndex;			
 			arranger = config.arranger;					
 		   
-            midiOut.options[0] = new Option("Midi Out **UNUSED**", "midiOutSel");
-            midiFwd.options[0] = new Option("Midi Forward **UNUSED**", "midiFwdSel");
-            midiStrum.options[0] = new Option("Midi Strum **UNUSED**", "midiStrumSel");
-            midiIn.options[0] = new Option("Midi In **UNUSED**", "midiInSel");
+            midiOut.options[0] = new Option("**UNUSED**", "midiOutSel");
+            midiFwd.options[0] = new Option("**UNUSED**", "midiFwdSel");
+            midiChordTracker.options[0] = new Option("**UNUSED**", "midiChordTrackerSel");
+            midiIn.options[0] = new Option("**UNUSED**", "midiInSel");
 
             for (var i=0; i<WebMidi.outputs.length; i++)
             {
@@ -283,14 +283,14 @@ function letsGo() {
                 }
                 midiFwd.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, fwdSelected, fwdSelected);
 
-                let strumSelected = false;
+                let chordTrackerSelected = false;
 
-                if (config.strum && config.strum == WebMidi.outputs[i].name)
+                if (config.chordTracker && config.chordTracker == WebMidi.outputs[i].name)
                 {
-                    strumSelected = true;
-                    strum = WebMidi.outputs[i];
+                    chordTrackerSelected = true;
+                    chordTracker = WebMidi.outputs[i];
                 }
-                midiStrum.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, strumSelected, strumSelected);
+                midiChordTracker.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, chordTrackerSelected, chordTrackerSelected);
             }
 
             for (var i=0; i<WebMidi.inputs.length; i++)
@@ -357,19 +357,19 @@ function letsGo() {
                 saveConfig();
             });
             
-            midiStrum.addEventListener("click", function()
+            midiChordTracker.addEventListener("click", function()
             {
-                strum = null;
+                chordTracker = null;
 
-                if (midiStrum.value != "midiStrumSel")
+                if (midiChordTracker.value != "midiChordTrackerSel")
                 {
-                    strum = WebMidi.getOutputByName(midiStrum.value);
-                    console.debug("selected strum midi port", strum, midiStrum.value);
+                    chordTracker = WebMidi.getOutputByName(midiChordTracker.value);
+                    console.debug("selected chordTracker midi port", chordTracker, midiChordTracker.value);
                 }
                 saveConfig();
             });
 
-            console.debug("WebMidi devices", input, output, forward, strum);
+            console.debug("WebMidi devices", input, output, forward, chordTracker);
 
             if (input)
             {
@@ -401,7 +401,7 @@ function saveConfig() {
     let config = {};
     config.output = output ? output.name : null;
     config.forward = forward ? forward.name : null;
-	config.strum = strum ? strum.name : null;
+	config.chordTracker = chordTracker ? chordTracker.name : null;
     config.input = input ? input.name : null;
 	config.arranger = arranger;
 	config.realGuitarStyle = realGuitarStyle;
@@ -612,7 +612,7 @@ function checkForFillOrBreak() {
 	}
 }
 
-function playChord(chord) {
+function playChord(chord, root, type, bass) {
    if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord)
    {
         console.debug("playChord", chord);
@@ -622,7 +622,10 @@ function playChord(chord) {
 			if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   // down					
 		}
 				
-        if (strum) strum.playNote(chord, [4], {velocity: 0.5});        
+        if (chordTracker) {
+			chordTracker.sendSysex(0x43, [0x7E, 0x02, root, type, bass, type]);				
+		}
+		
         activeChord = chord;
    }
 }
@@ -710,8 +713,7 @@ function stopChord() {
    if (activeChord && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN))
    {
         console.debug("stopChord", pad)
-        if (output) output.stopNote(activeChord, [4], {velocity: 0.5});
-        if (strum) strum.stopNote(activeChord, [4], {velocity: 0.5});        
+        if (output) output.stopNote(activeChord, [4], {velocity: 0.5});     
         activeChord = null;
    }
 }
@@ -827,7 +829,7 @@ function doChord() {
 
   if (pad.buttons[YELLOW] && pad.buttons[BLUE] && pad.buttons[ORANGE] && pad.buttons[RED])
   {
-    playChord([base - 36, base + 5, base + 9, base + 12]);
+    playChord([base - 36, base + 5, base + 9, base + 12], 0x34, 0x00, 0x31);
     orinayo.innerHTML = key + " - " + "4/1";
   }
   else
@@ -836,7 +838,7 @@ function doChord() {
 
   if (pad.buttons[YELLOW] && pad.buttons[BLUE] && pad.buttons[ORANGE] && pad.buttons[GREEN])
   {
-    playChord([base - 36, base + 7, base + 11, base + 14]);
+    playChord([base - 36, base + 7, base + 11, base + 14], 0x35, 0x00, 0x31);
     orinayo.innerHTML = key + " - " + "5/1";
   }
   else
@@ -845,28 +847,28 @@ function doChord() {
 
   if (pad.buttons[RED] && pad.buttons[YELLOW] && pad.buttons[BLUE] && pad.buttons[GREEN])
   {
-    playChord([base - 1, base + 3, base + 6]);
+    playChord([base - 1, base + 3, base + 6], 0x37, 0x00, 0x37);
     orinayo.innerHTML = key + " - " + "7";
   }
   else
 
   if (pad.buttons[RED] && pad.buttons[YELLOW] && pad.buttons[GREEN])     // Ab
   {
-    playChord([base - 4, base, base + 3]);
+    playChord([base - 4, base, base + 3], 0x26, 0x00, 0x26);
     orinayo.innerHTML = key + " - " + "6b";
   }
   else
 
   if (pad.buttons[RED] && pad.buttons[YELLOW] && pad.buttons[BLUE])     // A
   {
-    playChord([base + 9, base + 13, base + 16]);
+    playChord([base + 9, base + 13, base + 16], 0x36, 0x00, 0x36);
     orinayo.innerHTML = key + " - " + "6";
   }
   else
 
   if (pad.buttons[BLUE] && pad.buttons[YELLOW] && pad.buttons[GREEN])     // E
   {
-    playChord([base + 4, base + 8, base + 11]);
+    playChord([base + 4, base + 8, base + 11], 0x33, 0x00, 0x33);
     orinayo.innerHTML = key + " - " + "3";
   }
   else
@@ -876,77 +878,77 @@ function doChord() {
   {
     //playChord([base - 29, base + 9, base + 12, base + 16]);
     //orinayo.innerHTML = key + " - " + "Am/G";
-    playChord([base + 3, base + 7, base + 10]);
+    playChord([base + 3, base + 7, base + 10], 0x23, 0x00, 0x23);
     orinayo.innerHTML = key + " - " + "3b";  
   }
   else
 
   if (pad.buttons[YELLOW] && pad.buttons[BLUE] && pad.buttons[ORANGE])    // F/G
   {
-    playChord([base - 29, base + 5, base + 9, base + 12]);
+    playChord([base - 29, base + 5, base + 9, base + 12], 0x34, 0x00, 0x35);
     orinayo.innerHTML = key + " - " + "4/5";
   }
   else
 
   if (pad.buttons[RED] && pad.buttons[YELLOW])     // Bb
   {
-    playChord([base - 2, base + 2, base + 5]);
+    playChord([base - 2, base + 2, base + 5], 0x27, 0x00, 0x27);
     orinayo.innerHTML = key + " - " + "7b";
   }
   else
 
   if (pad.buttons[GREEN] && pad.buttons[YELLOW])     // Gsus
   {
-    playChord([base + 7, base + 12, base + 14]);
+    playChord([base + 7, base + 12, base + 14], 0x35, 0x20, 0x35);
     orinayo.innerHTML = key + " - " + "5sus";
   }
   else
 
   if (pad.buttons[ORANGE] && pad.buttons[YELLOW])     // Csus
   {
-    playChord([base, base + 5, base + 7]);
+    playChord([base, base + 5, base + 7], 0x31, 0x20, 0x31);
     orinayo.innerHTML = key + " - " + "1sus";
   }
   else
 
   if (pad.buttons[YELLOW] && pad.buttons[BLUE])    // C/E
   {
-    playChord([base - 32, base, base + 4, base + 7]);
+    playChord([base - 32, base, base + 4, base + 7], 0x31, 0x00, 0x33);
     orinayo.innerHTML = key + " - " + "1/3";
   }
   else
 
   if (pad.buttons[GREEN] && pad.buttons[RED])     // G/B
   {
-    playChord([base - 25, base + 7, base + 11, base + 14]);
+    playChord([base - 25, base + 7, base + 11, base + 14], 0x35, 0x00, 0x37);
     orinayo.innerHTML = key + " - " + "5/7";
   }
   else
 
   if (pad.buttons[BLUE] && pad.buttons[ORANGE])     // F/A
   {
-    playChord([base - 27, base + 5, base + 9, base + 12]);
+    playChord([base - 27, base + 5, base + 9, base + 12], 0x34, 0x00, 0x36);
     orinayo.innerHTML = key + " - " + "4/6";
   }
   else
 
   if (pad.buttons[GREEN] && pad.buttons[BLUE])     // Em
   {
-    playChord([base + 4, base + 7, base + 11]);
+    playChord([base + 4, base + 7, base + 11], 0x33, 0x08, 0x33);
     orinayo.innerHTML = key + " - " + "3m";
   }
   else
 
    if (pad.buttons[ORANGE] && pad.buttons[RED])   // Fm
    {
-     playChord([base + 5, base + 8, base + 12]);
+     playChord([base + 5, base + 8, base + 12], 0x34, 0x08, 0x34);
      orinayo.innerHTML = key + " - " + "4m";
    }
    else
 
    if (pad.buttons[GREEN] && pad.buttons[ORANGE])     // Gm
    {
-     playChord([base + 7, base + 10, base + 14]);
+     playChord([base + 7, base + 10, base + 14], 0x35, 0x08, 0x35);
      orinayo.innerHTML = key + " - " + "5m";
    }
   else
@@ -954,42 +956,42 @@ function doChord() {
   if (pad.buttons[RED] && pad.buttons[BLUE])     // D
   {
     //playChord([base + 9, base + 13, base + 16]);
-    playChord([base + 2, base + 6, base + 9]);
+    playChord([base + 2, base + 6, base + 9], 0x32, 0x00, 0x32);
     orinayo.innerHTML = key + " - " + "2";
   }
   else
 
   if (pad.buttons[YELLOW])    // C
   {
-    playChord([base, base + 4, base + 7]);
+    playChord([base, base + 4, base + 7], 0x31, 0x00, 0x31);
     orinayo.innerHTML = key + " - " + "1";
   }
   else
 
   if (pad.buttons[BLUE])      // Dm
   {
-    playChord([base + 2, base + 5, base + 9]);
+    playChord([base + 2, base + 5, base + 9], 0x32, 0x08, 0x32);
     orinayo.innerHTML = key + " - " + "2m";
   }
   else
 
   if (pad.buttons[ORANGE])   // F
   {
-    playChord([base + 5, base + 9, base + 12]);
+    playChord([base + 5, base + 9, base + 12], 0x34, 0x00, 0x34);
     orinayo.innerHTML = key + " - " + "4";
   }
   else
 
   if (pad.buttons[GREEN])     // G
   {
-    playChord([base + 7, base + 11, base + 14]);
+    playChord([base + 7, base + 11, base + 14], 0x35, 0x00, 0x35);
     orinayo.innerHTML = key + " - " + "5";
   }
   else
 
   if (pad.buttons[RED])     // Am
   {
-    playChord([base + 9, base + 12, base + 16]);
+    playChord([base + 9, base + 12, base + 16], 0x36, 0x08, 0x36);
     orinayo.innerHTML = key + " - " + "6m";
   }
 }
@@ -1022,16 +1024,13 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed");  				
-				output.sendControlChange (92, 0, 4);  				
-				if (strum) strum.sendStart();        
+				output.sendControlChange (92, 0, 4);  				    
 				styleStarted = true;
 			}
 			else {
 				console.debug("stop key pressed");				
 				output.sendControlChange (92, 96, 4); 			
-				setTimeout(() => output.sendControlChange (92, 112, 4), 2000); 
-				
-				if (strum) strum.sendStop();        
+				setTimeout(() => output.sendControlChange (92, 112, 4), 2000);        
 				styleStarted = false;
 			}
 		}	
@@ -1059,8 +1058,7 @@ function toggleStartStop() {
 					orinayo_section.innerHTML = SECTIONS[sectionChange];						
 					output.sendControlChange (87, 127, 4);			// START
 					
-				}
-				if (strum) strum.sendStart();       
+				}     
 				styleStarted = true;
 			}
 			else {
@@ -1078,9 +1076,7 @@ function toggleStartStop() {
 					} else {
 						output.sendControlChange (88, 127, 4);		// STOP
 					}				
-				}	
-				
-				if (strum) strum.sendStop();        
+				}	      
 				styleStarted = false;
 			}
 		}		
@@ -1091,15 +1087,12 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed");  				
-				sendYamahaSysex(0x08);					
-				if (strum) strum.sendStart();        
+				sendYamahaSysex(0x08);					      
 				styleStarted = true;
 			}
 			else {
 				console.debug("stop key pressed");				
-				sendYamahaSysex(0x0D);		
-				
-				if (strum) strum.sendStop();        
+				sendYamahaSysex(0x0D);		   
 				styleStarted = false;
 			}
 		}		
@@ -1122,8 +1115,7 @@ function toggleStartStop() {
 						output.sendStart();
 					}
 					
-				}
-				if (strum) strum.sendStart();        
+				}     
 				styleStarted = true;
 			}
 			else {
@@ -1139,9 +1131,7 @@ function toggleStartStop() {
 					} else {
 						output.sendStop();						
 					}
-				}	
-				
-				if (strum) strum.sendStop();        
+				}	      
 				styleStarted = false;
 			}
 		}		
@@ -1201,11 +1191,11 @@ function enableSequencer(flag) {
 
 		timerWorker.onmessage = function(e) {
 			if (e.data == "tick") {
-				// console.log("tick!");
+				// console.debug("tick!");
 				scheduler();
 			}
 			else
-				console.log("message: " + e.data);
+				console.debug("message: " + e.data);
 		};
 		timerWorker.postMessage({"interval":lookahead});	
 	}
@@ -1296,7 +1286,7 @@ function nextNote() {
 }
 
 function scheduleNote( beatNumber, time ) {
-	console.debug("scheduleNote",  currentPlayNote, audioContext.currentTime, nextNoteTime);
+	//console.debug("scheduleNote",  currentPlayNote, audioContext.currentTime, nextNoteTime);
     // push the note on the queue, even if we're not playing.
     notesInQueue.push( { note: beatNumber, time: time } );
 
