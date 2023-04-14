@@ -3402,6 +3402,5327 @@ var Basic_P44_16T_50_90 = [
   ]
 }
 ]
+var Funk1_S_16th_90_120 = [
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.325,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.325,
+      "length": 16,
+      "notes": [
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0,
+          "velocity": 0.7874015748031497,
+          "duration": 0.075
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.5590551181102362,
+          "duration": 0.07499999999999998
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.7322834645669292,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.7165354330708661,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.6,
+          "velocity": 0.8976377952755905,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.75,
+          "velocity": 0.7874015748031497,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.8999999999999999,
+          "velocity": 0.6141732283464567,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.0499999999999998,
+          "velocity": 0.6141732283464567,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.1999999999999997,
+          "velocity": 0.8740157480314961,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.3499999999999996,
+          "velocity": 0.6141732283464567,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.4999999999999996,
+          "velocity": 0.6850393700787402,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.6499999999999995,
+          "velocity": 0.5826771653543307,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.7999999999999994,
+          "velocity": 0.8661417322834646,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999993,
+          "velocity": 0.5590551181102362,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.0999999999999996,
+          "velocity": 0.6377952755905512,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.25,
+          "velocity": 0.6692913385826772,
+          "duration": 0.07500000000000018
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S01_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3999999999999995,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3999999999999995,
+      "length": 10,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6692913385826772,
+          "duration": 0.07499999999999998
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.5118110236220472,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.5999999999999999,
+          "velocity": 0.7401574803149606,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.7499999999999998,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.8999999999999997,
+          "velocity": 0.7165354330708661,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.0499999999999996,
+          "velocity": 0.9212598425196851,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.0999999999999996,
+          "velocity": 0.8031496062992126,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.2499999999999996,
+          "velocity": 0.5905511811023622,
+          "duration": 0.1499999999999999
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S02_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 1.1249999999999996,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 1.1249999999999996,
+      "length": 8,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6692913385826772,
+          "duration": 0.07499999999999998
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.5118110236220472,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.5999999999999999,
+          "velocity": 0.7401574803149606,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.7499999999999998,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.8999999999999997,
+          "velocity": 0.7165354330708661,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.0499999999999996,
+          "velocity": 0.9212598425196851,
+          "duration": 0.07499999999999996
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S03_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3999999999999995,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3999999999999995,
+      "length": 16,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6299212598425197,
+          "duration": 0.07499999999999998
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.3,
+          "velocity": 0.5748031496062992,
+          "duration": 0.07500000000000001
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.45,
+          "velocity": 0.5826771653543307,
+          "duration": 0.07500000000000001
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.6,
+          "velocity": 0.8267716535433071,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.75,
+          "velocity": 0.5748031496062992,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.8999999999999999,
+          "velocity": 0.5118110236220472,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.0499999999999998,
+          "velocity": 0.905511811023622,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.1999999999999997,
+          "velocity": 0.6692913385826772,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.3499999999999996,
+          "velocity": 0.5354330708661418,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.4999999999999996,
+          "velocity": 0.47244094488188976,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.6499999999999995,
+          "velocity": 0.4409448818897638,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.7999999999999994,
+          "velocity": 0.7874015748031497,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999993,
+          "velocity": 0.5039370078740157,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.0999999999999996,
+          "velocity": 0.6692913385826772,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.2499999999999996,
+          "velocity": 0.5354330708661418,
+          "duration": 0.1499999999999999
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S04_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 3.525,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 3.525,
+      "length": 24,
+      "notes": [
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0,
+          "velocity": 0.7874015748031497,
+          "duration": 0.15
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.5590551181102362,
+          "duration": 0.15
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.7322834645669292,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.7165354330708661,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.6,
+          "velocity": 0.8976377952755905,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.75,
+          "velocity": 0.7874015748031497,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.8999999999999999,
+          "velocity": 0.6141732283464567,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.0499999999999998,
+          "velocity": 0.6141732283464567,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.1999999999999997,
+          "velocity": 0.8740157480314961,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.3499999999999996,
+          "velocity": 0.6141732283464567,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.4999999999999996,
+          "velocity": 0.6850393700787402,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.6499999999999995,
+          "velocity": 0.5826771653543307,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.7999999999999994,
+          "velocity": 0.8661417322834646,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999993,
+          "velocity": 0.5590551181102362,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.099999999999999,
+          "velocity": 0.6377952755905512,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.2499999999999996,
+          "velocity": 0.6692913385826772,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.3999999999999995,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.5499999999999994,
+          "velocity": 0.6692913385826772,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.6999999999999993,
+          "velocity": 0.5118110236220472,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.849999999999999,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.9999999999999996,
+          "velocity": 0.7401574803149606,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 3.1499999999999995,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 3.3,
+          "velocity": 0.7165354330708661,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 3.4499999999999997,
+          "velocity": 0.9212598425196851,
+          "duration": 0.07500000000000018
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S05_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3249999999999997,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3249999999999997,
+      "length": 16,
+      "notes": [
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0,
+          "velocity": 0.5039370078740157,
+          "duration": 0.075
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.5669291338582677,
+          "duration": 0.07499999999999998
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.7401574803149606,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.7795275590551181,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.6,
+          "velocity": 0.8976377952755905,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.75,
+          "velocity": 0.7874015748031497,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.8999999999999999,
+          "velocity": 0.5196850393700787,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.0499999999999998,
+          "velocity": 0.5354330708661418,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.1999999999999997,
+          "velocity": 0.84251968503937,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.3499999999999996,
+          "velocity": 0.5275590551181102,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.4999999999999996,
+          "velocity": 0.5511811023622047,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.6499999999999995,
+          "velocity": 0.9133858267716536,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.7999999999999994,
+          "velocity": 0.7874015748031497,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999993,
+          "velocity": 0.5590551181102362,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.0999999999999996,
+          "velocity": 0.8110236220472441,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.2499999999999996,
+          "velocity": 0.7244094488188977,
+          "duration": 0.07500000000000018
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S06_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.325,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.325,
+      "length": 16,
+      "notes": [
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.15,
+          "velocity": 0.7322834645669292,
+          "duration": 0.15
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.3,
+          "velocity": 0.7007874015748031,
+          "duration": 0.07500000000000001
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.45,
+          "velocity": 0.6614173228346457,
+          "duration": 0.07500000000000001
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 0.6,
+          "velocity": 0.8031496062992126,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.75,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.9,
+          "velocity": 0.6535433070866141,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.05,
+          "velocity": 0.6299212598425197,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 1.2,
+          "velocity": 0.8503937007874016,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.3499999999999999,
+          "velocity": 0.6771653543307087,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.4999999999999998,
+          "velocity": 0.6377952755905512,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.6499999999999997,
+          "velocity": 0.6062992125984252,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 1.7999999999999996,
+          "velocity": 0.7874015748031497,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.9499999999999995,
+          "velocity": 0.6535433070866141,
+          "duration": 0.15000000000000013
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.0999999999999996,
+          "velocity": 0.7952755905511811,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.25,
+          "velocity": 0.6062992125984252,
+          "duration": 0.07500000000000018
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S07_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3249999999999997,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3249999999999997,
+      "length": 16,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6062992125984252,
+          "duration": 0.15
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.7874015748031497,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.6929133858267716,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.6,
+          "velocity": 0.8346456692913385,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.75,
+          "velocity": 0.6850393700787402,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.8999999999999999,
+          "velocity": 0.6850393700787402,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.0499999999999998,
+          "velocity": 0.7007874015748031,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.1999999999999997,
+          "velocity": 0.84251968503937,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.3499999999999996,
+          "velocity": 0.6299212598425197,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.4999999999999996,
+          "velocity": 0.8188976377952756,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.6499999999999995,
+          "velocity": 0.6220472440944882,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.7999999999999994,
+          "velocity": 0.8346456692913385,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 1.9499999999999993,
+          "velocity": 0.6850393700787402,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.099999999999999,
+          "velocity": 0.6850393700787402,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.2499999999999996,
+          "velocity": 0.6141732283464567,
+          "duration": 0.07500000000000018
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S08_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3249999999999993,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3249999999999993,
+      "length": 16,
+      "notes": [
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0,
+          "velocity": 0.6929133858267716,
+          "duration": 0.15
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.7007874015748031,
+          "duration": 0.15
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.8503937007874016,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.7322834645669292,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.5999999999999999,
+          "velocity": 0.6929133858267716,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.7499999999999999,
+          "velocity": 0.6850393700787402,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.8999999999999999,
+          "velocity": 0.8503937007874016,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.0499999999999998,
+          "velocity": 0.7401574803149606,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.1999999999999997,
+          "velocity": 0.6614173228346457,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.3499999999999996,
+          "velocity": 0.6614173228346457,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.4999999999999996,
+          "velocity": 0.8346456692913385,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.6499999999999995,
+          "velocity": 0.7007874015748031,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.7999999999999994,
+          "velocity": 0.6614173228346457,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999993,
+          "velocity": 0.6692913385826772,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.099999999999999,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.249999999999999,
+          "velocity": 0.6456692913385826,
+          "duration": 0.07500000000000018
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S09_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.325,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.325,
+      "length": 16,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.84251968503937,
+          "duration": 0.075
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6377952755905512,
+          "duration": 0.07499999999999998
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.3,
+          "velocity": 0.6771653543307087,
+          "duration": 0.07500000000000001
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.45,
+          "velocity": 0.7952755905511811,
+          "duration": 0.07500000000000001
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.6,
+          "velocity": 0.5905511811023622,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.7499999999999999,
+          "velocity": 0.5905511811023622,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 0.8999999999999998,
+          "velocity": 0.8503937007874016,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.0499999999999998,
+          "velocity": 0.5748031496062992,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.1999999999999997,
+          "velocity": 0.6062992125984252,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.3499999999999996,
+          "velocity": 0.8661417322834646,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.4999999999999996,
+          "velocity": 0.5984251968503937,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.6499999999999995,
+          "velocity": 0.6062992125984252,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.7999999999999994,
+          "velocity": 0.8346456692913385,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999993,
+          "velocity": 0.6062992125984252,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.0999999999999996,
+          "velocity": 0.7874015748031497,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.25,
+          "velocity": 0.5590551181102362,
+          "duration": 0.07500000000000018
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S10_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3999999999999995,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3999999999999995,
+      "length": 12,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.8346456692913385,
+          "duration": 0.15
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6220472440944882,
+          "duration": 0.15
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.3,
+          "velocity": 0.6220472440944882,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.44999999999999996,
+          "velocity": 0.6220472440944882,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.6,
+          "velocity": 0.8188976377952756,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.75,
+          "velocity": 0.7874015748031497,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.9,
+          "velocity": 0.5984251968503937,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.05,
+          "velocity": 0.8740157480314961,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.7999999999999998,
+          "velocity": 0.84251968503937,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999997,
+          "velocity": 0.6456692913385826,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.0999999999999996,
+          "velocity": 0.7874015748031497,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.2499999999999996,
+          "velocity": 0.6929133858267716,
+          "duration": 0.1499999999999999
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S11_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3999999999999995,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3999999999999995,
+      "length": 12,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.6929133858267716,
+          "duration": 0.15
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.15,
+          "velocity": 0.8346456692913385,
+          "duration": 0.15
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.3,
+          "velocity": 0.6220472440944882,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.44999999999999996,
+          "velocity": 0.6220472440944882,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.6,
+          "velocity": 0.6220472440944882,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.75,
+          "velocity": 0.8188976377952756,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.9,
+          "velocity": 0.7874015748031497,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.05,
+          "velocity": 0.5984251968503937,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.2,
+          "velocity": 0.8740157480314961,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.9499999999999997,
+          "velocity": 0.84251968503937,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.0999999999999996,
+          "velocity": 0.6456692913385826,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.2499999999999996,
+          "velocity": 0.7874015748031497,
+          "duration": 0.1499999999999999
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S12_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3249999999999997,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3249999999999997,
+      "length": 16,
+      "notes": [
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0,
+          "velocity": 0.6535433070866141,
+          "duration": 0.075
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6614173228346457,
+          "duration": 0.07499999999999998
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.8582677165354331,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.7086614173228346,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.5999999999999999,
+          "velocity": 0.7244094488188977,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.7499999999999998,
+          "velocity": 0.8818897637795275,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.8999999999999997,
+          "velocity": 0.7559055118110236,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.0499999999999996,
+          "velocity": 0.6771653543307087,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 1.1999999999999995,
+          "velocity": 0.8818897637795275,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.3499999999999994,
+          "velocity": 0.7559055118110236,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.4999999999999993,
+          "velocity": 0.8188976377952756,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.6499999999999992,
+          "velocity": 0.6692913385826772,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.7999999999999992,
+          "velocity": 0.7244094488188977,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.949999999999999,
+          "velocity": 0.8582677165354331,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.099999999999999,
+          "velocity": 0.7007874015748031,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.2499999999999996,
+          "velocity": 0.6850393700787402,
+          "duration": 0.07500000000000018
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S13_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3249999999999993,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3249999999999993,
+      "length": 16,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.075
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6456692913385826,
+          "duration": 0.15
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.8582677165354331,
+          "duration": 0.07500000000000001
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.45,
+          "velocity": 0.6220472440944882,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.6,
+          "velocity": 0.8582677165354331,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.7499999999999999,
+          "velocity": 0.6299212598425197,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.8999999999999999,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.0499999999999998,
+          "velocity": 0.5984251968503937,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.1999999999999997,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.3499999999999996,
+          "velocity": 0.7086614173228346,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.4999999999999996,
+          "velocity": 0.6692913385826772,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.6499999999999995,
+          "velocity": 0.7086614173228346,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.7999999999999994,
+          "velocity": 0.8582677165354331,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999993,
+          "velocity": 0.6456692913385826,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.099999999999999,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.249999999999999,
+          "velocity": 0.6456692913385826,
+          "duration": 0.07500000000000018
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S14_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3999999999999995,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3999999999999995,
+      "length": 16,
+      "notes": [
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.15,
+          "velocity": 0.6929133858267716,
+          "duration": 0.15
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.8661417322834646,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.44999999999999996,
+          "velocity": 0.7874015748031497,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.6,
+          "velocity": 0.6535433070866141,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.75,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.9,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.05,
+          "velocity": 0.7322834645669292,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.2,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.3499999999999999,
+          "velocity": 0.6929133858267716,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.4999999999999998,
+          "velocity": 0.8661417322834646,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.6499999999999997,
+          "velocity": 0.7874015748031497,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.7999999999999996,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999995,
+          "velocity": 0.6377952755905512,
+          "duration": 0.15000000000000013
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.0999999999999996,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.2499999999999996,
+          "velocity": 0.6692913385826772,
+          "duration": 0.1499999999999999
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S15_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 1.7499999999999998,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 1.7499999999999998,
+      "length": 12,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.15,
+          "velocity": 0.7322834645669292,
+          "duration": 0.15
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.3,
+          "velocity": 0.7952755905511811,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.44999999999999996,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.6,
+          "velocity": 0.7637795275590551,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.75,
+          "velocity": 0.7874015748031497,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.9,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.05,
+          "velocity": 0.7559055118110236,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.2,
+          "velocity": 0.8661417322834646,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.3499999999999999,
+          "velocity": 0.7795275590551181,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.4999999999999998,
+          "velocity": 0.8346456692913385,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.6499999999999997,
+          "velocity": 0.889763779527559,
+          "duration": 0.10000000000000009
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S16_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.36,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.36,
+      "length": 13,
+      "notes": [
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0,
+          "velocity": 0.5039370078740157,
+          "duration": 0.15
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.1575,
+          "velocity": 0.8346456692913385,
+          "duration": 0.15
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.3075,
+          "velocity": 0.7007874015748031,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.4575,
+          "velocity": 0.6220472440944882,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.6075,
+          "velocity": 0.7007874015748031,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.7575000000000001,
+          "velocity": 0.8188976377952756,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.9075000000000001,
+          "velocity": 0.7637795275590551,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.0575,
+          "velocity": 0.6535433070866141,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.2075,
+          "velocity": 0.8031496062992126,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.7999999999999998,
+          "velocity": 0.6535433070866141,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.9574999999999998,
+          "velocity": 0.7874015748031497,
+          "duration": 0.15000000000000013
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.1075,
+          "velocity": 0.7007874015748031,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.2575,
+          "velocity": 0.84251968503937,
+          "duration": 0.10250000000000004
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S17_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3999999999999995,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3999999999999995,
+      "length": 16,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.15,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.3,
+          "velocity": 0.6535433070866141,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.44999999999999996,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.6,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.75,
+          "velocity": 0.6299212598425197,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.9,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.05,
+          "velocity": 0.6141732283464567,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.2,
+          "velocity": 0.6141732283464567,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.3499999999999999,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.4999999999999998,
+          "velocity": 0.6062992125984252,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.6499999999999997,
+          "velocity": 0.5748031496062992,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.7999999999999996,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.9499999999999995,
+          "velocity": 0.6141732283464567,
+          "duration": 0.15000000000000013
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.0999999999999996,
+          "velocity": 0.6220472440944882,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.2499999999999996,
+          "velocity": 0.7086614173228346,
+          "duration": 0.1499999999999999
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S18_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3999999999999995,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3999999999999995,
+      "length": 16,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.6220472440944882,
+          "duration": 0.15
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6062992125984252,
+          "duration": 0.15
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.8267716535433071,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.6220472440944882,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.6,
+          "velocity": 0.5669291338582677,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.75,
+          "velocity": 0.8661417322834646,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.9,
+          "velocity": 0.6062992125984252,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.05,
+          "velocity": 0.5905511811023622,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.2,
+          "velocity": 0.84251968503937,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.3499999999999999,
+          "velocity": 0.6299212598425197,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.4999999999999998,
+          "velocity": 0.5905511811023622,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.6499999999999997,
+          "velocity": 0.8267716535433071,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.7999999999999996,
+          "velocity": 0.6062992125984252,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999995,
+          "velocity": 0.5826771653543307,
+          "duration": 0.15000000000000013
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.0999999999999996,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.2499999999999996,
+          "velocity": 0.5905511811023622,
+          "duration": 0.1499999999999999
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S19_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 2.3999999999999995,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 2.3999999999999995,
+      "length": 16,
+      "notes": [
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0,
+          "velocity": 0.5669291338582677,
+          "duration": 0.15
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.15,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.3,
+          "velocity": 0.6456692913385826,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.44999999999999996,
+          "velocity": 0.6062992125984252,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.6,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.75,
+          "velocity": 0.6377952755905512,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.9,
+          "velocity": 0.5984251968503937,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.05,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.2,
+          "velocity": 0.6456692913385826,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.3499999999999999,
+          "velocity": 0.5984251968503937,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.4999999999999998,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.6499999999999997,
+          "velocity": 0.6377952755905512,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.7999999999999996,
+          "velocity": 0.5905511811023622,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.9499999999999995,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000013
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.0999999999999996,
+          "velocity": 0.6299212598425197,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.2499999999999996,
+          "velocity": 0.5826771653543307,
+          "duration": 0.1499999999999999
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S20_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 4.800000000000001,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 4.800000000000001,
+      "length": 32,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.15,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.3,
+          "velocity": 0.6535433070866141,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.44999999999999996,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.6,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.75,
+          "velocity": 0.6299212598425197,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.9,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.05,
+          "velocity": 0.6141732283464567,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.2,
+          "velocity": 0.6141732283464567,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.3499999999999999,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.4999999999999998,
+          "velocity": 0.6062992125984252,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.6499999999999997,
+          "velocity": 0.5748031496062992,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.7999999999999996,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.9499999999999995,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000013
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.0999999999999996,
+          "velocity": 0.6535433070866141,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.2499999999999996,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.3999999999999995,
+          "velocity": 0.6771653543307087,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.5499999999999994,
+          "velocity": 0.6299212598425197,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.6999999999999993,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.849999999999999,
+          "velocity": 0.6141732283464567,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.999999999999999,
+          "velocity": 0.6141732283464567,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 3.149999999999999,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 3.299999999999999,
+          "velocity": 0.6062992125984252,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 3.449999999999999,
+          "velocity": 0.5748031496062992,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 3.5999999999999988,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 3.7499999999999987,
+          "velocity": 0.6771653543307087,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 3.8999999999999986,
+          "velocity": 0.6535433070866141,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 4.049999999999999,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 4.199999999999999,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 4.35,
+          "velocity": 0.6299212598425197,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 4.5,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 4.65,
+          "velocity": 0.6141732283464567,
+          "duration": 0.15000000000000036
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S21_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 4.800000000000001,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 4.800000000000001,
+      "length": 26,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6299212598425197,
+          "duration": 0.15
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.3,
+          "velocity": 0.5748031496062992,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.44999999999999996,
+          "velocity": 0.5826771653543307,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.6,
+          "velocity": 0.8267716535433071,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.75,
+          "velocity": 0.5748031496062992,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.9,
+          "velocity": 0.5118110236220472,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.05,
+          "velocity": 0.905511811023622,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.2,
+          "velocity": 0.7874015748031497,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.3499999999999999,
+          "velocity": 0.5354330708661418,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.4999999999999998,
+          "velocity": 0.47244094488188976,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.6499999999999997,
+          "velocity": 0.4409448818897638,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.7999999999999996,
+          "velocity": 0.8346456692913385,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999995,
+          "velocity": 0.5039370078740157,
+          "duration": 0.15000000000000013
+        },
+        {
+          "name": "D#0",
+          "midi": 15,
+          "time": 2.0999999999999996,
+          "velocity": 0.7716535433070866,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 2.2499999999999996,
+          "velocity": 0.6062992125984252,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.3999999999999995,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.5499999999999994,
+          "velocity": 0.6692913385826772,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.6999999999999993,
+          "velocity": 0.5118110236220472,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.849999999999999,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.9999999999999996,
+          "velocity": 0.7401574803149606,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 3.1499999999999995,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 3.3,
+          "velocity": 0.7165354330708661,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 3.4499999999999997,
+          "velocity": 0.9212598425196851,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "D#0",
+          "midi": 15,
+          "time": 4.5,
+          "velocity": 0.7637795275590551,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 4.65,
+          "velocity": 0.5826771653543307,
+          "duration": 0.15000000000000036
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S22_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 4.725000000000001,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 4.725000000000001,
+      "length": 32,
+      "notes": [
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0,
+          "velocity": 0.5039370078740157,
+          "duration": 0.15
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.5669291338582677,
+          "duration": 0.15
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.7401574803149606,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.7795275590551181,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.6,
+          "velocity": 0.8976377952755905,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.75,
+          "velocity": 0.7874015748031497,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.8999999999999999,
+          "velocity": 0.5196850393700787,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.0499999999999998,
+          "velocity": 0.5354330708661418,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.1999999999999997,
+          "velocity": 0.84251968503937,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.3499999999999996,
+          "velocity": 0.5275590551181102,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.4999999999999996,
+          "velocity": 0.5511811023622047,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.6499999999999995,
+          "velocity": 0.9133858267716536,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.7999999999999994,
+          "velocity": 0.7874015748031497,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999993,
+          "velocity": 0.5590551181102362,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.099999999999999,
+          "velocity": 0.8110236220472441,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.249999999999999,
+          "velocity": 0.7244094488188977,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.3999999999999995,
+          "velocity": 0.6929133858267716,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.5499999999999994,
+          "velocity": 0.7007874015748031,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.6999999999999993,
+          "velocity": 0.8503937007874016,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.849999999999999,
+          "velocity": 0.7322834645669292,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.9999999999999996,
+          "velocity": 0.6929133858267716,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 3.1499999999999995,
+          "velocity": 0.6850393700787402,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 3.2999999999999994,
+          "velocity": 0.8503937007874016,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 3.4499999999999993,
+          "velocity": 0.7401574803149606,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 3.5999999999999996,
+          "velocity": 0.6614173228346457,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 3.7499999999999996,
+          "velocity": 0.6614173228346457,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 3.8999999999999995,
+          "velocity": 0.8346456692913385,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 4.05,
+          "velocity": 0.7007874015748031,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 4.2,
+          "velocity": 0.6614173228346457,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 4.3500000000000005,
+          "velocity": 0.6692913385826772,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 4.500000000000001,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 4.650000000000001,
+          "velocity": 0.6456692913385826,
+          "duration": 0.07500000000000018
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S23_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 9.600000000000005,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 9.600000000000005,
+      "length": 52,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6692913385826772,
+          "duration": 0.15
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0.3,
+          "velocity": 0.5118110236220472,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.5999999999999999,
+          "velocity": 0.7401574803149606,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.7499999999999999,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.8999999999999998,
+          "velocity": 0.7165354330708661,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.0499999999999998,
+          "velocity": 0.9212598425196851,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.0999999999999996,
+          "velocity": 0.8031496062992126,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.2499999999999996,
+          "velocity": 0.5905511811023622,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.3999999999999995,
+          "velocity": 0.5039370078740157,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.5499999999999994,
+          "velocity": 0.5669291338582677,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.6999999999999993,
+          "velocity": 0.7401574803149606,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.849999999999999,
+          "velocity": 0.7795275590551181,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.999999999999999,
+          "velocity": 0.8976377952755905,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 3.149999999999999,
+          "velocity": 0.7874015748031497,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 3.2999999999999994,
+          "velocity": 0.5196850393700787,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 3.4499999999999993,
+          "velocity": 0.5354330708661418,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 3.599999999999999,
+          "velocity": 0.84251968503937,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 3.7499999999999996,
+          "velocity": 0.5275590551181102,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 3.8999999999999995,
+          "velocity": 0.5511811023622047,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 4.05,
+          "velocity": 0.9133858267716536,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 4.2,
+          "velocity": 0.7874015748031497,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 4.3500000000000005,
+          "velocity": 0.5590551181102362,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 4.500000000000001,
+          "velocity": 0.8110236220472441,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 4.650000000000001,
+          "velocity": 0.7244094488188977,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 4.800000000000002,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 4.950000000000002,
+          "velocity": 0.6692913385826772,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 5.100000000000002,
+          "velocity": 0.5118110236220472,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 5.250000000000003,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 5.400000000000003,
+          "velocity": 0.7401574803149606,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 5.550000000000003,
+          "velocity": 0.7795275590551181,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 5.700000000000004,
+          "velocity": 0.7165354330708661,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 5.850000000000004,
+          "velocity": 0.9212598425196851,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 6.900000000000004,
+          "velocity": 0.8031496062992126,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 7.050000000000004,
+          "velocity": 0.5905511811023622,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 7.200000000000005,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 7.350000000000005,
+          "velocity": 0.7322834645669292,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 7.500000000000005,
+          "velocity": 0.7007874015748031,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 7.650000000000006,
+          "velocity": 0.6614173228346457,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 7.800000000000006,
+          "velocity": 0.8031496062992126,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 7.950000000000006,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 8.100000000000007,
+          "velocity": 0.6535433070866141,
+          "duration": 0.07499999999999929
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 8.250000000000005,
+          "velocity": 0.6299212598425197,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 8.400000000000006,
+          "velocity": 0.8503937007874016,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 8.550000000000006,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 8.700000000000006,
+          "velocity": 0.6377952755905512,
+          "duration": 0.07499999999999929
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 8.850000000000005,
+          "velocity": 0.6062992125984252,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 9.000000000000005,
+          "velocity": 0.7874015748031497,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 9.150000000000006,
+          "velocity": 0.6535433070866141,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 9.300000000000006,
+          "velocity": 0.7952755905511811,
+          "duration": 0.07499999999999929
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 9.450000000000005,
+          "velocity": 0.6062992125984252,
+          "duration": 0.15000000000000036
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S24_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 9.600000000000007,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 9.600000000000007,
+      "length": 64,
+      "notes": [
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 0,
+          "velocity": 0.84251968503937,
+          "duration": 0.075
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.15,
+          "velocity": 0.6377952755905512,
+          "duration": 0.15
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.3,
+          "velocity": 0.6771653543307087,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.44999999999999996,
+          "velocity": 0.7952755905511811,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.5999999999999999,
+          "velocity": 0.5905511811023622,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.7499999999999999,
+          "velocity": 0.5905511811023622,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 0.8999999999999999,
+          "velocity": 0.8503937007874016,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.0499999999999998,
+          "velocity": 0.5748031496062992,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.1999999999999997,
+          "velocity": 0.6062992125984252,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.3499999999999996,
+          "velocity": 0.8661417322834646,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.4999999999999996,
+          "velocity": 0.5984251968503937,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.6499999999999995,
+          "velocity": 0.6062992125984252,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.7999999999999994,
+          "velocity": 0.8346456692913385,
+          "duration": 0.07499999999999996
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.9499999999999993,
+          "velocity": 0.6062992125984252,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.099999999999999,
+          "velocity": 0.7874015748031497,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.2499999999999996,
+          "velocity": 0.5590551181102362,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.3999999999999995,
+          "velocity": 0.6535433070866141,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 2.5499999999999994,
+          "velocity": 0.6614173228346457,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.6999999999999993,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.849999999999999,
+          "velocity": 0.7086614173228346,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.9999999999999996,
+          "velocity": 0.7244094488188977,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 3.1499999999999995,
+          "velocity": 0.8818897637795275,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 3.3,
+          "velocity": 0.7559055118110236,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 3.4499999999999997,
+          "velocity": 0.6771653543307087,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 3.5999999999999996,
+          "velocity": 0.8818897637795275,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 3.7499999999999996,
+          "velocity": 0.7559055118110236,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 3.8999999999999995,
+          "velocity": 0.8188976377952756,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 4.05,
+          "velocity": 0.6692913385826772,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 4.2,
+          "velocity": 0.7244094488188977,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 4.3500000000000005,
+          "velocity": 0.8582677165354331,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 4.500000000000001,
+          "velocity": 0.7007874015748031,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 4.650000000000001,
+          "velocity": 0.6850393700787402,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 4.800000000000002,
+          "velocity": 0.84251968503937,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 4.950000000000002,
+          "velocity": 0.6377952755905512,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 5.100000000000002,
+          "velocity": 0.6771653543307087,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 5.250000000000003,
+          "velocity": 0.7952755905511811,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 5.400000000000003,
+          "velocity": 0.5905511811023622,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 5.550000000000003,
+          "velocity": 0.5905511811023622,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 5.700000000000004,
+          "velocity": 0.8503937007874016,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 5.850000000000004,
+          "velocity": 0.5748031496062992,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 6.000000000000004,
+          "velocity": 0.6062992125984252,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 6.150000000000005,
+          "velocity": 0.8661417322834646,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 6.300000000000005,
+          "velocity": 0.5984251968503937,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 6.4500000000000055,
+          "velocity": 0.6062992125984252,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 6.600000000000006,
+          "velocity": 0.8346456692913385,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 6.750000000000006,
+          "velocity": 0.6062992125984252,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 6.900000000000007,
+          "velocity": 0.7874015748031497,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 7.050000000000007,
+          "velocity": 0.5590551181102362,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 7.200000000000007,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 7.350000000000008,
+          "velocity": 0.6062992125984252,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 7.500000000000008,
+          "velocity": 0.7874015748031497,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 7.650000000000008,
+          "velocity": 0.6929133858267716,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 7.800000000000009,
+          "velocity": 0.8346456692913385,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 7.950000000000009,
+          "velocity": 0.6850393700787402,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 8.100000000000009,
+          "velocity": 0.6850393700787402,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 8.250000000000009,
+          "velocity": 0.7007874015748031,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 8.40000000000001,
+          "velocity": 0.84251968503937,
+          "duration": 0.07499999999999929
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 8.550000000000008,
+          "velocity": 0.6299212598425197,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 8.700000000000008,
+          "velocity": 0.8188976377952756,
+          "duration": 0.07499999999999929
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 8.850000000000007,
+          "velocity": 0.6220472440944882,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 9.000000000000007,
+          "velocity": 0.8346456692913385,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 9.150000000000007,
+          "velocity": 0.6850393700787402,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 9.300000000000008,
+          "velocity": 0.6850393700787402,
+          "duration": 0.07499999999999929
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 9.450000000000006,
+          "velocity": 0.6141732283464567,
+          "duration": 0.15000000000000036
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S25_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+},
+{
+  "header": {
+    "PPQ": 480,
+    "timeSignature": [
+      4,
+      4
+    ],
+    "bpm": 100,
+    "name": "untitled"
+  },
+  "tempo": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "bpm": 100
+    }
+  ],
+  "timeSignature": [
+    {
+      "absoluteTime": 0,
+      "seconds": 0,
+      "numerator": 4,
+      "denominator": 2,
+      "click": 24,
+      "notesQ": 8
+    }
+  ],
+  "startTime": 0,
+  "duration": 9.60000000000001,
+  "tracks": [
+    {
+      "startTime": 0,
+      "duration": 0,
+      "length": 0,
+      "notes": [],
+      "controlChanges": {},
+      "id": 0,
+      "name": "untitled"
+    },
+    {
+      "startTime": 0,
+      "duration": 9.60000000000001,
+      "length": 58,
+      "notes": [
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0,
+          "velocity": 0.6456692913385826,
+          "duration": 0.15
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.15,
+          "velocity": 0.8346456692913385,
+          "duration": 0.15
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.3,
+          "velocity": 0.6771653543307087,
+          "duration": 0.14999999999999997
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 0.44999999999999996,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.6,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 0.75,
+          "velocity": 0.8188976377952756,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 0.9,
+          "velocity": 0.8661417322834646,
+          "duration": 0.15000000000000002
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 1.05,
+          "velocity": 0.6535433070866141,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 1.2,
+          "velocity": 0.8740157480314961,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 1.7999999999999998,
+          "velocity": 0.6220472440944882,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 1.9499999999999997,
+          "velocity": 0.84251968503937,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.0999999999999996,
+          "velocity": 0.8267716535433071,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.2499999999999996,
+          "velocity": 0.84251968503937,
+          "duration": 0.1299999999999999
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 2.3999999999999995,
+          "velocity": 0.8582677165354331,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 2.5499999999999994,
+          "velocity": 0.8031496062992126,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 2.6999999999999993,
+          "velocity": 0.7480314960629921,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 2.8499999999999996,
+          "velocity": 0.6614173228346457,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 3,
+          "velocity": 0.8031496062992126,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 3.15,
+          "velocity": 0.7401574803149606,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 3.3,
+          "velocity": 0.6535433070866141,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 3.45,
+          "velocity": 0.6299212598425197,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 3.6000000000000005,
+          "velocity": 0.8503937007874016,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 3.7500000000000004,
+          "velocity": 0.7559055118110236,
+          "duration": 0.1499999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 3.9000000000000004,
+          "velocity": 0.7086614173228346,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 4.050000000000001,
+          "velocity": 0.6062992125984252,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "E0",
+          "midi": 16,
+          "time": 4.200000000000001,
+          "velocity": 0.7874015748031497,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 4.350000000000001,
+          "velocity": 0.7322834645669292,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 4.500000000000002,
+          "velocity": 0.7952755905511811,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 4.650000000000002,
+          "velocity": 0.6062992125984252,
+          "duration": 0.07500000000000018
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 4.8000000000000025,
+          "velocity": 0.6141732283464567,
+          "duration": 0.1299999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 4.950000000000002,
+          "velocity": 0.8346456692913385,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 5.100000000000002,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 5.250000000000003,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 5.400000000000003,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 5.550000000000003,
+          "velocity": 0.8188976377952756,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 5.700000000000004,
+          "velocity": 0.8661417322834646,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G#0",
+          "midi": 20,
+          "time": 5.850000000000004,
+          "velocity": 0.6535433070866141,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 6.000000000000004,
+          "velocity": 0.8740157480314961,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 6.600000000000005,
+          "velocity": 0.6456692913385826,
+          "duration": 0.1299999999999999
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 6.750000000000004,
+          "velocity": 0.84251968503937,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 6.900000000000005,
+          "velocity": 0.8267716535433071,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 7.050000000000005,
+          "velocity": 0.84251968503937,
+          "duration": 0.13750000000000018
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 7.2000000000000055,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 7.350000000000006,
+          "velocity": 0.7716535433070866,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 7.500000000000006,
+          "velocity": 0.6535433070866141,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 7.650000000000007,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 7.800000000000007,
+          "velocity": 0.6771653543307087,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 7.950000000000007,
+          "velocity": 0.6299212598425197,
+          "duration": 0.14999999999999947
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 8.100000000000007,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 8.250000000000007,
+          "velocity": 0.6141732283464567,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 8.400000000000007,
+          "velocity": 0.6141732283464567,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 8.550000000000008,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 8.700000000000008,
+          "velocity": 0.6062992125984252,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 8.850000000000009,
+          "velocity": 0.5748031496062992,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 9.000000000000009,
+          "velocity": 0.8582677165354331,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F#0",
+          "midi": 18,
+          "time": 9.15000000000001,
+          "velocity": 0.6141732283464567,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "G0",
+          "midi": 19,
+          "time": 9.30000000000001,
+          "velocity": 0.6220472440944882,
+          "duration": 0.15000000000000036
+        },
+        {
+          "name": "F0",
+          "midi": 17,
+          "time": 9.45000000000001,
+          "velocity": 0.7086614173228346,
+          "duration": 0.15000000000000036
+        }
+      ],
+      "controlChanges": {},
+      "id": 1,
+      "name": "S26_Funk1",
+      "channelNumber": 0,
+      "isPercussion": false
+    }
+  ]
+}
+]
 var Funk3_S_16th_90_120 = [
 {
   "header": {
