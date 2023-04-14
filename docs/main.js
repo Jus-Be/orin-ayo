@@ -676,12 +676,12 @@ function transposeNote(root) {
 		else if (root == 0x33) root = 0x35;
 		else if (root == 0x34) root = 0x45;	
 		else if (root == 0x35) root = 0x46;
-		else if (root == 0x36) root = 0x47;	
+		else if (root == 0x36) root = 0x31;	
 		else if (root == 0x37) root = 0x32;
 		
 		else if (root == 0x23) root = 0x44;	
 		else if (root == 0x26) root = 0x37;
-		else if (root == 0x27) root = 0x32;					
+		else if (root == 0x27) root = 0x41;					
 	}	
 	else
 	if (keyChange == 4) {
@@ -690,12 +690,12 @@ function transposeNote(root) {
 		else if (root == 0x33) root = 0x45;
 		else if (root == 0x34) root = 0x36;	
 		else if (root == 0x35) root = 0x37;
-		else if (root == 0x36) root = 0x31;	
+		else if (root == 0x36) root = 0x41;	
 		else if (root == 0x37) root = 0x42;
 		
 		else if (root == 0x23) root = 0x35;	
 		else if (root == 0x26) root = 0x31;
-		else if (root == 0x27) root = 0x42;					
+		else if (root == 0x27) root = 0x32;					
 	}	
 	return root;
 }
