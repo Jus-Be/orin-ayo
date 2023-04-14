@@ -237,7 +237,7 @@ function letsGo() {
 			const realguitar = document.getElementById("realguitar");
 			let realGuitarIndex = 0;
 			
-			realguitar.options[0] = new Option("None", "none", config.realguitar == "none");
+			realguitar.options[0] = new Option("**UNUSED**", "none", config.realguitar == "none");
 			realguitar.options[1] = new Option("Funk One - 16th (90-120 BPM)", "Funk1_S_16th_90_120", config.realguitar == "Funk1_S_16th_90_120");			
 			realguitar.options[2] = new Option("Funk Three - 16th (90-120 BPM)", "Funk3_S_16th_90_120", config.realguitar == "Funk3_S_16th_90_120");
 			realguitar.options[3] = new Option("4'4 Basic Strum 8th (100-200 BPM)", "Basic_B44_8th_100_200", config.realguitar == "Basic_B44_8th_100_200");
@@ -712,7 +712,10 @@ function resetArrToA() {
 	}
 	
 	orinayo_section.innerHTML = SECTIONS[sectionChange];
-	orinayo_strum.innerHTML = "Strum " + (rgIndex + 1) + "/" + window[realGuitarStyle].length;	
+	
+	if (window[realGuitarStyle]) {
+		orinayo_strum.innerHTML = "Strum " + (rgIndex + 1) + "/" + window[realGuitarStyle].length;	
+	}
 	
 	document.querySelector(".play").innerText = styleStarted ? "Play" : "Stop";	
 		
@@ -734,14 +737,21 @@ function playSectionCheck() {
 					
 		if (pad.buttons[STARPOWER]) {
 			sectionChange++;
-			nextRgIndex++;
-			if (nextRgIndex ==  window[realGuitarStyle].length) nextRgIndex = 0;
 			if (sectionChange > 3) sectionChange = 0;	
+			
+			if (window[realGuitarStyle]) {
+				nextRgIndex++;
+				if (nextRgIndex ==  window[realGuitarStyle].length) nextRgIndex = 0;
+			}
+
 		} else {
-			sectionChange--;
-			nextRgIndex--;			
+			sectionChange--;		
 			if (sectionChange < 0) sectionChange = 3;
-			if (nextRgIndex < 0) nextRgIndex = window[realGuitarStyle].length - 1;			
+
+			if (window[realGuitarStyle]) {			
+				nextRgIndex--;				
+				if (nextRgIndex < 0) nextRgIndex = window[realGuitarStyle].length - 1;		
+			}				
 		}
 		arrChanged = true;
 	}
@@ -749,7 +759,10 @@ function playSectionCheck() {
 	console.debug("playSectionCheck pressed " + arrChanged);
 	changeArrSection();
 	orinayo_section.innerHTML = SECTIONS[sectionChange];
-	orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;	
+	
+	if (window[realGuitarStyle]) {
+		orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;	
+	}
 
 }
 
@@ -1186,7 +1199,7 @@ function enableSequencer(flag) {
 	document.querySelector("#sequencer").style.display = flag ? "" : "none";
 	document.querySelector("#tempoCanvas").style.display = flag ? "" : "none";
 
-	if (!canvasContext) {
+	if (!canvasContext && flag) {
 		canvasContext = tempoCanvas.getContext( '2d' );    
 		canvasContext.strokeStyle = "#ffffff";
 		canvasContext.lineWidth = 2;
