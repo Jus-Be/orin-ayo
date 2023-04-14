@@ -657,7 +657,7 @@ function transposeNote(root) {
 	}
 	else
 	if (keyChange == 2) {
-		else if (root == 0x31) root = 0x32;
+		if (root == 0x31) root = 0x32;
 		else if (root == 0x32) root = 0x33;		
 		else if (root == 0x33) root = 0x44;
 		else if (root == 0x34) root = 0x35;	
@@ -671,7 +671,7 @@ function transposeNote(root) {
 	}			
 	else
 	if (keyChange == 3) {
-		else if (root == 0x31) root = 0x42;
+		if (root == 0x31) root = 0x42;
 		else if (root == 0x32) root = 0x34;		
 		else if (root == 0x33) root = 0x35;
 		else if (root == 0x34) root = 0x45;	
@@ -685,7 +685,7 @@ function transposeNote(root) {
 	}	
 	else
 	if (keyChange == 4) {
-		else if (root == 0x31) root = 0x33;
+		if (root == 0x31) root = 0x33;
 		else if (root == 0x32) root = 0x44;		
 		else if (root == 0x33) root = 0x45;
 		else if (root == 0x34) root = 0x36;	

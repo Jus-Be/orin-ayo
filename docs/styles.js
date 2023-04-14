@@ -1,4 +1,4 @@
-var 24K_MASD = {
+var STYLE_24K_MASD = {
   "header": {
     "keySignatures": [],
     "meta": [
