@@ -27,13 +27,15 @@ var input = null;
 var forward = null;
 var strum = null;
 var orinayo = null;
-var orinayo_section
+var orinayo_section = null;
+var orinayo_strum = null;
 var statusMsg = null;
 var base = BASE;
 var key = "C"
 var keyChange = 0;
 var sectionChange = 0;
 var rgIndex = 0;
+var nextRgIndex = 0;
 var styleStarted = false;
 var activeChord = null;
 var activeStyle = -1;
@@ -53,7 +55,6 @@ var scheduleAheadTime = 0.1;    // How far ahead to schedule audio (sec)
                             // This is calculated from lookahead, and overlaps 
                             // with next interval (in case the timer is late)
 var nextNoteTime = 0.0;     // when the next note is due.
-var noteResolution = 0;     // 0 == 16th, 1 == 8th, 2 == quarter note
 var noteLength = 0.05;      // length of "beep" (in seconds)
 var canvasContext;          // canvasContext is the canvas' context 2D
 var last16thNoteDrawn = -1; // the last "box" we drew on the screen
@@ -80,6 +81,7 @@ function onloadHandler() {
 	tempoCanvas = orinayo = document.querySelector('#tempoCanvas');	
 	orinayo = document.querySelector('#orinayo');
 	orinayo_section = document.querySelector('#orinayo-section');
+	orinayo_strum = document.querySelector('#orinayo-strum');	
 	statusMsg = document.querySelector('#statusMsg');
 
 	window.addEventListener("gamepadconnected", connectHandler);
@@ -120,10 +122,6 @@ function onloadHandler() {
 			this.innerText = styleStarted ? "Play" : "Stop";
 			toggleStartStop();
 		}
-	});	
-
-	document.querySelector("#selectResolution").addEventListener("change", function() {
-		noteResolution = this.selectedIndex;
 	});	
 	
 	document.querySelector("#tempo").addEventListener("input", function() {
@@ -664,6 +662,7 @@ function pressFootSwitch(code) {
 
 function resetArrToA() {
 	sectionChange = 0;
+	rgIndex = 0;
 	
 	if (arranger == "ketron") {
 		sendKetronSysex(3 + sectionChange);	
@@ -700,7 +699,11 @@ function resetArrToA() {
 		console.debug("resetArrToA Montage " + sectionChange);			
 	}
 	
-	orinayo_section.innerHTML = SECTIONS[sectionChange];	
+	orinayo_section.innerHTML = SECTIONS[sectionChange];
+	orinayo_strum.innerHTML = "Strum " + (rgIndex + 1);	
+	
+	document.querySelector(".play").innerText = styleStarted ? "Play" : "Stop";	
+		
 }
 
 function stopChord() {
@@ -716,25 +719,26 @@ function stopChord() {
 function playSectionCheck() {
 	let arrChanged = false;
 	
-	if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN])
-	{
+	if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) {
+					
 		if (pad.buttons[STARPOWER]) {
 			sectionChange++;
-			rgIndex++;
-			if (rgIndex ==  window[realGuitarStyle][rgIndex].length) rgIndex = 0;
+			nextRgIndex++;
+			if (nextRgIndex ==  window[realGuitarStyle].length) nextRgIndex = 0;
 			if (sectionChange > 3) sectionChange = 0;	
 		} else {
 			sectionChange--;
-			rgIndex++;			
+			nextRgIndex--;			
 			if (sectionChange < 0) sectionChange = 3;
-			if (rgIndex < 0) rgIndex = window[realGuitarStyle][rgIndex].length;			
+			if (nextRgIndex < 0) nextRgIndex = window[realGuitarStyle].length;			
 		}
 		arrChanged = true;
 	}
 	
 	console.debug("playSectionCheck pressed " + arrChanged);
 	changeArrSection();
-	orinayo_section.innerHTML = SECTIONS[sectionChange];	
+	orinayo_section.innerHTML = SECTIONS[sectionChange];
+	orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1);	
 
 }
 
@@ -1266,19 +1270,25 @@ function draw() {
     requestAnimFrame(draw);
 }
 
-function nextNote() {		
-    current16thNote++;    // Advance the beat number, wrap to zero
+function nextNote() {	
 	const tempRatio = tempo / window[realGuitarStyle][rgIndex].header.bpm ;
-
+	
+    current16thNote++;    // Advance the beat number, wrap to zero
+	
     if (current16thNote == 16) {
         current16thNote = 0;
     }	
 	
-	currentPlayNote++;
+	currentPlayNote++;	
 	
-    if (currentPlayNote == window[realGuitarStyle][rgIndex].tracks[1].notes.length) {
+    if (currentPlayNote == window[realGuitarStyle][rgIndex].tracks[1].notes.length) {			
         currentPlayNote = 0;
-		playStartTime = playStartTime + (window[realGuitarStyle][rgIndex].tracks[1].duration / tempRatio);		
+		playStartTime = playStartTime + (window[realGuitarStyle][rgIndex].tracks[1].duration / tempRatio);	
+
+		if (rgIndex != nextRgIndex) {
+			rgIndex = nextRgIndex;
+			orinayo_strum.innerHTML = "Strum " + (nextRgIndex + 1);				
+		}		
     }
 	
 	const timestamp = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].time / tempRatio;
