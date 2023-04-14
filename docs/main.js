@@ -38,7 +38,6 @@ var rgIndex = 0;
 var nextRgIndex = 0;
 var styleStarted = false;
 var activeChord = null;
-var activeStyle = -1;
 
 var currentPlayNote;
 var tempoCanvas = null;
@@ -631,6 +630,50 @@ function playChord(chord, root, type, bass) {
 		}
 				
         if (chordTracker) {
+			
+			if (keyChange == 1) {
+				if (root == 0x31) root = 0x41;
+				if (root == 0x32) root = 0x42;		
+				if (root == 0x33) root = 0x34;
+				if (root == 0x34) root = 0x44;	
+				if (root == 0x35) root = 0x45;
+				if (root == 0x36) root = 0x46;	
+				if (root == 0x37) root = 0x31;
+				
+				if (root == 0x23) root = 0x33;	
+				if (root == 0x26) root = 0x36;
+				if (root == 0x27) root = 0x37;					
+			}
+			else
+			if (keyChange == 2) {
+				if (root == 0x31) root = 0x32;
+				if (root == 0x32) root = 0x33;		
+				if (root == 0x33) root = 0x44;
+				if (root == 0x34) root = 0x35;	
+				if (root == 0x35) root = 0x36;
+				if (root == 0x36) root = 0x37;	
+				if (root == 0x37) root = 0x41;
+				
+				if (root == 0x23) root = 0x34;	
+				if (root == 0x26) root = 0x46;
+				if (root == 0x27) root = 0x31;					
+			}			
+			else
+			if (keyChange == 3) {
+				if (root == 0x31) root = 0x42;
+				if (root == 0x32) root = 0x34;		
+				if (root == 0x33) root = 0x35;
+				if (root == 0x34) root = 0x45;	
+				if (root == 0x35) root = 0x46;
+				if (root == 0x36) root = 0x47;	
+				if (root == 0x37) root = 0x32;
+				
+				if (root == 0x23) root = 0x44;	
+				if (root == 0x26) root = 0x37;
+				if (root == 0x27) root = 0x32;					
+			}
+// TODO			
+			
 			chordTracker.sendSysex(0x43, [0x7E, 0x02, root, type, bass, type]);				
 		}
 		
@@ -801,10 +844,7 @@ function changeArrSection() {
 function dokeyChange() {
     keyChange = (keyChange % 12);
 
-    activeStyle++;
-    if (activeStyle > 15) activeStyle = 0;
-
-    console.debug("Received 'key change (" + KEYS[keyChange] + ").", activeStyle);
+    console.debug("Received 'key change (" + KEYS[keyChange] + ")");
 
     orinayo.innerHTML = KEYS[keyChange];
     key = KEYS[keyChange];
