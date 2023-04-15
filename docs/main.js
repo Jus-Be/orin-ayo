@@ -20,6 +20,8 @@ const STRUM = 9;
 const TOUCH = 5;
 const LOGO = 12;
 
+var loop = null;
+var realdrums = null;
 var arranger = "ketron";
 var realGuitarStyle = "none";
 var output = null;
@@ -232,6 +234,7 @@ function letsGo() {
             const midiOut = document.getElementById("midiOutSel");
             const midiFwd = document.getElementById("midiFwdSel");
         	const midiChordTracker = document.getElementById("midiChordTrackerSel");
+        	const realDrums = document.getElementById("realdrums");			
 			
 			const realguitar = document.getElementById("realguitar");
 			let realGuitarIndex = 0;
@@ -269,6 +272,7 @@ function letsGo() {
             midiFwd.options[0] = new Option("**UNUSED**", "midiFwdSel");
             midiChordTracker.options[0] = new Option("**UNUSED**", "midiChordTrackerSel");
             midiIn.options[0] = new Option("**UNUSED**", "midiInSel");
+			realDrums.options[0] = new Option("**UNUSED**", "realDrums");
 
             for (var i=0; i<WebMidi.outputs.length; i++)
             {
@@ -377,6 +381,36 @@ function letsGo() {
             });
 
             console.debug("WebMidi devices", input, output, forward, chordTracker);
+			
+            for (var i=0; i<drum_loops.length; i++)
+            {
+                let selectedDrum = false;
+
+                if (config.realdrum && config.realdrum == drum_loops[i].name) {
+                    selectedDrum = true;
+                    realdrums = drum_loops[i];
+                }
+                realDrums.options[i + 1] = new Option(drum_loops[i].label, drum_loops[i].name, selectedDrum, selectedDrum);
+            }	
+
+            realDrums.addEventListener("click", function()
+            {
+                realdrums = null;
+
+                if (realDrums.value != "realDrums")
+                {
+					for (let drum of drum_loops) 
+					{
+						if (realDrums.value == drum.name) {
+							realdrums = drum
+							setupRealDrums();
+							break;
+						}						
+					}
+                    console.debug("selected real drums", realdrums, realDrums.value);
+                }
+                saveConfig();
+            });			
 
             if (input)
             {
@@ -395,6 +429,7 @@ function letsGo() {
             }
 			
 			enableSequencer(!!forward);
+			if (realdrums) setupRealDrums();
         }
         else {
             statusMsg.innerHTML = "NO MIDI devices available";
@@ -412,6 +447,7 @@ function saveConfig() {
     config.input = input ? input.name : null;
 	config.arranger = arranger;
 	config.realGuitarStyle = realGuitarStyle;
+	config.realdrum = realdrums?.name;
 
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }
@@ -923,6 +959,13 @@ function playSectionCheck() {
 	if (window[realGuitarStyle]) {
 		orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;	
 	}
+	
+	if (loop) {
+		if (sectionChange == 0) loop.update('arra', true);
+		if (sectionChange == 1) loop.update('arrb', true);
+		if (sectionChange == 2) loop.update('arrb', true);
+		if (sectionChange == 3) loop.update('arrc', true);		
+	}
 
 }
 
@@ -1181,6 +1224,19 @@ function toggleStartStop() {
 		
 		if (forward && realGuitarStyle != "none" && window[realGuitarStyle]) {			
 			startStopSequencer();
+		}
+		
+		if (loop) {
+			if (!styleStarted) {			
+				loop.start('int1');
+				loop.update('arra', true);
+			} else {
+				if (pad.buttons[YELLOW]) {				
+					loop.update('end1', true);	
+				} else {
+					loop.stop();
+				}					
+			}
 		}
 		
 		if (arranger == "ketron") {		
@@ -1484,4 +1540,30 @@ function scheduler() {
         scheduleNote( current16thNote, nextNoteTime );
         nextNote();
     }
+}
+function setupRealDrums() {
+	loop = new SeamlessLoop();
+	
+	const output = null;
+	
+	loop.addUri(realdrums["int1"].url, realdrums["int1"].duration, 'int1', output);
+	loop.addUri(realdrums["end1"].url, realdrums["end1"].duration, 'end1', output);
+	loop.addUri(realdrums["arra"].url, realdrums["arra"].duration, 'arra', output);
+	loop.addUri(realdrums["arrb"].url, realdrums["arrb"].duration, 'arrb', output);
+	loop.addUri(realdrums["arrc"].url, realdrums["arrc"].duration, 'arrc', output);
+	loop.addUri(realdrums["arrd"].url, realdrums["arrd"].duration, 'arrd', output);	
+		
+	loop.callback(soundsLoaded, eventStatus);	
+}
+
+function soundsLoaded() {
+	console.log("audio loaded ok");
+}
+
+function eventStatus(event, id) {
+	console.debug(event, id);
+
+	if (event == "_eventPlaying" && id == "end1") {
+		setTimeout(() => loop.stop(), realdrums["end1"].duration - 1000);
+	}
 }
