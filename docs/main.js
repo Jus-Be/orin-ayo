@@ -1,6 +1,6 @@
 const BASE = 48;
 const KEYS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-const SECTIONS = ["Arr A", "Arr B", "Arr C", "Arr D"];
+const SECTIONS = ["Arr A", "Arr B", "Arr C", "Arr D", "Intro 1", "End 1"];
 
 const STRUM_NEUTRAL =  1.2857;
 const STRUM_UP = -1.0000;
@@ -21,7 +21,8 @@ const TOUCH = 5;
 const LOGO = 12;
 
 var loop = null;
-var realdrums = null;
+var realdrumLoop = null;
+var realdrumDevice = null;
 var arranger = "ketron";
 var realGuitarStyle = "none";
 var output = null;
@@ -220,7 +221,7 @@ function letsGo() {
 	
 	const config = JSON.parse(data);
 	
-    WebMidi.enable(function (err)
+    WebMidi.enable(async function (err)
     {
       if (err) {
         statusMsg.innerHTML = "WebMidi could not be enabled.";
@@ -234,7 +235,8 @@ function letsGo() {
             const midiOut = document.getElementById("midiOutSel");
             const midiFwd = document.getElementById("midiFwdSel");
         	const midiChordTracker = document.getElementById("midiChordTrackerSel");
-        	const realDrums = document.getElementById("realdrums");			
+        	const realDrumsDevice = document.getElementById("realdrumLoopDevice");			
+        	const realDrumsLoop = document.getElementById("realdrumLoopLoop");				
 			
 			const realguitar = document.getElementById("realguitar");
 			let realGuitarIndex = 0;
@@ -272,7 +274,8 @@ function letsGo() {
             midiFwd.options[0] = new Option("**UNUSED**", "midiFwdSel");
             midiChordTracker.options[0] = new Option("**UNUSED**", "midiChordTrackerSel");
             midiIn.options[0] = new Option("**UNUSED**", "midiInSel");
-			realDrums.options[0] = new Option("**UNUSED**", "realDrums");
+			realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice");
+			realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop");			
 
             for (var i=0; i<WebMidi.outputs.length; i++)
             {
@@ -386,31 +389,72 @@ function letsGo() {
             {
                 let selectedDrum = false;
 
-                if (config.realdrum && config.realdrum == drum_loops[i].name) {
+                if (config.realdrumLoop && config.realdrumLoop == drum_loops[i].name) {
                     selectedDrum = true;
-                    realdrums = drum_loops[i];
+                    realdrumLoop = drum_loops[i];
                 }
-                realDrums.options[i + 1] = new Option(drum_loops[i].label, drum_loops[i].name, selectedDrum, selectedDrum);
+                realDrumsLoop.options[i + 1] = new Option(drum_loops[i].label, drum_loops[i].name, selectedDrum, selectedDrum);
             }	
 
-            realDrums.addEventListener("click", function()
+            realDrumsLoop.addEventListener("click", function()
             {
-                realdrums = null;
+                realdrumLoop = null;
 
-                if (realDrums.value != "realDrums")
+                if (realDrumsLoop.value != "realDrumsLoop")
                 {
 					for (let drum of drum_loops) 
 					{
-						if (realDrums.value == drum.name) {
-							realdrums = drum
+						if (realDrumsLoop.value == drum.name) {
+							realdrumLoop = drum
 							setupRealDrums();
 							break;
 						}						
 					}
-                    console.debug("selected real drums", realdrums, realDrums.value);
+                    console.debug("selected real drums loop", realdrumLoop, realDrumsLoop.value);
                 }
                 saveConfig();
-            });			
+            });	
+
+            console.debug("WebMidi devices", input, output, forward, chordTracker);
+			
+			const audioMedia = await navigator.mediaDevices.getUserMedia({audio:true});
+			audioMedia.getTracks().forEach( (track) => track.stop());				
+			const devices = await navigator.mediaDevices.enumerateDevices();
+			const outputs = devices.filter(({ kind }) => kind === 'audiooutput');			
+			
+            for (var i=0; i<outputs.length; i++)
+            {
+                let selectedDevice = false;
+
+                if (config.realdrumDevice && config.realdrumDevice == outputs[i].deviceId) {
+                    selectedDevice = true;
+                    realdrumDevice = outputs[i];
+                }
+                realDrumsDevice.options[i + 1] = new Option(outputs[i].label, outputs[i].deviceId, selectedDevice, selectedDevice);
+            }	
+
+            realDrumsDevice.addEventListener("click", async function()
+            {
+                realdrumDevice = null;
+
+                if (realDrumsDevice.value != "realDrumsDevice") {
+					const audioMedia = await navigator.mediaDevices.getUserMedia({audio:true});
+					audioMedia.getTracks().forEach( (track) => track.stop());				
+					const devices = await navigator.mediaDevices.enumerateDevices();
+					const outputs = devices.filter(({ kind }) => kind === 'audiooutput');
+					
+					for (let output of outputs) 
+					{
+						if (realDrumsDevice.value == output.deviceId) {
+							realdrumDevice = output;
+							setupRealDrums();
+							break;
+						}						
+					}
+                    console.debug("selected real drums device ", realdrumDevice, realDrumsDevice.value);
+                }
+                saveConfig();
+            });				
 
             if (input)
             {
@@ -429,7 +473,7 @@ function letsGo() {
             }
 			
 			enableSequencer(!!forward);
-			if (realdrums) setupRealDrums();
+			if (realdrumLoop) setupRealDrums();
         }
         else {
             statusMsg.innerHTML = "NO MIDI devices available";
@@ -447,7 +491,8 @@ function saveConfig() {
     config.input = input ? input.name : null;
 	config.arranger = arranger;
 	config.realGuitarStyle = realGuitarStyle;
-	config.realdrum = realdrums?.name;
+	config.realdrumLoop = realdrumLoop?.name;
+	config.realdrumDevice = realdrumDevice?.deviceId;
 
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }
@@ -913,8 +958,7 @@ function resetArrToA() {
 		orinayo_strum.innerHTML = "Strum " + (rgIndex + 1) + "/" + window[realGuitarStyle].length;	
 	}
 	
-	document.querySelector(".play").innerText = styleStarted ? "Play" : "Stop";	
-		
+	document.querySelector(".play").innerText = styleStarted ? "Play" : "Stop";			
 }
 
 function stopChord() {
@@ -954,17 +998,19 @@ function playSectionCheck() {
 	
 	console.debug("playSectionCheck pressed " + arrChanged);
 	changeArrSection();
-	orinayo_section.innerHTML = SECTIONS[sectionChange];
-	
-	if (window[realGuitarStyle]) {
-		orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;	
-	}
-	
-	if (loop) {
+	orinayo_section.innerHTML = SECTIONS[sectionChange];	
+		
+	if (loop && realdrumLoop) {
+		orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
+		
 		if (sectionChange == 0) loop.update('arra', true);
 		if (sectionChange == 1) loop.update('arrb', true);
-		if (sectionChange == 2) loop.update('arrb', true);
-		if (sectionChange == 3) loop.update('arrc', true);		
+		if (sectionChange == 2) loop.update('arrc', true);
+		if (sectionChange == 3) loop.update('arrd', true);	
+	}
+
+	if (window[realGuitarStyle]) {
+		orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;	
 	}
 
 }
@@ -1220,13 +1266,13 @@ function doChord() {
 
 function toggleStartStop() {	
 	if (output) { 
-		resetArrToA();
+		if (!styleStarted) resetArrToA();
 		
 		if (forward && realGuitarStyle != "none" && window[realGuitarStyle]) {			
 			startStopSequencer();
 		}
 		
-		if (loop) {
+		if (loop && realdrumLoop) {
 			if (!styleStarted) {			
 				loop.start('int1');
 				loop.update('arra', true);
@@ -1541,17 +1587,16 @@ function scheduler() {
         nextNote();
     }
 }
+
 function setupRealDrums() {
 	loop = new SeamlessLoop();
-	
-	const output = null;
-	
-	loop.addUri(realdrums["int1"].url, realdrums["int1"].duration, 'int1', output);
-	loop.addUri(realdrums["end1"].url, realdrums["end1"].duration, 'end1', output);
-	loop.addUri(realdrums["arra"].url, realdrums["arra"].duration, 'arra', output);
-	loop.addUri(realdrums["arrb"].url, realdrums["arrb"].duration, 'arrb', output);
-	loop.addUri(realdrums["arrc"].url, realdrums["arrc"].duration, 'arrc', output);
-	loop.addUri(realdrums["arrd"].url, realdrums["arrd"].duration, 'arrd', output);	
+		
+	loop.addUri(realdrumLoop["int1"].url, realdrumLoop["int1"].duration, 'int1', realdrumDevice);
+	loop.addUri(realdrumLoop["end1"].url, realdrumLoop["end1"].duration, 'end1', realdrumDevice);
+	loop.addUri(realdrumLoop["arra"].url, realdrumLoop["arra"].duration, 'arra', realdrumDevice);
+	loop.addUri(realdrumLoop["arrb"].url, realdrumLoop["arrb"].duration, 'arrb', realdrumDevice);
+	loop.addUri(realdrumLoop["arrc"].url, realdrumLoop["arrc"].duration, 'arrc', realdrumDevice);
+	loop.addUri(realdrumLoop["arrd"].url, realdrumLoop["arrd"].duration, 'arrd', realdrumDevice);	
 		
 	loop.callback(soundsLoaded, eventStatus);	
 }
@@ -1563,7 +1608,17 @@ function soundsLoaded() {
 function eventStatus(event, id) {
 	console.debug(event, id);
 
-	if (event == "_eventPlaying" && id == "end1") {
-		setTimeout(() => loop.stop(), realdrums["end1"].duration - 1000);
+	if (event == "_eventPlaying") {
+		if (id == "arra") orinayo_section.innerHTML = SECTIONS[0];
+		if (id == "arrb") orinayo_section.innerHTML = SECTIONS[1];
+		if (id == "arrc") orinayo_section.innerHTML = SECTIONS[2];
+		if (id == "arrd") orinayo_section.innerHTML = SECTIONS[3];		
+		
+		if (id == "int1") orinayo_section.innerHTML = SECTIONS[4];
+		if (id == "end1") orinayo_section.innerHTML = SECTIONS[5];			
+			
+		if (id == "end1") {
+			setTimeout(() => loop.stop(), realdrumLoop["end1"].duration - 1000);
+		}
 	}
 }
