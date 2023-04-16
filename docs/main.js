@@ -1000,9 +1000,8 @@ function playSectionCheck() {
 	}
 	
 	console.debug("playSectionCheck pressed " + arrChanged);
-	changeArrSection();
-	orinayo_section.innerHTML = SECTIONS[sectionChange];	
-		
+	orinayo_section.innerHTML = SECTIONS[sectionChange];		
+			
 	if (loop && realdrumLoop) {
 		orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
 		
@@ -1010,6 +1009,9 @@ function playSectionCheck() {
 		if (sectionChange == 1) loop.update('arrb', true);
 		if (sectionChange == 2) loop.update('arrc', true);
 		if (sectionChange == 3) loop.update('arrd', true);	
+	}
+	else {
+		changeArrSection();		
 	}
 
 	if (window[realGuitarStyle]) {
@@ -1289,8 +1291,10 @@ function toggleStartStop() {
 					loop.stop();
 				}					
 			}
+			styleStarted = !styleStarted;				
 		}
-		
+		else
+			
 		if (arranger == "ketron") {		
 			let startEndType = 0x12; // default start/stop
 		
