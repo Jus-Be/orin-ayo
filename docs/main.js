@@ -76,6 +76,7 @@ var pad = {buttons: [], axis: []};
 
 window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
+window.addEventListener("beforeunload", () => saveConfig())
 
 function onloadHandler() {
 	console.debug("onloadHandler");
@@ -231,6 +232,9 @@ function letsGo() {
 
         if (WebMidi.outputs.length > 0 && WebMidi.inputs.length > 0)
         {
+			keyChange = config.keyChange ? config.keyChange : keyChange;
+			dokeyChange();
+			
             const midiIn = document.getElementById("midiInSel");
             const midiOut = document.getElementById("midiOutSel");
             const midiFwd = document.getElementById("midiFwdSel");
@@ -485,6 +489,7 @@ function letsGo() {
 
 function saveConfig() {
     let config = {};
+	config.keyChange = keyChange;
     config.output = output ? output.name : null;
     config.forward = forward ? forward.name : null;
 	config.chordTracker = chordTracker ? chordTracker.name : null;
@@ -956,9 +961,7 @@ function resetArrToA() {
 	
 	if (window[realGuitarStyle]) {
 		orinayo_strum.innerHTML = "Strum " + (rgIndex + 1) + "/" + window[realGuitarStyle].length;	
-	}
-	
-	document.querySelector(".play").innerText = styleStarted ? "Play" : "Stop";			
+	}		
 }
 
 function stopChord() {
@@ -1273,13 +1276,16 @@ function toggleStartStop() {
 		}
 		
 		if (loop && realdrumLoop) {
-			if (!styleStarted) {			
+			if (!styleStarted) {
+				orinayo_section.innerHTML = ">Arr A";	
 				loop.start('int1');
 				loop.update('arra', true);
 			} else {
-				if (pad.buttons[YELLOW]) {				
+				if (pad.buttons[YELLOW]) {	
+					orinayo_section.innerHTML = ">End 1";					
 					loop.update('end1', true);	
 				} else {
+					orinayo_section.innerHTML = "End 1";						
 					loop.stop();
 				}					
 			}
@@ -1416,7 +1422,9 @@ function toggleStartStop() {
 				styleStarted = false;
 			}
 		}		
-	}		
+	}	
+
+	document.querySelector(".play").innerText = !styleStarted ? "Play" : "Stop";	
 }
 
 function updateGame() {
