@@ -56,5 +56,34 @@ var drum_loops = [
 		url: "assets/drumloops/iknow/arrd.wav",
 		duration: 18290
 	}
+},
+{
+	name: "8beat",
+	label: "8 Beat Standard",
+	bpm: 100,
+	int1: {
+		url: "assets/drumloops/8beat/int1.wav",
+		duration: 2400
+	},
+	end1: {
+		url: "assets/drumloops/8beat/end1.wav",
+		duration: 7000
+	},	
+	arra: {
+		url: "assets/drumloops/8beat/arra.wav",
+		duration: 19200
+	},	
+	arrb: {
+		url: "assets/drumloops/8beat/arrb.wav",
+		duration: 19200
+	},
+	arrc: {
+		url: "assets/drumloops/8beat/arrc.wav",
+		duration: 19200
+	},
+	arrd: {
+		url: "assets/drumloops/8beat/arrd.wav",
+		duration: 19200
+	}
 }
 ]
