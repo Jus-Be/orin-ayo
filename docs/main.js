@@ -20,7 +20,8 @@ const STRUM = 9;
 const TOUCH = 5;
 const LOGO = 12;
 
-var loop = null;
+var bassLoop = null;
+var drumLoop = null;
 var realdrumLoop = null;
 var realdrumDevice = null;
 var arranger = "ketron";
@@ -151,11 +152,9 @@ function onloadHandler() {
 			
 	});
 	
-	document.querySelector(".play").addEventListener("click", function() {
-		if (output) { 		
-			this.innerText = styleStarted ? "Play" : "Stop";
-			toggleStartStop();
-		}
+	document.querySelector(".play").addEventListener("click", function() {	
+		this.innerText = styleStarted ? "Play" : "Stop";
+		toggleStartStop();
 	});	
 	
 	document.querySelector("#tempo").addEventListener("input", function() {
@@ -746,6 +745,10 @@ function playChord(chord, root, type, bass) {
 			chordTracker.sendSysex(0x43, [0x7E, 0x02, trasposedRoot, type, transposedBass, type]);				
 		}
 		
+		if (bassLoop) {
+			bassLoop.update('key' + (chord[0] % 12), false);	
+		}
+		
         activeChord = chord;
    }
 }
@@ -1027,13 +1030,13 @@ function playSectionCheck() {
 	console.debug("playSectionCheck pressed " + arrChanged);
 	orinayo_section.innerHTML = SECTIONS[sectionChange];		
 			
-	if (loop && realdrumLoop) {
+	if (drumLoop && realdrumLoop) {
 		orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
 		
-		if (sectionChange == 0) loop.update('arra', true);
-		if (sectionChange == 1) loop.update('arrb', true);
-		if (sectionChange == 2) loop.update('arrc', true);
-		if (sectionChange == 3) loop.update('arrd', true);	
+		if (sectionChange == 0) drumLoop.update('arra', true);
+		if (sectionChange == 1) drumLoop.update('arrb', true);
+		if (sectionChange == 2) drumLoop.update('arrc', true);
+		if (sectionChange == 3) drumLoop.update('arrd', true);	
 	}
 	else {
 		changeArrSection();		
@@ -1295,31 +1298,39 @@ function doChord() {
 }
 
 function toggleStartStop() {	
-	if (output) { 
-		if (!styleStarted) resetArrToA();
-		
-		if (forward && realGuitarStyle != "none" && window[realGuitarStyle]) {			
-			startStopSequencer();
-		}
-		
-		if (loop && realdrumLoop) {
-			if (!styleStarted) {
-				orinayo_section.innerHTML = ">Arr A";	
-				loop.start('int1');
-				loop.update('arra', true);
-			} else {
-				if (pad.buttons[YELLOW]) {	
-					orinayo_section.innerHTML = ">End 1";					
-					loop.update('end1', true);	
-				} else {
-					orinayo_section.innerHTML = "End 1";						
-					loop.stop();
-				}					
-			}
-			styleStarted = !styleStarted;				
-		}
-		else
+
+	if (!styleStarted) resetArrToA();
+	
+	if (forward && realGuitarStyle != "none" && window[realGuitarStyle]) {			
+		startStopSequencer();
+	}
+	
+	if (drumLoop && realdrumLoop) {
+		if (!styleStarted) {
+			orinayo_section.innerHTML = ">Arr A";	
+			drumLoop.start('int1');
+			drumLoop.update('arra', true);
 			
+			if (bassLoop) {
+				setTimeout(() => bassLoop.start("key" + (keyChange % 12)), realdrumLoop["int1"].drum.duration);
+			}
+			
+		} else {
+			if (pad.buttons[YELLOW]) {	
+				orinayo_section.innerHTML = ">End 1";					
+				drumLoop.update('end1', true);	
+			} else {
+				orinayo_section.innerHTML = "End 1";						
+				drumLoop.stop();
+				
+				if (bassLoop) bassLoop.stop();
+			}					
+		}
+		styleStarted = !styleStarted;				
+	}
+	else
+
+	if (output) { 			
 		if (arranger == "ketron") {		
 			let startEndType = 0x12; // default start/stop
 		
@@ -1626,16 +1637,24 @@ function scheduler() {
 }
 
 function setupRealDrums() {
-	loop = new SeamlessLoop();
+	drumLoop = new SeamlessLoop();
 		
-	loop.addUri(realdrumLoop["int1"].url, realdrumLoop["int1"].duration, 'int1', realdrumDevice);
-	loop.addUri(realdrumLoop["end1"].url, realdrumLoop["end1"].duration, 'end1', realdrumDevice);
-	loop.addUri(realdrumLoop["arra"].url, realdrumLoop["arra"].duration, 'arra', realdrumDevice);
-	loop.addUri(realdrumLoop["arrb"].url, realdrumLoop["arrb"].duration, 'arrb', realdrumDevice);
-	loop.addUri(realdrumLoop["arrc"].url, realdrumLoop["arrc"].duration, 'arrc', realdrumDevice);
-	loop.addUri(realdrumLoop["arrd"].url, realdrumLoop["arrd"].duration, 'arrd', realdrumDevice);	
+	drumLoop.addUri(realdrumLoop["int1"].drum.url, realdrumLoop["int1"].drum.duration, 'int1', realdrumDevice);
+	drumLoop.addUri(realdrumLoop["end1"].drum.url, realdrumLoop["end1"].drum.duration, 'end1', realdrumDevice);
+	drumLoop.addUri(realdrumLoop["arra"].drum.url, realdrumLoop["arra"].drum.duration, 'arra', realdrumDevice);
+	drumLoop.addUri(realdrumLoop["arrb"].drum.url, realdrumLoop["arrb"].drum.duration, 'arrb', realdrumDevice);
+	drumLoop.addUri(realdrumLoop["arrc"].drum.url, realdrumLoop["arrc"].drum.duration, 'arrc', realdrumDevice);
+	drumLoop.addUri(realdrumLoop["arrd"].drum.url, realdrumLoop["arrd"].drum.duration, 'arrd', realdrumDevice);	
+	
+	if (realdrumLoop["arra"].bass) {
+		bassLoop = new SeamlessLoop();
 		
-	loop.callback(soundsLoaded, eventStatus);	
+		for (let i in realdrumLoop["arra"].bass.urls) {
+			bassLoop.addUri(realdrumLoop["arra"].bass.urls[i], realdrumLoop["arra"].bass.duration, 'key' + i, realdrumDevice);		
+		}
+	}
+		
+	drumLoop.callback(soundsLoaded, eventStatus);	
 }
 
 function soundsLoaded() {
@@ -1655,7 +1674,11 @@ function eventStatus(event, id) {
 		if (id == "end1") orinayo_section.innerHTML = SECTIONS[5];			
 			
 		if (id == "end1") {
-			setTimeout(() => loop.stop(), realdrumLoop["end1"].duration - 1000);
+			if (bassLoop) bassLoop.stop();			
+			
+			setTimeout(() => {
+				drumLoop.stop();				
+			}, realdrumLoop["end1"].drum.duration - 1000);
 		}
 	}
 }
