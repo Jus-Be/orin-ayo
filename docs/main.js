@@ -261,258 +261,252 @@ function letsGo() {
         statusMsg.innerHTML = "Orin Ayo";
         console.debug("WebMidi enabled!", config, WebMidi);
 
-        if (WebMidi.outputs.length > 0 && WebMidi.inputs.length > 0)
-        {
-			keyChange = config.keyChange ? config.keyChange : keyChange;
-			dokeyChange();
-			
-            const midiIn = document.getElementById("midiInSel");
-            const midiOut = document.getElementById("midiOutSel");
-            const midiFwd = document.getElementById("midiFwdSel");
-        	const midiChordTracker = document.getElementById("midiChordTrackerSel");
-        	const realDrumsDevice = document.getElementById("realdrumLoopDevice");			
-        	const realDrumsLoop = document.getElementById("realdrumLoopLoop");				
-			
-			const realguitar = document.getElementById("realguitar");
-			let realGuitarIndex = 0;
-			
-			realguitar.options[0] = new Option("**UNUSED**", "none", config.realguitar == "none");
-			realguitar.options[1] = new Option("Funk One - 16th (90-120 BPM)", "Funk1_S_16th_90_120", config.realguitar == "Funk1_S_16th_90_120");			
-			realguitar.options[2] = new Option("Funk Three - 16th (90-120 BPM)", "Funk3_S_16th_90_120", config.realguitar == "Funk3_S_16th_90_120");
-			realguitar.options[3] = new Option("4'4 Basic Strum 8th (100-200 BPM)", "Basic_B44_8th_100_200", config.realguitar == "Basic_B44_8th_100_200");
-			realguitar.options[4] = new Option("4'4 Basic Picking 16th (50-90 BPM)", "Basic_P44_16T_50_90", config.realguitar == "Basic_P44_16T_50_90");
+		keyChange = config.keyChange ? config.keyChange : keyChange;
+		dokeyChange();
+		
+		const midiIn = document.getElementById("midiInSel");
+		const midiOut = document.getElementById("midiOutSel");
+		const midiFwd = document.getElementById("midiFwdSel");
+		const midiChordTracker = document.getElementById("midiChordTrackerSel");
+		const realDrumsDevice = document.getElementById("realdrumLoopDevice");			
+		const realDrumsLoop = document.getElementById("realdrumLoopLoop");				
+		
+		const realguitar = document.getElementById("realguitar");
+		let realGuitarIndex = 0;
+		
+		realguitar.options[0] = new Option("**UNUSED**", "none", config.realguitar == "none");
+		realguitar.options[1] = new Option("Funk One - 16th (90-120 BPM)", "Funk1_S_16th_90_120", config.realguitar == "Funk1_S_16th_90_120");			
+		realguitar.options[2] = new Option("Funk Three - 16th (90-120 BPM)", "Funk3_S_16th_90_120", config.realguitar == "Funk3_S_16th_90_120");
+		realguitar.options[3] = new Option("4'4 Basic Strum 8th (100-200 BPM)", "Basic_B44_8th_100_200", config.realguitar == "Basic_B44_8th_100_200");
+		realguitar.options[4] = new Option("4'4 Basic Picking 16th (50-90 BPM)", "Basic_P44_16T_50_90", config.realguitar == "Basic_P44_16T_50_90");
 
-			realGuitarIndex = config.realGuitarStyle == "Funk1_S_16th_90_120" ? 1 : realGuitarIndex;
-			realGuitarIndex = config.realGuitarStyle == "Funk3_S_16th_90_120" ? 2 : realGuitarIndex;				
-			realGuitarIndex = config.realGuitarStyle == "Basic_B44_8th_100_200" ? 3 : realGuitarIndex;			
-			realGuitarIndex = config.realGuitarStyle == "Basic_P44_16T_50_90" ? 4 : realGuitarIndex;			
-			realguitar.selectedIndex = realGuitarIndex;			
-			realGuitarStyle = config.realGuitarStyle;				
+		realGuitarIndex = config.realGuitarStyle == "Funk1_S_16th_90_120" ? 1 : realGuitarIndex;
+		realGuitarIndex = config.realGuitarStyle == "Funk3_S_16th_90_120" ? 2 : realGuitarIndex;				
+		realGuitarIndex = config.realGuitarStyle == "Basic_B44_8th_100_200" ? 3 : realGuitarIndex;			
+		realGuitarIndex = config.realGuitarStyle == "Basic_P44_16T_50_90" ? 4 : realGuitarIndex;			
+		realguitar.selectedIndex = realGuitarIndex;			
+		realGuitarStyle = config.realGuitarStyle;				
 
-			const arrangerType =  document.getElementById("arrangerType");			
-			arrangerType.options[0] = new Option("Ketron SD/Event", "ketron", config.arranger == "ketron");
-			arrangerType.options[1] = new Option("Yamaha MODX", "modx", config.arranger == "modx");
-			arrangerType.options[2] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
-			arrangerType.options[3] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");	
-			arrangerType.options[4] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
-			arrangerType.options[5] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");				
-			let arrangerIndex = 0;
-			arrangerIndex = config.arranger == "modx" ? 1 : arrangerIndex;
-			arrangerIndex = config.arranger == "montage" ? 2 : arrangerIndex;
-			arrangerIndex = config.arranger == "qy100" ? 3 : arrangerIndex;			
-			arrangerIndex = config.arranger == "microarranger" ? 4 : arrangerIndex;				
-			arrangerIndex = config.arranger == "giglad" ? 5 : arrangerIndex;				
-			arrangerType.selectedIndex = arrangerIndex;			
-			arranger = config.arranger;					
-		   
-            midiOut.options[0] = new Option("**UNUSED**", "midiOutSel");
-            midiFwd.options[0] = new Option("**UNUSED**", "midiFwdSel");
-            midiChordTracker.options[0] = new Option("**UNUSED**", "midiChordTrackerSel");
-            midiIn.options[0] = new Option("**UNUSED**", "midiInSel");
-			realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice");
-			realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop");			
+		const arrangerType =  document.getElementById("arrangerType");			
+		arrangerType.options[0] = new Option("Ketron SD/Event", "ketron", config.arranger == "ketron");
+		arrangerType.options[1] = new Option("Yamaha MODX", "modx", config.arranger == "modx");
+		arrangerType.options[2] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
+		arrangerType.options[3] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");	
+		arrangerType.options[4] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
+		arrangerType.options[5] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");				
+		let arrangerIndex = 0;
+		arrangerIndex = config.arranger == "modx" ? 1 : arrangerIndex;
+		arrangerIndex = config.arranger == "montage" ? 2 : arrangerIndex;
+		arrangerIndex = config.arranger == "qy100" ? 3 : arrangerIndex;			
+		arrangerIndex = config.arranger == "microarranger" ? 4 : arrangerIndex;				
+		arrangerIndex = config.arranger == "giglad" ? 5 : arrangerIndex;				
+		arrangerType.selectedIndex = arrangerIndex;			
+		arranger = config.arranger;					
+	   
+		midiOut.options[0] = new Option("**UNUSED**", "midiOutSel");
+		midiFwd.options[0] = new Option("**UNUSED**", "midiFwdSel");
+		midiChordTracker.options[0] = new Option("**UNUSED**", "midiChordTrackerSel");
+		midiIn.options[0] = new Option("**UNUSED**", "midiInSel");
+		realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice");
+		realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop");			
 
-            for (var i=0; i<WebMidi.outputs.length; i++)
-            {
-                let outSelected = false;
+		for (var i=0; i<WebMidi.outputs.length; i++)
+		{
+			let outSelected = false;
 
-                if (config.output && config.output == WebMidi.outputs[i].name)
-                {
-                    outSelected = true;
-                    output = WebMidi.outputs[i];
-                }
-                midiOut.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, outSelected, outSelected);
+			if (config.output && config.output == WebMidi.outputs[i].name)
+			{
+				outSelected = true;
+				output = WebMidi.outputs[i];
+			}
+			midiOut.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, outSelected, outSelected);
 
-                let fwdSelected = false;
+			let fwdSelected = false;
 
-                if (config.forward && config.forward == WebMidi.outputs[i].name)
-                {
-                    fwdSelected = true;
-                    forward = WebMidi.outputs[i];
-                }
-                midiFwd.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, fwdSelected, fwdSelected);
+			if (config.forward && config.forward == WebMidi.outputs[i].name)
+			{
+				fwdSelected = true;
+				forward = WebMidi.outputs[i];
+			}
+			midiFwd.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, fwdSelected, fwdSelected);
 
-                let chordTrackerSelected = false;
+			let chordTrackerSelected = false;
 
-                if (config.chordTracker && config.chordTracker == WebMidi.outputs[i].name)
-                {
-                    chordTrackerSelected = true;
-                    chordTracker = WebMidi.outputs[i];
-                }
-                midiChordTracker.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, chordTrackerSelected, chordTrackerSelected);
-            }
+			if (config.chordTracker && config.chordTracker == WebMidi.outputs[i].name)
+			{
+				chordTrackerSelected = true;
+				chordTracker = WebMidi.outputs[i];
+			}
+			midiChordTracker.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, chordTrackerSelected, chordTrackerSelected);
+		}
 
-            for (var i=0; i<WebMidi.inputs.length; i++)
-            {
-                let selected = false;
+		for (var i=0; i<WebMidi.inputs.length; i++)
+		{
+			let selected = false;
 
-                if (config.input && config.input == WebMidi.inputs[i].name)
-                {
-                    selected = true;
-                    input = WebMidi.inputs[i];
-                }
-                midiIn.options[i + 1] = new Option(WebMidi.inputs[i].name, WebMidi.inputs[i].name, selected, selected);
-            }
+			if (config.input && config.input == WebMidi.inputs[i].name)
+			{
+				selected = true;
+				input = WebMidi.inputs[i];
+			}
+			midiIn.options[i + 1] = new Option(WebMidi.inputs[i].name, WebMidi.inputs[i].name, selected, selected);
+		}
 
-            midiIn.addEventListener("click", function()
-            {
-                input = null;
+		midiIn.addEventListener("click", function()
+		{
+			input = null;
 
-                if (midiIn.value != "midiInSel")
-                {
-                    input = WebMidi.getInputByName(midiIn.value);
-                    console.debug("selected input midi port", input, midiIn.value);
-                }
-                saveConfig();
-            });
+			if (midiIn.value != "midiInSel")
+			{
+				input = WebMidi.getInputByName(midiIn.value);
+				console.debug("selected input midi port", input, midiIn.value);
+			}
+			saveConfig();
+		});
 
-            midiOut.addEventListener("click", function()
-            {
-                output = null;
+		midiOut.addEventListener("click", function()
+		{
+			output = null;
 
-                if (midiOut.value != "midiOutSel")
-                {
-                    output = WebMidi.getOutputByName(midiOut.value);
-                    console.debug("selected output midi port", output, midiOut.value);
-                }
-                saveConfig();
-            });
+			if (midiOut.value != "midiOutSel")
+			{
+				output = WebMidi.getOutputByName(midiOut.value);
+				console.debug("selected output midi port", output, midiOut.value);
+			}
+			saveConfig();
+		});
 
-            arrangerType.addEventListener("click", function()
-            {
-                arranger = arrangerType.value;
-                console.debug("selected arranger type", arranger, arrangerType.value);				
-                saveConfig();
-            });
-			
-            realguitar.addEventListener("click", function()
-            {
-                realGuitarStyle = realguitar.value;
-                console.debug("selected realguitar style", realGuitarStyle, realguitar.value);				
-                saveConfig();
-            });
+		arrangerType.addEventListener("click", function()
+		{
+			arranger = arrangerType.value;
+			console.debug("selected arranger type", arranger, arrangerType.value);				
+			saveConfig();
+		});
+		
+		realguitar.addEventListener("click", function()
+		{
+			realGuitarStyle = realguitar.value;
+			console.debug("selected realguitar style", realGuitarStyle, realguitar.value);				
+			saveConfig();
+		});
 
-            midiFwd.addEventListener("click", function()
-            {
-                forward = null;
-				enableSequencer(false);
+		midiFwd.addEventListener("click", function()
+		{
+			forward = null;
+			enableSequencer(false);
 
-                if (midiFwd.value != "midiFwdSel")
-                {
-                    forward = WebMidi.getOutputByName(midiFwd.value);
-					enableSequencer(true);
-                    console.debug("selected forward midi port", forward, midiFwd.value);
-                }
-                saveConfig();
-            });
-            
-            midiChordTracker.addEventListener("click", function()
-            {
-                chordTracker = null;
+			if (midiFwd.value != "midiFwdSel")
+			{
+				forward = WebMidi.getOutputByName(midiFwd.value);
+				enableSequencer(true);
+				console.debug("selected forward midi port", forward, midiFwd.value);
+			}
+			saveConfig();
+		});
+		
+		midiChordTracker.addEventListener("click", function()
+		{
+			chordTracker = null;
 
-                if (midiChordTracker.value != "midiChordTrackerSel")
-                {
-                    chordTracker = WebMidi.getOutputByName(midiChordTracker.value);
-                    console.debug("selected chordTracker midi port", chordTracker, midiChordTracker.value);
-                }
-                saveConfig();
-            });
+			if (midiChordTracker.value != "midiChordTrackerSel")
+			{
+				chordTracker = WebMidi.getOutputByName(midiChordTracker.value);
+				console.debug("selected chordTracker midi port", chordTracker, midiChordTracker.value);
+			}
+			saveConfig();
+		});
 
-            console.debug("WebMidi devices", input, output, forward, chordTracker);
-			
-            for (var i=0; i<drum_loops.length; i++)
-            {
-                let selectedDrum = false;
+		console.debug("WebMidi devices", input, output, forward, chordTracker);
+		
+		for (var i=0; i<drum_loops.length; i++)
+		{
+			let selectedDrum = false;
 
-                if (config.realdrumLoop && config.realdrumLoop == drum_loops[i].name) {
-                    selectedDrum = true;
-                    realdrumLoop = drum_loops[i];
-                }
-                realDrumsLoop.options[i + 1] = new Option(drum_loops[i].label, drum_loops[i].name, selectedDrum, selectedDrum);
-            }	
+			if (config.realdrumLoop && config.realdrumLoop == drum_loops[i].name) {
+				selectedDrum = true;
+				realdrumLoop = drum_loops[i];
+			}
+			realDrumsLoop.options[i + 1] = new Option(drum_loops[i].label, drum_loops[i].name, selectedDrum, selectedDrum);
+		}	
 
-            realDrumsLoop.addEventListener("click", function()
-            {
-                realdrumLoop = null;
+		realDrumsLoop.addEventListener("click", function()
+		{
+			realdrumLoop = null;
 
-                if (realDrumsLoop.value != "realDrumsLoop")
-                {
-					for (let drum of drum_loops) 
-					{
-						if (realDrumsLoop.value == drum.name) {
-							realdrumLoop = drum
-							setupRealDrums();
-							break;
-						}						
-					}
-                    console.debug("selected real drums loop", realdrumLoop, realDrumsLoop.value);
-                }
-                saveConfig();
-            });	
+			if (realDrumsLoop.value != "realDrumsLoop")
+			{
+				for (let drum of drum_loops) 
+				{
+					if (realDrumsLoop.value == drum.name) {
+						realdrumLoop = drum
+						setupRealDrums();
+						break;
+					}						
+				}
+				console.debug("selected real drums loop", realdrumLoop, realDrumsLoop.value);
+			}
+			saveConfig();
+		});	
 
-            console.debug("WebMidi devices", input, output, forward, chordTracker);
-			
-			const audioMedia = await navigator.mediaDevices.getUserMedia({audio:true});
-			audioMedia.getTracks().forEach( (track) => track.stop());				
-			const devices = await navigator.mediaDevices.enumerateDevices();
-			const outputs = devices.filter(({ kind }) => kind === 'audiooutput');			
-			
-            for (var i=0; i<outputs.length; i++)
-            {
-                let selectedDevice = false;
+		console.debug("WebMidi devices", input, output, forward, chordTracker);
+		
+		const audioMedia = await navigator.mediaDevices.getUserMedia({audio:true});
+		audioMedia.getTracks().forEach( (track) => track.stop());				
+		const devices = await navigator.mediaDevices.enumerateDevices();
+		const outputs = devices.filter(({ kind }) => kind === 'audiooutput');			
+		
+		for (var i=0; i<outputs.length; i++)
+		{
+			let selectedDevice = false;
 
-                if (config.realdrumDevice && config.realdrumDevice == outputs[i].deviceId) {
-                    selectedDevice = true;
-                    realdrumDevice = outputs[i];
-                }
-                realDrumsDevice.options[i + 1] = new Option(outputs[i].label, outputs[i].deviceId, selectedDevice, selectedDevice);
-            }	
+			if (config.realdrumDevice && config.realdrumDevice == outputs[i].deviceId) {
+				selectedDevice = true;
+				realdrumDevice = outputs[i];
+			}
+			realDrumsDevice.options[i + 1] = new Option(outputs[i].label, outputs[i].deviceId, selectedDevice, selectedDevice);
+		}	
 
-            realDrumsDevice.addEventListener("click", async function()
-            {
-                realdrumDevice = null;
+		realDrumsDevice.addEventListener("click", async function()
+		{
+			realdrumDevice = null;
 
-                if (realDrumsDevice.value != "realDrumsDevice") {
-					const audioMedia = await navigator.mediaDevices.getUserMedia({audio:true});
-					audioMedia.getTracks().forEach( (track) => track.stop());				
-					const devices = await navigator.mediaDevices.enumerateDevices();
-					const outputs = devices.filter(({ kind }) => kind === 'audiooutput');
-					
-					for (let output of outputs) 
-					{
-						if (realDrumsDevice.value == output.deviceId) {
-							realdrumDevice = output;
-							setupRealDrums();
-							break;
-						}						
-					}
-                    console.debug("selected real drums device ", realdrumDevice, realDrumsDevice.value);
-                }
-                saveConfig();
-            });				
+			if (realDrumsDevice.value != "realDrumsDevice") {
+				const audioMedia = await navigator.mediaDevices.getUserMedia({audio:true});
+				audioMedia.getTracks().forEach( (track) => track.stop());				
+				const devices = await navigator.mediaDevices.enumerateDevices();
+				const outputs = devices.filter(({ kind }) => kind === 'audiooutput');
+				
+				for (let output of outputs) 
+				{
+					if (realDrumsDevice.value == output.deviceId) {
+						realdrumDevice = output;
+						setupRealDrums();
+						break;
+					}						
+				}
+				console.debug("selected real drums device ", realdrumDevice, realDrumsDevice.value);
+			}
+			saveConfig();
+		});				
 
-            if (input)
-            {
-                input.addListener('noteon', 1, function (e)
-                {
-                    console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note);
-                    orinayo.innerHTML = e.note.name;
-                    key = e.note.name;
-                    base = BASE + (e.note.number % 12);
-                });
+		if (input)
+		{
+			input.addListener('noteon', 1, function (e)
+			{
+				console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note);
+				orinayo.innerHTML = e.note.name;
+				key = e.note.name;
+				base = BASE + (e.note.number % 12);
+			});
 
-                input.addListener('controlchange', "all", function (e)
-                {
-                  console.debug("Received 'controlchange' message", e);
-                });
-            }
-			
-			enableSequencer(!!forward && realGuitarStyle != "none");
-			if (realdrumLoop) setupRealDrums();
-        }
-        else {
-            statusMsg.innerHTML = "NO MIDI devices available";
-        }
+			input.addListener('controlchange', "all", function (e)
+			{
+			  console.debug("Received 'controlchange' message", e);
+			});
+		}
+		
+		enableSequencer(!!forward && realGuitarStyle != "none");
+		if (realdrumLoop) setupRealDrums();
       }
 
     }, true);
