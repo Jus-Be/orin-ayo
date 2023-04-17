@@ -85,5 +85,34 @@ var drum_loops = [
 		url: "assets/drumloops/8beat/arrd.wav",
 		duration: 19200
 	}
+},
+{
+	name: "afro-pop2",
+	label: "Afro Beats Pop2",
+	bpm: 100,
+	int1: {
+		url: "assets/drumloops/afro-pop2/int1.wav",
+		duration: 2162
+	},
+	end1: {
+		url: "assets/drumloops/afro-pop2/end1.wav",
+		duration: 6486
+	},	
+	arra: {
+		url: "assets/drumloops/afro-pop2/arra.wav",
+		duration: 17297
+	},	
+	arrb: {
+		url: "assets/drumloops/afro-pop2/arrb.wav",
+		duration: 17297
+	},
+	arrc: {
+		url: "assets/drumloops/afro-pop2/arrc.wav",
+		duration: 17297
+	},
+	arrd: {
+		url: "assets/drumloops/afro-pop2/arrd.wav",
+		duration: 17297
+	}
 }
 ]

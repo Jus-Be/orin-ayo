@@ -77,9 +77,14 @@ var pad = {buttons: [], axis: []};
 var timeoutId = 0;
 var timeouts = {};
 
-var worker = new Worker("timeout-worker.js");
+var timeoutWorker = new Worker("timeout-worker.js");
+timeoutWorker.addEventListener("message", myWorkerTimer);
 
-worker.addEventListener("message", function(evt) {
+window.requestAnimFrame = window.requestAnimationFrame;
+window.addEventListener("load", onloadHandler);
+window.addEventListener("beforeunload", () => saveConfig());
+
+function myWorkerTimer(evt) {
   var data = evt.data,
       id = data.id,
       fn = timeouts[id].fn,
@@ -87,26 +92,22 @@ worker.addEventListener("message", function(evt) {
 
   fn.apply(null, args);
   delete timeouts[id];
-});
+};
 
-window.mysetTimeout = function(fn, delay) {
+function myclearTimeout(id) {
+  timeoutWorker.postMessage({command: "clearTimeout", id: id});
+  delete timeouts[id];
+};
+
+function mysetTimeout(fn, delay) {
   var args = Array.prototype.slice.call(arguments, 2);
   timeoutId += 1;
   delay = delay || 0;
   var id = timeoutId;
   timeouts[id] = {fn: fn, args: args};
-  worker.postMessage({command: "setTimeout", id: id, timeout: delay});
+  timeoutWorker.postMessage({command: "setTimeout", id: id, timeout: delay});
   return id;
 };
-
-window.myclearTimeout = function(id) {
-  worker.postMessage({command: "clearTimeout", id: id});
-  delete timeouts[id];
-};
-
-window.requestAnimFrame = window.requestAnimationFrame;
-window.addEventListener("load", onloadHandler);
-window.addEventListener("beforeunload", () => saveConfig())
 
 function onloadHandler() {
 	console.debug("onloadHandler");
@@ -506,7 +507,7 @@ function letsGo() {
                 });
             }
 			
-			enableSequencer(!!forward);
+			enableSequencer(!!forward && realGuitarStyle != "none");
 			if (realdrumLoop) setupRealDrums();
         }
         else {
