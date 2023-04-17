@@ -74,6 +74,36 @@ var content = [];
 var game = null;
 var pad = {buttons: [], axis: []};
 
+var timeoutId = 0;
+var timeouts = {};
+
+var worker = new Worker("timeout-worker.js");
+
+worker.addEventListener("message", function(evt) {
+  var data = evt.data,
+      id = data.id,
+      fn = timeouts[id].fn,
+      args = timeouts[id].args;
+
+  fn.apply(null, args);
+  delete timeouts[id];
+});
+
+window.mysetTimeout = function(fn, delay) {
+  var args = Array.prototype.slice.call(arguments, 2);
+  timeoutId += 1;
+  delay = delay || 0;
+  var id = timeoutId;
+  timeouts[id] = {fn: fn, args: args};
+  worker.postMessage({command: "setTimeout", id: id, timeout: delay});
+  return id;
+};
+
+window.myclearTimeout = function(id) {
+  worker.postMessage({command: "clearTimeout", id: id});
+  delete timeouts[id];
+};
+
 window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
 window.addEventListener("beforeunload", () => saveConfig())
@@ -1480,7 +1510,7 @@ function enableSequencer(flag) {
 
 		requestAnimFrame(draw);    // start the drawing loop.
 
-		timerWorker = new Worker("metronomeworker.js");
+		timerWorker = new Worker("metronome-worker.js");
 
 		timerWorker.onmessage = function(e) {
 			if (e.data == "tick") {

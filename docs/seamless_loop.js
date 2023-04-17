@@ -92,7 +92,7 @@ function SeamlessLoop() {
 	this._eventPlaying = function(audMute, id) {
 		if (this.cb_status) this.cb_status("_eventPlaying", id);
 		
-		setTimeout(function() {
+		mysetTimeout(function() {
 			audMute.pause();
 			try {
 				audMute.currentTime = 0;
@@ -100,7 +100,7 @@ function SeamlessLoop() {
 		}, t.stopDelay);
 		
 		if(t.dropOld == true) {
-			setTimeout(function() {
+			mysetTimeout(function() {
 				if(t.old.paused == false) {
 					t.old.pause();
 					try {
@@ -122,7 +122,7 @@ function SeamlessLoop() {
 		var antikey = (this.next == 1 ? "_2" : "_1");
 		
 		var t = this;
-		this.timeout = setTimeout(function() {t.doLoop();}, this.actual._length + this.playDelay);
+		this.timeout = mysetTimeout(function() {t.doLoop();}, this.actual._length + this.playDelay);
 		
 		if(this.is.opera) this.actual[antikey].pause();
 		
@@ -153,7 +153,7 @@ SeamlessLoop.prototype.volume = function(vol) {
 };
 
 SeamlessLoop.prototype.stop = function() {
-	clearTimeout(this.timeout);
+	myclearTimeout(this.timeout);
 	this.actual._1.currentTime = 0;
 	this.actual._1.pause();
 	this.actual._2.currentTime = 0;
@@ -178,7 +178,7 @@ SeamlessLoop.prototype.update = function(id, sync) {
 			this.dropOld = true;
 			if(this.is.opera) this.old.pause();
 		}
-		clearTimeout(this.timeout);
+		myclearTimeout(this.timeout);
 		this.doLoop();
 	}
 };
@@ -190,10 +190,10 @@ SeamlessLoop.prototype.addUri = function(uri, length, id, output) {
 	this.audios[id]._1_isLoaded = new Boolean();
 	this.audios[id]._2_isLoaded = new Boolean();
 	this.audios[id]._1 = new Audio(uri);
-	if (output) if (output) setTimeout(() => this.audios[id]._1.setSinkId(output.deviceId), 1000);
+	if (output) if (output) mysetTimeout(() => this.audios[id]._1.setSinkId(output.deviceId), 1000);
 	
 	this.audios[id]._2 = new Audio(uri);	
-	if (output) setTimeout(() => this.audios[id]._2.setSinkId(output.deviceId), 1000);
+	if (output) mysetTimeout(() => this.audios[id]._2.setSinkId(output.deviceId), 1000);
 	
 	this._total++;
 	this.audios[id]._1.addEventListener("canplaythrough", function() {t._eventCanplaythrough(t.audios[id]._1_isLoaded);});
