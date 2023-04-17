@@ -92,7 +92,7 @@ function SeamlessLoop() {
 	this._eventPlaying = function(audMute, id) {
 		if (this.cb_status) this.cb_status("_eventPlaying", id);
 		
-		mysetTimeout(function() {
+		setTimeout(function() {
 			audMute.pause();
 			try {
 				audMute.currentTime = 0;
@@ -100,7 +100,7 @@ function SeamlessLoop() {
 		}, t.stopDelay);
 		
 		if(t.dropOld == true) {
-			mysetTimeout(function() {
+			setTimeout(function() {
 				if(t.old.paused == false) {
 					t.old.pause();
 					try {
@@ -190,10 +190,10 @@ SeamlessLoop.prototype.addUri = function(uri, length, id, output) {
 	this.audios[id]._1_isLoaded = new Boolean();
 	this.audios[id]._2_isLoaded = new Boolean();
 	this.audios[id]._1 = new Audio(uri);
-	if (output) if (output) mysetTimeout(() => this.audios[id]._1.setSinkId(output.deviceId), 1000);
+	if (output) if (output) setTimeout(() => this.audios[id]._1.setSinkId(output.deviceId), 1000);
 	
 	this.audios[id]._2 = new Audio(uri);	
-	if (output) mysetTimeout(() => this.audios[id]._2.setSinkId(output.deviceId), 1000);
+	if (output) setTimeout(() => this.audios[id]._2.setSinkId(output.deviceId), 1000);
 	
 	this._total++;
 	this.audios[id]._1.addEventListener("canplaythrough", function() {t._eventCanplaythrough(t.audios[id]._1_isLoaded);});

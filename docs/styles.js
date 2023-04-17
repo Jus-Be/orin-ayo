@@ -166,7 +166,7 @@ var drum_loops = [
 {
 	name: "8beat-simple",
 	label: "8 Beat Simple (75)",
-	bpm: 100,
+	bpm: 75,
 	int1: {
 		drum: {
 			url: "assets/drumloops/beat_75/int1.wav",

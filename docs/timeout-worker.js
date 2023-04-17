@@ -7,7 +7,7 @@ function fireTimeout(id) {
 
 this.addEventListener("message", function(evt) {
   var data = evt.data;
-	console.debug("addEventListener", data);  
+	//console.debug("addEventListener", data);  
 
   switch (data.command) {
   case "setTimeout":
