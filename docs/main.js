@@ -746,7 +746,7 @@ function playChord(chord, root, type, bass) {
 		}
 		
 		if (bassLoop) {
-			bassLoop.update('key' + (chord[0] % 12), true);	
+			bassLoop.update('key' + (chord[0] % 12), true);	// TODO
 		}
 		
         activeChord = chord;
