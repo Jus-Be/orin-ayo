@@ -746,7 +746,7 @@ function playChord(chord, root, type, bass) {
 		}
 		
 		if (bassLoop) {
-			bassLoop.update('key' + (chord[0] % 12), true);	// TODO
+			bassLoop.update('key' + (chord[0] % 12), false);	// TODO
 		}
 		
         activeChord = chord;
@@ -1033,10 +1033,10 @@ function playSectionCheck() {
 	if (drumLoop && realdrumLoop) {
 		orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
 		
-		if (sectionChange == 0) drumLoop.update('arra', true);
-		if (sectionChange == 1) drumLoop.update('arrb', true);
-		if (sectionChange == 2) drumLoop.update('arrc', true);
-		if (sectionChange == 3) drumLoop.update('arrd', true);	
+		if (sectionChange == 0) drumLoop.update('arra', false);
+		if (sectionChange == 1) drumLoop.update('arrb', false);
+		if (sectionChange == 2) drumLoop.update('arrc', false);
+		if (sectionChange == 3) drumLoop.update('arrd', false);	
 	}
 	else {
 		changeArrSection();		
@@ -1312,7 +1312,7 @@ function toggleStartStop() {
 			drumLoop.update('arra', true);
 			
 			if (bassLoop) {
-				setTimeout(() => bassLoop.start("key" + (keyChange % 12)), realdrumLoop["int1"].drum.duration);
+				setTimeout(() => bassLoop.start("key" + (keyChange % 12)), realdrumLoop.drum.int1.stop);
 			}
 			
 		} else {
@@ -1637,21 +1637,14 @@ function scheduler() {
 }
 
 function setupRealDrums() {
-	drumLoop = new SeamlessLoop();
+	drumLoop = new AudioLooper();
 		
-	drumLoop.addUri(realdrumLoop["int1"].drum.url, realdrumLoop["int1"].drum.duration, 'int1', realdrumDevice);
-	drumLoop.addUri(realdrumLoop["end1"].drum.url, realdrumLoop["end1"].drum.duration, 'end1', realdrumDevice);
-	drumLoop.addUri(realdrumLoop["arra"].drum.url, realdrumLoop["arra"].drum.duration, 'arra', realdrumDevice);
-	drumLoop.addUri(realdrumLoop["arrb"].drum.url, realdrumLoop["arrb"].drum.duration, 'arrb', realdrumDevice);
-	drumLoop.addUri(realdrumLoop["arrc"].drum.url, realdrumLoop["arrc"].drum.duration, 'arrc', realdrumDevice);
-	drumLoop.addUri(realdrumLoop["arrd"].drum.url, realdrumLoop["arrd"].drum.duration, 'arrd', realdrumDevice);	
+	drumLoop.addUri(realdrumLoop.drum, realdrumDevice);
+	bassLoop = null;
 	
-	if (realdrumLoop["arra"].bass) {
-		bassLoop = new SeamlessLoop();
-		
-		for (let i in realdrumLoop["arra"].bass.urls) {
-			bassLoop.addUri(realdrumLoop["arra"].bass.urls[i], realdrumLoop["arra"].bass.duration, 'key' + i, realdrumDevice);		
-		}
+	if (realdrumLoop.bass) {
+		bassLoop = new AudioLooper();
+		bassLoop.addUri(realdrumLoop.bass, realdrumDevice);		
 	}
 		
 	drumLoop.callback(soundsLoaded, eventStatus);	
@@ -1672,7 +1665,7 @@ function eventStatus(event, id) {
 		
 		if (id == "int1") orinayo_section.innerHTML = SECTIONS[4];
 		if (id == "end1") orinayo_section.innerHTML = SECTIONS[5];			
-			
+/*			
 		if (id == "end1") {
 			if (bassLoop) bassLoop.stop();			
 			
@@ -1680,5 +1673,6 @@ function eventStatus(event, id) {
 				drumLoop.stop();				
 			}, realdrumLoop["end1"].drum.duration - 1000);
 		}
+*/		
 	}
 }
