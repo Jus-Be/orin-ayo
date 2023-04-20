@@ -3,13 +3,11 @@ function AudioLooper() {
 	this.cb_status = null;
     this.audioContext = new AudioContext();	
 		
-	this.doLoop = function() {	
-		console.log("doLoop starts", this.id);
-		
-		const start =  this.loop[this.id].start /1000;
-		const end = this.loop[this.id].stop / 1000;
-		const duration = end - start;
-		
+	this.doLoop = function(id, beginTime, howLong) {			
+		if (id != this.id) return;
+
+		console.log("doLoop starts", id, this.id, howLong);
+				
 		this.source = this.audioContext.createBufferSource();
 		this.source.loop = false;		
 		this.source.buffer = this.sample;	
@@ -17,51 +15,71 @@ function AudioLooper() {
 		this.gainNode.gain.value = 1;
 		this.gainNode.connect(this.audioContext.destination)		
 		this.source.connect(this.gainNode);
-		this.source.start(this.audioContext.currentTime, start, duration);		
-		this.startTime = this.audioContext.currentTime;	
+		this.startTime = this.audioContext.currentTime - this.offset;			
+		this.source.start(this.startTime, (beginTime + this.offset), (howLong - this.offset));		
 		
-		if (this.cb_status) this.cb_status("_eventPlaying", this.id);
-		if (this.id == "end1") this.looping = false;			
+		if (this.cb_status) this.cb_status("_eventPlaying", id);
+		if (id == "end1") this.looping = false;			
 		
 		this.source.addEventListener("ended", () => {
-			console.log("doLoop ends", this.id, this.loop[this.id].start /1000, this.loop[this.id].stop / 1000);	
-			if (this.cb_status) this.cb_status("_eventEnded", this.id);
-			this.source.stop();	
-						
-			if (this.looping) this.doLoop();				
+			console.log("doLoop ends", id, this.id);	
+			if (this.cb_status) this.cb_status("_eventEnded", id);	
+			
+			const beginTime =  this.loop[this.id].start /1000;
+			const endTime = this.loop[this.id].stop / 1000;
+			const howLong = endTime - beginTime;
+	
+			if (this.looping && this.offset == 0) this.doLoop(this.id, beginTime, howLong);	
+			this.offset = 0;			
 		});		
 	};
 }
 
 
 AudioLooper.prototype.update = function(id, sync) {
-	this.prevId = this.id;
+	if (id == this.id) return;
+	
 	this.id = id;
-	this.sync = sync;
+
+	const beginTime =  this.loop[this.id].start /1000;
+	const endTime = this.loop[this.id].stop / 1000;
+	const howLong = endTime - beginTime;
 	
-	const cycle = this.loop.arra.stop - this.loop.arra.start;
-	const duration = ((this.audioContext.currentTime - this.startTime ) * 1000) - this.loop.int1.stop;
-	const beat = duration % cycle;
-	const ratio = beat / cycle;	
+	const cycle = howLong * 1000;
+	const duration = ((this.audioContext.currentTime - this.startTime ) * 1000);
 	
-	console.debug("update", id, this.source.buffer.duration, duration, beat, cycle, ratio, this.loop[this.id].start, this.loop[this.id].stop);
+	console.debug("update", id, cycle, duration);
 		
 	if (this.source) {
 		
-		if (sync || true) {	
-
+		if (sync || duration == cycle || duration == 0) {	
+			this.offset = 0;
 		} else {
+			this.offset = (duration  / 1000) + 0.000;
+
+			const old = this.source;
+			const gain = this.gainNode.gain;			
 			
+			this.doLoop(id, beginTime, howLong);
+
+			gain.value = 0;			
+			old.stop();
 		}
 	}
 };
 
 AudioLooper.prototype.start = function(id) {
-	this.looping = true;	
-	console.debug("AudioLooper start");
+	this.looping = true;
+	this.offset = 0;
+	this.id = id;	
+
+	const beginTime =  this.loop[this.id].start /1000;
+	const endTime = this.loop[this.id].stop / 1000;
+	const howLong = endTime - beginTime;	
 	
-	this.id = id;
-	if (this.sample) this.doLoop();
+	console.debug("AudioLooper start");
+
+	if (this.sample) this.doLoop(id, beginTime, howLong);
 };
 
 AudioLooper.prototype.volume = function(vol) {

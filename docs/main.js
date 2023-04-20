@@ -1322,9 +1322,9 @@ function toggleStartStop() {
 			} else {
 				orinayo_section.innerHTML = "End 1";						
 				drumLoop.stop();
-				
-				if (bassLoop) bassLoop.stop();
-			}					
+			}
+			
+			if (bassLoop) bassLoop.stop();			
 		}
 		styleStarted = !styleStarted;				
 	}
