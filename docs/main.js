@@ -1318,7 +1318,7 @@ function toggleStartStop() {
 		} else {
 			if (pad.buttons[YELLOW]) {	
 				orinayo_section.innerHTML = ">End 1";					
-				drumLoop.update('end1', true);	
+				drumLoop.update('end1', false);	
 			} else {
 				orinayo_section.innerHTML = "End 1";						
 				drumLoop.stop();
@@ -1639,12 +1639,12 @@ function scheduler() {
 function setupRealDrums() {
 	drumLoop = new AudioLooper();
 		
-	drumLoop.addUri(realdrumLoop.drum, realdrumDevice);
+	drumLoop.addUri(realdrumLoop.drum, realdrumDevice, realdrumLoop.bpm);
 	bassLoop = null;
 	
 	if (realdrumLoop.bass) {
 		bassLoop = new AudioLooper();
-		bassLoop.addUri(realdrumLoop.bass, realdrumDevice);		
+		bassLoop.addUri(realdrumLoop.bass, realdrumDevice, realdrumLoop.bpm);		
 	}
 		
 	drumLoop.callback(soundsLoaded, eventStatus);	
