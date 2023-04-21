@@ -10,12 +10,13 @@ function AudioLooper() {
 				
 		this.source = this.audioContext.createBufferSource();		
 		this.source.buffer = this.sample;	
-		this.gainNode = this.audioContext.createGain()
+		this.gainNode = this.audioContext.createGain();
 		this.gainNode.gain.value = 1;
+		//this.gainNode.gain.exponentialRampToValueAtTime(1.0, this.audioContext.currentTime + 0.25);			
 		this.gainNode.connect(this.audioContext.destination)		
-		this.source.connect(this.gainNode);
+		this.source.connect(this.gainNode);		
 		this.startTime = this.audioContext.currentTime - this.offset;			
-		this.source.start(this.audioContext.currentTime, (beginTime + this.offset), (howLong - this.offset));
+		this.source.start(this.audioContext.currentTime, (beginTime + this.offset), (howLong - this.offset));			
 		
 		if (this.cb_status) this.cb_status("_eventPlaying", id);
 		if (id == "end1") this.looping = false;			
@@ -42,7 +43,7 @@ function AudioLooper() {
 
 
 AudioLooper.prototype.update = function(id, sync) {
-	if (id == this.id) return;
+	//if (id == this.id) return;
 		
 	if (this.source) {
 		
@@ -69,8 +70,10 @@ AudioLooper.prototype.update = function(id, sync) {
 			const gain = this.gainNode.gain;		
 			const old = this.source;					
 			this.doLoop(id, beginTime, howLong);
-			gain.value = 0;
-			old.stop();	
+			old.stop();
+			
+			//gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.25);				
+			//old.stop(this.audioContext.currentTime + 0.25);	
 
 			//gain.value = 0;
 			//const when = this.audioContext.currentTime + 1;
