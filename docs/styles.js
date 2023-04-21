@@ -118,6 +118,92 @@ var drum_loops = [
 	}	
 },
 {
+	name: "ballad90",
+	label: "Ballad Guitar",
+	bpm: 90,
+	drum: {
+		url: "assets/drumloops/ballad90.ogg",
+		duration: 96000,
+		int1: {
+			start: 0,
+			stop: 2667
+		},
+		arra: {
+			start: 2667,
+			stop: 24000
+		},	
+		arrb: {
+			start: 24000,
+			stop:  45333
+		},	
+		arrc: {
+			start: 45333,
+			stop:  66667
+		},	
+		arrd: {
+			start: 66667,
+			stop:  88000
+		},	
+		end1: {
+			start: 88000,
+			stop:  96000
+		}		
+	},
+	
+	bass: {
+		url: "assets/bassloops/ballad90.ogg",
+		duration: 128000,
+		key0: {
+			start: 0,
+			stop: 10667
+		},
+		key1: {
+			start: 10667,
+			stop: 21333
+		},	
+		key2: {
+			start: 21333,
+			stop:  32000
+		},	
+		key3: {
+			start: 32000,
+			stop:  42667
+		},	
+		key4: {
+			start: 42667,
+			stop:  53333
+		},	
+		key5: {
+			start: 53333,
+			stop:  64000
+		},
+		key6: {
+			start: 64000,
+			stop:  74667
+		},
+		key7: {
+			start: 74667,
+			stop:  85333
+		},	
+		key8: {
+			start: 85333,
+			stop:  96000
+		},	
+		key9: {
+			start: 96000,
+			stop:  106667
+		},	
+		key10: {
+			start: 106667,
+			stop:  117333
+		},	
+		key11: {
+			start: 117333,
+			stop:  128000
+		}		
+	}	
+},
+{
 	name: "bolero90",
 	label: "Bolero Guitar",
 	bpm: 90,
