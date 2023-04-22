@@ -532,6 +532,11 @@ function saveConfig() {
 
 function doBreak() {
 	console.debug("doBreak " + arranger);	
+	
+	if (arranger == "webaudio" && realdrumLoop) {
+
+	}
+	else
 		
 	if (arranger == "ketron") {
 		sendKetronSysex(0x0B + sectionChange);		
@@ -559,8 +564,13 @@ function doBreak() {
 }
 
 function doFill() {
-	console.debug("doFill " + arranger);		
+	console.debug("doFill " + arranger);
 	
+	if (arranger == "webaudio" &&  realdrumLoop) {
+
+	}
+	else
+			
 	if (arranger == "ketron") {
 		sendKetronSysex(0x07 + sectionChange);		
 	}
@@ -682,55 +692,53 @@ function doYamahaFill() {
 	}		
 }
 
-function checkForFillOrBreak() {
-	if (output) {
-		//console.debug("GREEN Touch", pad.axis[TOUCH]);	
-		
-		if (pad.axis[TOUCH] == -0.7 || pad.axis[TOUCH] == -0.8) { 
-			console.debug("GREEN Touch");		
+function checkForTouchArea() {
+	//console.debug("GREEN Touch", pad.axis[TOUCH] == -0.7);	
+	
+	if (pad.axis[TOUCH] == -0.7 || pad.axis[TOUCH] == -0.8) { 
+		console.debug("GREEN Touch");		
 
-			if (pad.axis[STRUM] == STRUM_UP) {
-				doBreak();			
-			}
-			else
-				
-			if (pad.axis[STRUM] == STRUM_DOWN) {
-				doFill();
-			}
+		if (pad.axis[STRUM] == STRUM_UP) {
+			doBreak();			
 		}
 		else
 			
-		if (pad.axis[TOUCH] == -0.4 || pad.axis[TOUCH] == -0.3) { 
-			console.debug("RED Touch");		
-
-			if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(9);	// FSW 9
-			if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(8);	// FSW-8
+		if (pad.axis[STRUM] == STRUM_DOWN) {
+			doFill();
 		}
-		else
-			
-		if (pad.axis[TOUCH] == 0.2 || pad.axis[TOUCH] == 0.1) { 
-			console.debug("YELLOW Touch");		
-
-			if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(11);	// FSW 11
-			if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(10);	// FSW-10
-		}		
-		else
-			
-		if (pad.axis[TOUCH] == 0.4 || pad.axis[TOUCH] == 0.5) { 
-			console.debug("BLUE Touch");		
-
-			if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(13);	// FSW 13
-			if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(12);	// FSW-12
-		}		
-		else
-			
-		if (pad.axis[TOUCH] == 1.0) { 
-			console.debug("ORANGE Touch");	
-				
-			if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(7);	// FSW 7
-			if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(6);	// FSW-6
-		}			
 	}
+	else
+		
+	if (pad.axis[TOUCH] == -0.4 || pad.axis[TOUCH] == -0.3) { 
+		console.debug("RED Touch");		
+
+		if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(9);	// FSW 9
+		if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(8);	// FSW-8
+	}
+	else
+		
+	if (pad.axis[TOUCH] == 0.2 || pad.axis[TOUCH] == 0.1) { 
+		console.debug("YELLOW Touch");		
+
+		if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(11);	// FSW 11
+		if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(10);	// FSW-10
+	}		
+	else
+		
+	if (pad.axis[TOUCH] == 0.4 || pad.axis[TOUCH] == 0.5) { 
+		console.debug("BLUE Touch");		
+
+		if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(13);	// FSW 13
+		if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(12);	// FSW-12
+	}		
+	else
+		
+	if (pad.axis[TOUCH] == 1.0) { 
+		console.debug("ORANGE Touch");	
+			
+		if (pad.axis[STRUM] == STRUM_UP) pressFootSwitch(7);	// FSW 7
+		if (pad.axis[STRUM] == STRUM_DOWN) pressFootSwitch(6);	// FSW-6
+	}			
 }
 
 function playChord(chord, root, type, bass) {
@@ -942,8 +950,18 @@ function sendKetronSysex(code) {
 }
 
 function pressFootSwitch(code) {
+	console.debug("pressFootSwitch", code)	
+		
+	if (arranger == "webaudio" && realdrumLoop) {
+		if (code == 7 && drumLoop) drumLoop.muteToggle();
+		if (code == 6 && chordLoop) chordLoop.muteToggle();		
+		if (code == 6 && bassLoop) bassLoop.muteToggle();	
+		if (code == 9 && chordLoop) chordLoop.muteToggle();		
+		if (code == 8 && bassLoop) bassLoop.muteToggle();		
+	}
+	else	
+	
     if (output) { 
-        console.debug("pressFootSwitch", code)	
 		output.sendSysex(0x26, [0x7C, 0x05, 0x01, 0x55 + code, 0x7F]);
 		
 		setTimeout(() => {
@@ -1128,7 +1146,7 @@ function doChord() {
   }  
 
    if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN)) {
-		checkForFillOrBreak();
+		checkForTouchArea();
    }
 
   if ((pad.axis[STRUM] != STRUM_UP && pad.axis[STRUM] != STRUM_DOWN)) return;

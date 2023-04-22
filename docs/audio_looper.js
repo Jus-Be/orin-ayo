@@ -28,11 +28,11 @@ function AudioLooper() {
 		this.startTime = this.audioContext.currentTime - this.offset;
 
 		this.gainNode.gain.setValueAtTime(0.01, this.audioContext.currentTime);
-		this.gainNode.gain.exponentialRampToValueAtTime(0.75, this.audioContext.currentTime + 0.01);	
+		this.gainNode.gain.exponentialRampToValueAtTime(this.vol, this.audioContext.currentTime + 0.01);	
 		
 		this.source.start(this.audioContext.currentTime, (beginTime + this.offset), (howLong - this.offset));	
 
-		this.gainNode.gain.setValueAtTime(0.75, this.audioContext.currentTime + howLong - this.offset - 0.01);
+		this.gainNode.gain.setValueAtTime(this.vol, this.audioContext.currentTime + howLong - this.offset - 0.01);
 		this.gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + howLong - this.offset);			
 		
 		if (this.cb_status) this.cb_status("_eventPlaying", id);
@@ -59,6 +59,25 @@ function AudioLooper() {
 	};
 }
 
+AudioLooper.prototype.muteToggle = function(id) {
+
+	if (this.vol == 0.0001) {
+		this.unmute();
+	} else {
+		this.mute();
+	}
+}
+
+AudioLooper.prototype.mute = function(id) {
+	this.prevVol = this.vol;	
+	this.vol = 0.0001;
+	this.gainNode.gain.exponentialRampToValueAtTime(this.vol, this.audioContext.currentTime + 0.5);	
+}
+
+AudioLooper.prototype.unmute = function(id) {
+	this.vol = this.prevVol;	
+	this.gainNode.gain.exponentialRampToValueAtTime(this.vol, this.audioContext.currentTime + 0.5);	
+}
 
 AudioLooper.prototype.update = function(id, sync) {
 		
@@ -96,7 +115,9 @@ AudioLooper.prototype.start = function(id) {
 	this.looping = true;
 	this.reloop = true;
 	this.offset = 0;
-	this.id = id;	
+	this.id = id;
+	this.vol = vol = 0.75;
+	this.prevVol = this.vol;
 
 	const loop = this.getLoop(this.id);
 	const beginTime =  loop.start /1000;
@@ -109,7 +130,8 @@ AudioLooper.prototype.start = function(id) {
 };
 
 AudioLooper.prototype.volume = function(vol) {
-	if(typeof vol != "undefined") {
+	if (typeof vol != "undefined") {
+		this.vol = vol;
 		
 		if (this?.gainNode) {
 			this.gainNode.gain.value = vol;
