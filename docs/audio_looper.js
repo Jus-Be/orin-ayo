@@ -18,6 +18,8 @@ function AudioLooper() {
 		//if (id != this.id) return;
 
 		//console.log("doLoop starts", id, this.id, howLong);
+		
+		if (id == "end1")  this.offset = 0; 
 				
 		this.source = this.audioContext.createBufferSource();		
 		this.source.buffer = this.sample;	
@@ -35,12 +37,22 @@ function AudioLooper() {
 		this.gainNode.gain.setValueAtTime(this.vol, this.audioContext.currentTime + howLong - this.offset - 0.01);
 		this.gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + howLong - this.offset);			
 		
-		if (this.cb_status) this.cb_status("_eventPlaying", id);
-		if (id == "end1") this.looping = false;			
+		if (this.cb_status) this.cb_status("_eventPlaying", id); 		
 		
 		this.source.addEventListener("ended", () => {
-			console.log("doLoop ends", id, this.id, this.reloop);	
+			console.log("doLoop ends", id, id, this.reloop);	
+			
 			if (this.cb_status) this.cb_status("_eventEnded", id);	
+			
+			if (this.id == "int1") 	this.id = "arra";	
+			
+			if (id == "end1") 	{
+				this.looping = false;	
+				this.mute();
+				this.source.stop();
+			}
+			
+			if (this.id.startsWith("fil") || this.id.startsWith("brk")) this.id = "arr" + this.id.substring(3);					
 			
 			const loop = this.getLoop(this.id);
 			const beginTime =  loop.start /1000;

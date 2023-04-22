@@ -533,8 +533,21 @@ function saveConfig() {
 function doBreak() {
 	console.debug("doBreak " + arranger);	
 	
-	if (arranger == "webaudio" && realdrumLoop) {
-
+	if (arranger == "webaudio" && realdrumLoop) 
+	{
+		if (sectionChange == 0) {
+			drumLoop.update('brka', false);		
+		}
+		if (sectionChange == 1) {
+			drumLoop.update('brkb', false);			
+		}
+		if (sectionChange == 2) {
+			drumLoop.update('brkc', false);			
+		}
+		
+		if (sectionChange == 3) {
+			drumLoop.update('brkd', false);			
+		}
 	}
 	else
 		
@@ -567,7 +580,10 @@ function doFill() {
 	console.debug("doFill " + arranger);
 	
 	if (arranger == "webaudio" &&  realdrumLoop) {
-
+		if (sectionChange == 0) drumLoop.update('fila', false);
+		if (sectionChange == 1) drumLoop.update('filb', false);
+		if (sectionChange == 2) drumLoop.update('filc', false);
+		if (sectionChange == 3) drumLoop.update('fild', false);
 	}
 	else
 			
@@ -1058,10 +1074,10 @@ function playSectionCheck() {
 	if (drumLoop && realdrumLoop) {
 		orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
 		
-		if (sectionChange == 0) drumLoop.update('arra', false);
-		if (sectionChange == 1) drumLoop.update('arrb', false);
-		if (sectionChange == 2) drumLoop.update('arrc', false);
-		if (sectionChange == 3) drumLoop.update('arrd', false);	
+		if (sectionChange == 0) drumLoop.update(arrChanged ? 'arra': 'fila', false);
+		if (sectionChange == 1) drumLoop.update(arrChanged ? 'arrb': 'filb', false);
+		if (sectionChange == 2) drumLoop.update(arrChanged ? 'arrc': 'filc', false);
+		if (sectionChange == 3) drumLoop.update(arrChanged ? 'arrd': 'fild', false);	
 	}
 	else {
 		changeArrSection();		
@@ -1334,7 +1350,6 @@ function toggleStartStop() {
 		if (!styleStarted) {
 			orinayo_section.innerHTML = ">Arr A";	
 			drumLoop.start('int1');
-			drumLoop.update('arra', true);
 			
 			setTimeout(() => {
 				if (bassLoop) bassLoop.start("key" + (keyChange % 12));

@@ -5,7 +5,7 @@ var drum_loops = [
 	bpm: 100,
 	drums: {
 		url: "assets/drums/8beat.ogg",
-		duration: 86399,
+		duration: 105599,
 		int1: {
 			start: 0,
 			stop: 2399
@@ -29,7 +29,39 @@ var drum_loops = [
 		end1: {
 			start: 79199,
 			stop:  86399
-		}		
+		},
+		brka: {
+			start: 86399,
+			stop:  88799
+		},	
+		brkb: {
+			start: 88799,
+			stop:  91199
+		},	
+		brkc: {
+			start: 91199,
+			stop:  93599
+		},	
+		brkd: {
+			start: 93599,
+			stop:  95999
+		},	
+		fila: {
+			start: 95999,
+			stop:  98399
+		},	
+		filb: {
+			start: 98399,
+			stop:  100799
+		},	
+		filc: {
+			start: 100799,
+			stop:  103199
+		},	
+		fild: {
+			start: 103199,
+			stop:  105599
+		}			
 	}
 },
 {
@@ -38,7 +70,7 @@ var drum_loops = [
 	bpm: 75,
 	drums: {
 		url: "assets/drums/beat75.ogg",
-		duration: 60800,
+		duration: 86400,
 		int1: {
 			start: 0,
 			stop: 3200
@@ -62,6 +94,38 @@ var drum_loops = [
 		end1: {
 			start: 54400,
 			stop:  60800
+		},
+		brka: {
+			start: 60800,
+			stop:  64000
+		},	
+		brkb: {
+			start: 64000,
+			stop:  67200
+		},	
+		brkc: {
+			start: 67200,
+			stop:  70400
+		},	
+		brkd: {
+			start: 70400,
+			stop:  73600
+		},	
+		fila: {
+			start: 73600,
+			stop:  76800
+		},	
+		filb: {
+			start: 76800,
+			stop:  80000
+		},	
+		filc: {
+			start: 80000,
+			stop:  83200
+		},	
+		fild: {
+			start: 83200,
+			stop:  86400
 		}		
 	},	
 	bass: {
@@ -123,7 +187,7 @@ var drum_loops = [
 	bpm: 90,
 	drums: {
 		url: "assets/drums/ballad90.ogg",
-		duration: 96000,
+		duration: 117333,
 		int1: {
 			start: 0,
 			stop: 2667
@@ -147,6 +211,38 @@ var drum_loops = [
 		end1: {
 			start: 88000,
 			stop:  96000
+		},
+		brka: {
+			start: 96000,
+			stop:  98667
+		},	
+		brkb: {
+			start: 98667,
+			stop:  101333
+		},	
+		brkc: {
+			start: 101333,
+			stop:  104000
+		},	
+		brkd: {
+			start: 104000,
+			stop:  106667
+		},	
+		fila: {
+			start: 106667,
+			stop:  109333
+		},	
+		filb: {
+			start: 109333,
+			stop:  112000
+		},	
+		filc: {
+			start: 112000,
+			stop:  114667
+		},	
+		fild: {
+			start: 114667,
+			stop:  117333
 		}		
 	},	
 	chords: {
@@ -304,7 +400,7 @@ var drum_loops = [
 	bpm: 90,
 	drums: {
 		url: "assets/drums/bolero90.ogg",
-		duration: 93333,
+		duration: 114667,
 		int1: {
 			start: 0,
 			stop: 2667
@@ -328,6 +424,38 @@ var drum_loops = [
 		end1: {
 			start: 88000,
 			stop:  93333
+		},
+		brka: {
+			start: 93333,
+			stop:  96000
+		},	
+		brkb: {
+			start: 96000,
+			stop:  98677
+		},	
+		brkc: {
+			start: 98677,
+			stop:  101333
+		},	
+		brkd: {
+			start: 101333,
+			stop:  100400
+		},	
+		fila: {
+			start: 100400,
+			stop:  106667
+		},	
+		filb: {
+			start: 106667,
+			stop:  109333
+		},	
+		filc: {
+			start: 109333,
+			stop:  112000
+		},	
+		fild: {
+			start: 112000,
+			stop:  114667
 		}		
 	},
 	
