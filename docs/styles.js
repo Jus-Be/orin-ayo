@@ -3,8 +3,8 @@ var drum_loops = [
 	name: "8beat",
 	label: "8 Beat Standard",
 	bpm: 100,
-	drum: {
-		url: "assets/drumloops/8beat.ogg",
+	drums: {
+		url: "assets/drums/8beat.ogg",
 		duration: 86399,
 		int1: {
 			start: 0,
@@ -36,8 +36,8 @@ var drum_loops = [
 	name: "beat75",
 	label: "8 Beat with Bass Simple",
 	bpm: 75,
-	drum: {
-		url: "assets/drumloops/beat75.ogg",
+	drums: {
+		url: "assets/drums/beat75.ogg",
 		duration: 60800,
 		int1: {
 			start: 0,
@@ -65,7 +65,7 @@ var drum_loops = [
 		}		
 	},	
 	bass: {
-		url: "assets/bassloops/beat75.ogg",
+		url: "assets/bass/beat75.ogg",
 		duration: 76800,
 		key0: {
 			start: 0,
@@ -121,8 +121,8 @@ var drum_loops = [
 	name: "ballad90",
 	label: "Ballad Guitar",
 	bpm: 90,
-	drum: {
-		url: "assets/drumloops/ballad90.ogg",
+	drums: {
+		url: "assets/drums/ballad90.ogg",
 		duration: 96000,
 		int1: {
 			start: 0,
@@ -148,11 +148,10 @@ var drum_loops = [
 			start: 88000,
 			stop:  96000
 		}		
-	},
-	
-	bass: {
-		url: "assets/bassloops/ballad90.ogg",
-		duration: 128000,
+	},	
+	chords: {
+		url: "assets/chords/ballad90.ogg",
+		duration: 320000,
 		key0: {
 			start: 0,
 			stop: 10667
@@ -200,6 +199,102 @@ var drum_loops = [
 		key11: {
 			start: 117333,
 			stop:  128000
+		},
+		key0_min: {
+			start: 128000,
+			stop:  138667
+		},
+		key1_min: {
+			start: 138667,
+			stop:  149333
+		},	
+		key2_min: {
+			start: 149333,
+			stop:  160000
+		},	
+		key3_min: {
+			start: 160000,
+			stop:  170667
+		},	
+		key4_min: {
+			start: 170667,
+			stop:  181333
+		},	
+		key5_min: {
+			start: 181333,
+			stop:  192000
+		},
+		key6_min: {
+			start: 192000,
+			stop:  202667
+		},
+		key7_min: {
+			start: 202667,
+			stop:  213333
+		},	
+		key8_min: {
+			start: 213333,
+			stop:  224000 
+		},	
+		key9_min: {
+			start: 224000,
+			stop:  234667
+		},	
+		key10_min: {
+			start: 234667,
+			stop:  245333
+		},	
+		key11_min: {
+			start: 245333,
+			stop:  256000
+		},
+		key0_sus: {
+			start: 256000,
+			stop:  261333
+		},
+		key1_sus: {
+			start: 261333,
+			stop:  266666
+		},	
+		key2_sus: {
+			start: 266666,
+			stop:  271999
+		},	
+		key3_sus: {
+			start: 271999,
+			stop:  277332
+		},	
+		key4_sus: {
+			start: 277332,
+			stop:  282665
+		},	
+		key5_sus: {
+			start: 282665,
+			stop:  287998
+		},
+		key6_sus: {
+			start: 287998,
+			stop:  293331
+		},
+		key7_sus: {
+			start: 293331,
+			stop:  298664
+		},	
+		key8_sus: {
+			start: 298664,
+			stop:  303998 
+		},	
+		key9_sus: {
+			start: 303998,
+			stop:  309332
+		},	
+		key10_sus: {
+			start: 309332,
+			stop:  314666
+		},	
+		key11_sus: {
+			start: 314666,
+			stop:  320000
 		}		
 	}	
 },
@@ -207,8 +302,8 @@ var drum_loops = [
 	name: "bolero90",
 	label: "Bolero Guitar",
 	bpm: 90,
-	drum: {
-		url: "assets/drumloops/bolero90.ogg",
+	drums: {
+		url: "assets/drums/bolero90.ogg",
 		duration: 93333,
 		int1: {
 			start: 0,
@@ -236,8 +331,8 @@ var drum_loops = [
 		}		
 	},
 	
-	bass: {
-		url: "assets/bassloops/bolero90.ogg",
+	chords: {
+		url: "assets/chords/bolero90.ogg",
 		duration: 128000,
 		key0: {
 			start: 0,

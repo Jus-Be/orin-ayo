@@ -1,6 +1,7 @@
 const BASE = 48;
 const KEYS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 const SECTIONS = ["Arr A", "Arr B", "Arr C", "Arr D", "Intro 1", "End 1"];
+const SECTION_IDS = ["arra", "arrb", "arrc", "arrd"]
 
 const STRUM_NEUTRAL =  1.2857;
 const STRUM_UP = -1.0000;
@@ -22,6 +23,7 @@ const LOGO = 12;
 
 var bassLoop = null;
 var drumLoop = null;
+var chordLoop = null;
 var realdrumLoop = null;
 var realdrumDevice = null;
 var arranger = "ketron";
@@ -286,19 +288,21 @@ function letsGo() {
 		realguitar.selectedIndex = realGuitarIndex;			
 		realGuitarStyle = config.realGuitarStyle;				
 
-		const arrangerType =  document.getElementById("arrangerType");			
-		arrangerType.options[0] = new Option("Ketron SD/Event", "ketron", config.arranger == "ketron");
-		arrangerType.options[1] = new Option("Yamaha MODX", "modx", config.arranger == "modx");
-		arrangerType.options[2] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
-		arrangerType.options[3] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");	
-		arrangerType.options[4] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
-		arrangerType.options[5] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");				
+		const arrangerType =  document.getElementById("arrangerType");	
+		arrangerType.options[0] = new Option("Web Audio Files", "webaudio", config.arranger == "webaudio");		
+		arrangerType.options[1] = new Option("Ketron SD/Event", "ketron", config.arranger == "ketron");
+		arrangerType.options[2] = new Option("Yamaha MODX", "modx", config.arranger == "modx");
+		arrangerType.options[3] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
+		arrangerType.options[4] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");	
+		arrangerType.options[5] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
+		arrangerType.options[6] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");				
 		let arrangerIndex = 0;
-		arrangerIndex = config.arranger == "modx" ? 1 : arrangerIndex;
-		arrangerIndex = config.arranger == "montage" ? 2 : arrangerIndex;
-		arrangerIndex = config.arranger == "qy100" ? 3 : arrangerIndex;			
-		arrangerIndex = config.arranger == "microarranger" ? 4 : arrangerIndex;				
-		arrangerIndex = config.arranger == "giglad" ? 5 : arrangerIndex;				
+		arrangerIndex = config.arranger == "ketron" ? 1 : arrangerIndex;
+		arrangerIndex = config.arranger == "modx" ? 2 : arrangerIndex;		
+		arrangerIndex = config.arranger == "montage" ? 3 : arrangerIndex;
+		arrangerIndex = config.arranger == "qy100" ? 4 : arrangerIndex;			
+		arrangerIndex = config.arranger == "microarranger" ? 5 : arrangerIndex;				
+		arrangerIndex = config.arranger == "giglad" ? 6 : arrangerIndex;				
 		arrangerType.selectedIndex = arrangerIndex;			
 		arranger = config.arranger;					
 	   
@@ -744,10 +748,13 @@ function playChord(chord, root, type, bass) {
 			const transposedBass = transposeNote(bass);
 			chordTracker.sendSysex(0x43, [0x7E, 0x02, trasposedRoot, type, transposedBass, type]);				
 		}
+		const chordNote = (chord.length == 4 ? chord[1] : chord[0]) % 12;
+		const chordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : "maj"))
+		const key = "key" + chordNote + "_" + chordType + "_" + SECTION_IDS[sectionChange];
+		const bassKey = "key" + (chord[0] % 12) + "_" + chordType + "_" + SECTION_IDS[sectionChange];
 		
-		if (bassLoop) {
-			bassLoop.update('key' + (chord[0] % 12), false);	// TODO
-		}
+		if (bassLoop) bassLoop.update(bassKey, false);
+		if (chordLoop) chordLoop.update(key, false);		
 		
         activeChord = chord;
    }
@@ -1311,9 +1318,10 @@ function toggleStartStop() {
 			drumLoop.start('int1');
 			drumLoop.update('arra', true);
 			
-			if (bassLoop) {
-				setTimeout(() => bassLoop.start("key" + (keyChange % 12)), realdrumLoop.drum.int1.stop);
-			}
+			setTimeout(() => {
+				if (bassLoop) bassLoop.start("key" + (keyChange % 12));
+				if (chordLoop) chordLoop.start("key" + (keyChange % 12));			
+			}, realdrumLoop.drums.int1.stop);
 			
 		} else {
 			if (pad.buttons[YELLOW]) {	
@@ -1325,6 +1333,7 @@ function toggleStartStop() {
 			}
 			
 			if (bassLoop) bassLoop.stop();			
+			if (chordLoop) chordLoop.stop();				
 		}
 		styleStarted = !styleStarted;				
 	}
@@ -1638,16 +1647,23 @@ function scheduler() {
 
 function setupRealDrums() {
 	drumLoop = new AudioLooper();
-		
-	drumLoop.addUri(realdrumLoop.drum, realdrumDevice, realdrumLoop.bpm);
+	drumLoop.callback(soundsLoaded, eventStatus);				
+	drumLoop.addUri(realdrumLoop.drums, realdrumDevice, realdrumLoop.bpm);
+	
 	bassLoop = null;
+	chordLoop = null;
 	
 	if (realdrumLoop.bass) {
 		bassLoop = new AudioLooper();
+		bassLoop.callback(soundsLoaded, eventStatus);		
 		bassLoop.addUri(realdrumLoop.bass, realdrumDevice, realdrumLoop.bpm);		
 	}
-		
-	drumLoop.callback(soundsLoaded, eventStatus);	
+	
+	if (realdrumLoop.chords) {
+		chordLoop = new AudioLooper();
+		chordLoop.callback(soundsLoaded, eventStatus);		
+		chordLoop.addUri(realdrumLoop.chords, realdrumDevice, realdrumLoop.bpm);		
+	}	
 }
 
 function soundsLoaded() {
@@ -1671,7 +1687,7 @@ function eventStatus(event, id) {
 			
 			setTimeout(() => {
 				drumLoop.stop();				
-			}, realdrumLoop["end1"].drum.duration - 1000);
+			}, realdrumLoop["end1"].drums.duration - 1000);
 		}
 */		
 	}

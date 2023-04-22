@@ -2,8 +2,19 @@ function AudioLooper() {
 	this.cb_loaded = null;
 	this.cb_status = null;
     this.audioContext = new AudioContext();	
+
+	this.getLoop = function(id) {	// key0 OR key0_maj OR key0_min_arra
+		const keys = id.split("_");
 		
-	this.doLoop = function(id, beginTime, howLong) {			
+		let key = keys[0] + "_" + keys[1] + "_" + keys[2];
+		if (!this.loop[key]) key = keys[0] + "_" + keys[1];
+		if (!this.loop[key]) key = keys[0];
+		const loop = this.loop[key];
+		console.log("getLoop", id, key, loop);		
+		return loop;		
+	};
+		
+	this.doLoop = function(id, beginTime, howLong) {		
 		//if (id != this.id) return;
 
 		//console.log("doLoop starts", id, this.id, howLong);
@@ -31,8 +42,9 @@ function AudioLooper() {
 			console.log("doLoop ends", id, this.id, this.reloop);	
 			if (this.cb_status) this.cb_status("_eventEnded", id);	
 			
-			const beginTime =  this.loop[this.id].start /1000;
-			const endTime = this.loop[this.id].stop / 1000;
+			const loop = this.getLoop(this.id);
+			const beginTime =  loop.start /1000;
+			const endTime = loop.stop / 1000;
 			const howLong = endTime - beginTime;
 						
 			if (this.looping && this.reloop) {
@@ -50,10 +62,10 @@ function AudioLooper() {
 
 AudioLooper.prototype.update = function(id, sync) {
 		
-	if (this.source) {
-		
-		const beginTime =  this.loop[id].start /1000;
-		const endTime = this.loop[id].stop / 1000;
+	if (this.source) {		
+		const loop = this.getLoop(id);
+		const beginTime =  loop.start /1000;
+		const endTime = loop.stop / 1000;
 		const howLong = endTime - beginTime;
 		
 		const cycle = howLong * 1000;
@@ -86,8 +98,9 @@ AudioLooper.prototype.start = function(id) {
 	this.offset = 0;
 	this.id = id;	
 
-	const beginTime =  this.loop[this.id].start /1000;
-	const endTime = this.loop[this.id].stop / 1000;
+	const loop = this.getLoop(this.id);
+	const beginTime =  loop.start /1000;
+	const endTime = loop.stop / 1000;
 	const howLong = endTime - beginTime;	
 	
 	console.debug("AudioLooper start");
