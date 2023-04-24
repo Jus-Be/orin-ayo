@@ -1206,14 +1206,14 @@ function doChord() {
 
   if (pad.buttons[RED] && pad.buttons[YELLOW] && pad.buttons[BLUE])     // A
   {
-    playChord([base + 9, base + 13, base + 16], 0x36, 0x00, 0x36);
+    playChord([base - 3, base + 13, base + 16], 0x36, 0x00, 0x36);
     orinayo.innerHTML = key + " - " + "6";
   }
   else
 
   if (pad.buttons[BLUE] && pad.buttons[YELLOW] && pad.buttons[GREEN])     // E
   {
-    playChord([base + 4, base + 8, base + 11], 0x33, 0x00, 0x33);
+    playChord([base - 8, base + 8, base + 11], 0x33, 0x00, 0x33);
     orinayo.innerHTML = key + " - " + "3";
   }
   else
@@ -1223,7 +1223,7 @@ function doChord() {
   {
     //playChord([base - 29, base + 9, base + 12, base + 16]);
     //orinayo.innerHTML = key + " - " + "Am/G";
-    playChord([base + 3, base + 7, base + 10], 0x23, 0x00, 0x23);
+    playChord([base - 9, base + 7, base + 10], 0x23, 0x00, 0x23);
     orinayo.innerHTML = key + " - " + "3b";  
   }
   else
@@ -1244,7 +1244,7 @@ function doChord() {
 
   if (pad.buttons[GREEN] && pad.buttons[YELLOW])     // Gsus
   {
-    playChord([base + 7, base + 12, base + 14], 0x35, 0x20, 0x35);
+    playChord([base - 5, base + 12, base + 14], 0x35, 0x20, 0x35);
     orinayo.innerHTML = key + " - " + "5sus";
   }
   else
@@ -1279,28 +1279,27 @@ function doChord() {
 
   if (pad.buttons[GREEN] && pad.buttons[BLUE])     // Em
   {
-    playChord([base + 4, base + 7, base + 11], 0x33, 0x08, 0x33);
+    playChord([base - 8, base + 7, base + 11], 0x33, 0x08, 0x33);
     orinayo.innerHTML = key + " - " + "3m";
   }
   else
 
    if (pad.buttons[ORANGE] && pad.buttons[RED])   // Fm
    {
-     playChord([base + 5, base + 8, base + 12], 0x34, 0x08, 0x34);
+     playChord([base - 7, base + 8, base + 12], 0x34, 0x08, 0x34);
      orinayo.innerHTML = key + " - " + "4m";
    }
    else
 
    if (pad.buttons[GREEN] && pad.buttons[ORANGE])     // Gm
    {
-     playChord([base + 7, base + 10, base + 14], 0x35, 0x08, 0x35);
+     playChord([base - 5, base + 10, base + 14], 0x35, 0x08, 0x35);
      orinayo.innerHTML = key + " - " + "5m";
    }
   else
 
   if (pad.buttons[RED] && pad.buttons[BLUE])     // D
   {
-    //playChord([base + 9, base + 13, base + 16]);
     playChord([base + 2, base + 6, base + 9], 0x32, 0x00, 0x32);
     orinayo.innerHTML = key + " - " + "2";
   }
@@ -1322,21 +1321,21 @@ function doChord() {
 
   if (pad.buttons[ORANGE])   // F
   {
-    playChord([base + 5, base + 9, base + 12], 0x34, 0x00, 0x34);
+    playChord([base - 7, base + 9, base + 12], 0x34, 0x00, 0x34);
     orinayo.innerHTML = key + " - " + "4";
   }
   else
 
   if (pad.buttons[GREEN])     // G
   {
-    playChord([base + 7, base + 11, base + 14], 0x35, 0x00, 0x35);
+    playChord([base - 5, base + 11, base + 14], 0x35, 0x00, 0x35);
     orinayo.innerHTML = key + " - " + "5";
   }
   else
 
   if (pad.buttons[RED])     // Am
   {
-    playChord([base + 9, base + 12, base + 16], 0x36, 0x08, 0x36);
+    playChord([base - 3, base + 12, base + 16], 0x36, 0x08, 0x36);
     orinayo.innerHTML = key + " - " + "6m";
   }
 }
