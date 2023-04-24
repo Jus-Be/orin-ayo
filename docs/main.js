@@ -401,7 +401,7 @@ function letsGo() {
 			if (midiFwd.value != "midiFwdSel")
 			{
 				forward = WebMidi.getOutputByName(midiFwd.value);
-				enableSequencer(true);
+				enableSequencer(!!forward);
 				console.debug("selected forward midi port", forward, midiFwd.value);
 			}
 			saveConfig();
