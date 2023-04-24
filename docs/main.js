@@ -772,13 +772,16 @@ function playChord(chord, root, type, bass) {
 			const transposedBass = transposeNote(bass);
 			chordTracker.sendSysex(0x43, [0x7E, 0x02, trasposedRoot, type, transposedBass, type]);				
 		}
-		const chordNote = (chord.length == 4 ? chord[1] : chord[0]) % 12;
-		const chordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : "maj"))
-		const key = "key" + chordNote + "_" + chordType + "_" + SECTION_IDS[sectionChange];
-		const bassKey = "key" + (chord[0] % 12) + "_" + chordType + "_" + SECTION_IDS[sectionChange];
 		
-		if (bassLoop) bassLoop.update(bassKey, false);
-		if (chordLoop) chordLoop.update(key, false);		
+		if (arranger == "webaudio" && realdrumLoop) {
+			const chordNote = (chord.length == 4 ? chord[1] : chord[0]) % 12;
+			const chordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : "maj"))
+			const key = "key" + chordNote + "_" + chordType + "_" + SECTION_IDS[sectionChange];
+			const bassKey = "key" + (chord[0] % 12) + "_" + chordType + "_" + SECTION_IDS[sectionChange];
+			
+			if (bassLoop) bassLoop.update(bassKey, false);
+			if (chordLoop) chordLoop.update(key, false);		
+		}
 		
         activeChord = chord;
    }
