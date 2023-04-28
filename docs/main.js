@@ -197,22 +197,10 @@ function handleKeyboard(name, code) {
 		setup();
 		resetGuitarHero();
 	}	
-	
-	if (keyboard.get(".")) {
-		pad.buttons[START] = true;
-		handled = true;		
-	}
-	else
-
-	if (keyboard.get("0")) {
-		pad.buttons[STARPOWER] = true;
-		handled = true;				
-	}
-	else
 		
 	if (keyboard.get("Enter")) {
 		pad.buttons[LOGO] = true;
-		if (keyboard.get("5")) pad.buttons[YELLOW] = true;
+		if (keyboard.get("Backspace")) pad.buttons[YELLOW] = true; 	// End1
 		handled = true;				
 	}
 	else
@@ -228,10 +216,44 @@ function handleKeyboard(name, code) {
 		handled = true;			
 	}	
 	  
-	if (keyboard.get("1") || keyboard.get("2") || keyboard.get("3") || keyboard.get("4") || keyboard.get("5") || keyboard.get("6") || keyboard.get("7") || keyboard.get("8") || keyboard.get("9") || keyboard.get("*") || keyboard.get("/") || keyboard.get("Backspace")) {	
+	if (keyboard.get("0") || keyboard.get(".") || keyboard.get("1") || keyboard.get("2") || keyboard.get("3") || keyboard.get("4") || keyboard.get("5") || keyboard.get("6") || keyboard.get("7") || keyboard.get("8") || keyboard.get("9") || keyboard.get("*") || keyboard.get("/") || keyboard.get("Backspace")) {	
 		pad.axis[STRUM] = STRUM_UP;
 		handled = true;			
 
+		if (keyboard.get("Backspace") && keyboard.get("0")) {	// Fill
+			pad.axis[TOUCH] = -0.7;
+			pad.axis[STRUM] = STRUM_DOWN;			
+		}
+		else	
+		
+		if (keyboard.get(".") && !keyboard.get("0")) {		// style next
+			pad.buttons[START] = true;
+			handled = true;		
+		}
+		else
+
+		if (keyboard.get("0") && !keyboard.get(".")) {		// style prev
+			pad.buttons[STARPOWER] = true;
+			handled = true;				
+		}		
+		else 
+			
+		if (keyboard.get("Backspace") && keyboard.get("1")) {	// Mute Drums
+			pad.axis[TOUCH] = 1.0;		
+		}
+		else 
+			
+		if (keyboard.get("Backspace") && keyboard.get("2")) {	// Mute Chord
+			pad.axis[TOUCH] = -0.4;
+		}
+		else 
+			
+		if (keyboard.get("Backspace") && keyboard.get("3")) {	// Mute Bass
+			pad.axis[TOUCH] = -0.4;
+			pad.axis[STRUM] = STRUM_DOWN;			
+		}
+		else 
+			
 		if (keyboard.get("7") && keyboard.get("8")) {			// 3
 			pad.buttons[GREEN] = true;
 			pad.buttons[YELLOW] = true;			
@@ -291,17 +313,17 @@ function handleKeyboard(name, code) {
 			pad.buttons[GREEN] = true;
 			pad.buttons[RED] = true;			
 		}
-		else if (keyboard.get("/")) {																			// 3b
+		else if (keyboard.get("*") && keyboard.get("/")) {														// 3b
 			pad.buttons[ORANGE] = true;		
 			pad.buttons[BLUE] = true;
-			pad.buttons[RED] = true;			
-		}
-		else if (keyboard.get("*")) {																			// 5b
+			pad.buttons[RED] = true;				
+		}	
+		else if (keyboard.get("/") && !keyboard.get("*")) {														// 5b			
 			pad.buttons[YELLOW] = true;			
 			pad.buttons[GREEN] = true;
-			pad.buttons[RED] = true;			
-		}
-		else if (keyboard.get("Backspace")) {																	// 7b
+			pad.buttons[RED] = true;		
+		}		
+		else if (keyboard.get("*") && !keyboard.get("/")) {														// 7b
 			pad.buttons[YELLOW] = true;			
 			pad.buttons[RED] = true;			
 		}		
