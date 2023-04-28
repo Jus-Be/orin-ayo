@@ -21,6 +21,7 @@ const STRUM = 9;
 const TOUCH = 5;
 const LOGO = 12;
 
+var keyboard = new Map();
 var bassLoop = null;
 var drumLoop = null;
 var chordLoop = null;
@@ -164,7 +165,162 @@ function onloadHandler() {
 		document.getElementById('showTempo').innerText = tempo;
 	});
 	
+	document.addEventListener('keyup', (event) => {
+		var name = event.key;
+		var code = event.code;
+		
+		//console.debug("keyup", name, code);	
+		keyboard.delete(name);			
+	});
+	
+	document.addEventListener('keydown', (event) => {
+		var name = event.key;
+		var code = event.code;
+		
+		//console.debug("keydown", name, code);
+		
+		if (!keyboard.has(name)) {
+			keyboard.set(name, true);			
+			handleKeyboard(name, code);	
+		}			
+	});	
+
+	
 	letsGo();
+}
+
+function handleKeyboard(name, code) {
+	//console.debug("handleKeyboard", name, code);
+	var handled = false;
+
+	if (!game) {
+		setup();
+		resetGuitarHero();
+	}	
+	
+	if (keyboard.get(".")) {
+		pad.buttons[START] = true;
+		handled = true;		
+	}
+	else
+
+	if (keyboard.get("0")) {
+		pad.buttons[STARPOWER] = true;
+		handled = true;				
+	}
+	else
+		
+	if (keyboard.get("Enter")) {
+		pad.buttons[LOGO] = true;
+		if (keyboard.get("5")) pad.buttons[YELLOW] = true;
+		handled = true;				
+	}
+	else
+	  
+	if (keyboard.get("+")) {
+		pad.axis[STRUM] = STRUM_RIGHT;
+		handled = true;			
+	}	
+	else
+	  
+	if (keyboard.get("-")) {
+		pad.axis[STRUM] = STRUM_LEFT;
+		handled = true;			
+	}	
+	  
+	if (keyboard.get("1") || keyboard.get("2") || keyboard.get("3") || keyboard.get("4") || keyboard.get("5") || keyboard.get("6") || keyboard.get("7") || keyboard.get("8") || keyboard.get("9") || keyboard.get("*") || keyboard.get("/") || keyboard.get("Backspace")) {	
+		pad.axis[STRUM] = STRUM_UP;
+		handled = true;			
+
+		if (keyboard.get("7") && keyboard.get("8")) {			// 3
+			pad.buttons[GREEN] = true;
+			pad.buttons[YELLOW] = true;			
+			pad.buttons[BLUE] = true;				
+		}
+		else 
+			
+		if (keyboard.get("1") && keyboard.get("2")) {			// 2
+			pad.buttons[RED] = true;		
+			pad.buttons[BLUE] = true;				
+		}
+		else 
+			
+		if (keyboard.get("4") && keyboard.get("5")) {			// 6
+			pad.buttons[RED] = true;
+			pad.buttons[YELLOW] = true;			
+			pad.buttons[BLUE] = true;				
+		}
+		else 
+			
+		if (keyboard.get("5") && keyboard.get("6")) {			// 1sus
+			pad.buttons[ORANGE] = true;
+			pad.buttons[YELLOW] = true;			
+		}
+		else 
+			
+		if (keyboard.get("8") && keyboard.get("9")) {			// 5sus
+			pad.buttons[GREEN] = true;
+			pad.buttons[YELLOW] = true;			
+		}
+		else 
+			
+		if (keyboard.get("2") && keyboard.get("3")) {			// 4m
+			pad.buttons[ORANGE] = true;
+			pad.buttons[RED] = true;			
+		}	
+
+		else if (keyboard.get("5") && !keyboard.get("4") && !keyboard.get("6")) pad.buttons[YELLOW] = true;		// 1	
+		else if (keyboard.get("2") && !keyboard.get("1") && !keyboard.get("3")) pad.buttons[ORANGE] = true;		// 4		
+		else if (keyboard.get("8") && !keyboard.get("7") && !keyboard.get("9")) pad.buttons[GREEN] = true;		// 5
+		else if (keyboard.get("4") && !keyboard.get("5")) pad.buttons[RED] = true;								// 6m		
+		else if (keyboard.get("1") && !keyboard.get("2")) pad.buttons[BLUE] = true;								// 2m		
+		
+		else if (keyboard.get("7") && !keyboard.get("8")) {														// 3m
+			pad.buttons[GREEN] = true;
+			pad.buttons[BLUE] = true;			
+		}
+		else if (keyboard.get("3") && !keyboard.get("2")) {														// 4/6
+			pad.buttons[ORANGE] = true;
+			pad.buttons[BLUE] = true;			
+		}		
+		else if (keyboard.get("6") && !keyboard.get("5")) {														// 1/3
+			pad.buttons[BLUE] = true;
+			pad.buttons[YELLOW] = true;			
+		}
+		else if (keyboard.get("9") && !keyboard.get("8")) {														// 5/7
+			pad.buttons[GREEN] = true;
+			pad.buttons[RED] = true;			
+		}
+		else if (keyboard.get("/")) {																			// 3b
+			pad.buttons[ORANGE] = true;		
+			pad.buttons[BLUE] = true;
+			pad.buttons[RED] = true;			
+		}
+		else if (keyboard.get("*")) {																			// 5b
+			pad.buttons[YELLOW] = true;			
+			pad.buttons[GREEN] = true;
+			pad.buttons[RED] = true;			
+		}
+		else if (keyboard.get("Backspace")) {																	// 7b
+			pad.buttons[YELLOW] = true;			
+			pad.buttons[RED] = true;			
+		}		
+	}	
+
+	if (handled) {
+		doChord();
+		updateGame();
+		updateCanvas();			
+		resetGuitarHero();	
+	}
+	
+}
+
+function resetGuitarHero() {
+	for (var i=0; i<20; i++) {	  
+	  pad.buttons[i] = false;
+	  pad.axis[i] = 0;
+	}	
 }
 
 function connectHandler(e) {
@@ -758,16 +914,19 @@ function checkForTouchArea() {
 }
 
 function playChord(chord, root, type, bass) {
-   if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord)
-   {
-        console.debug("playChord", chord);
+	
+	if (arranger == "webaudio" && !styleStarted) return;
+	
+	if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord)
+	{
+		console.debug("playChord", chord);
 		
-        if (output) {			
-			if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});	// up
-			if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   // down					
+		if (output) {			
+			if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});		// up
+			if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   	// down					
 		}
 				
-        if (chordTracker) {		
+		if (chordTracker) {		
 			const trasposedRoot = transposeNote(root);
 			const transposedBass = transposeNote(bass);
 			chordTracker.sendSysex(0x43, [0x7E, 0x02, trasposedRoot, type, transposedBass, type]);				
@@ -783,8 +942,8 @@ function playChord(chord, root, type, bass) {
 			if (chordLoop) chordLoop.update(key, false);		
 		}
 		
-        activeChord = chord;
-   }
+		activeChord = chord;
+	}
 }
 
 function transposeNote(root) {
@@ -1136,22 +1295,42 @@ function dokeyChange() {
     if (forward) forward.playNote(84 + keyChange, 1, {velocity: 0.5, duration: 1000});
 }
 
+function dokeyUp() {
+    keyChange++;
+    if (keyChange > 11) keyChange = 0	
+    dokeyChange();
+}
+
+function dokeyDown() {
+    keyChange--;
+    if (keyChange < 0) keyChange = 11
+    dokeyChange();	
+}
+
+function dokeyChange() {
+    keyChange = (keyChange % 12);
+
+    console.debug("Received 'key change (" + KEYS[keyChange] + ")");
+
+    orinayo.innerHTML = KEYS[keyChange];
+    key = KEYS[keyChange];
+    base = BASE + keyChange;
+
+    if (forward) forward.playNote(84 + keyChange, 1, {velocity: 0.5, duration: 1000});
+}
+
 function doChord() {
   //console.debug("doChord", pad)
   stopChord();
 
   if (pad.axis[STRUM] == STRUM_LEFT && !pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN])
   {
-    keyChange--;
-    if (keyChange < 0) keyChange = 11
-    dokeyChange();
+	dokeyDown();
   }
 
   if (pad.axis[STRUM] == STRUM_RIGHT && !pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN])
   {
-    keyChange++;
-    if (keyChange > 11) keyChange = 0	
-    dokeyChange();
+	dokeyUp();
   }
 
   if (pad.buttons[START] || pad.buttons[STARPOWER])

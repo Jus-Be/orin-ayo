@@ -27,6 +27,7 @@ function HitBar(context, x, y, width, height) {
   
   return {
     update: function() {
+	  //console.debug("** update**", pad);
       context.fillStyle = '#666666';
       context.fillRect(_x, _y + ((3 * _height) / 8) - 2, _width, (_height / 4) + 4);
       context.fillStyle = '#444444';

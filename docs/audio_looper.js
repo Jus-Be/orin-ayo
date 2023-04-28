@@ -98,8 +98,6 @@ AudioLooper.prototype.update = function(id, sync) {
 		const beginTime =  loop.start /1000;
 		const endTime = loop.stop / 1000;
 		const howLong = endTime - beginTime;
-		
-		const cycle = howLong * 1000;
 		const duration = this.audioContext.currentTime - this.startTime;	
 		
 		if (sync) {	
