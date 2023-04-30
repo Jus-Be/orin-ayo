@@ -702,8 +702,8 @@ function saveConfig() {
     config.input = input ? input.name : null;
 	config.arranger = arranger;
 	config.realGuitarStyle = realGuitarStyle;
-	config.realdrumLoop = realdrumLoop?.name;
-	config.realdrumDevice = realdrumDevice?.deviceId;
+	config.realdrumLoop = realdrumLoop ? realdrumLoop.name : null;
+	config.realdrumDevice = realdrumDevice ? realdrumDevice.deviceId : null;
 
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }

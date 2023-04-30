@@ -143,7 +143,7 @@ AudioLooper.prototype.volume = function(vol) {
 	if (typeof vol != "undefined") {
 		this.vol = vol;
 		
-		if (this?.gainNode) {
+		if (this.gainNode) {
 			this.gainNode.gain.value = vol;
 		}
 	}
