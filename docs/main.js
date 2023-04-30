@@ -434,11 +434,8 @@ function letsGo() {
 	
     WebMidi.enable(async function (err)
     {
-      if (err) {
-        statusMsg.innerHTML = "WebMidi could not be enabled.";
-      } else {
-        statusMsg.innerHTML = "Orin Ayo";
-        console.debug("WebMidi enabled!", config, WebMidi);
+		statusMsg.innerHTML = "Orin Ayo";
+		console.debug("WebMidi enabled!", config, WebMidi);
 
 		keyChange = config.keyChange ? config.keyChange : keyChange;
 		dokeyChange();
@@ -688,7 +685,6 @@ function letsGo() {
 		
 		enableSequencer(!!forward && realGuitarStyle != "none");
 		if (realdrumLoop) setupRealDrums();
-      }
 
     }, true);
 };
