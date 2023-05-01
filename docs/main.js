@@ -426,7 +426,7 @@ function updateStatus() {
 	window.setTimeout(updateStatus);
 }
 
-function letsGo() {
+async function letsGo() {
 	let data = localStorage.getItem("orin.ayo.config");
 	if (!data) data = '{"arranger": "ketron"}';
 	
