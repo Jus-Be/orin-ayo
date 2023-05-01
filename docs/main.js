@@ -27,7 +27,7 @@ var drumLoop = null;
 var chordLoop = null;
 var realdrumLoop = null;
 var realdrumDevice = null;
-var arranger = "ketron";
+var arranger = "webaudio";
 var realGuitarStyle = "none";
 var output = null;
 var input = null;
@@ -428,7 +428,7 @@ function updateStatus() {
 
 async function letsGo() {
 	let data = localStorage.getItem("orin.ayo.config");
-	if (!data) data = '{"arranger": "ketron"}';
+	if (!data) data = '{"arranger": "webaudio"}';
 	
 	const config = JSON.parse(data);
 	
