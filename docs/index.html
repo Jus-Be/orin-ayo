@@ -5,12 +5,13 @@
     <title>Orin Ayo</title>
     <link rel="stylesheet" href="bootstrap.css">
     <link rel="stylesheet" href="main.css">	
+    <link id="favicon"     href="./assets/icon_16.png" rel="shortcut icon" type="image/gif" />		
 </head>
 
 <body>
   <div>
 	<table width="90%">	
-	<tr><td><h2 id="statusMsg"></h2></td><td><a class="play">Play</a><span style="font-size: 24px;display:none;margin-left:100px" id="sequencer">Tempo: <span id="showTempo">100</span>BPM <input id="tempo" type="range" min="30.0" max="160.0" step="1" value="100" style="height: 20px; width: 200px"></span></td></tr>		
+	<tr><td><h2 id="statusMsg"></h2></td><td><a class="play">On</a><span style="font-size: 24px;display:none;margin-left:100px" id="sequencer">Tempo: <span id="showTempo">100</span>BPM <input id="tempo" type="range" min="30.0" max="160.0" step="1" value="100" style="height: 20px; width: 200px"></span></td></tr>		
 	<tr><td>Arranger Type</td><td><select id="arrangerType" type="text" class="form-control input"></select></td></tr>	
     <tr><td>Arranger MIDI Device</td><td><select id="midiOutSel" type="text" class="form-control input"></select></td></tr>
     <tr><td>Transpose MIDI Device</td><td><select id="midiInSel" type="text" class="form-control input"></select></td></tr>	

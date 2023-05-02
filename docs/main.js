@@ -21,6 +21,7 @@ const STRUM = 9;
 const TOUCH = 5;
 const LOGO = 12;
 
+var playButton = null;
 var keyboard = new Map();
 var bassLoop = null;
 var drumLoop = null;
@@ -51,22 +52,19 @@ var tempoCanvas = null;
 var playStartTime = 0;
 var audioContext = null;
 var unlocked = false;
-var isPlaying = false;      // Are we currently playing?
-var startTime;              // The start time of the entire sequence.
-var current16thNote;        // What note is currently last scheduled?
-var tempo = 100.0;          // tempo (in beats per minute)
-var lookahead = 25.0;       // How frequently to call scheduling function 
-                            //(in milliseconds)
-var scheduleAheadTime = 0.1;    // How far ahead to schedule audio (sec)
-                            // This is calculated from lookahead, and overlaps 
-                            // with next interval (in case the timer is late)
-var nextNoteTime = 0.0;     // when the next note is due.
-var noteLength = 0.05;      // length of "beep" (in seconds)
-var canvasContext;          // canvasContext is the canvas' context 2D
-var last16thNoteDrawn = -1; // the last "box" we drew on the screen
-var notesInQueue = [];      // the notes that have been put into the web audio,
-                            // and may or may not have played yet. {note, time}
-var timerWorker = null;     // The Web Worker used to fire timer messages
+var current16thNote;        		// What note is currently last scheduled?
+var tempo = 100.0;          		// tempo (in beats per minute)
+var lookahead = 25.0;       		// How frequently to call scheduling function 
+									//(in milliseconds)
+var scheduleAheadTime = 0.1;		// How far ahead to schedule audio (sec)
+									// This is calculated from lookahead, and overlaps 
+									// with next interval (in case the timer is late)
+var nextNoteTime = 0.0;     		// when the next note is due.
+var canvasContext;          		// canvasContext is the canvas' context 2D
+var last16thNoteDrawn = -1; 		// the last "box" we drew on the screen
+var notesInQueue = [];      		// the notes that have been put into the web audio,
+									// and may or may not have played yet. {note, time}
+var timerWorker = null;     		// The Web Worker used to fire timer messages
 
 var canvas = {
   context : null,
@@ -116,6 +114,7 @@ function mysetTimeout(fn, delay) {
 function onloadHandler() {
 	console.debug("onloadHandler");
   
+	playButton = document.querySelector(".play");
 	tempoCanvas = orinayo = document.querySelector('#tempoCanvas');	
 	orinayo = document.querySelector('#orinayo');
 	orinayo_section = document.querySelector('#orinayo-section');
@@ -155,9 +154,17 @@ function onloadHandler() {
 			
 	});
 	
-	document.querySelector(".play").addEventListener("click", function() {	
-		this.innerText = styleStarted ? "Play" : "Stop";
-		toggleStartStop();
+	playButton.addEventListener("click", function() {	
+		if (realdrumLoop) {
+			
+			if (drumLoop) {
+				toggleStartStop();
+			} else {
+				setupRealDrums();	
+			}
+		} else {
+			toggleStartStop();			
+		}
 	});	
 	
 	document.querySelector("#tempo").addEventListener("input", function() {
@@ -693,7 +700,6 @@ async function setupUI(config,err) {
 	}
 	
 	enableSequencer(!!forward && realGuitarStyle != "none");
-	if (realdrumLoop) setupRealDrums();
 };
 
 function saveConfig() {
@@ -1544,8 +1550,12 @@ function doChord() {
   }
 }
 
-function toggleStartStop() {	
-
+function toggleStartStop() {
+	
+	if (realdrumLoop && !drumLoop) {
+		return;
+	}
+	
 	if (!styleStarted) resetArrToA();
 	
 	if (forward && realGuitarStyle != "none" && window[realGuitarStyle]) {			
@@ -1712,7 +1722,7 @@ function toggleStartStop() {
 		}		
 	}	
 
-	document.querySelector(".play").innerText = !styleStarted ? "Play" : "Stop";	
+	playButton.innerText = !styleStarted ? "Play" : "Stop";	
 }
 
 function updateGame() {
@@ -1885,6 +1895,8 @@ function scheduler() {
 }
 
 function setupRealDrums() {
+	playButton.innerText = "Wait..";	
+	
 	drumLoop = new AudioLooper();
 	drumLoop.callback(soundsLoaded, eventStatus);				
 	drumLoop.addUri(realdrumLoop.drums, realdrumDevice, realdrumLoop.bpm);
@@ -1907,6 +1919,7 @@ function setupRealDrums() {
 
 function soundsLoaded() {
 	console.log("audio loaded ok");
+	playButton.innerText = "Play";	
 }
 
 function eventStatus(event, id) {
