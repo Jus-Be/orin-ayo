@@ -426,22 +426,27 @@ function updateStatus() {
 	window.setTimeout(updateStatus);
 }
 
-async function letsGo() {
+function letsGo() {
 	let data = localStorage.getItem("orin.ayo.config");
 	if (!data) data = '{"arranger": "webaudio"}';
+	console.debug("letsGo", data, WebMidi);		
 	
 	const config = JSON.parse(data);
 	
     WebMidi.enable(async function (err)
     {
       if (err) {
-        statusMsg.innerHTML = "WebMidi could not be enabled.";
+        statusMsg.innerHTML = "Orin Ayo - Audio";
 	  } else {
-		statusMsg.innerHTML = "Orin Ayo";		  
+		statusMsg.innerHTML = "Orin Ayo - Midi";	
 	  }
-    }, true);	
-	
-	console.debug("WebMidi enabled!", config, WebMidi);
+	  
+	  setupUI(config, err);	
+    }, true);
+}
+
+async function setupUI(config,err) {	
+	console.debug("setupUI", config);
 
 	keyChange = config.keyChange ? config.keyChange : keyChange;
 	dokeyChange();
@@ -494,7 +499,7 @@ async function letsGo() {
 	realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice");
 	realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop");			
 
-	for (var i=0; i<WebMidi.outputs.length; i++)
+	if (!err) for (var i=0; i<WebMidi.outputs.length; i++)
 	{
 		let outSelected = false;
 
@@ -524,7 +529,7 @@ async function letsGo() {
 		midiChordTracker.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, chordTrackerSelected, chordTrackerSelected);
 	}
 
-	for (var i=0; i<WebMidi.inputs.length; i++)
+	if (!err) for (var i=0; i<WebMidi.inputs.length; i++)
 	{
 		let selected = false;
 
@@ -536,7 +541,7 @@ async function letsGo() {
 		midiIn.options[i + 1] = new Option(WebMidi.inputs[i].name, WebMidi.inputs[i].name, selected, selected);
 	}
 
-	midiIn.addEventListener("click", function()
+	if (!err) midiIn.addEventListener("click", function()
 	{
 		input = null;
 
@@ -548,7 +553,7 @@ async function letsGo() {
 		saveConfig();
 	});
 
-	midiOut.addEventListener("click", function()
+	if (!err) midiOut.addEventListener("click", function()
 	{
 		output = null;
 
@@ -574,7 +579,7 @@ async function letsGo() {
 		saveConfig();
 	});
 
-	midiFwd.addEventListener("click", function()
+	if (!err) midiFwd.addEventListener("click", function()
 	{
 		forward = null;
 		enableSequencer(false);
@@ -588,7 +593,7 @@ async function letsGo() {
 		saveConfig();
 	});
 	
-	midiChordTracker.addEventListener("click", function()
+	if (!err) midiChordTracker.addEventListener("click", function()
 	{
 		chordTracker = null;
 
@@ -599,8 +604,6 @@ async function letsGo() {
 		}
 		saveConfig();
 	});
-
-	console.debug("WebMidi devices", input, output, forward, chordTracker);
 	
 	for (var i=0; i<drum_loops.length; i++)
 	{
