@@ -72,14 +72,13 @@ var canvas = {
   gameHeight : null
 };
 
-var content = [];
 var game = null;
 var pad = {buttons: [], axis: []};
 
 var timeoutId = 0;
 var timeouts = {};
 
-var timeoutWorker = new Worker("timeout-worker.js");
+var timeoutWorker = new Worker("./js/timeout-worker.js");
 timeoutWorker.addEventListener("message", myWorkerTimer);
 
 window.requestAnimFrame = window.requestAnimationFrame;
@@ -338,7 +337,6 @@ function handleKeyboard(name, code) {
 
 	if (handled) {
 		doChord();
-		updateGame();
 		updateCanvas();			
 		resetGuitarHero();	
 	}
@@ -425,7 +423,6 @@ function updateStatus() {
 		
 		if (updated) {
 			doChord();
-			updateGame();
 			updateCanvas();	
 		}				
 	}
@@ -766,7 +763,7 @@ function doBreak() {
 function doFill() {
 	console.debug("doFill " + arranger);
 	
-	if (arranger == "webaudio" &&  realdrumLoop) {
+	if (arranger == "webaudio" &&  drumLoop) {
 		if (sectionChange == 0) drumLoop.update('fila', false);
 		if (sectionChange == 1) drumLoop.update('filb', false);
 		if (sectionChange == 2) drumLoop.update('filc', false);
@@ -1725,18 +1722,12 @@ function toggleStartStop() {
 	playButton.innerText = !styleStarted ? "Play" : "Stop";	
 }
 
-function updateGame() {
-  game.update();
-}
-
 function updateCanvas() {
-  canvas.context.fillStyle = "#080018";
+	canvas.context.fillStyle = "#080018";
     canvas.context.fillRect(0, 0, canvas.gameWidth, canvas.gameHeight);
     canvas.context.strokeStyle = "#000000";
     canvas.context.strokeRect(0, 0, canvas.gameWidth, canvas.gameHeight);
-  for (var i = 0; i < content.length; i++) {
-    content[i].update();
-  }
+	game.update();
 }
 
 function setup() {
@@ -1745,19 +1736,7 @@ function setup() {
   canvas.gameWidth = gameCanvas.width;
   canvas.gameHeight = gameCanvas.height;
 
-  var noteHeight = canvas.gameHeight/8;
-
-  var hitRegion = new HitRegion(
-    70,
-    noteHeight);
-
-  game = new GameBoardState(3, noteHeight, hitRegion, canvas.gameHeight);
-
-  content.push(new GameBoard(
-    canvas.context,
-    game,
-    canvas.gameWidth / 4, 0,
-    canvas.gameWidth / 2, canvas.gameHeight));
+  game = new GameBoard(canvas.context, canvas.gameWidth / 4, 0,  canvas.gameWidth / 2, canvas.gameHeight);
 }
 
 function enableSequencer(flag) {
@@ -1774,7 +1753,7 @@ function enableSequencer(flag) {
 
 		requestAnimFrame(draw);    // start the drawing loop.
 
-		timerWorker = new Worker("metronome-worker.js");
+		timerWorker = new Worker("./js/metronome-worker.js");
 
 		timerWorker.onmessage = function(e) {
 			if (e.data == "tick") {
