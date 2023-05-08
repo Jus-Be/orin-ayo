@@ -37,7 +37,7 @@ if (location.protocol == "chrome-extension:") {
 		
 		chrome.windows.create(data, (win) => {
 			chrome.storage.local.set({orinAyoWin: win.id});			
-			chrome.windows.update(win.id, {width: 900, height: 800});
+			chrome.windows.update(win.id, {width: 900, height: 850});
 		});	
 	}
 
