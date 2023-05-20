@@ -511,44 +511,38 @@ async function setupUI(config,err) {
 	midiIn.options[0] = new Option("**UNUSED**", "midiInSel");
 	realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice");
 	realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop");	
-	songSeq.options[0] = new Option("**UNUSED**", "songSeq");
+	songSeq.options[0] = new Option("**UNUSED**", "songSeq");			
 
-	if (!err) for (var i=0; i<WebMidi.outputs.length; i++)
-	{
-		let outSelected = false;
-
-		if (config.output && config.output == WebMidi.outputs[i].name)
-		{
+	if (!err) for (var i=0; i<WebMidi.outputs.length; i++) 	{
+		let outSelected = false;		
+		
+		if (config.output && config.output == WebMidi.outputs[i].name) {
 			outSelected = true;
 			output = WebMidi.outputs[i];
 		}
 		midiOut.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, outSelected, outSelected);
 
 		let fwdSelected = false;
-
-		if (config.forward && config.forward == WebMidi.outputs[i].name)
-		{
+		
+		if (config.forward && config.forward == WebMidi.outputs[i].name) {
 			fwdSelected = true;
 			forward = WebMidi.outputs[i];
 		}
 		midiFwd.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, fwdSelected, fwdSelected);
 
-		let chordTrackerSelected = false;
-
-		if (config.chordTracker && config.chordTracker == WebMidi.outputs[i].name)
-		{
+		let chordTrackerSelected = false;	
+	
+		if (config.chordTracker && config.chordTracker == WebMidi.outputs[i].name) {
 			chordTrackerSelected = true;
 			chordTracker = WebMidi.outputs[i];
 		}
 		midiChordTracker.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, chordTrackerSelected, chordTrackerSelected);
 	}
 
-	if (!err) for (var i=0; i<WebMidi.inputs.length; i++)
-	{
-		let selected = false;
-
-		if (config.input && config.input == WebMidi.inputs[i].name)
-		{
+	if (!err) for (var i=0; i<WebMidi.inputs.length; i++) {
+		let selected = false;	
+		
+		if (config.input && config.input == WebMidi.inputs[i].name) {
 			selected = true;
 			input = WebMidi.inputs[i];
 		}
@@ -559,24 +553,22 @@ async function setupUI(config,err) {
 	{
 		input = null;
 
-		if (midiIn.value != "midiInSel")
-		{
+		if (midiIn.value != "midiInSel") {
 			input = WebMidi.getInputByName(midiIn.value);
+			saveConfig();			
 			console.debug("selected input midi port", input, midiIn.value);
 		}
-		saveConfig();
 	});
 
 	if (!err) midiOut.addEventListener("click", function()
 	{
 		output = null;
 
-		if (midiOut.value != "midiOutSel")
-		{
+		if (midiOut.value != "midiOutSel") {
 			output = WebMidi.getOutputByName(midiOut.value);
+			saveConfig();			
 			console.debug("selected output midi port", output, midiOut.value);
 		}
-		saveConfig();
 	});
 
 	arrangerType.addEventListener("click", function()
@@ -599,31 +591,28 @@ async function setupUI(config,err) {
 		forward = null;
 		enableSequencer(false);
 
-		if (midiFwd.value != "midiFwdSel")
-		{
+		if (midiFwd.value != "midiFwdSel") {
 			forward = WebMidi.getOutputByName(midiFwd.value);
-			enableSequencer(!!forward);
+			saveConfig();			
+			enableSequencer(!!forward && realGuitarStyle != "none");
 			console.debug("selected forward midi port", forward, midiFwd.value);
 		}
-		saveConfig();
 	});
 	
 	if (!err) midiChordTracker.addEventListener("click", function()
 	{
 		chordTracker = null;
 
-		if (midiChordTracker.value != "midiChordTrackerSel")
-		{
+		if (midiChordTracker.value != "midiChordTrackerSel") {
 			chordTracker = WebMidi.getOutputByName(midiChordTracker.value);
+			saveConfig();			
 			console.debug("selected chordTracker midi port", chordTracker, midiChordTracker.value);
 		}
-		saveConfig();
 	});
 	
-	for (var i=0; i<song_sequences.length; i++)
-	{
-		let selectedSong = false;
-
+	for (var i=0; i<song_sequences.length; i++) {
+		let selectedSong = false;		
+		
 		if (config.songName && config.songName == song_sequences[i].name) {
 			selectedSong = true;
 			songSequence = song_sequences[i];
@@ -642,18 +631,17 @@ async function setupUI(config,err) {
 				if (songSeq.value == song.name) {
 					songSequence = song
 					setupSongSequence(true);
+					saveConfig();						
 					break;
 				}						
-			}
+			}		
 			console.debug("selected song sequence", songSequence, songSeq.value);
 		}
-		saveConfig();
 	});	
 	
-	for (var i=0; i<drum_loops.length; i++)
-	{
-		let selectedDrum = false;
-
+	for (var i=0; i<drum_loops.length; i++) {
+		let selectedDrum = false;	
+		
 		if (config.realdrumLoop && config.realdrumLoop == drum_loops[i].name) {
 			selectedDrum = true;
 			realdrumLoop = drum_loops[i];
@@ -672,12 +660,12 @@ async function setupUI(config,err) {
 				if (realDrumsLoop.value == drum.name) {
 					realdrumLoop = drum
 					setupRealDrums();
+					saveConfig();					
 					break;
 				}						
 			}
 			console.debug("selected real drums loop", realdrumLoop, realDrumsLoop.value);
 		}
-		saveConfig();
 	});		
 
 	console.debug("WebMidi devices", input, output, forward, chordTracker);
@@ -687,10 +675,9 @@ async function setupUI(config,err) {
 	const devices = await navigator.mediaDevices.enumerateDevices();
 	const outputs = devices.filter(({ kind }) => kind === 'audiooutput');			
 	
-	for (var i=0; i<outputs.length; i++)
-	{
-		let selectedDevice = false;
-
+	for (var i=0; i<outputs.length; i++) 	{
+		let selectedDevice = false;			
+		
 		if (config.realdrumDevice && config.realdrumDevice == outputs[i].deviceId) {
 			selectedDevice = true;
 			realdrumDevice = outputs[i];
@@ -713,12 +700,12 @@ async function setupUI(config,err) {
 				if (realDrumsDevice.value == output.deviceId) {
 					realdrumDevice = output;
 					setupRealDrums();
+					saveConfig();					
 					break;
 				}						
 			}
 			console.debug("selected real drums device ", realdrumDevice, realDrumsDevice.value);
 		}
-		saveConfig();
 	});				
 
 	if (input)
@@ -1286,7 +1273,7 @@ function playSectionCheck() {
 	
 	if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) {
 					
-		if (pad.buttons[STARPOWER]) {
+		if (pad.buttons[STARPOWER]) {	// next variation
 			sectionChange++;
 			if (sectionChange > 3) sectionChange = 0;	
 			
@@ -1295,7 +1282,7 @@ function playSectionCheck() {
 				if (nextRgIndex ==  window[realGuitarStyle].length) nextRgIndex = 0;
 			}
 
-		} else {
+		} else {						// prev variation
 			sectionChange--;		
 			if (sectionChange < 0) sectionChange = 3;
 
@@ -1305,6 +1292,12 @@ function playSectionCheck() {
 			}				
 		}
 		arrChanged = true;
+	}
+	else 
+		
+	if (pad.buttons[START]) {
+		sectionChange = 0;		// reset to variation arra
+		arrChanged = true;		
 	}
 	
 	console.debug("playSectionCheck pressed " + arrChanged);
