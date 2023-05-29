@@ -1607,10 +1607,10 @@ function toggleStartStop() {
 				} else {
 					drumLoop.start('int1');
 					
-					setTimeout(() => {
+					//setTimeout(() => {
 						if (bassLoop) bassLoop.start("key" + (keyChange % 12));
 						if (chordLoop) chordLoop.start("key" + (keyChange % 12));			
-					}, realdrumLoop.drums.int1.stop);
+					//}, realdrumLoop.drums.int1.stop);
 				}
 				
 			} else {

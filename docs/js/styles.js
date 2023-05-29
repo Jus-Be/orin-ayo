@@ -872,5 +872,219 @@ var drum_loops = [
 			stop:  128000
 		}		
 	}	
+},
+{
+	name: "midtempo100",
+	label: "Mid Tempo",
+	bpm: 90,
+	drums: {
+		url: "assets/drums/midtempo100.ogg",
+		duration: 129600,
+		int1: {
+			start: 0,
+			stop: 14400
+		},
+		arra: {
+			start: 14400,
+			stop: 33600
+		},	
+		arrb: {
+			start: 33600,
+			stop:  52800
+		},	
+		arrc: {
+			start: 52800,
+			stop:  72000
+		},	
+		arrd: {
+			start: 72000,
+			stop:  91200
+		},	
+		end1: {
+			start: 91200,
+			stop:  110400
+		},
+		brka: {
+			start: 110400,
+			stop:  112800
+		},	
+		brkb: {
+			start: 112800,
+			stop:  115200
+		},	
+		brkc: {
+			start: 115200,
+			stop:  117600
+		},	
+		brkd: {
+			start: 117600,
+			stop:  120000
+		},	
+		fila: {
+			start: 120000,
+			stop:  122400
+		},	
+		filb: {
+			start: 122400,
+			stop:  124800
+		},	
+		filc: {
+			start: 124800,
+			stop:  127200
+		},	
+		fild: {
+			start: 127200,
+			stop:  129600
+		}		
+	},
+	
+	chords: {
+		url: "assets/chords/midtempo100.ogg",
+		duration: 288000,
+		key0: {
+			start: 0,
+			stop: 9600
+		},
+		key1: {
+			start: 9600,
+			stop: 19200
+		},	
+		key2: {
+			start: 19200,
+			stop:  28800
+		},	
+		key3: {
+			start: 28800,
+			stop:  38400
+		},	
+		key4: {
+			start: 38400,
+			stop:  48000
+		},	
+		key5: {
+			start: 48000,
+			stop:  57600
+		},
+		key6: {
+			start: 57600,
+			stop:  67200
+		},
+		key7: {
+			start: 67200,
+			stop:  76800
+		},	
+		key8: {
+			start: 76800,
+			stop:  86400
+		},	
+		key9: {
+			start: 86400,
+			stop:  96000
+		},	
+		key10: {
+			start: 96000,
+			stop:  105600
+		},	
+		key11: {
+			start: 105600,
+			stop:  115200
+		},
+		key0_min: {
+			start: 115200,
+			stop:  124800
+		},
+		key1_min: {
+			start: 124800,
+			stop:  134400
+		},	
+		key2_min: {
+			start: 134400,
+			stop:  144000
+		},	
+		key3_min: {
+			start: 144000,
+			stop:  153600
+		},	
+		key4_min: {
+			start: 153600,
+			stop:  163200
+		},	
+		key5_min: {
+			start: 163200,
+			stop:  172800
+		},
+		key6_min: {
+			start: 172800,
+			stop:  182400
+		},
+		key7_min: {
+			start: 182400,
+			stop:  192000
+		},	
+		key8_min: {
+			start: 192000,
+			stop:  201600 
+		},	
+		key9_min: {
+			start: 201600,
+			stop:  211200
+		},	
+		key10_min: {
+			start: 211200,
+			stop:  220800
+		},	
+		key11_min: {
+			start: 220800,
+			stop:  230400
+		},
+		key0_sus: {
+			start: 230400,
+			stop:  235200
+		},		
+		key1_sus: {
+			start: 235200,
+			stop:  240000
+		},
+		key2_sus: {
+			start: 240000,
+			stop:  244800
+		},	
+		key3_sus: {
+			start: 244800,
+			stop:  249600
+		},	
+		key4_sus: {
+			start: 249600,
+			stop:  254400
+		},	
+		key5_sus: {
+			start: 254400,
+			stop:  259200
+		},	
+		key6_sus: {
+			start: 259200,
+			stop:  264000
+		},
+		key7_sus: {
+			start: 264000,
+			stop:  268800
+		},	
+		key8_sus: {
+			start: 268800,
+			stop:  273600 
+		},	
+		key9_sus: {
+			start: 273600,
+			stop:  278400
+		},	
+		key10_sus: {
+			start: 278400,
+			stop:  283200 
+		},	
+		key11_sus: {
+			start: 283200,
+			stop:  288000
+		}				
+	}	
 }
 ]
