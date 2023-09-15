@@ -9,6 +9,7 @@ self.addEventListener('install', function(event) {
 });
 self.addEventListener('activate', function (event) {
     console.log('activate', event);
+	openOrinAyoWindow();	
 });
 
 self.addEventListener('message', function (event) {
@@ -30,39 +31,6 @@ self.addEventListener('notificationclick', function(event) {
 // -------------------------------------------------------
 
 if (location.protocol == "chrome-extension:") {
-
-	const createOrinAyoWindow = () => {
-		console.debug("createOrinAyoWindow");		
-		const data = {url: chrome.runtime.getURL("index.html"), type: "popup"};
-		
-		chrome.windows.create(data, (win) => {
-			chrome.storage.local.set({orinAyoWin: win.id});			
-			chrome.windows.update(win.id, {width: 900, height: 850});
-		});	
-	}
-
-	const openOrinAyoWindow = () => {	
-		chrome.storage.local.get('orinAyoWin', (data) => 
-		{	
-			if (data.orinAyoWin) {
-				chrome.windows.getAll((windows) => {
-					let window = null;
-
-					for (let win of windows) {
-						if (data.orinAyoWin == win.id) window = win;
-					}
-					
-					if (window) {
-						chrome.windows.update(window.id, {focused: true});			
-					} else {
-						createOrinAyoWindow();
-					}					
-				});	
-			} else {
-				createOrinAyoWindow();
-			}
-		});		
-	}
 	
 	chrome.runtime.onInstalled.addListener((details) => {
 		console.debug("onInstalled");
@@ -78,13 +46,11 @@ if (location.protocol == "chrome-extension:") {
 			{
 				console.debug("Updated from " + details.previousVersion + " to " + thisVersion + "!");			
 			}
-		}
-		openOrinAyoWindow();	
+		}	
 	});
 
 	chrome.runtime.onStartup.addListener(() => {
 		console.debug("onStartup");	
-		openOrinAyoWindow();
 	});
 	
 	chrome.action.onClicked.addListener(() => {
@@ -116,3 +82,35 @@ if (location.protocol == "chrome-extension:") {
 //
 // -------------------------------------------------------
 
+const createOrinAyoWindow = () => {
+	console.debug("createOrinAyoWindow");		
+	const data = {url: chrome.runtime.getURL("index.html"), type: "popup"};
+	
+	chrome.windows.create(data, (win) => {
+		chrome.storage.local.set({orinAyoWin: win.id});			
+		chrome.windows.update(win.id, {width: 900, height: 850});
+	});	
+}
+
+const openOrinAyoWindow = () => {	
+	chrome.storage.local.get('orinAyoWin', (data) => 
+	{	
+		if (data.orinAyoWin) {
+			chrome.windows.getAll((windows) => {
+				let window = null;
+
+				for (let win of windows) {
+					if (data.orinAyoWin == win.id) window = win;
+				}
+				
+				if (window) {
+					chrome.windows.update(window.id, {focused: true});			
+				} else {
+					createOrinAyoWindow();
+				}					
+			});	
+		} else {
+			createOrinAyoWindow();
+		}
+	});		
+}

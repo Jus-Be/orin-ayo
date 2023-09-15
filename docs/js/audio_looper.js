@@ -1,4 +1,5 @@
-function AudioLooper() {
+function AudioLooper(styleType) {
+	this.styleType = styleType;
 	this.cb_loaded = null;
 	this.cb_status = null;
     this.audioContext = new AudioContext();	

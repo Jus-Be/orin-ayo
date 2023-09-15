@@ -47,7 +47,7 @@ var rgIndex = 0;
 var nextRgIndex = 0;
 var styleStarted = false;
 var activeChord = null;
-
+var currentRcLooperChord = null;
 var currentPlayNote;
 var tempoCanvas = null;
 var nextBeatTime = 0;
@@ -358,10 +358,11 @@ function resetGuitarHero() {
 }
 
 function connectHandler(e) {
-  console.debug("connectHandler", e);	
+  console.debug("connectHandler " + e.gamepad.id, e.gamepad);	
   
-  if (e.gamepad.id.indexOf("Guitar") > -1)
-  {
+  if (e.gamepad.id.indexOf("Guitar") > -1 || (e.gamepad.id.indexOf("248a") > -1 && e.gamepad.id.indexOf("8266") > -1)) {
+	console.debug("connectHandler found gamepad " + e.gamepad.id, e.gamepad);
+  
 	if (!game) setup();
 		  
 	for (var i=0; i<e.gamepad.buttons.length; i++) {	  
@@ -380,20 +381,51 @@ function disconnectHandler(e) {
 
 function updateStatus() {
 	var guitar = null
+	var ring = null
+	
 	var gamepads = navigator.getGamepads();	
 	  
-	for (var i = 0; i < gamepads.length; i++) 
-	{
-		if (gamepads[i] && gamepads[i].id.indexOf("Guitar") > -1)		
-		{
+	for (var i = 0; i < gamepads.length; i++) {
+		//console.debug("found gamepad " + gamepads[i].id, gamepads[i]);
+		
+		if (gamepads[i] && gamepads[i].id.indexOf("Guitar") > -1) {
 		  guitar = gamepads[i];
 		  break;
 		}
+		else
+			
+		if (gamepads[i] && gamepads[i].id.indexOf("248a") > -1 && gamepads[i].id.indexOf("8266") > -1) {
+		  ring = gamepads[i];
+		  break;
+		}		
 	}
+	
+	var updated = false;
+
+	if (ring) {	
+		for (var i=0; i<ring.buttons.length; i++) 
+		{
+			var val = ring.buttons[i];
+			var touched = false;							
+		  
+			if (typeof(val) == "object") {	  			
+				if ('touched' in val) {
+				  touched = val.touched;
+				}			
+			}
+		  
+			if (pad.buttons[i] != touched) {
+				console.debug("button " + i, touched, ring.axes[0], ring.axes[1]);									
+				pad.buttons[i] = touched;
+				//updated = updated || true;
+			}
+		}
+
+	}
+	else	
   
-	if (guitar)
-	{		
-		var updated = false;		
+	if (guitar) {				
+		//console.debug("using guitar" + guitar.id, guitar);
 		
 		for (var i=0; i<guitar.buttons.length; i++) 
 		{
@@ -426,13 +458,13 @@ function updateStatus() {
 				pad.axis[TOUCH] = guitar.axes[TOUCH].toFixed(1);
 				updated = updated || true;				
 			}			
-		}
-		
-		if (updated) {
-			doChord();
-			updateCanvas();	
 		}				
 	}
+		
+	if (updated) {
+		doChord();
+		updateCanvas();	
+	}	
 	
 	window.setTimeout(updateStatus);
 }
@@ -492,7 +524,9 @@ async function setupUI(config,err) {
 	arrangerType.options[3] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
 	arrangerType.options[4] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");	
 	arrangerType.options[5] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
-	arrangerType.options[6] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");				
+	arrangerType.options[6] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");	
+	arrangerType.options[7] = new Option("Boss RC Loop Station", "rclooper", config.arranger == "rclooper");	
+	
 	let arrangerIndex = 0;
 	arrangerIndex = config.arranger == "ketron" ? 1 : arrangerIndex;
 	arrangerIndex = config.arranger == "modx" ? 2 : arrangerIndex;		
@@ -500,6 +534,7 @@ async function setupUI(config,err) {
 	arrangerIndex = config.arranger == "qy100" ? 4 : arrangerIndex;			
 	arrangerIndex = config.arranger == "microarranger" ? 5 : arrangerIndex;				
 	arrangerIndex = config.arranger == "giglad" ? 6 : arrangerIndex;				
+	arrangerIndex = config.arranger == "rclooper" ? 7 : arrangerIndex;	
 	arrangerType.selectedIndex = arrangerIndex;			
 	arranger = config.arranger;	
 	
@@ -787,6 +822,11 @@ function doBreak() {
 		
 	if (arranger == "giglad") {
 		doGigladFill();  			
+	}
+	else 
+		
+	if (arranger == "rclooper") {
+		doRcLooperFill(false);  			
 	} 	
 	else 	
 	
@@ -821,6 +861,11 @@ function doFill() {
 	}	
 	else 
 		
+	if (arranger == "rclooper") {
+		doRcLooperFill(false);  			
+	}	
+	else 
+		
 	if (arranger == "giglad") {
 		doGigladFill(); 		
 	} 	
@@ -830,6 +875,45 @@ function doFill() {
 		doModxFill();		
 	}
 }
+
+function doRcLooperFill(newSection) {
+	console.debug("doRcLooperFill", newSection, sectionChange);	
+
+	if (sectionChange == 0) {
+		if (newSection) {
+			output.sendControlChange (64, 127, 4); 			
+		} else {
+			output.sendControlChange (66, 127, 4); 
+			setTimeout(() => output.sendControlChange (64, 127, 4), 1000); 		
+		}
+	}
+	
+	if (sectionChange == 1) {
+		if (newSection) {
+			output.sendControlChange (65, 127, 4); 			
+		} else {		
+			output.sendControlChange (67, 127, 4); 	
+			setTimeout(() => output.sendControlChange (65, 127, 4), 1000); 	
+		}			
+	}
+	if (sectionChange == 2) {
+		if (newSection) {
+			output.sendControlChange (66, 127, 4); 			
+		} else {		
+			output.sendControlChange (64, 127, 4); 
+			setTimeout(() => output.sendControlChange (66, 127, 4), 1000); 			
+		}
+	}		
+	if (sectionChange == 3) {
+		if (newSection) {
+			output.sendControlChange (67, 127, 4); 			
+		} else {		
+			output.sendControlChange (65, 127, 4); 
+			setTimeout(() => output.sendControlChange (67, 127, 4), 1000); 	
+		}			
+	}	
+}
+
 
 function doGigladFill() {
 	console.debug("doGigladFill " + sectionChange);	
@@ -978,7 +1062,8 @@ function checkForTouchArea() {
 
 function playChord(chord, root, type, bass) {
 	
-	if (arranger == "webaudio" && !styleStarted) return;
+	if (!styleStarted) return;
+	
 	console.debug("playChord", chord, root, type, bass);
 	
 	if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord)
@@ -1005,6 +1090,17 @@ function playChord(chord, root, type, bass) {
 			if (bassLoop) bassLoop.update(bassKey, false);
 			if (chordLoop) chordLoop.update(key, false);		
 		}
+		else
+		
+		if (arranger == "rclooper") {
+			console.debug("playChord rc looper ", currentRcLooperChord, root);
+	
+			if (currentRcLooperChord != root) {
+				if (root > 48 && root < 55) output.sendControlChange ((root - 28), 127, 4);	
+				currentRcLooperChord = root;		
+			}				
+		}
+		
 		
 		activeChord = chord;
 	}
@@ -1202,6 +1298,12 @@ function pressFootSwitch(code) {
 		if (code == 8 && bassLoop) bassLoop.muteToggle();		
 	}
 	else	
+		
+	if (arranger == "rclooper") {
+		if (code == 6 || code == 7) output.sendControlChange (69, 127, 4);	
+		//if (code == 8 || code == 9) output.sendControlChange (70, 127, 4);			
+	}
+	else
 	
     if (output) { 
 		output.sendSysex(0x26, [0x7C, 0x05, 0x01, 0x55 + code, 0x7F]);
@@ -1233,6 +1335,12 @@ function resetArrToA() {
 		if (output) output.sendProgramChange(80, 4);	
 		console.debug("resetArrToA Micro Arranger " + sectionChange);			
 	} 	
+	else	
+	
+	if (arranger == "rclooper") {
+		if (output) output.sendControlChange (64, 127, 4);
+		console.debug("resetArrToA RC Looper " + sectionChange);			
+	}	
 	else	
 	
 	if (arranger == "giglad") {
@@ -1312,7 +1420,7 @@ function playSectionCheck() {
 		if (sectionChange == 3) drumLoop.update(arrChanged ? 'arrd': 'fild', false);	
 	}
 	else {
-		changeArrSection();		
+		changeArrSection(arrChanged);		
 	}
 
 	if (window[realGuitarStyle]) {
@@ -1321,7 +1429,7 @@ function playSectionCheck() {
 
 }
 
-function changeArrSection() {
+function changeArrSection(changed) {
 	
 	if (arranger == "ketron") {
 		sendKetronSysex(3 + sectionChange);	
@@ -1332,7 +1440,13 @@ function changeArrSection() {
 	if (arranger == "qy100") {
 		doYamahaFill();
 		console.debug("changeArrSection QY100 " + sectionChange);			
-	} 	
+	} 
+	else 
+		
+	if (arranger == "rclooper") {
+		doRcLooperFill(changed);  	
+		console.debug("changeArrSection RC Looper " + sectionChange);			
+	}	
 	else 
 		
 	if (arranger == "giglad") {
@@ -1606,11 +1720,14 @@ function toggleStartStop() {
 						
 				} else {
 					drumLoop.start('int1');
+					//if (bassLoop) bassLoop.start('int1');
+					//if (chordLoop) chordLoop.start('int1');					
 					
-					//setTimeout(() => {
+					setTimeout(() => {
 						if (bassLoop) bassLoop.start("key" + (keyChange % 12));
 						if (chordLoop) chordLoop.start("key" + (keyChange % 12));			
-					//}, realdrumLoop.drums.int1.stop);
+					}, realdrumLoop.drums.int1.stop);
+					
 				}
 				
 			} else {
@@ -1663,6 +1780,14 @@ function toggleStartStop() {
 				styleStarted = false;
 			}
 		}	
+		else
+
+		if (arranger == "rclooper") 
+		{		
+			output.sendControlChange (68, 127, 4);			// START/STOP
+			console.debug("RC looper start/stop key pressed"); 
+			styleStarted = !styleStarted; 			
+		}
 		else
 
 		if (arranger == "giglad") 
@@ -2058,7 +2183,7 @@ function setupRealDrums() {
 	playButton.innerText = "Wait..";	
 	setTempo(realdrumLoop.bpm);
 	
-	drumLoop = new AudioLooper();
+	drumLoop = new AudioLooper("drum");
 	drumLoop.callback(soundsLoaded, eventStatus);				
 	drumLoop.addUri(realdrumLoop.drums, realdrumDevice, realdrumLoop.bpm);
 	
@@ -2066,13 +2191,13 @@ function setupRealDrums() {
 	chordLoop = null;
 	
 	if (realdrumLoop.bass) {
-		bassLoop = new AudioLooper();
+		bassLoop = new AudioLooper("bass");
 		bassLoop.callback(soundsLoaded, eventStatus);		
 		bassLoop.addUri(realdrumLoop.bass, realdrumDevice, realdrumLoop.bpm);		
 	}
 	
 	if (realdrumLoop.chords) {
-		chordLoop = new AudioLooper();
+		chordLoop = new AudioLooper("chord");
 		chordLoop.callback(soundsLoaded, eventStatus);		
 		chordLoop.addUri(realdrumLoop.chords, realdrumDevice, realdrumLoop.bpm);		
 	}	
