@@ -21,6 +21,7 @@ const STRUM = 9;
 const TOUCH = 5;
 const LOGO = 12;
 
+var footSwCode7Enabled = false;
 var playButton = null;
 var keyboard = new Map();
 var bassLoop = null;
@@ -257,7 +258,8 @@ function handleKeyboard(name, code) {
 		else 
 			
 		if (keyboard.get("Backspace") && keyboard.get("2")) {	// Mute Chord
-			pad.axis[TOUCH] = -0.4;
+			pad.axis[TOUCH] = 1.0;	
+			pad.axis[STRUM] = STRUM_DOWN;				
 		}
 		else 
 			
@@ -1300,8 +1302,17 @@ function pressFootSwitch(code) {
 	else	
 		
 	if (arranger == "rclooper") {
-		if (code == 6 || code == 7) output.sendControlChange (69, 127, 4);	
-		//if (code == 8 || code == 9) output.sendControlChange (70, 127, 4);			
+		if (code == 6) output.sendControlChange (69, 127, 4);
+		
+		if (code == 7) 
+		{
+			if (footSwCode7Enabled) {
+				output.sendControlChange (71, 127, 4);
+			} else {
+				output.sendControlChange (70, 127, 4);
+			}
+			footSwCode7Enabled = !footSwCode7Enabled;			
+		}
 	}
 	else
 	
@@ -1784,7 +1795,7 @@ function toggleStartStop() {
 
 		if (arranger == "rclooper") 
 		{		
-			output.sendControlChange (68, 127, 4);			// START/STOP
+			output.sendControlChange (68, 127, 4);						// START/STOP 
 			console.debug("RC looper start/stop key pressed"); 
 			styleStarted = !styleStarted; 			
 		}
