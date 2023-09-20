@@ -1097,12 +1097,14 @@ function playChord(chord, root, type, bass) {
 		if (arranger == "rclooper") {
 			console.debug("playChord rc looper ", currentRcLooperChord, root);
 	
-			if (currentRcLooperChord != root) {
-				if (root > 48 && root < 55) output.sendControlChange ((root - 28), 127, 4);	
-				currentRcLooperChord = root;		
+			if (currentRcLooperChord != root) 
+			{
+				if (root > 48 && root < 55) {
+					output.sendControlChange ((root - 28), 127, 4);	
+					currentRcLooperChord = root;						
+				}	
 			}				
-		}
-		
+		}		
 		
 		activeChord = chord;
 	}
@@ -1793,8 +1795,8 @@ function toggleStartStop() {
 		}	
 		else
 
-		if (arranger == "rclooper") 
-		{		
+		if (arranger == "rclooper") {		
+			currentRcLooperChord = 49;
 			output.sendControlChange (68, 127, 4);						// START/STOP 
 			console.debug("RC looper start/stop key pressed"); 
 			styleStarted = !styleStarted; 			
