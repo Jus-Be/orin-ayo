@@ -1099,38 +1099,38 @@ function playChord(chord, root, type, bass) {
 		if (padsDevice) {
 			console.debug("playChord pads", chord);
 		
-			const rootNote = (chord.length == 4 ? chord[1] : chord[0]);			
+			const rootNote = (chord.length == 4 ? chord[0] + 24 : chord[0]);			
 			const thirdNote = (chord.length == 4 ? chord[2] : chord[1]);	
 			const fifthNote = (chord.length == 4 ? chord[3] : chord[2]);				
-			
+
 			if (padsMode == 1) {
-				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(chord, 1, {velocity: 0.5});		// up chord
-				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(chord, 1, {velocity: 0.5});   	// down	chord				
-			}
-			else
-				
-			if (padsMode == 2) {
-				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(chord, 1, {velocity: 0.5});		// up chord
-				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(rootNote, 1, {velocity: 0.5});   // down	root				
-			}	
-			else
-				
-			if (padsMode == 3) {
 				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(rootNote, 1, {velocity: 0.5});		// up root
 				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(rootNote, 1, {velocity: 0.5});   // down	root				
 			}		
 			else
 				
-			if (padsMode == 4) {
+			if (padsMode == 2) {
+				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(chord, 1, {velocity: 0.5});		// down chord
+				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(rootNote, 1, {velocity: 0.5});     // up	root				
+			}	
+			else
+				
+			if (padsMode == 3) {
 				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(thirdNote, 1, {velocity: 0.5});	// up third
 				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(rootNote, 1, {velocity: 0.5});   // down	root				
 			}
 			else
 				
-			if (padsMode == 5) {
+			if (padsMode == 4) {
 				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(fifthNote, 1, {velocity: 0.5});	// up fifth
 				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(rootNote, 1, {velocity: 0.5});   // down	root				
-			}						
+			}
+			else
+				
+			if (padsMode == 5) {
+				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(chord, 1, {velocity: 0.5});		// up chord
+				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(chord, 1, {velocity: 0.5});   	// down	chord				
+			}			
 		}
 		
 		if (styleStarted) {		
@@ -1450,7 +1450,11 @@ function stopChord() {
    {
         console.debug("stopChord", pad)
         if (output) output.stopNote(activeChord, [4], {velocity: 0.5}); 
-		if (padsDevice) padsDevice.stopNote(activeChord, 1, {velocity: 0.5}); 
+		
+		if (padsDevice) {
+			padsDevice.stopNote(activeChord, 1, {velocity: 0.5}); 
+			if (activeChord.length == 4) padsDevice.stopNote(activeChord[0] + 24, 1, {velocity: 0.5}); 
+		}
         activeChord = null;
    }
 }
