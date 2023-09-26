@@ -35,6 +35,7 @@ var realGuitarStyle = "none";
 var output = null;
 var input = null;
 var forward = null;
+var padsDevice = null;
 var chordTracker = null;
 var orinayo = null;
 var orinayo_section = null;
@@ -43,12 +44,13 @@ var statusMsg = null;
 var base = BASE;
 var key = "C"
 var keyChange = 0;
+var padsMode = 1;
 var sectionChange = 0;
 var rgIndex = 0;
 var nextRgIndex = 0;
 var styleStarted = false;
 var activeChord = null;
-var currentRcLooperChord = null;
+var currentRcLooperChord = 49;
 var currentPlayNote;
 var tempoCanvas = null;
 var nextBeatTime = 0;
@@ -498,6 +500,7 @@ async function setupUI(config,err) {
 	const midiIn = document.getElementById("midiInSel");
 	const midiOut = document.getElementById("midiOutSel");
 	const midiFwd = document.getElementById("midiFwdSel");
+	const midiPads = document.getElementById("midiPadsSel");	
 	const midiChordTracker = document.getElementById("midiChordTrackerSel");
 	const realDrumsDevice = document.getElementById("realdrumLoopDevice");			
 	const realDrumsLoop = document.getElementById("realdrumLoopLoop");	
@@ -544,6 +547,7 @@ async function setupUI(config,err) {
    
 	midiOut.options[0] = new Option("**UNUSED**", "midiOutSel");
 	midiFwd.options[0] = new Option("**UNUSED**", "midiFwdSel");
+	midiPads.options[0] = new Option("**UNUSED**", "midiPadsSel");	
 	midiChordTracker.options[0] = new Option("**UNUSED**", "midiChordTrackerSel");
 	midiIn.options[0] = new Option("**UNUSED**", "midiInSel");
 	realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice");
@@ -558,6 +562,14 @@ async function setupUI(config,err) {
 			output = WebMidi.outputs[i];
 		}
 		midiOut.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, outSelected, outSelected);
+
+		let padsSelected = false;
+		
+		if (config.padsDevice && config.padsDevice == WebMidi.outputs[i].name) {
+			padsSelected = true;
+			padsDevice = WebMidi.outputs[i];
+		}
+		midiPads.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, padsSelected, padsSelected);
 
 		let fwdSelected = false;
 		
@@ -607,20 +619,16 @@ async function setupUI(config,err) {
 			console.debug("selected output midi port", output, midiOut.value);
 		}
 	});
-
-	arrangerType.addEventListener("click", function()
-	{
-		arranger = arrangerType.value;
-		setGigladUI();
-		console.debug("selected arranger type", arranger, arrangerType.value);				
-		saveConfig();
-	});
 	
-	realguitar.addEventListener("click", function()
+	if (!err) midiPads.addEventListener("click", function()
 	{
-		realGuitarStyle = realguitar.value;
-		console.debug("selected realguitar style", realGuitarStyle, realguitar.value);				
-		saveConfig();
+		padsDevice = null;
+
+		if (midiPads.value != "midiPadsSel") {
+			padsDevice = WebMidi.getOutputByName(midiPads.value);
+			saveConfig();			
+			console.debug("selected pads midi port", padsDevice, midiPads.value);
+		}
 	});
 
 	if (!err) midiFwd.addEventListener("click", function()
@@ -645,6 +653,22 @@ async function setupUI(config,err) {
 			saveConfig();			
 			console.debug("selected chordTracker midi port", chordTracker, midiChordTracker.value);
 		}
+	});
+	
+
+	arrangerType.addEventListener("click", function()
+	{
+		arranger = arrangerType.value;
+		setGigladUI();
+		console.debug("selected arranger type", arranger, arrangerType.value);				
+		saveConfig();
+	});
+	
+	realguitar.addEventListener("click", function()
+	{
+		realGuitarStyle = realguitar.value;
+		console.debug("selected realguitar style", realGuitarStyle, realguitar.value);				
+		saveConfig();
 	});
 	
 	for (var i=0; i<song_sequences.length; i++) {
@@ -775,6 +799,7 @@ function saveConfig() {
 	config.keyChange = keyChange;
     config.output = output ? output.name : null;
     config.forward = forward ? forward.name : null;
+    config.padsDevice = padsDevice ? padsDevice.name : null;	
 	config.chordTracker = chordTracker ? chordTracker.name : null;
     config.input = input ? input.name : null;
 	config.arranger = arranger;
@@ -879,6 +904,8 @@ function doFill() {
 }
 
 function doRcLooperFill(newSection) {
+	if (!output) return;
+	
 	console.debug("doRcLooperFill", newSection, sectionChange);	
 
 	if (sectionChange == 0) {
@@ -916,8 +943,8 @@ function doRcLooperFill(newSection) {
 	}	
 }
 
-
 function doGigladFill() {
+	if (!output) return;	
 	console.debug("doGigladFill " + sectionChange);	
 
 	if (sectionChange == 0) {
@@ -939,6 +966,7 @@ function doGigladFill() {
 }
 
 function doModxFill() {
+	if (!output) return;	
 	console.debug("doModxFill " + sectionChange);	
 	
 	if (arranger == "modx") 
@@ -984,6 +1012,7 @@ function doModxFill() {
 }
 
 function doKorgFill() {
+	if (!output) return;	
 	console.debug("doKorgFill " + arranger);			
 	const tempArr = sectionChange % 2;
 	
@@ -1062,49 +1091,85 @@ function checkForTouchArea() {
 	}			
 }
 
-function playChord(chord, root, type, bass) {
-	
-	if (!styleStarted) return;
-	
+function playChord(chord, root, type, bass) {	
 	console.debug("playChord", chord, root, type, bass);
 	
 	if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord)
-	{
-		console.debug("playChord", chord);
+	{		
+		if (padsDevice) {
+			console.debug("playChord pads", chord);
 		
-		if (output) {			
-			if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});		// up
-			if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   	// down					
-		}
-				
-		if (chordTracker) {		
-			const trasposedRoot = transposeNote(root);
-			const transposedBass = transposeNote(bass);
-			chordTracker.sendSysex(0x43, [0x7E, 0x02, trasposedRoot, type, transposedBass, type]);				
-		}
-		
-		if (arranger == "webaudio" && realdrumLoop) {
-			const chordNote = (chord.length == 4 ? chord[1] : chord[0]) % 12;
-			const chordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")))
-			const key = "key" + chordNote + "_" + chordType + "_" + SECTION_IDS[sectionChange];
-			const bassKey = "key" + (chord[0] % 12) + "_" + chordType + "_" + SECTION_IDS[sectionChange];
+			const rootNote = (chord.length == 4 ? chord[1] : chord[0]);			
+			const thirdNote = (chord.length == 4 ? chord[2] : chord[1]);	
+			const fifthNote = (chord.length == 4 ? chord[3] : chord[2]);				
 			
-			if (bassLoop) bassLoop.update(bassKey, false);
-			if (chordLoop) chordLoop.update(key, false);		
+			if (padsMode == 1) {
+				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(chord, 1, {velocity: 0.5});		// up chord
+				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(chord, 1, {velocity: 0.5});   	// down	chord				
+			}
+			else
+				
+			if (padsMode == 2) {
+				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(chord, 1, {velocity: 0.5});		// up chord
+				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(rootNote, 1, {velocity: 0.5});   // down	root				
+			}	
+			else
+				
+			if (padsMode == 3) {
+				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(rootNote, 1, {velocity: 0.5});		// up root
+				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(rootNote, 1, {velocity: 0.5});   // down	root				
+			}		
+			else
+				
+			if (padsMode == 4) {
+				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(thirdNote, 1, {velocity: 0.5});	// up third
+				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(rootNote, 1, {velocity: 0.5});   // down	root				
+			}
+			else
+				
+			if (padsMode == 5) {
+				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(fifthNote, 1, {velocity: 0.5});	// up fifth
+				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(rootNote, 1, {velocity: 0.5});   // down	root				
+			}						
 		}
-		else
 		
-		if (arranger == "rclooper") {
-			console.debug("playChord rc looper ", currentRcLooperChord, root);
-	
-			if (currentRcLooperChord != root) 
-			{
-				if (root > 48 && root < 55) {
-					output.sendControlChange ((root - 28), 127, 4);	
-					currentRcLooperChord = root;						
-				}	
-			}				
-		}		
+		if (styleStarted) {		
+			console.debug("playChord output", chord);
+			
+			if (output) {			
+				if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});		// up
+				if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   	// down					
+			}
+					
+			if (chordTracker) {		
+				const trasposedRoot = transposeNote(root);
+				const transposedBass = transposeNote(bass);
+				chordTracker.sendSysex(0x43, [0x7E, 0x02, trasposedRoot, type, transposedBass, type]);				
+			}
+			
+			if (arranger == "webaudio" && realdrumLoop) {
+				const chordNote = (chord.length == 4 ? chord[1] : chord[0]) % 12;
+				const chordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")))
+				const key = "key" + chordNote + "_" + chordType + "_" + SECTION_IDS[sectionChange];
+				const bassKey = "key" + (chord[0] % 12) + "_" + chordType + "_" + SECTION_IDS[sectionChange];
+				
+				if (bassLoop) bassLoop.update(bassKey, false);
+				if (chordLoop) chordLoop.update(key, false);		
+			}
+			else
+			
+			if (arranger == "rclooper" && output) {
+				console.debug("playChord rc looper ", currentRcLooperChord, root);
+		
+				if (currentRcLooperChord != root) 
+				{
+					if (root > 48 && root < 55) {
+						output.sendControlChange ((root - 28), 127, 4);	
+						currentRcLooperChord = root;						
+					}	
+				}				
+			}
+		}			
 		
 		activeChord = chord;
 	}
@@ -1303,7 +1368,7 @@ function pressFootSwitch(code) {
 	}
 	else	
 		
-	if (arranger == "rclooper") {
+	if (arranger == "rclooper" && output) {
 		if (code == 6) output.sendControlChange (69, 127, 4);
 		
 		if (code == 7) 
@@ -1384,7 +1449,8 @@ function stopChord() {
    if (activeChord && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN))
    {
         console.debug("stopChord", pad)
-        if (output) output.stopNote(activeChord, [4], {velocity: 0.5});     
+        if (output) output.stopNote(activeChord, [4], {velocity: 0.5}); 
+		if (padsDevice) padsDevice.stopNote(activeChord, 1, {velocity: 0.5}); 
         activeChord = null;
    }
 }
@@ -1520,12 +1586,28 @@ function doChord() {
 
   if (pad.buttons[START] || pad.buttons[STARPOWER])
   {
+	if (pad.buttons[START]) {
+		padsMode = 0;
+		
+		if (pad.buttons[GREEN]) padsMode = 1;	// full chord up/down
+		if (pad.buttons[RED]) padsMode = 2;		// chord up/root note down	
+		if (pad.buttons[YELLOW]) padsMode = 3;	// root note up/down
+		if (pad.buttons[BLUE]) padsMode = 4;	// 3rd note up/root note down
+		if (pad.buttons[ORANGE]) padsMode = 5;	// 5th note up/root note down
+	}
     playSectionCheck()
   }
 
   if (pad.buttons[LOGO])
   {
-	toggleStartStop();
+	if (pad.buttons[YELLOW] && pad.buttons[BLUE]) {	
+		styleStarted = false;	
+		resetArrToA();
+		playButton.innerText = !styleStarted ? "Play" : "Stop";				
+		
+	} else {	
+		toggleStartStop();
+	}
   }  
 
    if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN)) {
@@ -1796,7 +1878,6 @@ function toggleStartStop() {
 		else
 
 		if (arranger == "rclooper") {		
-			currentRcLooperChord = 49;
 			output.sendControlChange (68, 127, 4);						// START/STOP 
 			console.debug("RC looper start/stop key pressed"); 
 			styleStarted = !styleStarted; 			
