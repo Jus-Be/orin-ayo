@@ -1591,7 +1591,7 @@ function changeArrSection(changed) {
 		if (changed) {
 			aerosPart = (sectionChange == 0 || sectionChange == 2) ? 1 : 2;
 			output.sendControlChange (113, 80 + aerosPart, 4);	// switch to chord part	
-			setTimeout(() => output.sendControlChange (38, 60 + aerosChordTrack, 4), 300);				
+			setTimeout(() => output.sendControlChange (39, aerosChordTrack, 4), 300);				
 		}
 		console.debug("changeArrSection Aeros Looper " + sectionChange);			
 	}
