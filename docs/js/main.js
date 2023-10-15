@@ -50,7 +50,9 @@ var rgIndex = 0;
 var nextRgIndex = 0;
 var styleStarted = false;
 var activeChord = null;
-var currentRcLooperChord = 49;
+var rcLooperChord = 0;
+var aerosPart = 1;
+var aerosChordTrack = 1;
 var currentPlayNote;
 var tempoCanvas = null;
 var nextBeatTime = 0;
@@ -531,6 +533,7 @@ async function setupUI(config,err) {
 	arrangerType.options[5] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
 	arrangerType.options[6] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");	
 	arrangerType.options[7] = new Option("Boss RC Loop Station", "rclooper", config.arranger == "rclooper");	
+	arrangerType.options[8] = new Option("Aeros Loop Studio", "aeroslooper", config.arranger == "aeroslooper");	
 	
 	let arrangerIndex = 0;
 	arrangerIndex = config.arranger == "ketron" ? 1 : arrangerIndex;
@@ -540,6 +543,7 @@ async function setupUI(config,err) {
 	arrangerIndex = config.arranger == "microarranger" ? 5 : arrangerIndex;				
 	arrangerIndex = config.arranger == "giglad" ? 6 : arrangerIndex;				
 	arrangerIndex = config.arranger == "rclooper" ? 7 : arrangerIndex;	
+	arrangerIndex = config.arranger == "aeroslooper" ? 8 : arrangerIndex;		
 	arrangerType.selectedIndex = arrangerIndex;			
 	arranger = config.arranger;	
 	
@@ -852,6 +856,14 @@ function doBreak() {
 	}
 	else 
 		
+	if (arranger == "aeroslooper") {
+		aerosPart = 3;
+		output.sendControlChange (113, 70 + aerosPart, 4);				// switch to aux part						
+		setTimeout(() => output.sendControlChange (39, 5, 4), 300);		// unmute break track						
+		
+	} 	
+	else 
+
 	if (arranger == "rclooper") {
 		doRcLooperFill(false);  			
 	} 	
@@ -887,6 +899,13 @@ function doFill() {
 		doYamahaFill();		
 	}	
 	else 
+		
+	if (arranger == "aeroslooper") {
+		aerosPart = 3;		
+		output.sendControlChange (113, 70 + aerosPart, 4);				// switch to aux part						
+		setTimeout(() => output.sendControlChange (39, 4, 4), 300);		// unmute fill track			
+	}	
+	else
 		
 	if (arranger == "rclooper") {
 		doRcLooperFill(false);  			
@@ -1094,8 +1113,13 @@ function checkForTouchArea() {
 function playChord(chord, root, type, bass) {	
 	console.debug("playChord", chord, root, type, bass);
 	
-	if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord)
-	{		
+	if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord) {		
+		const chordNote = (chord.length == 4 ? chord[1] : chord[0]) % 12;
+		const chordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")))
+		const key = "key" + chordNote + "_" + chordType + "_" + SECTION_IDS[sectionChange];
+		const bassKey = "key" + (chord[0] % 12) + "_" + chordType + "_" + SECTION_IDS[sectionChange];
+
+	
 		if (padsDevice) {
 			console.debug("playChord pads", chord);
 		
@@ -1147,28 +1171,39 @@ function playChord(chord, root, type, bass) {
 				chordTracker.sendSysex(0x43, [0x7E, 0x02, trasposedRoot, type, transposedBass, type]);				
 			}
 			
-			if (arranger == "webaudio" && realdrumLoop) {
-				const chordNote = (chord.length == 4 ? chord[1] : chord[0]) % 12;
-				const chordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")))
-				const key = "key" + chordNote + "_" + chordType + "_" + SECTION_IDS[sectionChange];
-				const bassKey = "key" + (chord[0] % 12) + "_" + chordType + "_" + SECTION_IDS[sectionChange];
-				
+			if (arranger == "webaudio" && realdrumLoop) {				
 				if (bassLoop) bassLoop.update(bassKey, false);
 				if (chordLoop) chordLoop.update(key, false);		
 			}
 			else
 			
-			if (arranger == "rclooper" && output) {
-				console.debug("playChord rc looper ", currentRcLooperChord, root);
+			if ((arranger == "aeroslooper" || arranger == "rclooper") && output) {
+				console.debug("playChord rc looper ", rcLooperChord, root);
 		
-				if (currentRcLooperChord != root) 
+
+				if (arranger == "rclooper") 
+				{
+					if (rcLooperChord != root) 
+					{					
+						if (root > 48 && root < 55) {					
+							output.sendControlChange ((root - 28), 127, 4);	
+						}
+
+						rcLooperChord = root;	
+					}						
+				}
+				else
+					
+				if (arranger == "aeroslooper" && aerosPart < 3) 
 				{
 					if (root > 48 && root < 55) {
-						output.sendControlChange ((root - 28), 127, 4);	
-						currentRcLooperChord = root;						
-					}	
-				}				
-			}
+						aerosChordTrack = root - 48;							
+						output.sendControlChange (39, aerosChordTrack, 4);
+					}						
+				}										
+			}				
+		} else {
+			if (arranger == "aeroslooper" && aerosPart < 3) aerosChordTrack = root - 48;
 		}			
 		
 		activeChord = chord;
@@ -1368,15 +1403,30 @@ function pressFootSwitch(code) {
 	}
 	else	
 		
-	if (arranger == "rclooper" && output) {
-		if (code == 6) output.sendControlChange (69, 127, 4);
+	if (arranger == "aeroslooper" && output) {
+		aerosPart = 3;		
+		output.sendControlChange (113, 70 + aerosPart, 4);				// switch to aux part	
 		
-		if (code == 7) 
+		if (code == 6) {					
+			setTimeout(() => output.sendControlChange (39, 2, 4), 300);		// unmute drum A track	
+		}			
+		else
+			
+		if (code == 7) {					
+			setTimeout(() => output.sendControlChange (39, 3, 4), 300);		// unmute drum B 	
+		}
+	}
+	else	
+		
+	if (arranger == "rclooper" && output) {
+		if (code == 7) output.sendControlChange (69, 127, 4);	// mute/unmute drums
+		
+		if (code == 6) 
 		{
 			if (footSwCode7Enabled) {
-				output.sendControlChange (71, 127, 4);
+				output.sendControlChange (71, 127, 4);			// loop volume off 
 			} else {
-				output.sendControlChange (70, 127, 4);
+				output.sendControlChange (70, 127, 4)			// loop volume on
 			}
 			footSwCode7Enabled = !footSwCode7Enabled;			
 		}
@@ -1413,6 +1463,15 @@ function resetArrToA() {
 		if (output) output.sendProgramChange(80, 4);	
 		console.debug("resetArrToA Micro Arranger " + sectionChange);			
 	} 	
+	else	
+	
+	if (arranger == "aeroslooper") {
+		if (output) {
+			aerosPart = 1;		
+			output.sendControlChange (113, 70 + aerosPart, 4);				// switch to main part	
+		}
+		console.debug("resetArrToA Aeros Looper " + sectionChange);			
+	}
 	else	
 	
 	if (arranger == "rclooper") {
@@ -1524,6 +1583,18 @@ function changeArrSection(changed) {
 		doYamahaFill();
 		console.debug("changeArrSection QY100 " + sectionChange);			
 	} 
+	else 
+		
+	if (arranger == "aeroslooper") {
+		// auto-fill in loop. nothing to do if not changed
+		
+		if (changed) {
+			aerosPart = (sectionChange == 0 || sectionChange == 2) ? 1 : 2;
+			output.sendControlChange (113, 80 + aerosPart, 4);	// switch to chord part	
+			setTimeout(() => output.sendControlChange (38, 60 + aerosChordTrack, 4), 300);				
+		}
+		console.debug("changeArrSection Aeros Looper " + sectionChange);			
+	}
 	else 
 		
 	if (arranger == "rclooper") {
@@ -1881,8 +1952,50 @@ function toggleStartStop() {
 		}	
 		else
 
+		if (arranger == "aeroslooper") 
+		{				
+			if (!styleStarted) {				
+				console.debug("Aeros looper start key pressed");  
+				
+				if (output) {
+					if (pad.buttons[YELLOW] || pad.buttons[ORANGE] || pad.buttons[GREEN] || pad.buttons[RED] || pad.buttons[BLUE]) {
+
+						output.sendStart();	
+						output.sendControlChange (113, 73, 4);							// switch to aux part						
+						setTimeout(() => output.sendControlChange (39, 1, 4), 300);		// unmute intro track						
+						setTimeout(() => output.sendControlChange (113, 91, 4), 1000);	// switch to main part											
+					
+					} else {			
+						output.sendStart();	
+						output.sendControlChange (113, 71, 4);										// switch to aux part						
+						setTimeout(() => output.sendControlChange (39, aerosChordTrack, 4), 300);	// unmute chord track						
+					}										
+					
+				}     
+				styleStarted = true;
+			}
+			else {				
+				console.debug("Aeros looper stop key pressed");
+				
+				if (output) {
+					if (pad.buttons[YELLOW] || pad.buttons[ORANGE] || pad.buttons[GREEN] || pad.buttons[RED] || pad.buttons[BLUE]) {
+						output.sendControlChange (113, 73, 4);							// switch to aux part
+						setTimeout(() => output.sendControlChange (39, 6, 4), 300);		// unmute end track						
+						setTimeout(() => output.sendControlChange (43, 4, 4), 1000);	// stop at EOL
+
+
+					} else {
+						output.sendStop();						
+					}
+										
+				}	      
+				styleStarted = false;
+			}			
+		}
+		else
+
 		if (arranger == "rclooper") {		
-			output.sendControlChange (68, 127, 4);						// START/STOP 
+			output.sendControlChange (68, 127, 4);						
 			console.debug("RC looper start/stop key pressed"); 
 			styleStarted = !styleStarted; 			
 		}
