@@ -11,7 +11,7 @@ This is Orin Ayo in action on a typical Sunday Morning church service.
 
 The music is played live with a [Logitech Wireless Guitar Controller](https://www.amazon.co.uk/Logitech-Wireless-Guitar-Controller-Premiere/dp/B001MV7D10/ref=sr_1_16?crid=14Y5WHJKI2DVE). The wireless dongle is plugged into a MacAir laptop running Orin Ayo and [Musiclab's Real LPC](https://www.musiclab.com/products/reallpc/info.html). The [Boss RC 600 Loop Station](https://www.boss.info/global/products/rc-600) is connected to the MacAir by MIDI and audio with a USB cable. It sounds like a backing track, but those chord loops (C, F, G & Am) are played live on the logitech with realtime controls to the drum machine in the RC 600.
 
-Currently, the following devices and applications are supported:
+Currently, the following devices and applications are supported and confirmed working:
 
 ### Arrangers
 - Ketron Event keyboard, Event-X module, SD9 Series keyboards and sound module (SD90)
@@ -19,6 +19,8 @@ Currently, the following devices and applications are supported:
 - Yamaha QY100
 - Korg Micro Arranger
 - Giglad (Application)
+
+The Yamaha MODX and Montage are not really arrangers, but have arpeggios that can be triggeresd via MIDI making them suitable for Orin Ayo. Only the high-end Yamaha PSR arrangers can be controlled by MIDI and these have not been tested. As they use the same sysex messages like the QR100, it may work or not work. The same applies for Korg. It has been tested with Micro Arranger, but now with the high-end PA series. The new Korg I3 is a big disappointment as it has same engine as a Micro Arranger, but midi control of styles was dropped.
 
 ### Loopers
 - Boss RC 600 Loop Station
