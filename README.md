@@ -20,7 +20,7 @@ Currently, the following devices and applications are supported and confirmed wo
 - Korg Micro Arranger
 - Giglad (Application)
 
-The Yamaha MODX and Montage are not really arrangers, but have arpeggios that can be triggeresd via MIDI making them suitable for Orin Ayo. Only the high-end Yamaha PSR arrangers can be controlled by MIDI and these have not been tested. As they use the same sysex messages like the QR100, it may work or not work. The same applies for Korg. It has been tested with Micro Arranger, but now with the high-end PA series. The new Korg I3 is a big disappointment as it has same engine as a Micro Arranger, but midi control of styles was dropped.
+The Yamaha MODX and Montage are not really arrangers, but have arpeggios that can be triggeresd via MIDI making them suitable for Orin Ayo. Only the high-end Yamaha PSR arrangers can be controlled by MIDI and these have not been tested. As they use the same sysex messages like the QR100, it may or not work. The same applies for Korg. It has been tested with the Micro Arranger, but not with the high-end PA series. The new Korg I3 was promising as it has same engine as a Micro Arranger, but midi control of styles was dropped like Yamaha PSR mid-range arrangers.
 
 ### Loopers
 - Boss RC 600 Loop Station
