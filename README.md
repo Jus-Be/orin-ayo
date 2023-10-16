@@ -5,9 +5,11 @@ Orin Ayo is an Arranger/Looper Controller.
 
 It turns a Guitar Hero game controller HID device into a MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a Guitar Hero games controller. 
 
-This is Orin Ayo in action on a typical Sunday Morning church service.
-
 https://github.com/Jus-Be/orin-ayo/assets/110731/cd309c44-3d11-4fe2-b19d-0ca406c18fa5
+
+This is Orin Ayo in action on a typical Sunday Morning church service. 
+
+The music is played live with a [Logitech Wireless Guitar Controller](https://www.amazon.co.uk/Logitech-Wireless-Guitar-Controller-Premiere/dp/B001MV7D10/ref=sr_1_16?crid=14Y5WHJKI2DVE). The wireless dongle is plugged into a MacAir laptop running Orin Ayo and [Musiclab's Real LPC](https://www.musiclab.com/products/reallpc/info.html). The [Boss RC 600 Loop Station](https://www.boss.info/global/products/rc-600) is connected to the MacAir by MIDI and audio with a USB cable. It sounds like a backing track, but those chord loops (C, F, G & Am) are played live on the logitech with realtime controls to the drum machine in the RC 600.
 
 Currently, the following devices and applications are supported:
 
