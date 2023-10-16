@@ -3,7 +3,7 @@
 
 Orin Ayo is an Arranger/Looper Controller. 
 
-It turns a Guitar Hero game controller HID device into a MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a Guitar Hero games controller. 
+It turns a Guitar Hero game controller HID device into a MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a Guitar Hero games controller.
 
 https://github.com/Jus-Be/orin-ayo/assets/110731/cd309c44-3d11-4fe2-b19d-0ca406c18fa5
 
@@ -29,7 +29,7 @@ Orin Ayo can also play the strum/pick patterns for the virtual guitars from Musi
 <img src=https://jus-be.github.io/orin-ayo/assets/guitar_hero.png>
 
 # Chords
-The five colored fret buttons generate CHORD midi notes which are send on MIDI channel 4 when the strum bar goes up or down.  The chord mapping in Nashville number format is fixed as follows:
+The five colored fret buttons generate CHORD midi notes which are send on MIDI channel 4 when the strum bar goes up or down.  Twenty chord shapes are supported. There are six basic popular chords (I, IIm, IIIm, IV, V & VIm) playable with a single or two fingers and fourteen other less used chords requring two, three or even four fingers. The chord mapping in Nashville number format is fixed for now. It will become configureable in a future version.
 
 ## Basic
 
@@ -49,16 +49,19 @@ Chord | Green    | Red      | Yellow  | Blue    |  Orange
 1sus  |          |          |   X     |         |  X
 1/3   |          |          |   X     |  X      |  
 2     |          |   X      |         |  X      | 
+3b    |          |   X      |         |  X      |  X
 3     |    X     |          |   X     |  X      |
+4min  |          |   X      |   X     |  X      |  X
 4/5   |          |          |   X     |  X      |  X
 4/6   |          |          |         |  X      |  X
 5sus  |    X     |          |   X     |         |  
+5min  |    X     |          |         |         |  X
 5/7   |    X     |   X      |         |         | 
 5b    |    X     |   X      |   X     |         | 
 6     |          |   X      |   X     |  X      | 
 7b    |          |   X      |   X     |         | 
 
-Please note that the RC-600 Loop Station and Aeros Loop Studio have only six audio tracks. They can only play the basic six chords. However, when played together with the virtual guitars from Music Labs (RealGuitar, RealLPC, etc) in joystick mode, the virtual guitars can handle the advanced mode and fill in the missing gaps. Arrangers do not have ths limitation but do not sound as realistic as a looper with the exception of the Ketron Event which can play audio tracks in its styles.
+Please note that the RC-600 Loop Station and Aeros Loop Studio have only six audio tracks. They can only play the basic six chords. However, when played together with the virtual guitars from Music Labs (RealGuitar, RealLPC, etc) in joystick mode as heard in the demo song above, the virtual guitars can handle the advanced mode chords and fill in the missing gaps. Arrangers do not have ths limitation but do not sound as realistic as a looper with the exception of the Ketron Event series which can play audio tracks in their styles.
 
 # Start and Stop
 The button on the Directonal (logo) knob used with the five colored buttons determines how the arranger style starts and stops. 
@@ -82,7 +85,9 @@ When the Star-Power button is pressed on its own, it will cycles the style varia
 The START button cycles back down from A<--B<--C<--D<--A. 
 
 # Changing Song Key
-Moving the Directonal (logo) knob right or up steps the playing key up ( C -> C#) and moving it left or down steps the playing key down (C -> B)
+Moving the Directonal (logo) knob right or up steps the playing key up ( C -> C#) and moving it left or down steps the playing key down (C -> B). 
+
+Please note that this does nothing with a Looper. You have to preload the Looper with the audio files matching the song key. Both the RC 600 Loop Station and Aeros Loop Studio have memories to preload as many songs in all the needed keys for the live event. 
 
 # Other Features 
 Pressing down on any of the five sections in the slider bar at the same time the strum bar is moved up or down can be used to perform other features.
