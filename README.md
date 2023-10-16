@@ -1,19 +1,24 @@
 # Summary
 <img src=https://jus-be.github.io/orin-ayo/assets/orinayo.png>
 
-Orin Ayo is an Arranger Controller. 
+Orin Ayo is an Arranger/Looper Controller. 
 
-It turns a Guitar Hero game controller HID device into a MIDI controller for an Arranger keyboard, module, device or application. It lets you play chords and control an arranger with the buttons on a Guitar hero games controller. 
+It turns a Guitar Hero game controller HID device into a MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a Guitar hero games controller. 
 
-Currently, the following arrangers are supported:
+Currently, the following devices and applications are supported:
 
-- Ketron Event, SD9 Series keyboards and sound module (SD90)
+### Arrangers
+- Ketron Event keyboard, Event-X module, SD9 Series keyboards and sound module (SD90)
 - Yamaha MODX and Montage
 - Yamaha QY100
 - Korg Micro Arranger
 - Giglad (Application)
 
-Orin Ayo can also play some strum/pick patterns for the virtual guitars from Music Labs like RealGuitar, RealLPC, etc.
+### Loopers
+- Boss RC 600 Loop Station
+- Aeros Loop Studio
+
+Orin Ayo can also play the strum/pick patterns for the virtual guitars from Music Labs like RealGuitar, RealLPC, etc in joystick mode along with the arranger or looper patterns.
 
 <img src=https://jus-be.github.io/orin-ayo/assets/guitar_hero.png>
 
@@ -46,6 +51,8 @@ Chord | Green    | Red      | Yellow  | Blue    |  Orange
 5b    |    X     |   X      |   X     |         | 
 6     |          |   X      |   X     |  X      | 
 7b    |          |   X      |   X     |         | 
+
+Please note that the RC-600 Loop Station and Aeros Loop Studio have only six audio tracks. They can only play the basic six chords. However, when played together with the virtual guitars from Music Labs (RealGuitar, RealLPC, etc) in joystick mode, the virtual guitars can handle the advanced mode and fill in the missing gaps. Arrangers do not have ths limitation but do not sound as realistic as a looper with the exception of the Ketron Event which can play audio tracks in its styles.
 
 # Start and Stop
 The button on the Directonal (logo) knob used with the five colored buttons determines how the arranger style starts and stops. 
