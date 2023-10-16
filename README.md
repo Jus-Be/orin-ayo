@@ -3,7 +3,11 @@
 
 Orin Ayo is an Arranger/Looper Controller. 
 
-It turns a Guitar Hero game controller HID device into a MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a Guitar hero games controller. 
+It turns a Guitar Hero game controller HID device into a MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a Guitar Hero games controller. 
+
+This is Orin Ayo in action on a typical Sunday Morning church service.
+
+https://github.com/Jus-Be/orin-ayo/assets/110731/cd309c44-3d11-4fe2-b19d-0ca406c18fa5
 
 Currently, the following devices and applications are supported:
 
