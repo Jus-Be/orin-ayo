@@ -777,17 +777,17 @@ async function setupUI(config,err) {
 
 	if (input)
 	{
-		input.addListener('noteon', 1, function (e)
-		{
-		
-		console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note);
+		input.addListener('noteon', 1, function (e) {		
+			console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note);
+			
 			orinayo.innerHTML = e.note.name;
 			key = e.note.name;
 			base = BASE + (e.note.number % 12);
 		});
 
-		input.addListener('controlchange', "all", function (e)
-		{
+		input.addListener('controlchange', "all", function (e) {
+			console.debug("Received control-change (CC)", e?.controller?.number, e.value);	
+					
 			if (e?.controller.number == 113) 
 			{					
 				if (e.value == 0) {
