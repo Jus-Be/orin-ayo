@@ -796,7 +796,7 @@ async function setupUI(config,err) {
 					
 					if (aerosAux) {	
 						aerosAux = false;
-						aerosAuxMode = true;
+
 						// switch to aux part
 						
 						if (aerosChordTrack == 1) { // intro
@@ -812,6 +812,12 @@ async function setupUI(config,err) {
 						
 					}					
 				}
+				else
+					
+				if (e.value == 3) {	// switched to aux mode
+					aerosAuxMode = true;
+				}					
+				
 			}
 		});
 	}									
