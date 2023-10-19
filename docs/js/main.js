@@ -1571,34 +1571,35 @@ function stopChord() {
 
 function playSectionCheck() {
 	let arrChanged = false;
-	
-	if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) {
-					
-		if (pad.buttons[STARPOWER]) {	// next variation
-			sectionChange++;
-			if (sectionChange > 3) sectionChange = 0;	
-			
-			if (window[realGuitarStyle]) {
-				nextRgIndex++;
-				if (nextRgIndex ==  window[realGuitarStyle].length) nextRgIndex = 0;
-			}
-
-		} else {						// prev variation
-			sectionChange--;		
-			if (sectionChange < 0) sectionChange = 3;
-
-			if (window[realGuitarStyle]) {			
-				nextRgIndex--;				
-				if (nextRgIndex < 0) nextRgIndex = window[realGuitarStyle].length - 1;		
-			}				
+				
+	if (pad.buttons[STARPOWER]) {	// next variation
+		sectionChange++;
+		if (sectionChange > 3) sectionChange = 0;	
+		
+		if (window[realGuitarStyle]) {
+			nextRgIndex++;
+			if (nextRgIndex ==  window[realGuitarStyle].length) nextRgIndex = 0;
 		}
-		arrChanged = true;
-	}
+		arrChanged = true;	
+	} 
 	else 
 		
-	if (pad.buttons[START]) {
-		sectionChange = 0;		// reset to variation arra
-		arrChanged = true;		
+	if (pad.buttons[START] || pad.buttons[STARPOWER]) {						// prev variation
+		sectionChange--;		
+		if (sectionChange < 0) sectionChange = 3;
+
+		if (window[realGuitarStyle]) {			
+			nextRgIndex--;				
+			if (nextRgIndex < 0) nextRgIndex = window[realGuitarStyle].length - 1;		
+		}
+		arrChanged = true;			
+	}	
+	
+	if (arrChanged) 
+	{
+		if (pad.buttons[YELLOW] || pad.buttons[BLUE] || pad.buttons[ORANGE] || pad.buttons[RED] || pad.buttons[GREEN]) {
+			if (pad.buttons[START]) sectionChange = 0;	// reset to variation A
+		}
 	}
 	
 	console.debug("playSectionCheck pressed " + arrChanged);
