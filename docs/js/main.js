@@ -54,6 +54,7 @@ var rcLooperChord = 0;
 var aerosPart = 1;
 var aerosChordTrack = 1;
 var aerosAux = false;
+var aerosAuxMode = false;
 var currentPlayNote;
 var tempoCanvas = null;
 var nextBeatTime = 0;
@@ -789,12 +790,13 @@ async function setupUI(config,err) {
 		{
 			if (e?.controller.number == 113) 
 			{					
-				if (e.value != 0) {
+				//if (e.value == 0) {
 					console.debug("Aeros section change message", aerosChordTrack);			  
 					output.sendControlChange (39, aerosChordTrack, 4); 	// play current chord on new part					
 					
 					if (aerosAux) {	
 						aerosAux = false;
+						aerosAuxMode = true;
 						// switch to aux part
 						
 						if (aerosChordTrack == 1) { // intro
@@ -809,7 +811,7 @@ async function setupUI(config,err) {
 						}					
 						
 					}					
-				}
+				//}
 			}
 		});
 	}									
@@ -884,7 +886,12 @@ function doBreak() {
 	if (arranger == "aeroslooper") {
 		aerosAux = true;
 		aerosChordTrack = 4;
-		output.sendControlChange (113, 73, 4);	// switch to aux part												
+		
+		if (aerosAuxMode) {
+			output.sendControlChange (39, aerosChordTrack, 4);
+		} else  {
+			output.sendControlChange (113, 73, 4);	// switch to aux part												
+		}
 		
 	} 	
 	else 
@@ -927,8 +934,13 @@ function doFill() {
 		
 	if (arranger == "aeroslooper") {
 		aerosAux = true;	
-		aerosChordTrack = 5;		
-		output.sendControlChange (113, 73, 4);	// switch to aux part									
+		aerosChordTrack = 5;
+		
+		if (aerosAuxMode) {
+			output.sendControlChange (39, aerosChordTrack, 4);
+		} else  {
+			output.sendControlChange (113, 73, 4);	// switch to aux part												
+		}								
 	}	
 	else
 		
@@ -1441,7 +1453,11 @@ function pressFootSwitch(code) {
 			aerosChordTrack = 3;	// drum B
 		}
 		
-		output.sendControlChange (113, 73, 4);				// switch to aux part	
+		if (aerosAuxMode) {
+			output.sendControlChange (39, aerosChordTrack, 4);
+		} else  {
+			output.sendControlChange (113, 73, 4);	// switch to aux part												
+		}
 		
 	}
 	else	
@@ -1616,6 +1632,7 @@ function changeArrSection(changed) {
 		
 	if (arranger == "aeroslooper") {
 		// auto-fill in loop. nothing to do if not changed
+		aerosAuxMode = false;
 		
 		if (changed) {
 			aerosPart = (sectionChange == 0 || sectionChange == 2) ? 1 : 2;
