@@ -790,7 +790,7 @@ async function setupUI(config,err) {
 			if (e?.controller.number == 113) 
 			{					
 				if (e.value == 0) {
-					console.debug("Aeros section change message", aerosPart, aerosChordTrack);			  
+					console.debug("Aeros section change message", aerosChordTrack);			  
 					output.sendControlChange (39, aerosChordTrack, 4); 	// play current chord on new part					
 					
 					if (aerosAux) {	
@@ -1184,12 +1184,7 @@ function playChord(chord, root, type, bass) {
 		
 		if (styleStarted) {		
 			console.debug("playChord output", chord);
-			
-			if (output) {			
-				if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});		// up
-				if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   	// down					
-			}
-					
+								
 			if (chordTracker) {		
 				const trasposedRoot = transposeNote(root);
 				const transposedBass = transposeNote(bass);
@@ -1226,8 +1221,13 @@ function playChord(chord, root, type, bass) {
 						console.debug("playChord aeros looper ", aerosChordTrack, aerosPart);						
 						output.sendControlChange (39, aerosChordTrack, 4);
 					}						
-				}										
-			}				
+				}	
+				
+			} else {
+				if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});		// up
+				if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   	// down					
+			}
+			
 		} else {
 			if (arranger == "aeroslooper" && aerosPart < 3) aerosChordTrack = root - 48;
 		}			
