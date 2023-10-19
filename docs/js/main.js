@@ -1736,11 +1736,13 @@ function doChord() {
 	}
   }  
 
-   if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN)) {
+   if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) {
 		checkForTouchArea();
    }
 
-  if ((pad.axis[STRUM] != STRUM_UP && pad.axis[STRUM] != STRUM_DOWN)) return;
+  if (pad.axis[STRUM] != STRUM_UP && pad.axis[STRUM] != STRUM_DOWN && !pad.buttons[START] && !pad.buttons[STARPOWER]) {
+	  return;
+  }
 
   // --- F/C
 
