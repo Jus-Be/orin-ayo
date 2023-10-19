@@ -790,7 +790,7 @@ async function setupUI(config,err) {
 		{
 			if (e?.controller.number == 113) 
 			{					
-				//if (e.value == 0) {
+				if (e.value == 0) {
 					console.debug("Aeros section change message", aerosChordTrack);			  
 					output.sendControlChange (39, aerosChordTrack, 4); 	// play current chord on new part					
 					
@@ -811,7 +811,7 @@ async function setupUI(config,err) {
 						}					
 						
 					}					
-				//}
+				}
 			}
 		});
 	}									
@@ -1632,9 +1632,9 @@ function changeArrSection(changed) {
 		
 	if (arranger == "aeroslooper") {
 		// auto-fill in loop. nothing to do if not changed
-		aerosAuxMode = false;
 		
 		if (changed) {
+			aerosAuxMode = false;			
 			aerosPart = (sectionChange == 0 || sectionChange == 2) ? 1 : 2;
 			output.sendControlChange (113, 80 + aerosPart, 4);			
 		}
