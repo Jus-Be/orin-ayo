@@ -53,6 +53,7 @@ var activeChord = null;
 var rcLooperChord = 0;
 var aerosPart = 1;
 var aerosChordTrack = 1;
+var aerosAux = false;
 var currentPlayNote;
 var tempoCanvas = null;
 var nextBeatTime = 0;
@@ -161,7 +162,7 @@ function onloadHandler() {
 	});
 	
 	playButton.addEventListener("click", function() {	
-		if (realdrumLoop) {
+		if (arranger == "webaudio" && realdrumLoop) {
 			
 			if (drumLoop) {
 				toggleStartStop();
@@ -777,7 +778,8 @@ async function setupUI(config,err) {
 	{
 		input.addListener('noteon', 1, function (e)
 		{
-			console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note);
+		
+		console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note);
 			orinayo.innerHTML = e.note.name;
 			key = e.note.name;
 			base = BASE + (e.note.number % 12);
@@ -785,9 +787,32 @@ async function setupUI(config,err) {
 
 		input.addListener('controlchange', "all", function (e)
 		{
-		  console.debug("Received 'controlchange' message", e);
+			if (e?.controller.number == 113) 
+			{					
+				if (e.value == 0) {
+					console.debug("Aeros section change message", aerosPart, aerosChordTrack);			  
+					output.sendControlChange (39, aerosChordTrack, 4); 	// play current chord on new part					
+					
+					if (aerosAux) {	
+						aerosAux = false;
+						// switch to aux part
+						
+						if (aerosChordTrack == 1) { // intro
+							console.debug("Aeros section intro message");						
+							setTimeout(() => output.sendControlChange (113, 91, 4), 300); // switch to main part at end of loop
+						}
+						else
+							
+						if (aerosChordTrack == 6) { // end
+							console.debug("Aeros section end message");							
+							setTimeout(() => output.sendControlChange (43, 3, 4), 300); // stop at end of loop
+						}					
+						
+					}					
+				}
+			}
 		});
-	}
+	}									
 	
 	enableSequencer(!!forward && realGuitarStyle != "none");
 	setupSongSequence(songSequence != null);	
@@ -857,9 +882,9 @@ function doBreak() {
 	else 
 		
 	if (arranger == "aeroslooper") {
-		aerosPart = 3;
-		output.sendControlChange (113, 70 + aerosPart, 4);				// switch to aux part						
-		setTimeout(() => output.sendControlChange (39, 5, 4), 300);		// unmute break track						
+		aerosAux = true;
+		aerosChordTrack = 4;
+		output.sendControlChange (113, 73, 4);	// switch to aux part												
 		
 	} 	
 	else 
@@ -901,9 +926,9 @@ function doFill() {
 	else 
 		
 	if (arranger == "aeroslooper") {
-		aerosPart = 3;		
-		output.sendControlChange (113, 70 + aerosPart, 4);				// switch to aux part						
-		setTimeout(() => output.sendControlChange (39, 4, 4), 300);		// unmute fill track			
+		aerosAux = true;	
+		aerosChordTrack = 5;		
+		output.sendControlChange (113, 73, 4);	// switch to aux part									
 	}	
 	else
 		
@@ -1178,7 +1203,7 @@ function playChord(chord, root, type, bass) {
 			else
 			
 			if ((arranger == "aeroslooper" || arranger == "rclooper") && output) {
-				console.debug("playChord rc looper ", rcLooperChord, root);
+				console.debug("playChord looper ", rcLooperChord, root);
 		
 
 				if (arranger == "rclooper") 
@@ -1197,7 +1222,8 @@ function playChord(chord, root, type, bass) {
 				if (arranger == "aeroslooper" && aerosPart < 3) 
 				{
 					if (root > 48 && root < 55) {
-						aerosChordTrack = root - 48;							
+						aerosChordTrack = root - 48;	
+						console.debug("playChord aeros looper ", aerosChordTrack, aerosPart);						
 						output.sendControlChange (39, aerosChordTrack, 4);
 					}						
 				}										
@@ -1404,17 +1430,19 @@ function pressFootSwitch(code) {
 	else	
 		
 	if (arranger == "aeroslooper" && output) {
-		aerosPart = 3;		
-		output.sendControlChange (113, 70 + aerosPart, 4);				// switch to aux part	
+		aerosAux = true;	
 		
 		if (code == 6) {					
-			setTimeout(() => output.sendControlChange (39, 2, 4), 300);		// unmute drum A track	
+			aerosChordTrack = 2;	// drum A	
 		}			
 		else
 			
 		if (code == 7) {					
-			setTimeout(() => output.sendControlChange (39, 3, 4), 300);		// unmute drum B 	
+			aerosChordTrack = 3;	// drum B
 		}
+		
+		output.sendControlChange (113, 73, 4);				// switch to aux part	
+		
 	}
 	else	
 		
@@ -1467,8 +1495,9 @@ function resetArrToA() {
 	
 	if (arranger == "aeroslooper") {
 		if (output) {
-			aerosPart = 1;		
-			output.sendControlChange (113, 70 + aerosPart, 4);				// switch to main part	
+			aerosPart = 1;	
+			aerosChordTrack = 1;
+			//output.sendControlChange (113, 70 + aerosPart, 4);				// switch to main part	
 		}
 		console.debug("resetArrToA Aeros Looper " + sectionChange);			
 	}
@@ -1590,8 +1619,7 @@ function changeArrSection(changed) {
 		
 		if (changed) {
 			aerosPart = (sectionChange == 0 || sectionChange == 2) ? 1 : 2;
-			output.sendControlChange (113, 80 + aerosPart, 4);	// switch to chord part	
-			setTimeout(() => output.sendControlChange (39, aerosChordTrack, 4), 300);				
+			output.sendControlChange (113, 80 + aerosPart, 4);			
 		}
 		console.debug("changeArrSection Aeros Looper " + sectionChange);			
 	}
@@ -1958,17 +1986,19 @@ function toggleStartStop() {
 				console.debug("Aeros looper start key pressed");  
 				
 				if (output) {
+					aerosAux = true;
+						
 					if (pad.buttons[YELLOW] || pad.buttons[ORANGE] || pad.buttons[GREEN] || pad.buttons[RED] || pad.buttons[BLUE]) {
-
-						output.sendStart();	
-						output.sendControlChange (113, 73, 4);							// switch to aux part						
-						setTimeout(() => output.sendControlChange (39, 1, 4), 300);		// unmute intro track						
-						setTimeout(() => output.sendControlChange (113, 91, 4), 1000);	// switch to main part											
-					
-					} else {			
-						output.sendStart();	
-						output.sendControlChange (113, 71, 4);										// switch to aux part						
-						setTimeout(() => output.sendControlChange (39, aerosChordTrack, 4), 300);	// unmute chord track						
+						aerosChordTrack = 1;
+						aerosPart = 1;
+						console.debug("Aeros intro start"); 
+						output.sendControlChange (113, 73, 4);	// switch to aux part	
+						setTimeout(() => output.sendControlChange (39, aerosChordTrack, 4), 500);						
+						setTimeout(() => output.sendControlChange (113, 90 + aerosChordTrack, 4), 1000);
+						
+					} else {	
+						console.debug("Aeros main start"); 
+						output.sendControlChange (113, 71, 4);	// switch to main part													
 					}										
 					
 				}     
@@ -1979,13 +2009,12 @@ function toggleStartStop() {
 				
 				if (output) {
 					if (pad.buttons[YELLOW] || pad.buttons[ORANGE] || pad.buttons[GREEN] || pad.buttons[RED] || pad.buttons[BLUE]) {
-						output.sendControlChange (113, 73, 4);							// switch to aux part
-						setTimeout(() => output.sendControlChange (39, 6, 4), 300);		// unmute end track						
-						setTimeout(() => output.sendControlChange (43, 4, 4), 1000);	// stop at EOL
-
+						aerosChordTrack = 6;
+						aerosAux = true
+						output.sendControlChange (113, 73, 4);	// switch to aux part
 
 					} else {
-						output.sendStop();						
+						output.sendControlChange (43, 0, 4);	// stop all						
 					}
 										
 				}	      
