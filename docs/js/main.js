@@ -790,11 +790,11 @@ async function setupUI(config,err) {
 					
 			if (e?.controller.number == 113) 
 			{					
-				if (e.value == 0) {
+				if (e.value == 71 || e.value == 73 || e.value == 81 || e.value == 82 || || e.value == 91) {
 					console.debug("Aeros section change message", aerosChordTrack);			  
 					output.sendControlChange (39, aerosChordTrack, 4); 	// play current chord on new part					
 					
-					if (aerosAux) {	
+					if (e.value == 73) {	
 						aerosAux = false;
 						aerosAuxMode = true;
 						// switch to aux part
