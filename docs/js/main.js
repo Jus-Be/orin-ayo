@@ -2156,9 +2156,9 @@ function toggleStartStop() {
 				if (pad.buttons[YELLOW]) startEndType = 0x00;	// INTRO-1
 				if (pad.buttons[RED]) startEndType = 0x01;		// INTRO-2
 				if (pad.buttons[GREEN]) startEndType = 0x02;	// INTRO-3		
-				if (pad.buttons[BLUE]) startEndType = 0x03;		// INTRO-4				
-				sendYamahaSysEx(startEndType);	
-				output.sendStart();				
+				if (pad.buttons[BLUE]) startEndType = 0x03;		// INTRO-4	
+				output.sendStart();					
+				sendYamahaSysEx(startEndType);				
 				styleStarted = true;
 			}
 			else {
