@@ -1105,16 +1105,20 @@ function doPsrSxFill() {
 	console.debug("doPsrSxFill " + arranger);			
 
 	if (sectionChange == 0) {
-		sendYamahaSysEx(0x08);
+		sendYamahaSysEx(0x10);
+		//setTimeout(() => sendYamahaSysEx(0x08), 2000);			
 	}
 	if (sectionChange == 1) {
-		sendYamahaSysEx(0x09);			
+		sendYamahaSysEx(0x11);	
+		//setTimeout(() => sendYamahaSysEx(0x09), 2000);		
 	}
-	if (sectionChange == 2) {
-		sendYamahaSysEx(0x0A); 
+	if (sectionChange == 2) {		
+		sendYamahaSysEx(0x12); 
+		//setTimeout(() => sendYamahaSysEx(0x0A), 2000);			
 	}		
 	if (sectionChange == 3) {
-		sendYamahaSysEx(0x0B);
+		sendYamahaSysEx(0x13);
+		//setTimeout(() => sendYamahaSysEx(0x0B), 2000);			
 	}		
 }
 
@@ -2153,7 +2157,8 @@ function toggleStartStop() {
 				if (pad.buttons[RED]) startEndType = 0x01;		// INTRO-2
 				if (pad.buttons[GREEN]) startEndType = 0x02;	// INTRO-3		
 				if (pad.buttons[BLUE]) startEndType = 0x03;		// INTRO-4				
-				sendYamahaSysEx(startEndType);					      
+				sendYamahaSysEx(startEndType);	
+				output.sendStart();				
 				styleStarted = true;
 			}
 			else {
