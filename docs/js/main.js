@@ -531,21 +531,23 @@ async function setupUI(config,err) {
 	arrangerType.options[1] = new Option("Ketron SD/Event", "ketron", config.arranger == "ketron");
 	arrangerType.options[2] = new Option("Yamaha MODX", "modx", config.arranger == "modx");
 	arrangerType.options[3] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
-	arrangerType.options[4] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");	
-	arrangerType.options[5] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
-	arrangerType.options[6] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");	
-	arrangerType.options[7] = new Option("Boss RC Loop Station", "rclooper", config.arranger == "rclooper");	
-	arrangerType.options[8] = new Option("Aeros Loop Studio", "aeroslooper", config.arranger == "aeroslooper");	
+	arrangerType.options[4] = new Option("Yamaha PRS SX", "psrsx", config.arranger == "psrsx");	
+	arrangerType.options[5] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");		
+	arrangerType.options[6] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
+	arrangerType.options[7] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");	
+	arrangerType.options[8] = new Option("Boss RC Loop Station", "rclooper", config.arranger == "rclooper");	
+	arrangerType.options[9] = new Option("Aeros Loop Studio", "aeroslooper", config.arranger == "aeroslooper");	
 	
 	let arrangerIndex = 0;
 	arrangerIndex = config.arranger == "ketron" ? 1 : arrangerIndex;
 	arrangerIndex = config.arranger == "modx" ? 2 : arrangerIndex;		
 	arrangerIndex = config.arranger == "montage" ? 3 : arrangerIndex;
-	arrangerIndex = config.arranger == "qy100" ? 4 : arrangerIndex;			
-	arrangerIndex = config.arranger == "microarranger" ? 5 : arrangerIndex;				
-	arrangerIndex = config.arranger == "giglad" ? 6 : arrangerIndex;				
-	arrangerIndex = config.arranger == "rclooper" ? 7 : arrangerIndex;	
-	arrangerIndex = config.arranger == "aeroslooper" ? 8 : arrangerIndex;		
+	arrangerIndex = config.arranger == "psrsx" ? 4 : arrangerIndex;			
+	arrangerIndex = config.arranger == "qy100" ? 5 : arrangerIndex;		
+	arrangerIndex = config.arranger == "microarranger" ? 6 : arrangerIndex;				
+	arrangerIndex = config.arranger == "giglad" ? 7 : arrangerIndex;				
+	arrangerIndex = config.arranger == "rclooper" ? 8 : arrangerIndex;	
+	arrangerIndex = config.arranger == "aeroslooper" ? 9 : arrangerIndex;		
 	arrangerType.selectedIndex = arrangerIndex;			
 	arranger = config.arranger;	
 	
@@ -665,7 +667,7 @@ async function setupUI(config,err) {
 	arrangerType.addEventListener("click", function()
 	{
 		arranger = arrangerType.value;
-		setGigladUI();
+		setGigladUI(); // reset. remove if no more giglad
 		console.debug("selected arranger type", arranger, arrangerType.value);				
 		saveConfig();
 	});
@@ -879,8 +881,13 @@ function doBreak() {
 	} 
 	else 
 		
+	if (arranger == "psrsx") {
+		sendYamahaSysEx(0x18);		// Yamaha break
+	}
+	else 
+		
 	if (arranger == "qy100") {
-		doYamahaFill();		
+		doQY100Fill();		
 	}	
 	else 
 		
@@ -933,8 +940,13 @@ function doFill() {
 	} 	
 	else 
 		
+	if (arranger == "psrsx") {		
+		doPsrSxFill();		
+	}
+	else 
+		
 	if (arranger == "qy100") {		
-		doYamahaFill();		
+		doQY100Fill();		
 	}	
 	else 
 		
@@ -1089,18 +1101,35 @@ function doKorgFill() {
 	}		
 }
 
-function doYamahaFill() {
-	console.debug("doYamahaFill " + arranger);			
+function doPsrSxFill() {
+	console.debug("doPsrSxFill " + arranger);			
+
+	if (sectionChange == 0) {
+		sendYamahaSysEx(0x08);
+	}
+	if (sectionChange == 1) {
+		sendYamahaSysEx(0x09);			
+	}
+	if (sectionChange == 2) {
+		sendYamahaSysEx(0x0A); 
+	}		
+	if (sectionChange == 3) {
+		sendYamahaSysEx(0x0B);
+	}		
+}
+
+function doQY100Fill() {
+	console.debug("doQY100Fill " + arranger);			
 	const tempArr = sectionChange % 2;
 	
 	if (tempArr == 0) {
-		sendYamahaSysex(0x0C);
-		setTimeout(() => sendYamahaSysex(0x09), 2000);			
-		console.debug("doYamahaFill qy100 A");		
+		sendYamahaSysEx(0x0C);
+		setTimeout(() => sendYamahaSysEx(0x09), 2000);			
+		console.debug("doQY100Fill qy100 A");		
 	} else {
-		sendYamahaSysex(0x0B);	
-		setTimeout(() => sendYamahaSysex(0x0A), 2000);				
-		console.debug("doYamahaFill qy100 B");					
+		sendYamahaSysEx(0x0B);	
+		setTimeout(() => sendYamahaSysEx(0x0A), 2000);				
+		console.debug("doQY100Fill qy100 B");					
 	}		
 }
 
@@ -1413,9 +1442,9 @@ function transposeNote(root) {
 	return root;
 }
 
-function sendYamahaSysex(code) {
+function sendYamahaSysEx(code) {
     if (output) { 
-        console.debug("sendYamahaSysex", code)	
+        console.debug("sendYamahaSysEx", code)	
 		output.sendSysex(0x43, [0x7E, 0x00, code, 0x7F]);	
 		
 		setTimeout(() => {
@@ -1483,7 +1512,7 @@ function pressFootSwitch(code) {
 	}
 	else
 	
-    if (output) { 
+    if (output && arranger == "ketron") { 
 		output.sendSysex(0x26, [0x7C, 0x05, 0x01, 0x55 + code, 0x7F]);
 		
 		setTimeout(() => {
@@ -1503,8 +1532,14 @@ function resetArrToA() {
 	} 	
 	else 
 		
+	if (arranger == "psrsx") {
+		sendYamahaSysEx(0x00);	
+		console.debug("resetArrToA PSR SX " + sectionChange);			
+	}
+	else 
+		
 	if (arranger == "qy100") {
-		sendYamahaSysex(0x09);	
+		sendYamahaSysEx(0x09);	
 		console.debug("resetArrToA QY100 " + sectionChange);			
 	} 	
 	else 
@@ -1628,11 +1663,17 @@ function changeArrSection(changed) {
 	if (arranger == "ketron") {
 		sendKetronSysex(3 + sectionChange);	
 		console.debug("changeArrSection Ketron " + sectionChange);		
+	}
+	else 
+		
+	if (arranger == "psrsx") {
+		doPsrSxFill();
+		console.debug("changeArrSection PSR SX " + sectionChange);			
 	} 	
 	else 
 		
 	if (arranger == "qy100") {
-		doYamahaFill();
+		doQY100Fill();
 		console.debug("changeArrSection QY100 " + sectionChange);			
 	} 
 	else 
@@ -2102,17 +2143,43 @@ function toggleStartStop() {
 		}		
 		else
 
+		if (arranger == "psrsx") 
+		{		
+			if (!styleStarted)
+			{
+				console.debug("start key pressed"); 
+				let startEndType = 0x00;
+				if (pad.buttons[YELLOW]) startEndType = 0x00;	// INTRO-1
+				if (pad.buttons[RED]) startEndType = 0x01;		// INTRO-2
+				if (pad.buttons[GREEN]) startEndType = 0x02;	// INTRO-3		
+				if (pad.buttons[BLUE]) startEndType = 0x03;		// INTRO-4				
+				sendYamahaSysEx(startEndType);					      
+				styleStarted = true;
+			}
+			else {
+				console.debug("stop key pressed");				
+				let startEndType = 0x20;
+				if (pad.buttons[YELLOW]) startEndType = 0x20;	// END-1
+				if (pad.buttons[RED]) startEndType = 0x21;		// END-2
+				if (pad.buttons[GREEN]) startEndType = 0x22;	// END-3		
+				if (pad.buttons[BLUE]) startEndType = 0x23;		// END-4				
+				sendYamahaSysEx(startEndType);	   
+				styleStarted = false;
+			}
+		}
+		else
+
 		if (arranger == "qy100") 
 		{		
 			if (!styleStarted)
 			{
 				console.debug("start key pressed");  				
-				sendYamahaSysex(0x08);					      
+				sendYamahaSysEx(0x08);					      
 				styleStarted = true;
 			}
 			else {
 				console.debug("stop key pressed");				
-				sendYamahaSysex(0x0D);		   
+				sendYamahaSysEx(0x0D);		   
 				styleStarted = false;
 			}
 		}		
