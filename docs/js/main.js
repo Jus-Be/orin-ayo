@@ -2157,9 +2157,11 @@ function toggleStartStop() {
 				if (pad.buttons[RED]) startEndType = 0x01;		// INTRO-2
 				if (pad.buttons[GREEN]) startEndType = 0x02;	// INTRO-3		
 				if (pad.buttons[BLUE]) startEndType = 0x03;		// INTRO-4		
-				if (pad.buttons[ORANGE]) startEndType = 0x03;	// INTRO-4					
+				if (pad.buttons[ORANGE]) startEndType = 0x03;	// INTRO-4	
+				
+				sendYamahaSysEx(0x10);							// ARRA		
 				sendYamahaSysEx(startEndType);	
-				output.sendSysex(0x43, [0x60, 0x7A]);	
+				output.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start
 		
 				styleStarted = true;
 			}
@@ -2173,7 +2175,7 @@ function toggleStartStop() {
 				if (pad.buttons[ORANGE]) startEndType = 0x23;	// END-4
 				
 				if (startEndType == -1) {
-					output.sendSysex(0x43, [0x60, 0x7D]);	// JUST STOP
+					output.sendSysex(0x43, [0x60, 0x7D]);	// Yamaha Sysex for Accomp stop
 				} else {
 					sendYamahaSysEx(startEndType);						
 				}
