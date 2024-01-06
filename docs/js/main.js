@@ -2156,8 +2156,8 @@ function toggleStartStop() {
 				if (pad.buttons[YELLOW]) startEndType = 0x00;	// INTRO-1
 				if (pad.buttons[RED]) startEndType = 0x01;		// INTRO-2
 				if (pad.buttons[GREEN]) startEndType = 0x02;	// INTRO-3		
-				if (pad.buttons[BLUE]) startEndType = 0x03;		// INTRO-4	
-				//output.sendStart();					
+				if (pad.buttons[BLUE]) startEndType = 0x03;		// INTRO-4		
+				if (pad.buttons[ORANGE]) startEndType = 0x03;	// INTRO-4					
 				sendYamahaSysEx(startEndType);	
 				output.sendSysex(0x43, [0x60, 0x7A]);	
 		
@@ -2165,12 +2165,19 @@ function toggleStartStop() {
 			}
 			else {
 				console.debug("stop key pressed");				
-				let startEndType = 0x20;
+				let startEndType = -1;
 				if (pad.buttons[YELLOW]) startEndType = 0x20;	// END-1
 				if (pad.buttons[RED]) startEndType = 0x21;		// END-2
 				if (pad.buttons[GREEN]) startEndType = 0x22;	// END-3		
-				if (pad.buttons[BLUE]) startEndType = 0x23;		// END-4				
-				sendYamahaSysEx(startEndType);	   
+				if (pad.buttons[BLUE]) startEndType = 0x23;		// END-4	
+				if (pad.buttons[ORANGE]) startEndType = 0x23;	// END-4
+				
+				if (startEndType == -1) {
+					output.sendSysex(0x43, [0x60, 0x7D]);	// JUST STOP
+				} else {
+					sendYamahaSysEx(startEndType);						
+				}
+   
 				styleStarted = false;
 			}
 		}
