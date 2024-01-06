@@ -2190,12 +2190,19 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed");  				
-				sendYamahaSysEx(0x08);					      
+				sendYamahaSysEx(0x08);	
+				output.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start				
 				styleStarted = true;
 			}
 			else {
-				console.debug("stop key pressed");				
-				sendYamahaSysEx(0x0D);		   
+				console.debug("stop key pressed");					
+
+				if (!pad.buttons[YELLOW]) {
+					output.sendSysex(0x43, [0x60, 0x7D]);	// Yamaha Sysex for Accomp stop
+				} else {
+					sendYamahaSysEx(0x0D);						
+				}
+				
 				styleStarted = false;
 			}
 		}		
