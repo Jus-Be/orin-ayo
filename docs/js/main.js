@@ -1112,19 +1112,19 @@ function doPsrSxFill() {
 
 	if (sectionChange == 0) {
 		sendYamahaSysEx(0x10);
-		setTimeout(() => sendYamahaSysEx(0x08), 2000);			
+		setTimeout(() => sendYamahaSysEx(0x08), 1000);			
 	}
 	if (sectionChange == 1) {
 		sendYamahaSysEx(0x11);	
-		setTimeout(() => sendYamahaSysEx(0x09), 2000);		
+		setTimeout(() => sendYamahaSysEx(0x09), 1000);		
 	}
 	if (sectionChange == 2) {		
 		sendYamahaSysEx(0x12); 
-		setTimeout(() => sendYamahaSysEx(0x0A), 2000);			
+		setTimeout(() => sendYamahaSysEx(0x0A), 1000);			
 	}		
 	if (sectionChange == 3) {
 		sendYamahaSysEx(0x13);
-		setTimeout(() => sendYamahaSysEx(0x0B), 2000);			
+		setTimeout(() => sendYamahaSysEx(0x0B), 1000);			
 	}		
 }
 
@@ -1134,11 +1134,11 @@ function doQY100Fill() {
 	
 	if (tempArr == 0) {
 		sendYamahaSysEx(0x0C);
-		setTimeout(() => sendYamahaSysEx(0x09), 2000);			
+		setTimeout(() => sendYamahaSysEx(0x09), 1000);			
 		console.debug("doQY100Fill qy100 A");		
 	} else {
 		sendYamahaSysEx(0x0B);	
-		setTimeout(() => sendYamahaSysEx(0x0A), 2000);				
+		setTimeout(() => sendYamahaSysEx(0x0A), 1000);				
 		console.debug("doQY100Fill qy100 B");					
 	}		
 }
@@ -2158,6 +2158,8 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed"); 
+				doChord();	
+				
 				let startEndType = 0x00;
 				if (pad.buttons[YELLOW]) startEndType = 0x00;	// INTRO-1
 				if (pad.buttons[RED]) startEndType = 0x01;		// INTRO-2
@@ -2195,7 +2197,8 @@ function toggleStartStop() {
 		{		
 			if (!styleStarted)
 			{
-				console.debug("start key pressed");  				
+				console.debug("start key pressed");  
+				doChord();				
 				sendYamahaSysEx(0x08);	
 				output.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start				
 				styleStarted = true;
