@@ -1233,7 +1233,7 @@ function playChord(chord, root, type, bass) {
 			}			
 		}
 		
-		if (styleStarted) {		
+		if (styleStarted  || (arranger != "aeroslooper" && arranger != "rclooper")) {		
 			console.debug("playChord output", chord);
 								
 			if (chordTracker) {		
