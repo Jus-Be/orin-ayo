@@ -1774,21 +1774,22 @@ function doChord() {
 		if (pad.buttons[ORANGE]) padsMode = 5;	// 5th note up/root note down
 	}
     playSectionCheck()
-  }
-
-  if (pad.buttons[LOGO])
-  {
-	if (pad.buttons[YELLOW] && pad.buttons[BLUE]) {	
-		styleStarted = false;	
-		resetArrToA();
-		playButton.innerText = !styleStarted ? "Play" : "Stop";				
+  }  
+  
+  if (arranger == "aeroslooper" || arranger == "rclooper")  {
+	  if (pad.buttons[LOGO])
+	  {
+		if (pad.buttons[YELLOW] && pad.buttons[BLUE]) {	
+			styleStarted = false;	
+			resetArrToA();
+			playButton.innerText = !styleStarted ? "Play" : "Stop";						
+		}
 		
-	} else {	
-		toggleStartStop();
-	}
+		toggleStartStop();	
+	  }  
   }  
 
-   if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) {
+  if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) {
 		checkForTouchArea();
    }
 
@@ -1963,6 +1964,19 @@ function doChord() {
   {
     playChord([base - 3, base + 12, base + 16], 0x36, 0x08, 0x36);
     orinayo.innerHTML = key + " - " + "6m";
+  }
+  
+  if (arranger != "aeroslooper" && arranger != "rclooper")  {
+	  if (pad.buttons[LOGO])
+	  {
+		if (pad.buttons[YELLOW] && pad.buttons[BLUE]) {	
+			styleStarted = false;	
+			resetArrToA();
+			playButton.innerText = !styleStarted ? "Play" : "Stop";						
+		}
+		
+		toggleStartStop();	
+	  }  
   }
 }
 
