@@ -1641,7 +1641,7 @@ function playSectionCheck() {
 		arrChanged = true;			
 	}	
 	
-	console.debug("playSectionCheck pressed " + arrChanged, sectionChange;
+	console.debug("playSectionCheck pressed " + arrChanged, sectionChange);
 	orinayo_section.innerHTML = SECTIONS[sectionChange];		
 			
 	if (drumLoop && realdrumLoop) {
