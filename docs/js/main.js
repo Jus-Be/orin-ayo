@@ -23,6 +23,7 @@ const LOGO = 12;
 
 var footSwCode7Enabled = false;
 var playButton = null;
+var styleType = null;
 var keyboard = new Map();
 var bassLoop = null;
 var drumLoop = null;
@@ -123,6 +124,7 @@ function onloadHandler() {
 	console.debug("onloadHandler");
   
 	playButton = document.querySelector(".play");
+	styleType = document.querySelector(".style_type");
 	tempoCanvas = orinayo = document.querySelector('#tempoCanvas');	
 	orinayo = document.querySelector('#orinayo');
 	orinayo_section = document.querySelector('#orinayo-section');
@@ -160,6 +162,10 @@ function onloadHandler() {
 		setTimeout(() => output.sendControlChange (106, 127, 4), 210000);
 		setTimeout(() => output.sendControlChange (107, 127, 4), 220000);
 			
+	});
+
+	styleType.addEventListener("click", function() {
+		styleType.innerText = styleType.innerText == "DJ" ? "Normal" : "DJ";	
 	});
 	
 	playButton.addEventListener("click", function() {	
@@ -1233,7 +1239,7 @@ function playChord(chord, root, type, bass) {
 			}			
 		}
 		
-		if (styleStarted  || (arranger != "aeroslooper" && arranger != "rclooper")) {		
+		if (styleStarted  || (styleType.innerText == "Normal" && arranger != "aeroslooper" && arranger != "rclooper")) {		
 			console.debug("playChord output", chord);
 								
 			if (chordTracker) {		
