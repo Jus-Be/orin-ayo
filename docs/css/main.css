@@ -33,7 +33,7 @@ h1 {
 	
 }
 
-.play {
+.play, .style_type {
 	-moz-box-shadow:inset 0px 20px 26px 0px #b6cde3;
 	-webkit-box-shadow:inset 0px 20px 26px 0px #b6cde3;
 	box-shadow:inset 0px 20px 26px 0px #b6cde3;
@@ -45,6 +45,8 @@ h1 {
 	border-radius:20px;
 	color:#ffffff;
 	padding:8px 24px;
+	cursor: pointer;
+	margin-left: 10px;
 	text-decoration:none;
 	text-shadow:1px 1px 6px #000000;
 	width: 80px;

@@ -1239,7 +1239,7 @@ function playChord(chord, root, type, bass) {
 			}			
 		}
 		
-		if (styleStarted  || (styleType.innerText == "Normal" && arranger != "aeroslooper" && arranger != "rclooper")) {		
+		if (styleType.innerText == "Normal" && (styleStarted  || (arranger != "aeroslooper" && arranger != "rclooper"))) {		
 			console.debug("playChord output", chord);
 								
 			if (chordTracker) {		
