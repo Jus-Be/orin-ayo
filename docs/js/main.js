@@ -2026,6 +2026,8 @@ function toggleStartStop() {
 
 	if (output) { 			
 		if (arranger == "ketron") {		
+			output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});
+				
 			let startEndType = 0x12; // default start/stop
 		
 			if (pad.buttons[YELLOW]) startEndType = 0x0F;	// INTRO/END-1
@@ -2044,7 +2046,8 @@ function toggleStartStop() {
 		{		
 			if (!styleStarted)
 			{
-				console.debug("start key pressed");  				
+				console.debug("start key pressed");  
+				output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});				
 				output.sendControlChange (92, 0, 4);  				    
 				styleStarted = true;
 			}
@@ -2114,6 +2117,8 @@ function toggleStartStop() {
 				console.debug("start key pressed");  
 				
 				if (output) {
+					output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});
+				
 					if (pad.buttons[YELLOW]) {
 						output.sendControlChange (102, 127, 4); 	// INTRO 1
 						sectionChange = 0;						
@@ -2158,6 +2163,8 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed"); 
+				output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});
+				
 				let startEndType = 0x00;
 				if (pad.buttons[YELLOW]) startEndType = 0x00;	// INTRO-1
 				if (pad.buttons[RED]) startEndType = 0x01;		// INTRO-2
@@ -2195,7 +2202,8 @@ function toggleStartStop() {
 		{		
 			if (!styleStarted)
 			{
-				console.debug("start key pressed");  				
+				console.debug("start key pressed");  
+				output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});				
 				sendYamahaSysEx(0x08);	
 				output.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start				
 				styleStarted = true;
@@ -2218,9 +2226,11 @@ function toggleStartStop() {
 		{		
 			if (!styleStarted)
 			{
-				console.debug("start key pressed");  
+				console.debug("start key pressed");  				
 				
 				if (output) {
+					output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});
+				
 					if (pad.buttons[YELLOW]) {
 						output.sendProgramChange(85, 4);
 					} else if (pad.buttons[ORANGE]) {
@@ -2238,6 +2248,8 @@ function toggleStartStop() {
 				console.debug("stop key pressed");
 				
 				if (output) {
+					output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});
+				
 					if (pad.buttons[YELLOW]) {
 						output.sendProgramChange(89, 4);
 					} else if (pad.buttons[ORANGE]) {
