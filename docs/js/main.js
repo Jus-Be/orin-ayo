@@ -1612,8 +1612,15 @@ function playSectionCheck() {
 	let arrChanged = false;
 				
 	if (pad.buttons[STARPOWER]) {	// next variation
-		sectionChange++;
-		if (sectionChange > 3) sectionChange = 0;	
+
+		if (pad.buttons[YELLOW]) sectionChange = 0;
+		else if (pad.buttons[BLUE]) sectionChange = 1;		
+		else if (pad.buttons[RED]) sectionChange = 2;
+		else if (pad.buttons[ORANGE] || pad.buttons[GREEN]) sectionChange = 3;	
+		else {
+			sectionChange++;
+			if (sectionChange > 3) sectionChange = 0;			
+		}
 		
 		if (window[realGuitarStyle]) {
 			nextRgIndex++;
@@ -1633,21 +1640,8 @@ function playSectionCheck() {
 		}
 		arrChanged = true;			
 	}	
-	else {							// jump to variation
-		if (pad.buttons[YELLOW]) sectionChange = 0;
-		if (pad.buttons[BLUE]) sectionChange = 1;		
-		if (pad.buttons[RED]) sectionChange = 2;
-		if (pad.buttons[ORANGE] || pad.buttons[GREEN]) sectionChange = 3;			
-	}
 	
-	if (arrChanged) 
-	{
-		if (pad.buttons[YELLOW] || pad.buttons[BLUE] || pad.buttons[ORANGE] || pad.buttons[RED] || pad.buttons[GREEN]) {
-			if (pad.buttons[START]) sectionChange = 0;	// reset to variation A
-		}
-	}
-	
-	console.debug("playSectionCheck pressed " + arrChanged);
+	console.debug("playSectionCheck pressed " + arrChanged, sectionChange;
 	orinayo_section.innerHTML = SECTIONS[sectionChange];		
 			
 	if (drumLoop && realdrumLoop) {
