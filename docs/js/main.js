@@ -1623,7 +1623,7 @@ function playSectionCheck() {
 	} 
 	else 
 		
-	if (pad.buttons[START] || pad.buttons[STARPOWER]) {						// prev variation
+	if (pad.buttons[START]) {		// prev variation
 		sectionChange--;		
 		if (sectionChange < 0) sectionChange = 3;
 
@@ -1633,6 +1633,12 @@ function playSectionCheck() {
 		}
 		arrChanged = true;			
 	}	
+	else {							// jump to variation
+		if (pad.buttons[YELLOW]) sectionChange = 0;
+		if (pad.buttons[BLUE]) sectionChange = 1;		
+		if (pad.buttons[RED]) sectionChange = 2;
+		if (pad.buttons[ORANGE] || pad.buttons[GREEN]) sectionChange = 3;			
+	}
 	
 	if (arrChanged) 
 	{
