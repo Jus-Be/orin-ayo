@@ -2158,8 +2158,6 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed"); 
-				doChord();	
-				
 				let startEndType = 0x00;
 				if (pad.buttons[YELLOW]) startEndType = 0x00;	// INTRO-1
 				if (pad.buttons[RED]) startEndType = 0x01;		// INTRO-2
@@ -2197,8 +2195,7 @@ function toggleStartStop() {
 		{		
 			if (!styleStarted)
 			{
-				console.debug("start key pressed");  
-				doChord();				
+				console.debug("start key pressed");  				
 				sendYamahaSysEx(0x08);	
 				output.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start				
 				styleStarted = true;
