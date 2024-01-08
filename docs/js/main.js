@@ -51,6 +51,7 @@ var rgIndex = 0;
 var nextRgIndex = 0;
 var styleStarted = false;
 var activeChord = null;
+var firstChord = [base, base + 4, base + 7];
 var rcLooperChord = 0;
 var aerosPart = 1;
 var aerosChordTrack = 1;
@@ -1195,6 +1196,8 @@ function checkForTouchArea() {
 function playChord(chord, root, type, bass) {	
 	console.debug("playChord", chord, root, type, bass);
 	
+	firstChord = chord;
+	
 	if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord) {		
 		const chordNote = (chord.length == 4 ? chord[1] : chord[0]) % 12;
 		const chordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")))
@@ -2026,7 +2029,7 @@ function toggleStartStop() {
 
 	if (output) { 			
 		if (arranger == "ketron") {		
-			output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});
+			output.playNote(firstChord, [4], {velocity: 0.5});
 				
 			let startEndType = 0x12; // default start/stop
 		
@@ -2047,7 +2050,7 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed");  
-				output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});				
+				output.playNote(firstChord, [4], {velocity: 0.5});				
 				output.sendControlChange (92, 0, 4);  				    
 				styleStarted = true;
 			}
@@ -2117,7 +2120,7 @@ function toggleStartStop() {
 				console.debug("start key pressed");  
 				
 				if (output) {
-					output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});
+					output.playNote(firstChord, [4], {velocity: 0.5});
 				
 					if (pad.buttons[YELLOW]) {
 						output.sendControlChange (102, 127, 4); 	// INTRO 1
@@ -2163,7 +2166,7 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed"); 
-				output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});
+				output.playNote(firstChord, [4], {velocity: 0.5});
 				
 				let startEndType = 0x00;
 				if (pad.buttons[YELLOW]) startEndType = 0x00;	// INTRO-1
@@ -2203,7 +2206,7 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed");  
-				output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});				
+				output.playNote(firstChord, [4], {velocity: 0.5});				
 				sendYamahaSysEx(0x08);	
 				output.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start				
 				styleStarted = true;
@@ -2229,7 +2232,7 @@ function toggleStartStop() {
 				console.debug("start key pressed");  				
 				
 				if (output) {
-					output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});
+					output.playNote(firstChord, [4], {velocity: 0.5});
 				
 					if (pad.buttons[YELLOW]) {
 						output.sendProgramChange(85, 4);
@@ -2248,7 +2251,7 @@ function toggleStartStop() {
 				console.debug("stop key pressed");
 				
 				if (output) {
-					output.playNote([base, base + 4, base + 7], [4], {velocity: 0.5});
+					output.playNote(firstChord, [4], {velocity: 0.5});
 				
 					if (pad.buttons[YELLOW]) {
 						output.sendProgramChange(89, 4);
