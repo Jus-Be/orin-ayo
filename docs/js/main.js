@@ -373,6 +373,7 @@ function handleArtiphonI1(note) {
 		setup();
 		resetArtiphonI1Buttons();	
 		resetArtiphonI1Axis();
+		pad.axis[STRUM] = STRUM_UP;			
 	}	
 	  
 	/*if (keyboard.get("+")) {
@@ -385,7 +386,6 @@ function handleArtiphonI1(note) {
 	}*/	
 	  
 	if (note.number < artiphonI1Base + 44) {	
-		pad.axis[STRUM] = STRUM_UP;	
 
 		if (note.number == artiphonI1Base) {		
 			pad.buttons[LOGO] = true;
@@ -407,18 +407,19 @@ function handleArtiphonI1(note) {
 
 		if (note.number == artiphonI1Base + 5) {			// Fill
 			pad.axis[TOUCH] = -0.7;
-			pad.axis[STRUM] = STRUM_DOWN;	
-			pad.buttons[YELLOW] = true; 					// start/stop			
+			pad.axis[STRUM] = STRUM_DOWN;		
 		}
 		else	
 		
-		if (note.number == artiphonI1Base + 2) {			// style next
-			pad.buttons[START] = true;					
+		if (note.number == artiphonI1Base + 4) {			// style next
+			pad.buttons[START] = true;	
+			pad.buttons[STARPOWER] = false;			
 		}
 		else
 
-		if (note.number == artiphonI1Base + 4) {		// style prev
-			pad.buttons[STARPOWER] = true;					
+		if (note.number == artiphonI1Base + 2) {		// style prev
+			pad.buttons[STARPOWER] = true;	
+			pad.buttons[START] = false;				
 		}		
 		else 
 			
