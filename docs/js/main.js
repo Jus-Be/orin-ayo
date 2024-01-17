@@ -21,6 +21,7 @@ const STRUM = 9;
 const TOUCH = 5;
 const LOGO = 12;
 
+var artiphonI1Base = 36;
 var footSwCode7Enabled = false;
 var playButton = null;
 var styleType = null;
@@ -363,6 +364,131 @@ function handleKeyboard(name, code) {
 		resetGuitarHero();	
 	}
 	
+}
+
+function handleArtiphonI1(note) {
+	console.debug("handleArtiphonI1", note);
+
+	if (!game) {
+		setup();
+		resetArtiphonI1Buttons();	
+		resetArtiphonI1Axis();
+	}	
+	  
+	/*if (keyboard.get("+")) {
+		pad.axis[STRUM] = STRUM_RIGHT;		
+	}	
+	else
+	  
+	if (keyboard.get("-")) {
+		pad.axis[STRUM] = STRUM_LEFT;		
+	}*/	
+	  
+	if (note.number < artiphonI1Base + 44) {	
+		pad.axis[STRUM] = STRUM_UP;	
+
+		if (note.number == artiphonI1Base) {		
+			pad.buttons[LOGO] = true;
+			pad.buttons[YELLOW] = true; 					// start/stop		
+		}
+		else		
+
+		if (note.number == artiphonI1Base + 9) {			// STRUM DOWN
+			console.debug("handleArtiphonI1 - strum down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);			
+			pad.axis[STRUM] = STRUM_DOWN;		
+		}
+		else
+			
+		if (note.number == artiphonI1Base + 7) {			// STRUM UP
+			console.debug("handleArtiphonI1 - strum up", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);			
+			pad.axis[STRUM] = STRUM_UP;			
+		}
+		else		
+
+		if (note.number == artiphonI1Base + 5) {			// Fill
+			pad.axis[TOUCH] = -0.7;
+			pad.axis[STRUM] = STRUM_DOWN;	
+			pad.buttons[YELLOW] = true; 					// start/stop			
+		}
+		else	
+		
+		if (note.number == artiphonI1Base + 2) {			// style next
+			pad.buttons[START] = true;					
+		}
+		else
+
+		if (note.number == artiphonI1Base + 4) {		// style prev
+			pad.buttons[STARPOWER] = true;					
+		}		
+		else 
+			
+		if (note.number == artiphonI1Base + 43) {	// Mute Drums
+			pad.axis[TOUCH] = 1.0;					
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 41) {	// Mute Chord
+			pad.axis[TOUCH] = 1.0;					
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 40) {	// Mute Bass
+			pad.axis[TOUCH] = -0.4;				
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 24) {			// GREEN	
+			pad.axis[STRUM] = 0;
+			pad.buttons[GREEN] = true;				
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 26) {			// RED
+			pad.axis[STRUM] = 0;		
+			pad.buttons[RED] = true;					
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 28) {			// YELLOW
+			pad.axis[STRUM] = 0;		
+			pad.buttons[YELLOW] = true;						
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 29) {			// BLUE
+			pad.axis[STRUM] = 0;		
+			pad.buttons[BLUE] = true;					
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 31) {			// ORANGE
+			pad.axis[STRUM] = 0;		
+			pad.buttons[ORANGE] = true;				
+		}			
+	}	
+
+
+	doChord();
+	updateCanvas();	
+	
+	if (pad.axis[STRUM] == STRUM_DOWN || pad.axis[STRUM] == STRUM_UP) {	
+		resetArtiphonI1Buttons();
+		resetArtiphonI1Axis();		
+	} else {		
+		resetArtiphonI1Axis();
+	}
+}
+
+function resetArtiphonI1Buttons() {
+	for (var i=0; i<20; i++) {	  
+	  pad.buttons[i] = false;
+	}	
+}
+
+function resetArtiphonI1Axis() {
+	for (var i=0; i<20; i++) {	  
+	  pad.axis[i] = 0;
+	}	
 }
 
 function resetGuitarHero() {
@@ -786,18 +912,18 @@ async function setupUI(config,err) {
 
 	if (input)
 	{
-		input.addListener('noteon', 1, function (e) {		
-			console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note);
-			
-			orinayo.innerHTML = e.note.name;
-			key = e.note.name;
-			base = BASE + (e.note.number % 12);
+		input.addListener('noteon', "all", function (e) {		
+			console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note, midiIn.value);
+
+			if (midiIn.value == "INSTRUMENT1") {
+				handleArtiphonI1(e.note);
+			}
 		});
 
 		input.addListener('controlchange', "all", function (e) {
 			console.debug("Received control-change (CC)", e?.controller?.number, e.value);	
 					
-			if (e?.controller.number == 113) 
+			if (arranger == "aeroslooper" && e?.controller.number == 113) 
 			{					
 				if (e.value == 0) {
 					console.debug("Aeros section change message", aerosChordTrack);			  
@@ -1620,7 +1746,7 @@ function stopChord() {
 function playSectionCheck() {
 	let arrChanged = false;
 				
-	if (pad.buttons[STARPOWER]) {	// next variation
+	if (pad.buttons[STARPOWER]) {	// next variation. jump to section of button pressed
 
 		if (pad.buttons[YELLOW]) sectionChange = 0;
 		else if (pad.buttons[BLUE]) sectionChange = 1;		
@@ -1639,15 +1765,18 @@ function playSectionCheck() {
 	} 
 	else 
 		
-	if (pad.buttons[START]) {		// prev variation
-		sectionChange--;		
-		if (sectionChange < 0) sectionChange = 3;
+	if (pad.buttons[START]) {		// prev variation. do nothing if button pressed (used by realguitar)
+	
+		if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) {
+			sectionChange--;		
+			if (sectionChange < 0) sectionChange = 3;
 
-		if (window[realGuitarStyle]) {			
-			nextRgIndex--;				
-			if (nextRgIndex < 0) nextRgIndex = window[realGuitarStyle].length - 1;		
-		}
-		arrChanged = true;			
+			if (window[realGuitarStyle]) {			
+				nextRgIndex--;				
+				if (nextRgIndex < 0) nextRgIndex = window[realGuitarStyle].length - 1;		
+			}
+			arrChanged = true;		
+		}			
 	}	
 	
 	console.debug("playSectionCheck pressed " + arrChanged, sectionChange);
@@ -1795,7 +1924,7 @@ function doChord() {
 		checkForTouchArea();
    }
 
-  if (pad.axis[STRUM] != STRUM_UP && pad.axis[STRUM] != STRUM_DOWN && !pad.buttons[START] && !pad.buttons[STARPOWER]) {
+  if ((pad.axis[STRUM] != STRUM_UP && pad.axis[STRUM] != STRUM_DOWN) || pad.buttons[STARPOWER] || pad.buttons[START]) {
 	  return;
   }
 
