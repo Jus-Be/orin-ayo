@@ -387,43 +387,45 @@ function handleArtiphonI1(note) {
 	  
 	if (note.number < artiphonI1Base + 44) {	
 
-		if (note.number == artiphonI1Base) {		
+		/*if (note.number == artiphonI1Base + 38) {		
 			pad.buttons[LOGO] = true;
 			pad.buttons[YELLOW] = true; 					// start/stop		
 		}
-		else		
+		else*/		
 
-		if (note.number == artiphonI1Base + 9) {			// STRUM DOWN
-			console.debug("handleArtiphonI1 - strum down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);			
-			pad.axis[STRUM] = STRUM_DOWN;		
-		}
-		else
+		if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {			// STRUM UP/DOWN (BRIDGE Buttons)
+			console.debug("handleArtiphonI1 - strum up/down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);			
+			pad.axis[STRUM] = STRUM_DOWN;
 			
-		if (note.number == artiphonI1Base + 7) {			// STRUM UP
-			console.debug("handleArtiphonI1 - strum up", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);			
-			pad.axis[STRUM] = STRUM_UP;			
+			if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) {			
+
+				if (note.number == artiphonI1Base) {		// style next
+					pad.buttons[START] = true;	
+					pad.buttons[STARPOWER] = false;			
+				}
+				else
+
+				if (note.number == artiphonI1Base + 9) {	// style prev
+					pad.buttons[STARPOWER] = true;	
+					pad.buttons[START] = false;				
+				}
+				else
+									
+				if (note.number == artiphonI1Base + 4) 	{	// Fill
+					pad.buttons[START] = true;	
+					pad.buttons[STARPOWER] = false;							
+				}
+				else
+
+				if (note.number == artiphonI1Base + 5) 	{	// Fill
+					pad.buttons[START] = true;	
+					pad.buttons[STARPOWER] = false;							
+				}					
+			}			
 		}
 		else		
-
-		if (note.number == artiphonI1Base + 5) {			// Fill
-			pad.axis[TOUCH] = -0.7;
-			pad.axis[STRUM] = STRUM_DOWN;		
-		}
-		else	
-		
-		if (note.number == artiphonI1Base + 4) {			// style next
-			pad.buttons[START] = true;	
-			pad.buttons[STARPOWER] = false;			
-		}
-		else
-
-		if (note.number == artiphonI1Base + 2) {		// style prev
-			pad.buttons[STARPOWER] = true;	
-			pad.buttons[START] = false;				
-		}		
-		else 
 			
-		if (note.number == artiphonI1Base + 43) {	// Mute Drums
+		/*if (note.number == artiphonI1Base + 43) {	// Mute Drums
 			pad.axis[TOUCH] = 1.0;					
 		}
 		else 
@@ -436,7 +438,7 @@ function handleArtiphonI1(note) {
 		if (note.number == artiphonI1Base + 40) {	// Mute Bass
 			pad.axis[TOUCH] = -0.4;				
 		}
-		else 
+		else*/ 
 			
 		if (note.number == artiphonI1Base + 24) {			// GREEN	
 			pad.axis[STRUM] = 0;
@@ -920,6 +922,19 @@ async function setupUI(config,err) {
 				handleArtiphonI1(e.note);
 			}
 		});
+		
+		input.addListener("keyaftertouch", "all", function (e) {
+			console.log("Received after touch message", e);
+		});		
+		
+		input.addListener("programchange", "all", function (e) {
+			console.log("Received program change message", e.value);
+		});		
+
+		
+		input.addListener("pitchbend", "all", function (e) {
+			console.log("Received pitchbend", e);
+		});		
 
 		input.addListener('controlchange', "all", function (e) {
 			console.debug("Received control-change (CC)", e?.controller?.number, e.value);	
