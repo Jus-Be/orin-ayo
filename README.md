@@ -3,7 +3,8 @@
 
 Orin Ayo is an Arranger/Looper Controller. 
 
-It turns a Guitar Hero game controller HID device into a MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a Guitar Hero games controller.
+It turns a Guitar Hero game controller HID device into a chord based MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a Guitar Hero games controller.
+It recognises other non-keyboard USB MIDI controllers (like Artiphon Instrument 1) and enables them to be used as an arranger controller.
 
 https://github.com/Jus-Be/orin-ayo/assets/110731/cd309c44-3d11-4fe2-b19d-0ca406c18fa5
 
@@ -11,10 +12,18 @@ This is Orin Ayo in action on a typical Sunday Morning church service.
 
 The music is played live with a [Logitech Wireless Guitar Controller](https://www.amazon.co.uk/Logitech-Wireless-Guitar-Controller-Premiere/dp/B001MV7D10/ref=sr_1_16?crid=14Y5WHJKI2DVE). The wireless dongle is plugged into a MacAir laptop running Orin Ayo and [Musiclab's Real LPC](https://www.musiclab.com/products/reallpc/info.html). The [Boss RC 600 Loop Station](https://www.boss.info/global/products/rc-600) is connected to the MacAir by MIDI and audio with a USB cable. It sounds like a backing track, but those chord loops (C, F, G & Am) are played live on the logitech with realtime controls to the drum machine in the RC 600.
 
+# How to setup
+Orinayo can be setup and accessed as follows:
+
+- Type https://jus-be.github.io/orin-ayo/index.html directly into a Chrome or Edge browser.
+- Install it as a browser extension for Google Chrome and Microsoft Edge from https://chromewebstore.google.com/detail/orinayo/mhnemaeacdgnkmoibfeodelijegakklp
+- On Windows desktops, download orinayo.exe and run it directly from a desktop. It loads the above web page using webview2. See https://github.com/jchv/go-webview2
+
+## How to use
 Currently, the following devices and applications are supported and confirmed working:
 
 ### Arrangers
-- Ketron Event keyboard, Event-X module, SD9 Series keyboards and sound module (SD90)
+- Ketron Event 76/61 keyboards, Event-X module, SD9 Series keyboard and SD90 module
 - Yamaha PSR SX-600
 - Yamaha MODX and Montage
 - Yamaha QY100
@@ -26,6 +35,9 @@ The Yamaha MODX and Montage are not really arrangers, but have arpeggios that ca
 ### Loopers
 - Boss RC 600 Loop Station
 - Aeros Loop Studio
+
+### MIDI Controllers
+- Artiphon Instrument 1
 
 Orin Ayo can also play the strum/pick patterns for the virtual guitars from Music Labs like RealGuitar, RealLPC, etc in joystick mode along with the arranger or looper patterns.
 
