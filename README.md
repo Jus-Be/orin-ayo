@@ -17,7 +17,7 @@ Orinayo can be setup and accessed as follows:
 
 - Type https://jus-be.github.io/orin-ayo/index.html directly into a Chrome or Edge browser.
 - Install it as a browser extension for Google Chrome and Microsoft Edge from https://chromewebstore.google.com/detail/orinayo/mhnemaeacdgnkmoibfeodelijegakklp
-- On Windows desktops, download orinayo.exe and run it directly from a desktop. It loads the above web page using webview2. See https://github.com/jchv/go-webview2
+- On Windows 10+ desktops, download orinayo.exe and run it directly from a desktop. It loads the above web page using webview2. See https://github.com/jchv/go-webview2. If you are using Windows 10+, the WebView2 runtime should already be installed. If you don't have it installed, you can download and install a copy from Microsoft's website - https://developer.microsoft.com/en-us/microsoft-edge/webview2/
 
 ## How to use
 Currently, the following devices and applications are supported and confirmed working:
