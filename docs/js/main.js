@@ -20,10 +20,19 @@ const START = 9;
 const STRUM = 9;
 const TOUCH = 5;
 const LOGO = 12;
+const CONTROL = 100;
 
+var arrSynth = null;
+var requestArrEnd = false;
+var tempVariation = {};
+var currentSffVar = "Intro A";
+var loadFile = null;
+var fretButton = 127;
+var artiphonStrumUp = false;
 var artiphonI1Base = 36;
 var footSwCode7Enabled = false;
 var playButton = null;
+var gamePadModeButton = null;
 var styleType = null;
 var keyboard = new Map();
 var bassLoop = null;
@@ -31,6 +40,7 @@ var drumLoop = null;
 var chordLoop = null;
 var realdrumLoop = null;
 var songSequence = null;
+var arrSequence = null;
 var realdrumDevice = null;
 var arranger = "webaudio";
 var realGuitarStyle = "none";
@@ -52,6 +62,8 @@ var rgIndex = 0;
 var nextRgIndex = 0;
 var styleStarted = false;
 var activeChord = null;
+var arrChordType = "maj";
+var guitarAvailable = false;
 var firstChord = [base, base + 4, base + 7];
 var rcLooperChord = 0;
 var aerosPart = 1;
@@ -59,11 +71,13 @@ var aerosChordTrack = 1;
 var aerosAux = false;
 var aerosAuxMode = false;
 var currentPlayNote;
+var startofVariation;
 var tempoCanvas = null;
 var nextBeatTime = 0;
 var playStartTime = 0;
 var audioContext = null;
 var unlocked = false;
+var arrangerBeat;
 var current16thNote;        		// What note is currently last scheduled?
 var tempo = 100.0;          		// tempo (in beats per minute)
 var lookahead = 25.0;       		// How frequently to call scheduling function 
@@ -96,6 +110,7 @@ timeoutWorker.addEventListener("message", myWorkerTimer);
 window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
 window.addEventListener("beforeunload", () => saveConfig());
+window.addEventListener('message', messageHandler);
 
 function myWorkerTimer(evt) {
   var data = evt.data,
@@ -122,10 +137,15 @@ function mysetTimeout(fn, delay) {
   return id;
 };
 
+function messageHandler(evt) {
+	console.debug("messageHandler", evt);	
+}
+
 function onloadHandler() {
 	console.debug("onloadHandler");
-  
+		
 	playButton = document.querySelector(".play");
+	gamePadModeButton = document.querySelector(".gamepad_mode");
 	styleType = document.querySelector(".style_type");
 	tempoCanvas = orinayo = document.querySelector('#tempoCanvas');	
 	orinayo = document.querySelector('#orinayo');
@@ -165,10 +185,27 @@ function onloadHandler() {
 		setTimeout(() => output.sendControlChange (107, 127, 4), 220000);
 			
 	});
+	
+	const upload = document.getElementById("load-midifile");
+	
+	upload.addEventListener('change', function(event) {
+		handleFileContent(event);
+	});	
+
+	loadFile = document.querySelector(".load_file")
+		
+	loadFile.addEventListener('click', function(event) {
+		upload.click();	
+	});	
 
 	styleType.addEventListener("click", function() {
 		styleType.innerText = styleType.innerText == "DJ" ? "Normal" : "DJ";	
 	});
+	
+	gamePadModeButton.addEventListener("click", function() {	
+		gamePadModeButton.innerText = (gamePadModeButton.innerText == "Color Tabs" ? "Smart Strums" : (gamePadModeButton.innerText == "Smart Strums" ? "Smart Strings" : "Color Tabs"));	
+	});	
+	
 	
 	playButton.addEventListener("click", function() {	
 		if (arranger == "webaudio" && realdrumLoop) {
@@ -183,8 +220,8 @@ function onloadHandler() {
 		}
 	});	
 	
-	document.querySelector("#tempo").addEventListener("input", function() {
-		tempo = event.target.value; 
+	document.querySelector("#tempo").addEventListener("input", function(event) {
+		tempo = +event.target.value; 
 		document.getElementById('showTempo').innerText = tempo;
 	});
 	
@@ -207,12 +244,68 @@ function onloadHandler() {
 			handleKeyboard(name, code);	
 		}			
 	});	
-
 	
 	letsGo();
 }
 
-function setTempo(tempo) {
+function handleFileContent(event) {
+	console.debug("handleFileContent", event);	
+	var files = event.target.files;
+
+	for (const file of files) {
+		var reader = new FileReader();
+
+		reader.onload = function(event)	{
+			if (file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs")) {
+				handleStyleFile(file, event.target.result);
+			}
+			else
+				
+			if (file.name.toLowerCase().endsWith(".sf2")) {
+				handleSF2File(file, event.target.result);
+			}			
+			else {
+				alert("Only soundfonts or style files supported");
+			}
+		};
+
+		reader.onerror = function(event) {
+			console.error("handleFileContent - error", event);
+		};
+
+		reader.readAsArrayBuffer(file);
+		break;
+	}
+}
+
+function handleSF2File(file, data) {
+	console.log("handleSF2File", file, data);
+		
+	arrSynth = new SoundFont.WebMidiLink();
+	arrSynth.loadSoundFont(new Uint8Array(data));
+}
+
+function handleStyleFile(file, input) {
+	console.log("handleStyleFile", file, input);
+	
+	arrSequence = parseMidi(input);
+	console.log("parsed", file.name, arrSequence);	
+	
+	if (!arrSequence.data.SFF1) {
+		alert("Only SSF1 Style files supported");
+		arrSequence = null;
+		
+	} else {
+		arrSequence.name = file.name;
+		
+		if (!timerWorker) setupSongSequence(true);
+		localStorage.setItem("orin.ayo." + arrSequence.name, JSON.stringify(arrSequence));
+		location.reload();
+	}
+}
+
+function setTempo(tmpo) {
+	tempo = tmpo;
 	document.querySelector("#tempo").value = tempo; 
 	document.getElementById('showTempo').innerText = tempo;
 }
@@ -245,7 +338,7 @@ function handleKeyboard(name, code) {
 	}	
 	  
 	if (keyboard.get("0") || keyboard.get(".") || keyboard.get("1") || keyboard.get("2") || keyboard.get("3") || keyboard.get("4") || keyboard.get("5") || keyboard.get("6") || keyboard.get("7") || keyboard.get("8") || keyboard.get("9") || keyboard.get("*") || keyboard.get("/") || keyboard.get("Backspace")) {	
-		pad.axis[STRUM] = STRUM_UP;
+		toggleStrumUpDown();
 		handled = true;			
 
 		if (keyboard.get("Backspace") && keyboard.get("0")) {	// Fill
@@ -299,62 +392,87 @@ function handleKeyboard(name, code) {
 		if (keyboard.get("4") && keyboard.get("5")) {			// 6
 			pad.buttons[RED] = true;
 			pad.buttons[YELLOW] = true;			
-			pad.buttons[BLUE] = true;				
+			pad.buttons[BLUE] = true;	
+			
 		}
 		else 
 			
 		if (keyboard.get("5") && keyboard.get("6")) {			// 1sus
 			pad.buttons[ORANGE] = true;
-			pad.buttons[YELLOW] = true;			
+			pad.buttons[YELLOW] = true;	
 		}
 		else 
 			
 		if (keyboard.get("8") && keyboard.get("9")) {			// 5sus
 			pad.buttons[GREEN] = true;
-			pad.buttons[YELLOW] = true;			
+			pad.buttons[YELLOW] = true;	
+			
 		}
 		else 
 			
 		if (keyboard.get("2") && keyboard.get("3")) {			// 4m
 			pad.buttons[ORANGE] = true;
-			pad.buttons[RED] = true;			
+			pad.buttons[RED] = true;	
+			
 		}	
 
-		else if (keyboard.get("5") && !keyboard.get("4") && !keyboard.get("6")) pad.buttons[YELLOW] = true;		// 1	
-		else if (keyboard.get("2") && !keyboard.get("1") && !keyboard.get("3")) pad.buttons[ORANGE] = true;		// 4		
-		else if (keyboard.get("8") && !keyboard.get("7") && !keyboard.get("9")) pad.buttons[GREEN] = true;		// 5
-		else if (keyboard.get("4") && !keyboard.get("5")) pad.buttons[RED] = true;								// 6m		
-		else if (keyboard.get("1") && !keyboard.get("2")) pad.buttons[BLUE] = true;								// 2m		
+		else if (keyboard.get("5") && !keyboard.get("4") && !keyboard.get("6")) {
+			pad.buttons[YELLOW] = true;		// 1	
+			
+		}
+		else if (keyboard.get("2") && !keyboard.get("1") && !keyboard.get("3")) {
+			pad.buttons[ORANGE] = true;		// 4	
+			
+		}			
+		else if (keyboard.get("8") && !keyboard.get("7") && !keyboard.get("9")) {
+			pad.buttons[GREEN] = true;	
+			
+		}			// 5
+		else if (keyboard.get("4") && !keyboard.get("5")) {
+			pad.buttons[RED] = true;								// 6m	
+			
+		}			
+		else if (keyboard.get("1") && !keyboard.get("2")) {
+			pad.buttons[BLUE] = true;								// 2m	
+			
+		}
 		
 		else if (keyboard.get("7") && !keyboard.get("8")) {														// 3m
 			pad.buttons[GREEN] = true;
-			pad.buttons[BLUE] = true;			
+			pad.buttons[BLUE] = true;	
+			
 		}
 		else if (keyboard.get("3") && !keyboard.get("2")) {														// 4/6
 			pad.buttons[ORANGE] = true;
-			pad.buttons[BLUE] = true;			
+			pad.buttons[BLUE] = true;	
+			
 		}		
 		else if (keyboard.get("6") && !keyboard.get("5")) {														// 1/3
 			pad.buttons[BLUE] = true;
-			pad.buttons[YELLOW] = true;			
+			pad.buttons[YELLOW] = true;	
+			
 		}
 		else if (keyboard.get("9") && !keyboard.get("8")) {														// 5/7
 			pad.buttons[GREEN] = true;
-			pad.buttons[RED] = true;			
+			pad.buttons[RED] = true;	
+			
 		}
 		else if (keyboard.get("*") && keyboard.get("/")) {														// 3b
 			pad.buttons[ORANGE] = true;		
 			pad.buttons[BLUE] = true;
-			pad.buttons[RED] = true;				
+			pad.buttons[RED] = true;	
+			
 		}	
 		else if (keyboard.get("/") && !keyboard.get("*")) {														// 5b			
 			pad.buttons[YELLOW] = true;			
 			pad.buttons[GREEN] = true;
-			pad.buttons[RED] = true;		
+			pad.buttons[RED] = true;	
+			
 		}		
 		else if (keyboard.get("*") && !keyboard.get("/")) {														// 7b
 			pad.buttons[YELLOW] = true;			
-			pad.buttons[RED] = true;			
+			pad.buttons[RED] = true;	
+			
 		}		
 	}	
 
@@ -366,120 +484,259 @@ function handleKeyboard(name, code) {
 	
 }
 
-function handleArtiphonI1(note) {
-	console.debug("handleArtiphonI1", note);
+function toggleStrumUpDown() {
+	pad.axis[STRUM] = artiphonStrumUp ? STRUM_UP : STRUM_DOWN;
+	if (forward) forward.playNote(artiphonStrumUp ? 122 : 121, 1, {velocity: 0.5, duration: 1000});				
+	artiphonStrumUp = !artiphonStrumUp;
+}
 
-	if (!game) {
-		setup();
-		resetArtiphonI1Buttons();	
-		resetArtiphonI1Axis();
-		pad.axis[STRUM] = STRUM_UP;			
-	}	
-	  
-	/*if (keyboard.get("+")) {
-		pad.axis[STRUM] = STRUM_RIGHT;		
-	}	
-	else
-	  
-	if (keyboard.get("-")) {
-		pad.axis[STRUM] = STRUM_LEFT;		
-	}*/	
-	  
-	if (note.number < artiphonI1Base + 44) {	
-
-		/*if (note.number == artiphonI1Base + 38) {		
-			pad.buttons[LOGO] = true;
-			pad.buttons[YELLOW] = true; 					// start/stop		
-		}
-		else*/		
-
-		if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {			// STRUM UP/DOWN (BRIDGE Buttons)
-			console.debug("handleArtiphonI1 - strum up/down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);			
-			pad.axis[STRUM] = STRUM_DOWN;
-			
-			if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) {			
-
-				if (note.number == artiphonI1Base) {		// style next
-					pad.buttons[START] = true;	
-					pad.buttons[STARPOWER] = false;			
-				}
-				else
-
-				if (note.number == artiphonI1Base + 9) {	// style prev
-					pad.buttons[STARPOWER] = true;	
-					pad.buttons[START] = false;				
-				}
-				else
-									
-				if (note.number == artiphonI1Base + 4) 	{	// Fill
-					pad.buttons[START] = true;	
-					pad.buttons[STARPOWER] = false;							
-				}
-				else
-
-				if (note.number == artiphonI1Base + 5) 	{	// Fill
-					pad.buttons[START] = true;	
-					pad.buttons[STARPOWER] = false;							
-				}					
-			}			
-		}
-		else		
-			
-		/*if (note.number == artiphonI1Base + 43) {	// Mute Drums
-			pad.axis[TOUCH] = 1.0;					
-		}
-		else 
-			
-		if (note.number == artiphonI1Base + 41) {	// Mute Chord
-			pad.axis[TOUCH] = 1.0;					
-		}
-		else 
-			
-		if (note.number == artiphonI1Base + 40) {	// Mute Bass
-			pad.axis[TOUCH] = -0.4;				
-		}
-		else*/ 
-			
-		if (note.number == artiphonI1Base + 24) {			// GREEN	
-			pad.axis[STRUM] = 0;
-			pad.buttons[GREEN] = true;				
-		}
-		else 
-			
-		if (note.number == artiphonI1Base + 26) {			// RED
-			pad.axis[STRUM] = 0;		
-			pad.buttons[RED] = true;					
-		}
-		else 
-			
-		if (note.number == artiphonI1Base + 28) {			// YELLOW
-			pad.axis[STRUM] = 0;		
-			pad.buttons[YELLOW] = true;						
-		}
-		else 
-			
-		if (note.number == artiphonI1Base + 29) {			// BLUE
-			pad.axis[STRUM] = 0;		
-			pad.buttons[BLUE] = true;					
-		}
-		else 
-			
-		if (note.number == artiphonI1Base + 31) {			// ORANGE
-			pad.axis[STRUM] = 0;		
-			pad.buttons[ORANGE] = true;				
-		}			
-	}	
-
-
-	doChord();
-	updateCanvas();	
+function handleNoteOff(note, device, velocity) {	
+	//console.debug("handleNoteOff", note);
 	
-	if (pad.axis[STRUM] == STRUM_DOWN || pad.axis[STRUM] == STRUM_UP) {	
-		resetArtiphonI1Buttons();
-		resetArtiphonI1Axis();		
-	} else {		
-		resetArtiphonI1Axis();
+	if (device == "INSTRUMENT1") {
+		const fwdChord = [];
+			
+		if (gamePadModeButton.innerText == "Color Tabs") {
+			if (pad.buttons[GREEN]) fwdChord.push(127);						
+			if (pad.buttons[RED]) fwdChord.push(126);
+			if (pad.buttons[YELLOW]) fwdChord.push(125);						
+			if (pad.buttons[BLUE]) fwdChord.push(124);
+			if (pad.buttons[ORANGE]) fwdChord.push(123);
+			if (pad.axis[STRUM] == STRUM_UP) fwdChord.push(122);								
+			if (pad.axis[STRUM] == STRUM_DOWN) fwdChord.push(121);						
+			forward.stopNote(fwdChord, 1, {velocity});	
+			
+			if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {
+				stopChord();
+			}			
+			
+		} else {
+			
+			if (pad.buttons[GREEN]) fwdChord.push(127);						
+			if (pad.buttons[RED]) fwdChord.push(126);
+			if (pad.buttons[YELLOW]) fwdChord.push(125);						
+			if (pad.buttons[BLUE]) fwdChord.push(124);
+			if (pad.buttons[ORANGE]) fwdChord.push(123);
+			/*if (pad.axis[STRUM] == STRUM_UP) fwdChord.push(122);								
+			if (pad.axis[STRUM] == STRUM_DOWN) fwdChord.push(121);*/
+
+			pad.axis[STRUM] = STRUM_UP;
+			fwdChord.push(122);	
+			
+			if (fretButton) {
+				fwdChord.push(fretButton);
+			}
+			forward.stopNote(fwdChord, 1, {velocity});	
+		}			
+						
+		if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {
+			pad.axis[STRUM] = 0;
+			pad.buttons[CONTROL] = false;	
+			pad.buttons[START] = false;	
+			pad.buttons[STARPOWER] = false;	
+			pad.axis[TOUCH] = 0;		
+		}	
+		else				
+
+		if (note.number == artiphonI1Base + 24) {			// GREEN	
+			pad.buttons[GREEN] = false;			
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 26) {			// RED		
+			pad.buttons[RED] = false;				
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 28) {			// YELLOW		
+			pad.buttons[YELLOW] = false;			
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 29) {			// BLUE		
+			pad.buttons[BLUE] = false;
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 31) {			// ORANGE		
+			pad.buttons[ORANGE] = false;	
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 33) {			// CONTROL		
+			pad.buttons[CONTROL] = false;	
+			pad.buttons[START] = false;	
+			pad.buttons[STARPOWER] = false;				
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 35) {			// PLAY		
+			pad.buttons[LOGO] = false;	
+			pad.buttons[GREEN] = false;	
+			pad.buttons[RED] = false;
+			pad.buttons[YELLOW] = false;
+			pad.buttons[BLUE] = false;
+			pad.buttons[ORANGE] = false;			
+		}		
+		
+		updateCanvas();				
+	}				
+
+	
+}
+
+function handleNoteOn(note, device, velocity) {
+	//console.debug("handleNoteOn", note);
+
+	if (device == "INSTRUMENT1") {
+		
+		if (!game) {
+			setup();
+			resetArtiphonI1Buttons();	
+			resetArtiphonI1Axis();		
+		}	
+			
+		if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {			// STRUM UP/DOWN (BRIDGE Buttons)
+			console.debug("handleNoteOn - strum up/down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);	
+
+			if (!pad.buttons[GREEN] && !pad.buttons[RED] && !pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[CONTROL] && !pad.buttons[LOGO]) {
+				
+				if (note.number == artiphonI1Base + 9) {
+					pad.axis[TOUCH] = -0.7;
+					pad.axis[STRUM] = STRUM_DOWN;			// fill
+				}
+				else
+					
+				if (note.number == artiphonI1Base + 4) {
+					pad.axis[TOUCH] = -0.7;
+					pad.axis[STRUM] = STRUM_UP;				// break
+				}
+				else				
+					
+				if (note.number == artiphonI1Base) {
+					pad.buttons[START] = false;	
+					pad.buttons[STARPOWER] = true;			// next var				
+				}				
+				else
+					
+				if (note.number == artiphonI1Base + 2) {
+					pad.buttons[START] = true;				// prev var
+					pad.buttons[STARPOWER] = false;						
+				}
+			}
+			else
+				
+			if (gamePadModeButton.innerText == "Color Tabs") {
+				
+				if (note.number == artiphonI1Base) pad.axis[STRUM] = STRUM_DOWN;	
+				if (note.number == artiphonI1Base + 2) pad.axis[STRUM] = STRUM_UP;	
+				if (note.number == artiphonI1Base + 4) pad.axis[STRUM] = STRUM_DOWN;	
+				if (note.number == artiphonI1Base + 5) pad.axis[STRUM] = STRUM_UP;	
+				if (note.number == artiphonI1Base + 7) pad.axis[STRUM] = STRUM_DOWN;	
+				if (note.number == artiphonI1Base + 9) pad.axis[STRUM] = STRUM_UP;								
+			
+			} else if (gamePadModeButton.innerText == "Smart Strums") {
+					
+				if (note.number == artiphonI1Base) fretButton = (127);	
+				if (note.number == artiphonI1Base + 2) fretButton =(126);
+				if (note.number == artiphonI1Base + 4) fretButton =(125);	
+				if (note.number == artiphonI1Base + 5) fretButton =(124);	
+				if (note.number == artiphonI1Base + 7) fretButton = (123);	
+
+				const fwdChord = [fretButton];
+				
+				if (note.number == artiphonI1Base + 9) {
+					pad.axis[STRUM] = STRUM_UP;
+					fwdChord.push(122);						
+				}
+				
+				forward.playNote(fwdChord, 1, {velocity});	
+				
+			} else if (gamePadModeButton.innerText == "Smart Strings") {
+					
+				if (note.number == artiphonI1Base) fretButton = (127);	
+				if (note.number == artiphonI1Base + 2) fretButton =(126);
+				if (note.number == artiphonI1Base + 4) fretButton =(125);	
+				if (note.number == artiphonI1Base + 5) fretButton =(124);	
+				if (note.number == artiphonI1Base + 7) fretButton = (123);	
+				
+				const fwdChord = [fretButton];			
+				
+				if (note.number == artiphonI1Base + 9) {
+					fwdChord.push(121);	
+					pad.axis[STRUM] = STRUM_DOWN;
+				} else {
+					fwdChord.push(122);	
+					pad.axis[STRUM] = STRUM_UP;
+					
+				}					
+				forward.playNote(fwdChord, 1, {velocity});					
+			}
+				
+			if (pad.buttons[LOGO]) 
+			{
+				if (note.number == artiphonI1Base) pad.buttons[GREEN] = true;
+				if (note.number == artiphonI1Base + 2) pad.buttons[RED] = true;
+				if (note.number == artiphonI1Base + 4) pad.buttons[YELLOW] = true;
+				if (note.number == artiphonI1Base + 5) pad.buttons[BLUE] = true;	
+				if (note.number == artiphonI1Base + 7) pad.buttons[ORANGE] = true;			
+			}				
+		}
+		else				
+
+		if (note.number == artiphonI1Base + 24) {			// GREEN	
+			pad.buttons[GREEN] = true;			
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 26) {			// RED		
+			pad.buttons[RED] = true;				
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 28) {			// YELLOW		
+			pad.buttons[YELLOW] = true;			
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 29) {			// BLUE		
+			pad.buttons[BLUE] = true;
+		}
+		else 
+			
+		if (note.number == artiphonI1Base + 31) {			// ORANGE		
+			pad.buttons[ORANGE] = true;	
+		}	
+		else 
+			
+		if (note.number == artiphonI1Base + 33) {			// FILL, NEXT and PREV				
+			pad.buttons[CONTROL] = true;				
+		}		
+		else 
+			
+		if (note.number == artiphonI1Base + 35) {			// INTRO, END, START, STOP			
+			pad.buttons[LOGO] = true;				
+		}		
+		
+		if (gamePadModeButton.innerText == "Color Tabs") {
+			const fwdChord = [];
+			if (pad.buttons[GREEN]) fwdChord.push(127);						
+			if (pad.buttons[RED]) fwdChord.push(126);
+			if (pad.buttons[YELLOW]) fwdChord.push(125);						
+			if (pad.buttons[BLUE]) fwdChord.push(124);
+			if (pad.buttons[ORANGE]) fwdChord.push(123);
+			if (pad.axis[STRUM] == STRUM_UP) fwdChord.push(122);								
+			if (pad.axis[STRUM] == STRUM_DOWN) fwdChord.push(121);						
+			forward.playNote(fwdChord, 1, {velocity});
+		}
+
+		updateCanvas();	
+
+		if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN || pad.buttons[START] || pad.buttons[STARPOWER]) {			
+			doChord();				
+		}
 	}
+
 }
 
 function resetArtiphonI1Buttons() {
@@ -534,12 +791,14 @@ function updateStatus() {
 		
 		if (gamepads[i] && gamepads[i].id.indexOf("Guitar") > -1) {
 		  guitar = gamepads[i];
+		  guitarAvailable = true;
 		  break;
 		}
 		else
 			
 		if (gamepads[i] && gamepads[i].id.indexOf("248a") > -1 && gamepads[i].id.indexOf("8266") > -1) {
 		  ring = gamepads[i];
+		  guitarAvailable = true;
 		  break;
 		}		
 	}
@@ -661,29 +920,47 @@ async function setupUI(config,err) {
 	realGuitarIndex = config.realGuitarStyle == "Basic_P44_16T_50_90" ? 4 : realGuitarIndex;			
 	realguitar.selectedIndex = realGuitarIndex;			
 	realGuitarStyle = config.realGuitarStyle;	
+	
+	const arrangerStyle =  document.getElementById("arrangerStyle");
+	arrangerStyle.options[0] = new Option("**UNUSED**", "arrangerStyle");	
+	let styleSelected = false;
+	let iStyle = 0;
+	
+    for (var i = 0; i < localStorage.length; i++)
+    {
+        if (localStorage.key(i).startsWith("orin.ayo.") && localStorage.key(i) != "orin.ayo.config") {
+			iStyle++;
+            const key = localStorage.key(i).substring(9);
+			styleSelected = config.arrName == key;
+			arrangerStyle.options[iStyle] = new Option(key, key, styleSelected, styleSelected);			
+		}
+	}		
+	
 
 	const arrangerType =  document.getElementById("arrangerType");	
-	arrangerType.options[0] = new Option("Web Audio Files", "webaudio", config.arranger == "webaudio");		
-	arrangerType.options[1] = new Option("Ketron SD/Event", "ketron", config.arranger == "ketron");
-	arrangerType.options[2] = new Option("Yamaha MODX", "modx", config.arranger == "modx");
-	arrangerType.options[3] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
-	arrangerType.options[4] = new Option("Yamaha PRS SX", "psrsx", config.arranger == "psrsx");	
-	arrangerType.options[5] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");		
-	arrangerType.options[6] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
-	arrangerType.options[7] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");	
-	arrangerType.options[8] = new Option("Boss RC Loop Station", "rclooper", config.arranger == "rclooper");	
-	arrangerType.options[9] = new Option("Aeros Loop Studio", "aeroslooper", config.arranger == "aeroslooper");	
+	arrangerType.options[0] = new Option("Style Files Format", "sff", config.arranger == "sff");		
+	arrangerType.options[1] = new Option("Web Audio Files", "webaudio", config.arranger == "webaudio");		
+	arrangerType.options[2] = new Option("Ketron SD/Event", "ketron", config.arranger == "ketron");
+	arrangerType.options[3] = new Option("Yamaha MODX", "modx", config.arranger == "modx");
+	arrangerType.options[4] = new Option("Yamaha Montage", "montage", config.arranger == "montage");	
+	arrangerType.options[5] = new Option("Yamaha PRS SX", "psrsx", config.arranger == "psrsx");	
+	arrangerType.options[6] = new Option("Yamaha QY100", "qy100", config.arranger == "qy100");		
+	arrangerType.options[7] = new Option("Korg Micro Arranger", "microarranger", config.arranger == "microarranger");				
+	arrangerType.options[8] = new Option("Giglad Arranger", "giglad", config.arranger == "giglad");	
+	arrangerType.options[9] = new Option("Boss RC Loop Station", "rclooper", config.arranger == "rclooper");	
+	arrangerType.options[10] = new Option("Aeros Loop Studio", "aeroslooper", config.arranger == "aeroslooper");	
 	
 	let arrangerIndex = 0;
-	arrangerIndex = config.arranger == "ketron" ? 1 : arrangerIndex;
-	arrangerIndex = config.arranger == "modx" ? 2 : arrangerIndex;		
-	arrangerIndex = config.arranger == "montage" ? 3 : arrangerIndex;
-	arrangerIndex = config.arranger == "psrsx" ? 4 : arrangerIndex;			
-	arrangerIndex = config.arranger == "qy100" ? 5 : arrangerIndex;		
-	arrangerIndex = config.arranger == "microarranger" ? 6 : arrangerIndex;				
-	arrangerIndex = config.arranger == "giglad" ? 7 : arrangerIndex;				
-	arrangerIndex = config.arranger == "rclooper" ? 8 : arrangerIndex;	
-	arrangerIndex = config.arranger == "aeroslooper" ? 9 : arrangerIndex;		
+	arrangerIndex = config.arranger == "webaudio" ? 1 : arrangerIndex;
+	arrangerIndex = config.arranger == "ketron" ? 2 : arrangerIndex;
+	arrangerIndex = config.arranger == "modx" ? 3 : arrangerIndex;		
+	arrangerIndex = config.arranger == "montage" ? 4 : arrangerIndex;
+	arrangerIndex = config.arranger == "psrsx" ? 5 : arrangerIndex;			
+	arrangerIndex = config.arranger == "qy100" ? 6 : arrangerIndex;		
+	arrangerIndex = config.arranger == "microarranger" ? 7 : arrangerIndex;				
+	arrangerIndex = config.arranger == "giglad" ? 8 : arrangerIndex;				
+	arrangerIndex = config.arranger == "rclooper" ? 9 : arrangerIndex;	
+	arrangerIndex = config.arranger == "aeroslooper" ? 10 : arrangerIndex;		
 	arrangerType.selectedIndex = arrangerIndex;			
 	arranger = config.arranger;	
 	
@@ -799,13 +1076,26 @@ async function setupUI(config,err) {
 		}
 	});
 	
-
 	arrangerType.addEventListener("click", function()
 	{
 		arranger = arrangerType.value;
 		setGigladUI(); // reset. remove if no more giglad
 		console.debug("selected arranger type", arranger, arrangerType.value);				
 		saveConfig();
+	});
+	
+	arrangerStyle.addEventListener("click", function()
+	{
+		const arrData = localStorage.getItem("orin.ayo." + arrangerStyle.value);
+	
+		if (arrData) { 
+			arrSequence = JSON.parse(arrData);
+			const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
+			setTempo(bpm);			
+			console.debug("selected arranger type", arrangerStyle.value);				
+			saveConfig();			
+		}
+
 	});
 	
 	realguitar.addEventListener("click", function()
@@ -916,15 +1206,17 @@ async function setupUI(config,err) {
 	if (input)
 	{
 		input.addListener('noteon', "all", function (e) {		
-			console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note, midiIn.value);
-
-			if (midiIn.value == "INSTRUMENT1") {
-				handleArtiphonI1(e.note);
-			}
+			//console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note, e);
+			handleNoteOn(e.note, midiIn.value, e.velocity);
 		});
+
+		input.addListener("noteoff", "all", function (e) {
+			//console.log("Received noteoff message", e);
+			handleNoteOff(e.note, midiIn.value, e.velocity);			
+		});	
 		
 		input.addListener("keyaftertouch", "all", function (e) {
-			console.log("Received after touch message", e);
+			//console.log("Received after touch message", e);
 		});		
 		
 		input.addListener("programchange", "all", function (e) {
@@ -974,7 +1266,17 @@ async function setupUI(config,err) {
 	}									
 	
 	enableSequencer(!!forward && realGuitarStyle != "none");
-	setupSongSequence(songSequence != null);	
+	
+	if (config.arrName) {		
+		const arrData = localStorage.getItem("orin.ayo." + config.arrName);
+	
+		if (arrData) { 
+			arrSequence = JSON.parse(arrData);
+		}
+	}
+		
+	setupSongSequence(songSequence || arrSequence);	
+	
 };
 
 function setGigladUI() {
@@ -995,13 +1297,19 @@ function saveConfig() {
 	config.realdrumLoop = realdrumLoop ? realdrumLoop.name : null;
 	config.realdrumDevice = realdrumDevice ? realdrumDevice.deviceId : null;
 	config.songName = songSequence ? songSequence.name : null;
+	config.arrName = arrSequence ? arrSequence.name : null;
 
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }
 
 function doBreak() {
 	console.debug("doBreak " + arranger);	
+
+	if (arranger == "sff") {
 	
+	} 	
+	else 
+		
 	if (arranger == "webaudio" && realdrumLoop) 
 	{
 		if (sectionChange == 0) {
@@ -1070,6 +1378,11 @@ function doBreak() {
 
 function doFill() {
 	console.debug("doFill " + arranger);
+	
+	if (arranger == "sff") {
+		doSffFill(false);
+	} 	
+	else 	
 	
 	if (arranger == "webaudio" &&  drumLoop) {
 		if (sectionChange == 0) drumLoop.update('fila', false);
@@ -1286,6 +1599,44 @@ function doQY100Fill() {
 	}		
 }
 
+function setSffVar(changed) {
+	if (sectionChange == 0) {
+		currentSffVar = "Fill In AA";
+	}
+	if (sectionChange == 1) {
+		currentSffVar = "Fill In BB";
+	}
+	if (sectionChange == 2) {		
+		currentSffVar = "Fill In CC";
+	}		
+	if (sectionChange == 3) {
+		currentSffVar = "Fill In DD";	
+	}
+}
+	
+function doSffFill(changed) {
+	setSffVar(changed);	
+	
+	if (!arrSequence.data[currentSffVar]) {
+		sectionChange++;
+		if (sectionChange > 3) sectionChange = 0;
+		orinayo_section.innerHTML = SECTIONS[sectionChange];
+		setSffVar(changed);
+	}
+	
+	currentPlayNote = 0;
+	nextNoteTime = playStartTime;
+	currentPlayNote = -1;
+
+	while (nextNoteTime < audioContext.currentTime + scheduleAheadTime && currentPlayNote < arrSequence.data[currentSffVar].length - 1) {
+		currentPlayNote++;
+		const timestamp = arrSequence.data[currentSffVar][currentPlayNote].deltaTime * (60 / (tempo * arrSequence.header.ticksPerBeat));
+		nextNoteTime = nextNoteTime + timestamp;
+	}
+
+	console.debug("doSffFill", currentSffVar, arrangerBeat, currentPlayNote, arrSequence.data[currentSffVar].length);	
+}
+
 function checkForTouchArea() {
 	//console.debug("GREEN Touch", pad.axis[TOUCH] == -0.7);	
 	
@@ -1339,12 +1690,13 @@ function playChord(chord, root, type, bass) {
 	console.debug("playChord", chord, root, type, bass);
 	
 	firstChord = chord;
+	arrChordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")));
 	
-	if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord) {		
-		const chordNote = (chord.length == 4 ? chord[1] : chord[0]) % 12;
-		const chordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")))
-		const key = "key" + chordNote + "_" + chordType + "_" + SECTION_IDS[sectionChange];
-		const bassKey = "key" + (chord[0] % 12) + "_" + chordType + "_" + SECTION_IDS[sectionChange];
+	
+	if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord) {
+		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
+		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
+		const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 
 	
 		if (padsDevice) {
@@ -1398,7 +1750,7 @@ function playChord(chord, root, type, bass) {
 				if (chordLoop) chordLoop.update(key, false);		
 			}
 			else
-			
+				
 			if ((arranger == "aeroslooper" || arranger == "rclooper") && output) {
 				console.debug("playChord looper ", rcLooperChord, root);
 		
@@ -1426,8 +1778,40 @@ function playChord(chord, root, type, bass) {
 				}	
 				
 			} else {
-				if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});		// up
-				if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   	// down					
+
+				if (arranger == "sff") {
+					//currentPlayNote = 0;
+					//nextNoteTime = audioContext.currentTime;
+					
+					var events = Object.getOwnPropertyNames(tempVariation);
+
+					for (var i=0; i<events.length; i++) {
+						const event = tempVariation[events[i]].event;
+						const note = tempVariation[events[i]].note;
+						
+						if (output) {						
+							output.stopNote(note, event.channel + 1, {velocity: event.velocity});
+						}
+						else
+							
+						if (arrSynth) {
+							const eventTypeByte = 0x80 | event.channel;
+							const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity};
+							arrSynth.onmessage(evt);
+						}							
+					}
+					
+				} else {
+					if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});		// up
+					if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   	// down	
+				}
+				
+				if (!guitarAvailable && forward) 
+				{
+					if (gamePadModeButton.innerText != "Color Tabs") {					
+						forward.playNote(chord, 1, {velocity: 0.5});
+					}
+				}					
 			}
 			
 		} else {
@@ -1621,6 +2005,11 @@ function sendKetronSysex(code) {
 
 function pressFootSwitch(code) {
 	console.debug("pressFootSwitch", code)	
+
+	if (arranger == "sff") {
+	
+	} 	
+	else 
 		
 	if (arranger == "webaudio" && realdrumLoop) {
 		if (code == 7 && drumLoop) drumLoop.muteToggle();
@@ -1680,6 +2069,11 @@ function resetArrToA() {
 	sectionChange = 0;
 	rgIndex = 0;
 	nextRgIndex = 0;
+	
+	if (arranger == "sff") {
+	
+	} 	
+	else 	
 	
 	if (arranger == "ketron") {
 		sendKetronSysex(3 + sectionChange);	
@@ -1746,17 +2140,29 @@ function resetArrToA() {
 }
 
 function stopChord() {
-   if (activeChord && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN))
-   {
-        console.debug("stopChord", pad)
-        if (output) output.stopNote(activeChord, [4], {velocity: 0.5}); 
-		
-		if (padsDevice) {
-			padsDevice.stopNote(activeChord, 1, {velocity: 0.5}); 
-			if (activeChord.length == 4) padsDevice.stopNote(activeChord[0] + 24, 1, {velocity: 0.5}); 
-		}
-        activeChord = null;
-   }
+	if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) 
+	{
+		if (activeChord)
+		{
+			console.debug("stopChord", pad)
+			if (output) output.stopNote(activeChord, [4], {velocity: 0.5}); 
+			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: 0.5});
+			
+			if (padsDevice) {
+				padsDevice.stopNote(activeChord, 1, {velocity: 0.5}); 
+				if (activeChord.length == 4) padsDevice.stopNote(activeChord[0] + 24, 1, {velocity: 0.5}); 
+			}
+			
+			if (!guitarAvailable && forward) 
+			{
+				if (gamePadModeButton.innerText != "Color Tabs") {					
+					forward.stopNote(activeChord, 1);
+				}
+			}			
+			
+			activeChord = null;
+		}	   
+	}
 }
 
 function playSectionCheck() {
@@ -1817,6 +2223,12 @@ function playSectionCheck() {
 }
 
 function changeArrSection(changed) {
+	
+	if (arranger == "sff") {
+		doSffFill(false);		
+		console.debug("changeArrSection SFF " + sectionChange);	
+	} 	
+	else 	
 	
 	if (arranger == "ketron") {
 		sendKetronSysex(3 + sectionChange);	
@@ -1948,7 +2360,7 @@ function doChord() {
 
   if (pad.buttons[YELLOW] && pad.buttons[BLUE] && pad.buttons[ORANGE] && pad.buttons[RED])
   {
-    playChord([base - 36, base + 5, base + 9, base + 12], 0x34, 0x00, 0x31);
+    playChord([base - 12, base + 5, base + 9, base + 12], 0x34, 0x00, 0x31);
     orinayo.innerHTML = key + " - " + "4/1";
   }
   else
@@ -1957,7 +2369,7 @@ function doChord() {
 
   if (pad.buttons[YELLOW] && pad.buttons[BLUE] && pad.buttons[ORANGE] && pad.buttons[GREEN])
   {
-    playChord([base - 36, base + 7, base + 11, base + 14], 0x35, 0x00, 0x31);
+    playChord([base - 12, base + 7, base + 11, base + 14], 0x35, 0x00, 0x31);
     orinayo.innerHTML = key + " - " + "5/1";
   }
   else
@@ -2004,7 +2416,7 @@ function doChord() {
 
   if (pad.buttons[YELLOW] && pad.buttons[BLUE] && pad.buttons[ORANGE])    // F/G
   {
-    playChord([base - 29, base + 5, base + 9, base + 12], 0x34, 0x00, 0x35);
+    playChord([base - 17, base + 5, base + 9, base + 12], 0x34, 0x00, 0x35);
     orinayo.innerHTML = key + " - " + "4/5";
   }
   else
@@ -2032,21 +2444,21 @@ function doChord() {
 
   if (pad.buttons[YELLOW] && pad.buttons[BLUE])    // C/E
   {
-    playChord([base - 32, base, base + 4, base + 7], 0x31, 0x00, 0x33);
+    playChord([base - 20, base, base + 4, base + 7], 0x31, 0x00, 0x33);
     orinayo.innerHTML = key + " - " + "1/3";
   }
   else
 
   if (pad.buttons[GREEN] && pad.buttons[RED])     // G/B
   {
-    playChord([base - 25, base + 7, base + 11, base + 14], 0x35, 0x00, 0x37);
+    playChord([base - 13, base + 7, base + 11, base + 14], 0x35, 0x00, 0x37);
     orinayo.innerHTML = key + " - " + "5/7";
   }
   else
 
   if (pad.buttons[BLUE] && pad.buttons[ORANGE])     // F/A
   {
-    playChord([base - 27, base + 5, base + 9, base + 12], 0x34, 0x00, 0x36);
+    playChord([base - 15, base + 5, base + 9, base + 12], 0x34, 0x00, 0x36);
     orinayo.innerHTML = key + " - " + "4/6";
   }
   else
@@ -2118,7 +2530,8 @@ function toggleStartStop() {
 		
 	if (!styleStarted) resetArrToA();
 		
-	if ((forward && realGuitarStyle != "none" && window[realGuitarStyle]) || songSequence) {
+	if ((forward && realGuitarStyle != "none" && window[realGuitarStyle]) || songSequence || arrSequence) 
+	{
 		if (playButton.innerText != "On") {
 			startStopSequencer();
 
@@ -2130,6 +2543,11 @@ function toggleStartStop() {
 		}			
 	}
 
+	if (arranger == "sff") {
+		
+	}
+	else
+		
 	if (arranger == "webaudio") {				
 		if (drumLoop && realdrumLoop) {
 			if (!styleStarted) {
@@ -2464,28 +2882,97 @@ function enableSequencer(flag) {
 }
 
 function startStopSequencer() {
-
-    if (!audioContext) audioContext = new AudioContext();	
+	console.debug("startStopSequencer", styleStarted);
 	
-    if (!unlocked) {
-      // play silent buffer to unlock the audio
-      var buffer = audioContext.createBuffer(1, 1, 22050);
-      var node = audioContext.createBufferSource();
-      node.buffer = buffer;
-      node.start(0);
-      unlocked = true;
-    }	
+	if (!audioContext) audioContext = new AudioContext();	
+		
+	if (songSequence) 
+	{
+		if (!unlocked) {
+		  // play silent buffer to unlock the audio
+		  var buffer = audioContext.createBuffer(1, 1, 22050);
+		  var node = audioContext.createBufferSource();
+		  node.buffer = buffer;
+		  node.start(0);
+		  unlocked = true;
+		}
+	}
+	else
+		
+	if (arrSequence) 	
+	{		
+		function handleStyleFileEvent(event) {
+			//console.debug("handleStyleFileEvent", event);
+			
+			if (event.type == "programChange") 
+			{
+				if (output) {
+					output.sendProgramChange(event.programNumber, event.channel + 1);
+				}
+				else 
+					
+				if (arrSynth) {
+					const eventTypeByte = 0xC0 | event.channel;
+					const evt = {data: "midi," + eventTypeByte + "," + event.programNumber};
+					arrSynth.onmessage(evt);
+				}				
+					
+			}
+			else
+				
+			if (event.type == "controller") 
+			{
+				if (output) {				
+					output.sendControlChange(event.controllerType, event.value, event.channel + 1);
+				}
+				else
+					
+				if (arrSynth) {
+					const eventTypeByte = 0xB0 | event.channel;
+					const evt = {data: "midi," + eventTypeByte + "," + event.controllerType + "," + event.value};
+					arrSynth.onmessage(evt);
+				}					
+				
+			}			
+		}
+		
+		if (!styleStarted) 	
+		{		
+			for (let evt in arrSequence.data["SInt"]) {			
+				handleStyleFileEvent(arrSequence.data["SInt"][evt]);	
+			}
+		}
+	}
 	
-	if (!styleStarted) 	{	
+	if (!styleStarted) 	
+	{
+		if (arrSequence && requestArrEnd) {
+			styleStarted = !styleStarted;	
+			playButton.innerText = !styleStarted ? "Play" : "Stop";	
+			orinayo_section.innerHTML = currentSffVar;				
+			return;
+		}
+		
+		currentSffVar = "Intro A";
+		arrangerBeat = 0;
         current16thNote = 0;
 		currentPlayNote = 0;
         nextNoteTime = audioContext.currentTime;
 		nextBeatTime = nextNoteTime;
 		playStartTime = nextNoteTime;		
         timerWorker.postMessage("start");	
-	} else {
-        timerWorker.postMessage("stop");	
-		notesInQueue = []; 		
+	} else {		
+		requestArrEnd = true;
+		
+		if (songSequence) {
+			timerWorker.postMessage("stop");	
+			notesInQueue = []; 	
+		} 
+		else 
+		
+		if (arrSequence) {
+			orinayo_section.innerHTML = "Ending";	
+		}			
 	}
 }
 
@@ -2577,13 +3064,53 @@ function guitarScheduler() {
 function nextSongNote() {	
 	currentPlayNote++;	
 	
-    if (currentPlayNote >= songSequence.music.length) {			
-		toggleStartStop();
-		return;
-    }
-	
-	const timestamp = songSequence.music[currentPlayNote].tick * (60 / (tempo * 1920));
-	nextNoteTime = playStartTime + timestamp;		
+	if (songSequence) {
+		if (currentPlayNote >= songSequence.music.length) {			
+			toggleStartStop();
+			return;
+		}
+		
+		const timestamp = songSequence.music[currentPlayNote].tick * (60 / (tempo * 1920));
+		nextNoteTime = playStartTime + timestamp;	
+	}
+	else
+		
+	if (arrSequence) {
+		//console.debug("nextSongNote old", currentSffVar);
+			
+		if (currentPlayNote >= arrSequence.data[currentSffVar].length) {			
+			currentPlayNote = 0;
+
+			if ("Intro A" == currentSffVar) currentSffVar = "Main A";
+			if ("Intro B" == currentSffVar) currentSffVar = "Main B";			
+			if ("Intro C" == currentSffVar) currentSffVar = "Main C";
+			
+			if ("Fill In AA" == currentSffVar) currentSffVar = "Main A";
+			if ("Fill In BB" == currentSffVar) currentSffVar = "Main B";			
+			if ("Fill In CC" == currentSffVar) currentSffVar = "Main C";			
+			if ("Fill In DD" == currentSffVar) currentSffVar = "Main D";			
+			if ("Fill In BA" == currentSffVar) currentSffVar = "Main A";
+			
+			//console.debug("nextSongNote new", currentSffVar);
+
+			if (currentSffVar.startsWith("Ending")) {
+				timerWorker.postMessage("stop");	
+				notesInQueue = [];
+				requestArrEnd = false;
+			}	
+
+			if (requestArrEnd) {
+				currentSffVar = "Ending A";
+				orinayo_section.innerHTML = currentSffVar;					
+			}				
+			
+		}
+		
+		if (arrSequence.data[currentSffVar]) {
+			const timestamp = arrSequence.data[currentSffVar][currentPlayNote].deltaTime * (60 / (tempo * arrSequence.header.ticksPerBeat));
+			nextNoteTime = nextNoteTime + timestamp;
+		}			
+	}
 }
 
 function scheduleSongNote() {
@@ -2640,36 +3167,141 @@ function scheduleSongNote() {
 			}
 		}
 	}
+	else
+		
+	if (arrSequence) {
+		const event = arrSequence.data[currentSffVar][currentPlayNote];
+		//console.debug("scheduleSongNote", event);
+		//if (event.channel != 10) return;
+			
+		if (event?.type == "noteOn") {
+			if (output) {
+				output.playNote(harmoniseNote(event), event.channel + 1, {velocity: event.velocity});
+			}
+			else
+				
+			if (arrSynth) {
+				const eventTypeByte = 0x90 | event.channel;
+				const evt = {data: "midi," + eventTypeByte + "," + harmoniseNote(event) + "," + event.velocity}
+				arrSynth.onmessage(evt);
+			}
+	
+		}
+		else
+			
+		if (event?.type == "noteOff") {	
+
+			if (output) {		
+				output.stopNote(harmoniseNote(event), event.channel + 1, {velocity: event.velocity});	
+			}
+			else
+				
+			if (arrSynth) {
+				const eventTypeByte = 0x80 | event.channel;
+				const evt = {data: "midi," + eventTypeByte + "," + harmoniseNote(event) + "," + event.velocity}
+				arrSynth.onmessage(evt);	
+			}							
+		}		
+	}
+}
+
+function balanceNote(root) {
+	if (root > 5) {
+		return (root - 12);
+	} else {
+		return root;
+	}	
+}
+
+function harmoniseNote(event) {
+	const root = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
+	const bass = firstChord[0] % 12;
+	
+	let note = event.noteNumber;
+
+	if (arrChordType != "7" && (note % 12) == 9) note = note + 3;	// change A to C unless 7
+	if (arrChordType != "maj7" && (note % 12) == 11) note = note + 1;	// change B to C unless maj7
+	if (arrChordType == "min" && (note % 12) == 4) note = note - 1;	// change E to D# when min
+	if (arrChordType == "sus" && (note % 12) == 4) note = note + 1;	// change E to F when sus4	
+	if (arrChordType == "maj" && (note % 12) == 3) note = note + 1;	// change D# to E when maj
+	
+	if (event.channel != 8 && event.channel != 9) 
+	{	
+		if (event.channel == 10) 
+		{
+			if ((note % 12) == 0) {
+				note = note + bass;
+			} else {
+				note += balanceNote(root);
+			}				
+		} else {
+			note += balanceNote(root);
+		}
+		note = note % 128
+		tempVariation[event.channel + "-" + event.noteNumber] = {note, event};
+	}
+		
+	//if (event.channel == 10) console.debug("harmoniseNote", arrChordType, root, bass, note, event.noteNumber, event.channel);	
+	return note;
 }
 
 function songScheduler() {
-	//console.debug("songScheduler", nextNoteTime, currentPlayNote, songSequence.music.length);
+	//console.debug("songScheduler", nextNoteTime, currentPlayNote);
 
-    var secondsPerBeat = 60.0 / tempo;
+    var secondsPerBeat = 60.0 / tempo; 
     nextBeatTime += (0.25 * secondsPerBeat); 	
 	
-    current16thNote++;   
-	
-    if (current16thNote == 16) {
-        current16thNote = 0;
-    }	
-
+    current16thNote++; 
+	if (current16thNote == 16) current16thNote = 0;
 	notesInQueue.push( { note: current16thNote, time: nextBeatTime } );	
 	
-    while ((nextNoteTime < audioContext.currentTime + scheduleAheadTime) && currentPlayNote < songSequence.music.length ) {
-        scheduleSongNote();
-        nextSongNote();
-    }
+	if (songSequence) 
+	{
+		while ((nextNoteTime < audioContext.currentTime + scheduleAheadTime) && currentPlayNote < songSequence.music.length ) {
+			scheduleSongNote();
+			nextSongNote();
+		}
+	} 
+	else 
+	
+	if (arrSequence && arrSequence.data[currentSffVar]) {
+		arrangerBeat++;	
+		
+		if (arrangerBeat >=  9600 / tempo) {
+			arrangerBeat = 0;
+			playStartTime = audioContext.currentTime;
+		}	
+		
+		while ((nextNoteTime < audioContext.currentTime + scheduleAheadTime) && currentPlayNote < arrSequence.data[currentSffVar].length ) {
+			scheduleSongNote();
+			nextSongNote();
+			if (!arrSequence.data[currentSffVar]) break;
+		}		
+	}
 }
 
 function setupSongSequence(flag) {
-	if (!songSequence) return;	
-	console.log("setupSongSequence", flag, songSequence);	
+	if (!songSequence && !arrSequence) return;	
 	
-	playButton.innerText = "Wait..";
-	setTempo(songSequence.bpm);
+	if (songSequence) {
+		console.log("setupSongSequence", flag, songSequence);	
+		
+		playButton.innerText = "Wait..";
+		setTempo(songSequence.bpm);
+		keyChange = songSequence.key;
+	} 
+	else
+		
+	if (arrSequence) {
+		const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
+		setTempo(bpm);
 
-	keyChange = songSequence.key;
+		if (arrSequence.data[currentSffVar]) {
+			console.log("setupSongSequence", flag, currentSffVar, arrSequence.data[currentSffVar]);
+
+		}		
+	}
+	
     dokeyChange();
 
 	document.querySelector("#sequencer").style.display = flag ? "" : "none";

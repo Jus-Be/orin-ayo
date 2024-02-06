@@ -33,7 +33,11 @@ h1 {
 	
 }
 
-.play, .style_type {
+.synthtable {
+	margin: 10px;
+}
+
+.play, .style_type, .gamepad_mode, .load_file {
 	-moz-box-shadow:inset 0px 20px 26px 0px #b6cde3;
 	-webkit-box-shadow:inset 0px 20px 26px 0px #b6cde3;
 	box-shadow:inset 0px 20px 26px 0px #b6cde3;
