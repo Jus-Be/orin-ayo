@@ -268,6 +268,12 @@ function onloadHandler() {
 		handleFileContent(event);
 	});	
 
+	resetApp = document.querySelector(".reset_app")
+		
+	resetApp.addEventListener('click', function(event) {
+		location.reload();
+	});	
+	
 	loadFile = document.querySelector(".load_file")
 		
 	loadFile.addEventListener('click', function(event) {
@@ -358,22 +364,23 @@ function handleSF2File(file, data) {
 	console.log("handleSF2File", file, data);
 	
 	const data2 = new Uint8Array(data);
-	
-	if (chrome.storage)	{		
-        const store = new idbKeyval.Store("orinayo", "orinayo");
+		
+	const store = new idbKeyval.Store(file.name, file.name);
 
-		idbKeyval.set(file.name, data, store).then(function () {
-			console.debug("sf2 set", file.name, data);
-			saveConfig();
-			
-			arrSynth = new SoundFont.WebMidiLink();
-			arrSynth.name = file.name;
-			arrSynth.loadSoundFont(data2);
-			
-		}).catch(function (err) {e
-			console.error('sf2 set failed!', err)
-		});			
-	}
+	idbKeyval.set(file.name, data, store).then(function () {
+		console.debug("sf2 set", file.name, data);
+		arrSynth.name = file.name;
+		saveConfig();
+		
+		// TODO hack
+		location.reload();			
+		
+		/*arrSynth = new SoundFont.WebMidiLink();
+		arrSynth.loadSoundFont(data2);*/
+		
+	}).catch(function (err) {
+		console.error('sf2 set failed!', err)
+	});			
 }
 
 function handleStyleFile(file, input) {
@@ -392,7 +399,8 @@ function handleStyleFile(file, input) {
 		
 		if (!timerWorker) setupSongSequence(true);
 		localStorage.setItem("orin.ayo." + arrSequence.name, JSON.stringify(arrSequence));
-		//location.reload();
+		// TODO hack
+		location.reload();
 	}
 }
 
@@ -1026,8 +1034,25 @@ async function setupUI(config,err) {
 			styleSelected = config.arrName == key;
 			arrangerStyle.options[iStyle] = new Option(key, key, styleSelected, styleSelected);			
 		}
-	}		
-	
+	}	
+
+	const arrangerSf2 =  document.getElementById("arrangerSf2");
+	arrangerSf2.options[0] = new Option("**UNUSED**", "arrangerSf2");	
+	let sf2Selected = false;
+	let iSf2 = 0;
+
+	indexedDB.databases().then(function (databases) 
+	{
+		databases.forEach(function (db) {
+			console.debug("found database", db.name);
+			
+			if (db.name.endsWith(".sf2")) {
+				iSf2++;
+				sf2Selected = config.sf2Name == db.name;
+				arrangerSf2.options[iSf2] = new Option(db.name, db.name, sf2Selected, sf2Selected);				
+			}
+		})
+	})
 
 	const arrangerType =  document.getElementById("arrangerType");	
 	arrangerType.options[0] = new Option("Style Files Format", "sff", config.arranger == "sff");		
@@ -1178,6 +1203,9 @@ async function setupUI(config,err) {
 	
 	arrangerStyle.addEventListener("click", function()
 	{
+		arrSequence = null
+		if (arrangerStyle.value == "arrangerStyle") return;
+		
 		const arrData = localStorage.getItem("orin.ayo." + arrangerStyle.value);
 	
 		if (arrData) { 
@@ -1188,6 +1216,16 @@ async function setupUI(config,err) {
 			saveConfig();			
 		}
 
+	});	
+	
+	arrangerSf2.addEventListener("click", function()
+	{null;
+		arrSynth = null;
+		if (arrangerSf2.value == "arrangerSf2") return;	
+		
+		arrSynth = {name: arrangerSf2.value};
+		saveConfig();
+		//location.reload();			
 	});
 	
 	realguitar.addEventListener("click", function()
@@ -1367,25 +1405,27 @@ async function setupUI(config,err) {
 		}		
 	}
 	
-	if (config.sf2Name) 
-	{	
-        const store = new idbKeyval.Store("orinayo", "orinayo");
-
-		idbKeyval.get(config.sf2Name, store).then(function (data) {
-			console.debug("sf2 get", config.sf2Nam, data);
-			
-			arrSynth = new SoundFont.WebMidiLink();
-			arrSynth.name = config.sf2Name;
-			arrSynth.loadSoundFont(new Uint8Array(data));		
-
-		}).catch(function (err) {e
-			console.error('sf2 get failed!', err)
-		});	
+	if (config.sf2Name) {					
+		getArrSynth(config);
 	}	
 		
 	setupSongSequence(songSequence || arrSequence);	
 	
 };
+
+function getArrSynth(config) {
+	const store = new idbKeyval.Store(config.sf2Name, config.sf2Name);		
+
+	idbKeyval.get(config.sf2Name, store).then(function (data) {
+		console.debug("sf2 get", config.sf2Name, data);
+		
+		arrSynth = new SoundFont.WebMidiLink();
+		arrSynth.name = config.sf2Name;
+		arrSynth.loadSoundFont(new Uint8Array(data));		
+	}).catch(function (err) {
+		console.error('sf2 get failed!', err)
+	});	
+}
 
 function setGigladUI() {
 	document.getElementById("giglad").style.display = "none";
@@ -1889,26 +1929,7 @@ function playChord(chord, root, type, bass) {
 			} else {
 
 				if (arranger == "sff") {
-					//currentPlayNote = 0;
-					//nextNoteTime = audioContext.currentTime;
-					
-					var events = Object.getOwnPropertyNames(tempVariation);
-
-					for (var i=0; i<events.length; i++) {
-						const event = tempVariation[events[i]].event;
-						const note = tempVariation[events[i]].note;
-						
-						if (output) {						
-							output.stopNote(note, event.channel + 1, {velocity: event.velocity});
-						}
-						else
-							
-						if (arrSynth) {
-							const eventTypeByte = 0x80 | event.channel;
-							const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity};
-							arrSynth.onmessage(evt);
-						}							
-					}
+					clearAllSffNotes();
 					
 				} else {
 					if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});		// up
@@ -1929,6 +1950,26 @@ function playChord(chord, root, type, bass) {
 		
 		activeChord = chord;
 	}
+}
+
+function clearAllSffNotes() {
+	var events = Object.getOwnPropertyNames(tempVariation);
+
+	for (var i=0; i<events.length; i++) {
+		const event = tempVariation[events[i]].event;
+		const note = tempVariation[events[i]].note;
+		
+		if (output) {						
+			output.stopNote(note, event.channel + 1, {velocity: event.velocity});
+		}
+		else
+			
+		if (arrSynth) {
+			const eventTypeByte = 0x80 | event.channel;
+			const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity};
+			arrSynth.onmessage(evt);
+		}							
+	}	
 }
 
 function transposeNote(root) {
@@ -3206,6 +3247,7 @@ function nextSongNote() {
 				timerWorker.postMessage("stop");	
 				notesInQueue = [];
 				requestArrEnd = false;
+				clearAllSffNotes();
 			}	
 
 			if (requestArrEnd) {
@@ -3299,17 +3341,21 @@ function scheduleSongNote() {
 		else
 			
 		if (event?.type == "noteOff") {	
-
-			if (output) {		
-				output.stopNote(harmoniseNote(event), event.channel + 1, {velocity: event.velocity});	
-			}
-			else
-				
-			if (arrSynth) {
-				const eventTypeByte = 0x80 | event.channel;
-				const evt = {data: "midi," + eventTypeByte + "," + harmoniseNote(event) + "," + event.velocity}
-				arrSynth.onmessage(evt);	
-			}							
+			const note = tempVariation[event.channel + "-" + event.noteNumber]?.note;
+			
+			if (note) 
+			{		
+				if (output) {		
+					output.stopNote(note, event.channel + 1, {velocity: event.velocity});	
+				}
+				else
+					
+				if (arrSynth) {
+					const eventTypeByte = 0x80 | event.channel;
+					const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity}
+					arrSynth.onmessage(evt);	
+				}
+			}				
 		}		
 	}
 }
@@ -3347,8 +3393,9 @@ function harmoniseNote(event) {
 			note += balanceNote(root);
 		}
 		note = note % 128
-		tempVariation[event.channel + "-" + event.noteNumber] = {note, event};
 	}
+	
+	tempVariation[event.channel + "-" + event.noteNumber] = {note, event};	
 		
 	//if (event.channel == 10) console.debug("harmoniseNote", arrChordType, root, bass, note, event.noteNumber, event.channel);	
 	return note;
