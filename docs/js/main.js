@@ -107,6 +107,82 @@ var timeouts = {};
 var timeoutWorker = new Worker("./js/timeout-worker.js");
 timeoutWorker.addEventListener("message", myWorkerTimer);
 
+var idbKeyval = (function (exports) {
+	'use strict';
+
+	class Store {
+		constructor(dbName = 'keyval-store', storeName = 'keyval') {
+			this.storeName = storeName;
+			this._dbp = new Promise((resolve, reject) => {
+				const openreq = indexedDB.open(dbName, 1);
+				openreq.onerror = () => reject(openreq.error);
+				openreq.onsuccess = () => resolve(openreq.result);
+				// First time setup: create an empty object store
+				openreq.onupgradeneeded = () => {
+					openreq.result.createObjectStore(storeName);
+				};
+			});
+		}
+		_withIDBStore(type, callback) {
+			return this._dbp.then(db => new Promise((resolve, reject) => {
+				const transaction = db.transaction(this.storeName, type);
+				transaction.oncomplete = () => resolve();
+				transaction.onabort = transaction.onerror = () => reject(transaction.error);
+				callback(transaction.objectStore(this.storeName));
+			}));
+		}
+	}
+	let store;
+
+	function getDefaultStore() {
+		if (!store)
+			store = new Store();
+		return store;
+	}
+
+	function get(key, store = getDefaultStore()) {
+		let req;
+		return store._withIDBStore('readonly', store => {
+			req = store.get(key);
+		}).then(() => req.result);
+	}
+
+	function set(key, value, store = getDefaultStore()) {
+		return store._withIDBStore('readwrite', store => {
+			store.put(value, key);
+		});
+	}
+
+	function del(key, store = getDefaultStore()) {
+		return store._withIDBStore('readwrite', store => {
+			store.delete(key);
+		});
+	}
+
+	function clear(store = getDefaultStore()) {
+		return store._withIDBStore('readwrite', store => {
+			store.clear();
+		});
+	}
+
+	function keys(store = getDefaultStore()) {
+		let req;
+		return store._withIDBStore('readwrite', store => {
+			req = store.getAll();
+		}).then(() => req.result);
+	}
+
+	exports.Store = Store;
+	exports.get = get;
+	exports.set = set;
+	exports.del = del;
+	exports.clear = clear;
+	exports.keys = keys;
+
+	return exports;
+
+}({}));
+
 window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
 window.addEventListener("beforeunload", () => saveConfig());
@@ -280,9 +356,24 @@ function handleFileContent(event) {
 
 function handleSF2File(file, data) {
 	console.log("handleSF2File", file, data);
-		
-	arrSynth = new SoundFont.WebMidiLink();
-	arrSynth.loadSoundFont(new Uint8Array(data));
+	
+	const data2 = new Uint8Array(data);
+	
+	if (chrome.storage)	{		
+        const store = new idbKeyval.Store("orinayo", "orinayo");
+
+		idbKeyval.set(file.name, data, store).then(function () {
+			console.debug("sf2 set", file.name, data);
+			saveConfig();
+			
+			arrSynth = new SoundFont.WebMidiLink();
+			arrSynth.name = file.name;
+			arrSynth.loadSoundFont(data2);
+			
+		}).catch(function (err) {e
+			console.error('sf2 set failed!', err)
+		});			
+	}
 }
 
 function handleStyleFile(file, input) {
@@ -297,10 +388,11 @@ function handleStyleFile(file, input) {
 		
 	} else {
 		arrSequence.name = file.name;
+		saveConfig();
 		
 		if (!timerWorker) setupSongSequence(true);
 		localStorage.setItem("orin.ayo." + arrSequence.name, JSON.stringify(arrSequence));
-		location.reload();
+		//location.reload();
 	}
 }
 
@@ -1272,8 +1364,24 @@ async function setupUI(config,err) {
 	
 		if (arrData) { 
 			arrSequence = JSON.parse(arrData);
-		}
+		}		
 	}
+	
+	if (config.sf2Name) 
+	{	
+        const store = new idbKeyval.Store("orinayo", "orinayo");
+
+		idbKeyval.get(config.sf2Name, store).then(function (data) {
+			console.debug("sf2 get", config.sf2Nam, data);
+			
+			arrSynth = new SoundFont.WebMidiLink();
+			arrSynth.name = config.sf2Name;
+			arrSynth.loadSoundFont(new Uint8Array(data));		
+
+		}).catch(function (err) {e
+			console.error('sf2 get failed!', err)
+		});	
+	}	
 		
 	setupSongSequence(songSequence || arrSequence);	
 	
@@ -1298,6 +1406,7 @@ function saveConfig() {
 	config.realdrumDevice = realdrumDevice ? realdrumDevice.deviceId : null;
 	config.songName = songSequence ? songSequence.name : null;
 	config.arrName = arrSequence ? arrSequence.name : null;
+	config.sf2Name = arrSynth ? arrSynth.name : null;
 
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 }
@@ -3384,3 +3493,4 @@ function eventStatus(event, id) {
 */		
 	}
 }
+
