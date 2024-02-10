@@ -363,45 +363,33 @@ function handleFileContent(event) {
 function handleSF2File(file, data) {
 	console.log("handleSF2File", file, data);
 	
-	const data2 = new Uint8Array(data);
-		
 	const store = new idbKeyval.Store(file.name, file.name);
 
 	idbKeyval.set(file.name, data, store).then(function () {
 		console.debug("sf2 set", file.name, data);
-		arrSynth.name = file.name;
+		arrSynth = {name: file.name};
 		saveConfig();
-		
-		// TODO hack
 		location.reload();			
-		
-		/*arrSynth = new SoundFont.WebMidiLink();
-		arrSynth.loadSoundFont(data2);*/
 		
 	}).catch(function (err) {
 		console.error('sf2 set failed!', err)
 	});			
 }
 
-function handleStyleFile(file, input) {
+function handleStyleFile(file, data) {
 	console.log("handleStyleFile", file, input);
 	
-	arrSequence = parseMidi(input);
-	console.log("parsed", file.name, arrSequence);	
-	
-	if (!arrSequence.data.SFF1) {
-		alert("Only SSF1 Style files supported");
-		arrSequence = null;
-		
-	} else {
-		arrSequence.name = file.name;
+	const store = new idbKeyval.Store(file.name, file.name);
+
+	idbKeyval.set(file.name, data, store).then(function () {
+		console.debug("sff set", file.name, data);
+		arrSequence = {name: file.name};
 		saveConfig();
+		location.reload();			
 		
-		if (!timerWorker) setupSongSequence(true);
-		localStorage.setItem("orin.ayo." + arrSequence.name, JSON.stringify(arrSequence));
-		// TODO hack
-		location.reload();
-	}
+	}).catch(function (err) {
+		console.error('sff set failed!', err)
+	});	
 }
 
 function setTempo(tmpo) {
@@ -634,7 +622,13 @@ function handleNoteOff(note, device, velocity) {
 			pad.buttons[CONTROL] = false;	
 			pad.buttons[START] = false;	
 			pad.buttons[STARPOWER] = false;	
-			pad.axis[TOUCH] = 0;		
+			pad.axis[TOUCH] = 0;	
+
+			if (fretButton) {
+				const fwdChord = [119];
+				fwdChord.push(fretButton);	
+				forward.stopNote(fwdChord, 1, {velocity});	
+			}			
 		}	
 		else				
 
@@ -697,7 +691,7 @@ function handleNoteOn(note, device, velocity) {
 		}	
 			
 		if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {			// STRUM UP/DOWN (BRIDGE Buttons)
-			console.debug("handleNoteOn - strum up/down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);	
+			//console.debug("handleNoteOn - strum up/down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);	
 
 			if (!pad.buttons[GREEN] && !pad.buttons[RED] && !pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[CONTROL] && !pad.buttons[LOGO]) {
 				
@@ -723,17 +717,32 @@ function handleNoteOn(note, device, velocity) {
 					pad.buttons[START] = true;				// prev var
 					pad.buttons[STARPOWER] = false;						
 				}
+				
+				if (!styleStarted && forward) {											// change real guitar strum style
+					if (note.number == artiphonI1Base) fretButton = (127);	
+					if (note.number == artiphonI1Base + 2) fretButton =(126);
+					if (note.number == artiphonI1Base + 4) fretButton =(125);	
+					if (note.number == artiphonI1Base + 5) fretButton =(124);	
+					if (note.number == artiphonI1Base + 7) fretButton = (123);
+					 
+					if (fretButton) {
+						const fwdChord = [119];
+						fwdChord.push(fretButton);	
+						forward.playNote(fwdChord, 1, {velocity});	
+						return;
+					}
+				}
 			}
 			else
 				
 			if (gamePadModeButton.innerText == "Color Tabs") {
 				
-				if (note.number == artiphonI1Base) pad.axis[STRUM] = STRUM_DOWN;	
-				if (note.number == artiphonI1Base + 2) pad.axis[STRUM] = STRUM_UP;	
-				if (note.number == artiphonI1Base + 4) pad.axis[STRUM] = STRUM_DOWN;	
-				if (note.number == artiphonI1Base + 5) pad.axis[STRUM] = STRUM_UP;	
-				if (note.number == artiphonI1Base + 7) pad.axis[STRUM] = STRUM_DOWN;	
-				if (note.number == artiphonI1Base + 9) pad.axis[STRUM] = STRUM_UP;								
+				if (note.number == artiphonI1Base) pad.axis[STRUM] = STRUM_UP;	
+				if (note.number == artiphonI1Base + 2) pad.axis[STRUM] = STRUM_DOWN;	
+				if (note.number == artiphonI1Base + 4) pad.axis[STRUM] = STRUM_UP;	
+				if (note.number == artiphonI1Base + 5) pad.axis[STRUM] = STRUM_DOWN;	
+				if (note.number == artiphonI1Base + 7) pad.axis[STRUM] = STRUM_UP;	
+				if (note.number == artiphonI1Base + 9) pad.axis[STRUM] = STRUM_DOWN;								
 			
 			} else if (gamePadModeButton.innerText == "Smart Strums") {
 					
@@ -827,7 +836,8 @@ function handleNoteOn(note, device, velocity) {
 			if (pad.buttons[ORANGE]) fwdChord.push(123);
 			if (pad.axis[STRUM] == STRUM_UP) fwdChord.push(122);								
 			if (pad.axis[STRUM] == STRUM_DOWN) fwdChord.push(121);						
-			forward.playNote(fwdChord, 1, {velocity});
+			
+			if (fwdChord.length > 0) forward.playNote(fwdChord, 1, {velocity});
 		}
 
 		updateCanvas();	
@@ -989,6 +999,26 @@ function letsGo() {
     }, true);
 }
 
+function normaliseStyle() {
+	if (!arrSequence.data["Main B"]) {
+		arrSequence.data["Main B"] = JSON.parse(JSON.stringify(arrSequence.data["Main A"]));
+		arrSequence.data["Fill In BB"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
+	}
+	
+	if (!arrSequence.data["Main C"]) {
+		arrSequence.data["Main C"] = JSON.parse(JSON.stringify(arrSequence.data["Main A"]));
+		arrSequence.data["Fill In CC"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
+	}	
+	
+	if (!arrSequence.data["Main D"]) {
+		arrSequence.data["Main D"] = JSON.parse(JSON.stringify(arrSequence.data["Main B"]));
+		arrSequence.data["Fill In DD"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In BB"]));		
+	}	
+	
+	const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
+	setTempo(bpm);	
+}
+
 async function setupUI(config,err) {	
 	console.debug("setupUI", config);
 	
@@ -1026,33 +1056,30 @@ async function setupUI(config,err) {
 	let styleSelected = false;
 	let iStyle = 0;
 	
-    for (var i = 0; i < localStorage.length; i++)
-    {
-        if (localStorage.key(i).startsWith("orin.ayo.") && localStorage.key(i) != "orin.ayo.config") {
-			iStyle++;
-            const key = localStorage.key(i).substring(9);
-			styleSelected = config.arrName == key;
-			arrangerStyle.options[iStyle] = new Option(key, key, styleSelected, styleSelected);			
-		}
-	}	
-
 	const arrangerSf2 =  document.getElementById("arrangerSf2");
 	arrangerSf2.options[0] = new Option("**UNUSED**", "arrangerSf2");	
 	let sf2Selected = false;
-	let iSf2 = 0;
-
+	let iSf2 = 0;	
+	
 	indexedDB.databases().then(function (databases) 
 	{
 		databases.forEach(function (db) {
 			console.debug("found database", db.name);
 			
-			if (db.name.endsWith(".sf2")) {
+			if (db.name.toLowerCase().endsWith(".sf2")) {
 				iSf2++;
 				sf2Selected = config.sf2Name == db.name;
 				arrangerSf2.options[iSf2] = new Option(db.name, db.name, sf2Selected, sf2Selected);				
 			}
+			else
+				
+			if (db.name.toLowerCase().endsWith(".sty") || db.name.toLowerCase().endsWith(".prs")) {
+				iStyle++;
+				styleSelected = config.arrName == db.name;
+				arrangerStyle.options[iStyle] = new Option(db.name, db.name, styleSelected, styleSelected);				
+			}
 		})
-	})
+	})		
 
 	const arrangerType =  document.getElementById("arrangerType");	
 	arrangerType.options[0] = new Option("Style Files Format", "sff", config.arranger == "sff");		
@@ -1206,26 +1233,17 @@ async function setupUI(config,err) {
 		arrSequence = null
 		if (arrangerStyle.value == "arrangerStyle") return;
 		
-		const arrData = localStorage.getItem("orin.ayo." + arrangerStyle.value);
-	
-		if (arrData) { 
-			arrSequence = JSON.parse(arrData);
-			const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
-			setTempo(bpm);			
-			console.debug("selected arranger type", arrangerStyle.value);				
-			saveConfig();			
-		}
-
+		arrSequence = {name: arrangerStyle.value};
+		saveConfig();			
 	});	
 	
 	arrangerSf2.addEventListener("click", function()
-	{null;
+	{
 		arrSynth = null;
 		if (arrangerSf2.value == "arrangerSf2") return;	
 		
 		arrSynth = {name: arrangerSf2.value};
-		saveConfig();
-		//location.reload();			
+		saveConfig();			
 	});
 	
 	realguitar.addEventListener("click", function()
@@ -1398,30 +1416,51 @@ async function setupUI(config,err) {
 	enableSequencer(!!forward && realGuitarStyle != "none");
 	
 	if (config.arrName) {		
-		const arrData = localStorage.getItem("orin.ayo." + config.arrName);
-	
-		if (arrData) { 
-			arrSequence = JSON.parse(arrData);
-		}		
+		getArrSequence(config.arrName);		
 	}
 	
 	if (config.sf2Name) {					
-		getArrSynth(config);
+		getArrSynth(config.sf2Name);
 	}	
-		
-	setupSongSequence(songSequence || arrSequence);	
 	
 };
 
-function getArrSynth(config) {
-	const store = new idbKeyval.Store(config.sf2Name, config.sf2Name);		
+function getArrSequence(arrName) {
+	console.debug("getArrSequence", arrName);
+	arrSequence = {name: arrName};
+	
+	const store = new idbKeyval.Store(arrName, arrName);		
 
-	idbKeyval.get(config.sf2Name, store).then(function (data) {
-		console.debug("sf2 get", config.sf2Name, data);
-		
-		arrSynth = new SoundFont.WebMidiLink();
-		arrSynth.name = config.sf2Name;
-		arrSynth.loadSoundFont(new Uint8Array(data));		
+	idbKeyval.get(arrName, store).then(function (data) 
+	{
+		if (data) {
+			console.debug("sff get", arrName, data);
+			arrSequence = parseMidi(data);
+			normaliseStyle();	
+			arrSequence.name = arrName;	
+			
+			setupSongSequence(songSequence || arrSequence);				
+		}			
+	}).catch(function (err) {
+		console.error('sff get failed!', err)
+	});	
+}
+
+function getArrSynth(sf2Name) {
+	console.debug("getArrSynth", sf2Name);
+	arrSynth = {name: sf2Name};
+	
+	const store = new idbKeyval.Store(sf2Name, sf2Name);		
+
+	idbKeyval.get(sf2Name, store).then(function (data) 
+	{
+		if (data) {
+			console.debug("sf2 get", sf2Name, data);
+			
+			arrSynth = new SoundFont.WebMidiLink();
+			arrSynth.loadSoundFont(new Uint8Array(data));	
+			arrSynth.name = sf2Name;			
+		}			
 	}).catch(function (err) {
 		console.error('sf2 get failed!', err)
 	});	
@@ -1526,7 +1565,7 @@ function doBreak() {
 }
 
 function doFill() {
-	console.debug("doFill " + arranger);
+	//console.debug("doFill " + arranger);
 	
 	if (arranger == "sff") {
 		doSffFill(false);
@@ -1764,6 +1803,8 @@ function setSffVar(changed) {
 }
 	
 function doSffFill(changed) {
+	if (!styleStarted) return;
+	
 	setSffVar(changed);	
 	
 	if (!arrSequence.data[currentSffVar]) {
@@ -1771,6 +1812,7 @@ function doSffFill(changed) {
 		if (sectionChange > 3) sectionChange = 0;
 		orinayo_section.innerHTML = SECTIONS[sectionChange];
 		setSffVar(changed);
+		if (!arrSequence.data[currentSffVar]) return;
 	}
 	
 	currentPlayNote = 0;
@@ -1783,14 +1825,14 @@ function doSffFill(changed) {
 		nextNoteTime = nextNoteTime + timestamp;
 	}
 
-	console.debug("doSffFill", currentSffVar, arrangerBeat, currentPlayNote, arrSequence.data[currentSffVar].length);	
+	//console.debug("doSffFill", currentSffVar, arrangerBeat, currentPlayNote, arrSequence.data[currentSffVar].length);	
 }
 
 function checkForTouchArea() {
 	//console.debug("GREEN Touch", pad.axis[TOUCH] == -0.7);	
 	
 	if (pad.axis[TOUCH] == -0.7 || pad.axis[TOUCH] == -0.8) { 
-		console.debug("GREEN Touch");		
+		//console.debug("GREEN Touch");		
 
 		if (pad.axis[STRUM] == STRUM_UP) {
 			doBreak();			
@@ -1836,7 +1878,7 @@ function checkForTouchArea() {
 }
 
 function playChord(chord, root, type, bass) {	
-	console.debug("playChord", chord, root, type, bass);
+	//console.debug("playChord", chord, root, type, bass);
 	
 	firstChord = chord;
 	arrChordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")));
@@ -1849,7 +1891,7 @@ function playChord(chord, root, type, bass) {
 
 	
 		if (padsDevice) {
-			console.debug("playChord pads", chord);
+			//console.debug("playChord pads", chord);
 		
 			const rootNote = (chord.length == 4 ? chord[0] + 24 : chord[0]);			
 			const thirdNote = (chord.length == 4 ? chord[2] : chord[1]);	
@@ -1886,7 +1928,7 @@ function playChord(chord, root, type, bass) {
 		}
 		
 		if (styleType.innerText == "Normal" && (styleStarted  || (arranger != "aeroslooper" && arranger != "rclooper"))) {		
-			console.debug("playChord output", chord);
+			//console.debug("playChord output", chord);
 								
 			if (chordTracker) {		
 				const trasposedRoot = transposeNote(root);
@@ -1901,7 +1943,7 @@ function playChord(chord, root, type, bass) {
 			else
 				
 			if ((arranger == "aeroslooper" || arranger == "rclooper") && output) {
-				console.debug("playChord looper ", rcLooperChord, root);
+				//console.debug("playChord looper ", rcLooperChord, root);
 		
 
 				if (arranger == "rclooper") 
@@ -1921,7 +1963,7 @@ function playChord(chord, root, type, bass) {
 				{
 					if (root > 48 && root < 55) {
 						aerosChordTrack = root - 48;	
-						console.debug("playChord aeros looper ", aerosChordTrack, aerosPart);						
+						//console.debug("playChord aeros looper ", aerosChordTrack, aerosPart);						
 						output.sendControlChange (39, aerosChordTrack, 4);
 					}						
 				}	
@@ -1931,7 +1973,7 @@ function playChord(chord, root, type, bass) {
 				if (arranger == "sff") {
 					clearAllSffNotes();
 					
-				} else {
+				} else if (output) {
 					if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});		// up
 					if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   	// down	
 				}
@@ -2294,7 +2336,8 @@ function stopChord() {
 	{
 		if (activeChord)
 		{
-			console.debug("stopChord", pad)
+			//console.debug("stopChord", pad)
+			
 			if (output) output.stopNote(activeChord, [4], {velocity: 0.5}); 
 			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: 0.5});
 			
@@ -2680,23 +2723,18 @@ function toggleStartStop() {
 		
 	if (!styleStarted) resetArrToA();
 		
-	if ((forward && realGuitarStyle != "none" && window[realGuitarStyle]) || songSequence || arrSequence) 
+	if ((forward && realGuitarStyle != "none" && window[realGuitarStyle]) || songSequence || (arrSequence && arranger == "sff")) 
 	{
 		if (playButton.innerText != "On") {
 			startStopSequencer();
 
-			if (!songSequence) {
+			if (!songSequence || arranger == "sff") {
 				styleStarted = !styleStarted;	
 				playButton.innerText = !styleStarted ? "Play" : "Stop";					
 				return;	
 			}				
 		}			
 	}
-
-	if (arranger == "sff") {
-		
-	}
-	else
 		
 	if (arranger == "webaudio") {				
 		if (drumLoop && realdrumLoop) {
@@ -3248,6 +3286,15 @@ function nextSongNote() {
 				notesInQueue = [];
 				requestArrEnd = false;
 				clearAllSffNotes();
+				
+				for (let i=0; i<16; i++) {
+					const eventTypeByte = 0xB0 | i;
+					
+					const evt1 = {data: "midi," + eventTypeByte + ",120"};
+					arrSynth.onmessage(evt1);
+					
+					const evt2 = {data: "midi," + eventTypeByte + ",121"};				
+				}		
 			}	
 
 			if (requestArrEnd) {
@@ -3323,7 +3370,9 @@ function scheduleSongNote() {
 	if (arrSequence) {
 		const event = arrSequence.data[currentSffVar][currentPlayNote];
 		//console.debug("scheduleSongNote", event);
-		//if (event.channel != 10) return;
+		// TODO implement CASM
+		
+		if (event.channel < 0 || event.noteNumber > 84) return;
 			
 		if (event?.type == "noteOn") {
 			if (output) {
@@ -3335,6 +3384,7 @@ function scheduleSongNote() {
 				const eventTypeByte = 0x90 | event.channel;
 				const evt = {data: "midi," + eventTypeByte + "," + harmoniseNote(event) + "," + event.velocity}
 				arrSynth.onmessage(evt);
+				//console.debug("noteOn", evt);
 			}
 	
 		}
@@ -3354,6 +3404,7 @@ function scheduleSongNote() {
 					const eventTypeByte = 0x80 | event.channel;
 					const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity}
 					arrSynth.onmessage(evt);	
+					//console.debug("noteOff", evt);					
 				}
 			}				
 		}		
@@ -3374,25 +3425,29 @@ function harmoniseNote(event) {
 	
 	let note = event.noteNumber;
 
-	if (arrChordType != "7" && (note % 12) == 9) note = note + 3;	// change A to C unless 7
-	if (arrChordType != "maj7" && (note % 12) == 11) note = note + 1;	// change B to C unless maj7
-	if (arrChordType == "min" && (note % 12) == 4) note = note - 1;	// change E to D# when min
-	if (arrChordType == "sus" && (note % 12) == 4) note = note + 1;	// change E to F when sus4	
-	if (arrChordType == "maj" && (note % 12) == 3) note = note + 1;	// change D# to E when maj
-	
-	if (event.channel != 8 && event.channel != 9) 
+	if (event.channel != 9 && event.channel != 9) 
 	{	
-		if (event.channel == 10) 
-		{
-			if ((note % 12) == 0) {
-				note = note + bass;
+		if (!currentSffVar.startsWith("Ending") && !currentSffVar.startsWith("Intro")) {
+			if (arrChordType != "7" && (note % 12) == 9) note = note + 3;	// change A to C unless 7
+			if (arrChordType != "maj7" && (note % 12) == 11) note = note + 1;	// change B to C unless maj7
+			if (arrChordType == "min" && (note % 12) == 4) note = note - 1;	// change E to D# when min
+			if (arrChordType == "sus" && (note % 12) == 4) note = note + 1;	// change E to F when sus4	
+			if (arrChordType == "maj" && (note % 12) == 3) note = note + 1;	// change D# to E when maj	
+
+			if (event.channel == 10) 
+			{
+				if ((note % 12) == 0) {
+					note = note + bass;
+				} else {
+					note += balanceNote(root);
+				}				
 			} else {
 				note += balanceNote(root);
-			}				
+			}
+			note = note % 128
 		} else {
-			note += balanceNote(root);
+			note += keyChange;
 		}
-		note = note % 128
 	}
 	
 	tempVariation[event.channel + "-" + event.noteNumber] = {note, event};	
@@ -3420,7 +3475,7 @@ function songScheduler() {
 	} 
 	else 
 	
-	if (arrSequence && arrSequence.data[currentSffVar]) {
+	if (arrSequence && arrSequence?.data[currentSffVar]) {
 		arrangerBeat++;	
 		
 		if (arrangerBeat >=  9600 / tempo) {
