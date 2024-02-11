@@ -15,7 +15,7 @@ function parseMidi(data) {
   if (casmChunk.id != 'CASM')
     throw "Bad MIDI file.  Expected 'CASM', got: '" + casmChunk.id + "'"
 
-  console.debug("parseCasm casm", casmChunk.id, casmChunk.length); 
+  //console.debug("parseCasm casm", casmChunk.id, casmChunk.length); 
 	  
   return {
     header: parseHeader(headerChunk.data),
@@ -28,7 +28,7 @@ function parseCasm(data) {
   var styles = [];
   var ctabs = [];
   var p = new Parser(data);
-  console.debug("parseCasm", p);
+  //console.debug("parseCasm", p);
   
   while (!p.eof()) {
 	  var csegChunk = p.readChunk()
@@ -60,7 +60,7 @@ function parseCasm(data) {
 				 ctab.noteLowLimit = t.readUInt8();	
 				 ctab.noteHighLimit = t.readUInt8();
 				 ctab.retriggerRule = t.readUInt8();			 
-				 console.debug("parseCasm ctab", ctab); 
+				 //console.debug("parseCasm ctab", ctab); 
 
 			 } else {
 				 ctab.lowestNote = t.readUInt8();
@@ -68,7 +68,7 @@ function parseCasm(data) {
 				 ctab.lowNotes = getNotes(t);
 				 ctab.middleNotes = getNotes(t);				 
 				 ctab.highNotes = getNotes(t);
-				 console.debug("parseCasm ctb2", ctab); 				 
+				 //console.debug("parseCasm ctb2", ctab); 				 
 			 }
 
 			 ctabs.push(ctab);			 
