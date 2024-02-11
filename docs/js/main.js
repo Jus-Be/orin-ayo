@@ -591,8 +591,10 @@ function handleNoteOff(note, device, velocity) {
 			if (pad.buttons[BLUE]) fwdChord.push(124);
 			if (pad.buttons[ORANGE]) fwdChord.push(123);
 			if (pad.axis[STRUM] == STRUM_UP) fwdChord.push(122);								
-			if (pad.axis[STRUM] == STRUM_DOWN) fwdChord.push(121);						
+			if (pad.axis[STRUM] == STRUM_DOWN) fwdChord.push(121);	
+			
 			forward.stopNote(fwdChord, 1, {velocity});	
+			stopPads();
 			
 			if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {
 				stopChord();
@@ -614,7 +616,8 @@ function handleNoteOff(note, device, velocity) {
 			if (fretButton) {
 				fwdChord.push(fretButton);
 			}
-			forward.stopNote(fwdChord, 1, {velocity});	
+			forward.stopNote(fwdChord, 1, {velocity});
+			stopPads();			
 		}			
 						
 		if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {
@@ -1113,11 +1116,19 @@ async function setupUI(config,err) {
 	midiOut.options[0] = new Option("**UNUSED**", "midiOutSel");
 	midiFwd.options[0] = new Option("**UNUSED**", "midiFwdSel");
 	midiPads.options[0] = new Option("**UNUSED**", "midiPadsSel");	
+
 	midiChordTracker.options[0] = new Option("**UNUSED**", "midiChordTrackerSel");
 	midiIn.options[0] = new Option("**UNUSED**", "midiInSel");
 	realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice");
 	realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop");	
-	songSeq.options[0] = new Option("**UNUSED**", "songSeq");			
+	songSeq.options[0] = new Option("**UNUSED**", "songSeq");
+
+	midiPads.options[1] = new Option("Sound Font", "soundfont");	
+	
+	if (config.padsDevice == "soundfont") {
+		padsDevice = {name : "soundfont"};	
+		midiPads.options[1] = new Option("Sound Font", "soundfont", true, true);		
+	}	
 
 	if (!err) for (var i=0; i<WebMidi.outputs.length; i++) 	{
 		let outSelected = false;		
@@ -1134,7 +1145,7 @@ async function setupUI(config,err) {
 			padsSelected = true;
 			padsDevice = WebMidi.outputs[i];
 		}
-		midiPads.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, padsSelected, padsSelected);
+		midiPads.options[i + 2] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, padsSelected, padsSelected);
 
 		let fwdSelected = false;
 		
@@ -1189,11 +1200,18 @@ async function setupUI(config,err) {
 	{
 		padsDevice = null;
 
-		if (midiPads.value != "midiPadsSel") {
+		if (midiPads.value != "midiPadsSel" && midiPads.value != "soundfont") {
 			padsDevice = WebMidi.getOutputByName(midiPads.value);
 			saveConfig();			
 			console.debug("selected pads midi port", padsDevice, midiPads.value);
-		}
+		} 
+		else
+			
+		if ( midiPads.value == "soundfont") {
+			console.debug("SoundFont pads");
+			padsDevice = {name: "soundfont"};
+			saveConfig();			
+		}			
 	});
 
 	if (!err) midiFwd.addEventListener("click", function()
@@ -1273,7 +1291,7 @@ async function setupUI(config,err) {
 			{
 				if (songSeq.value == song.name) {
 					songSequence = song
-					setupSongSequence(true);
+					setupSongSequence();
 					saveConfig();						
 					break;
 				}						
@@ -1416,16 +1434,15 @@ async function setupUI(config,err) {
 	enableSequencer(!!forward && realGuitarStyle != "none");
 	
 	if (config.arrName) {		
-		getArrSequence(config.arrName);		
+		getArrSequence(config.arrName, setupSongSequence);		
 	}
 	
 	if (config.sf2Name) {					
 		getArrSynth(config.sf2Name);
 	}	
-	
 };
 
-function getArrSequence(arrName) {
+function getArrSequence(arrName, callback) {
 	console.debug("getArrSequence", arrName);
 	arrSequence = {name: arrName};
 	
@@ -1439,7 +1456,7 @@ function getArrSequence(arrName) {
 			normaliseStyle();	
 			arrSequence.name = arrName;	
 			
-			setupSongSequence(songSequence || arrSequence);				
+			if (callback) callback();				
 		}			
 	}).catch(function (err) {
 		console.error('sff get failed!', err)
@@ -1824,6 +1841,8 @@ function doSffFill(changed) {
 		const timestamp = arrSequence.data[currentSffVar][currentPlayNote].deltaTime * (60 / (tempo * arrSequence.header.ticksPerBeat));
 		nextNoteTime = nextNoteTime + timestamp;
 	}
+	
+	clearAllSffNotes();
 
 	//console.debug("doSffFill", currentSffVar, arrangerBeat, currentPlayNote, arrSequence.data[currentSffVar].length);	
 }
@@ -1877,6 +1896,50 @@ function checkForTouchArea() {
 	}			
 }
 
+function playSynthNote(note, channel, velocity) {
+	const eventTypeByte = 0x90 | channel;
+	const evt = {data: "midi," + eventTypeByte + "," + note + "," + velocity}
+	arrSynth.onmessage(evt);	
+}
+
+function stopSynthNote(note, channel, velocity) {
+	const eventTypeByte = 0x80 | channel;
+	const evt = {data: "midi," + eventTypeByte + "," + note + "," + velocity}
+	arrSynth.onmessage(evt);	
+}
+
+function playPads(chords, channel, opts) {
+	
+	if (arrSynth.w) 
+	{
+		if (chords instanceof Array) 
+		{
+			for (note of chords) {
+				playSynthNote(note, channel - 1, opts.velocity * 127);
+			}
+			
+		} else {
+			playSynthNote(chords, channel - 1, opts.velocity * 127);
+		}			
+	} else {
+		padsDevice.playNote(chords, channel, opts);			
+	}
+}
+
+function stopPads() {
+	
+	if (padsDevice) 
+	{
+		if (arrSynth.w) {
+			stopSynthNote(firstChord, 0, 0.5 * 127);
+			if (firstChord.length == 4) stopSynthNote(firstChord[0] + 24, 0, 0.5 * 127);		
+		} else {
+			padsDevice.stopNote(firstChord, 1, {velocity: 0.5}); 
+			if (firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 1, {velocity: 0.5}); 		
+		}
+	}
+}
+
 function playChord(chord, root, type, bass) {	
 	//console.debug("playChord", chord, root, type, bass);
 	
@@ -1898,32 +1961,32 @@ function playChord(chord, root, type, bass) {
 			const fifthNote = (chord.length == 4 ? chord[3] : chord[2]);				
 
 			if (padsMode == 1) {
-				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(rootNote, 1, {velocity: 0.5});		// up root
-				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(rootNote, 1, {velocity: 0.5});   // down	root				
+				if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 1, {velocity: 0.5});		// up root
+				if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: 0.5});   // down	root				
 			}		
 			else
 				
 			if (padsMode == 2) {
-				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(chord, 1, {velocity: 0.5});		// down chord
-				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(rootNote, 1, {velocity: 0.5});     // up	root				
+				if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 1, {velocity: 0.5});		// down chord
+				if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 1, {velocity: 0.5});     // up	root				
 			}	
 			else
 				
 			if (padsMode == 3) {
-				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(thirdNote, 1, {velocity: 0.5});	// up third
-				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(rootNote, 1, {velocity: 0.5});   // down	root				
+				if (pad.axis[STRUM] == STRUM_UP) playPads(thirdNote, 1, {velocity: 0.5});	// up third
+				if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: 0.5});   // down	root				
 			}
 			else
 				
 			if (padsMode == 4) {
-				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(fifthNote, 1, {velocity: 0.5});	// up fifth
-				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(rootNote, 1, {velocity: 0.5});   // down	root				
+				if (pad.axis[STRUM] == STRUM_UP) playPads(fifthNote, 1, {velocity: 0.5});	// up fifth
+				if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: 0.5});   // down	root				
 			}
 			else
 				
 			if (padsMode == 5) {
-				if (pad.axis[STRUM] == STRUM_UP) padsDevice.playNote(chord, 1, {velocity: 0.5});		// up chord
-				if (pad.axis[STRUM] == STRUM_DOWN) padsDevice.playNote(chord, 1, {velocity: 0.5});   	// down	chord				
+				if (pad.axis[STRUM] == STRUM_UP) playPads(chord, 1, {velocity: 0.5});		// up chord
+				if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 1, {velocity: 0.5});   	// down	chord				
 			}			
 		}
 		
@@ -1971,7 +2034,7 @@ function playChord(chord, root, type, bass) {
 			} else {
 
 				if (arranger == "sff") {
-					clearAllSffNotes();
+					if (styleStarted) setTimeout(clearAllSffNotes);
 					
 				} else if (output) {
 					if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});		// up
@@ -1995,6 +2058,8 @@ function playChord(chord, root, type, bass) {
 }
 
 function clearAllSffNotes() {
+	console.debug("clearAllSffNotes");
+	
 	var events = Object.getOwnPropertyNames(tempVariation);
 
 	for (var i=0; i<events.length; i++) {
@@ -2339,12 +2404,8 @@ function stopChord() {
 			//console.debug("stopChord", pad)
 			
 			if (output) output.stopNote(activeChord, [4], {velocity: 0.5}); 
-			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: 0.5});
-			
-			if (padsDevice) {
-				padsDevice.stopNote(activeChord, 1, {velocity: 0.5}); 
-				if (activeChord.length == 4) padsDevice.stopNote(activeChord[0] + 24, 1, {velocity: 0.5}); 
-			}
+			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: 0.5});		
+			if (padsDevice) stopPads();
 			
 			if (!guitarAvailable && forward) 
 			{
@@ -2728,9 +2789,7 @@ function toggleStartStop() {
 		if (playButton.innerText != "On") {
 			startStopSequencer();
 
-			if (!songSequence || arranger == "sff") {
-				styleStarted = !styleStarted;	
-				playButton.innerText = !styleStarted ? "Play" : "Stop";					
+			if (!songSequence || arranger == "sff") {				
 				return;	
 			}				
 		}			
@@ -3089,59 +3148,77 @@ function startStopSequencer() {
 		
 	if (arrSequence) 	
 	{		
-		function handleStyleFileEvent(event) {
-			//console.debug("handleStyleFileEvent", event);
-			
-			if (event.type == "programChange") 
-			{
-				if (output) {
-					output.sendProgramChange(event.programNumber, event.channel + 1);
-				}
-				else 
-					
-				if (arrSynth) {
-					const eventTypeByte = 0xC0 | event.channel;
-					const evt = {data: "midi," + eventTypeByte + "," + event.programNumber};
-					arrSynth.onmessage(evt);
-				}				
-					
-			}
-			else
-				
-			if (event.type == "controller") 
-			{
-				if (output) {				
-					output.sendControlChange(event.controllerType, event.value, event.channel + 1);
-				}
-				else
-					
-				if (arrSynth) {
-					const eventTypeByte = 0xB0 | event.channel;
-					const evt = {data: "midi," + eventTypeByte + "," + event.controllerType + "," + event.value};
-					arrSynth.onmessage(evt);
-				}					
-				
-			}			
-		}
-		
 		if (!styleStarted) 	
-		{		
-			for (let evt in arrSequence.data["SInt"]) {			
-				handleStyleFileEvent(arrSequence.data["SInt"][evt]);	
+		{
+			if (arrSequence.name && !arrSequence.data) {
+				getArrSequence(arrSequence.name, doStartStopSequencer);
 			}
+			else {
+				doStartStopSequencer();
+			}
+		} else {
+			doStartStopSequencer();			
 		}
 	}
+}
+
+function handleStyleFileEvent(event) {
+	//console.debug("handleStyleFileEvent", event);
+	
+	if (event.type == "programChange") 
+	{
+		if (output) {
+			output.sendProgramChange(event.programNumber, event.channel + 1);
+		}
+		else 
+			
+		if (arrSynth) {
+			const eventTypeByte = 0xC0 | event.channel;
+			const evt = {data: "midi," + eventTypeByte + "," + event.programNumber};
+			arrSynth.onmessage(evt);
+		}				
+			
+	}
+	else
+		
+	if (event.type == "controller") 
+	{
+		if (output) {				
+			output.sendControlChange(event.controllerType, event.value, event.channel + 1);
+		}
+		else
+			
+		if (arrSynth) {
+			const eventTypeByte = 0xB0 | event.channel;
+			const evt = {data: "midi," + eventTypeByte + "," + event.controllerType + "," + event.value};
+			arrSynth.onmessage(evt);
+		}					
+		
+	}			
+}
+
+function doStartStopSequencer() {
+	console.debug("doStartStopSequencer", styleStarted);
 	
 	if (!styleStarted) 	
 	{
-		if (arrSequence && requestArrEnd) {
-			styleStarted = !styleStarted;	
-			playButton.innerText = !styleStarted ? "Play" : "Stop";	
-			orinayo_section.innerHTML = currentSffVar;				
-			return;
+		if (arrSequence) 
+		{	
+			if (requestArrEnd) {
+				styleStarted = !styleStarted;	
+				playButton.innerText = !styleStarted ? "Play" : "Stop";	
+				orinayo_section.innerHTML = currentSffVar;				
+				return;
+			}
+			
+			for (let evt in arrSequence.data["SInt"]) {			
+				handleStyleFileEvent(arrSequence.data["SInt"][evt]);	
+			}			
 		}
 		
-		currentSffVar = "Intro A";
+		currentSffVar = "Intro A";		
+		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main A";
+		
 		arrangerBeat = 0;
         current16thNote = 0;
 		currentPlayNote = 0;
@@ -3162,6 +3239,9 @@ function startStopSequencer() {
 			orinayo_section.innerHTML = "Ending";	
 		}			
 	}
+	
+	styleStarted = !styleStarted;	
+	playButton.innerText = !styleStarted ? "Play" : "Stop";			
 }
 
 function resetCanvas (e) {
@@ -3282,23 +3362,31 @@ function nextSongNote() {
 			//console.debug("nextSongNote new", currentSffVar);
 
 			if (currentSffVar.startsWith("Ending")) {
-				timerWorker.postMessage("stop");	
-				notesInQueue = [];
 				requestArrEnd = false;
-				clearAllSffNotes();
 				
-				for (let i=0; i<16; i++) {
-					const eventTypeByte = 0xB0 | i;
+				timerWorker.postMessage("stop");	
+				notesInQueue = [];				
+				
+				setTimeout(() => {
+					console.debug("nextSongNote clear notes", currentSffVar);
 					
-					const evt1 = {data: "midi," + eventTypeByte + ",120"};
-					arrSynth.onmessage(evt1);
-					
-					const evt2 = {data: "midi," + eventTypeByte + ",121"};				
-				}		
+					for (let i=0; i<16; i++) {
+						const eventTypeByte = 0xB0 | i;
+						
+						const evt1 = {data: "midi," + eventTypeByte + ",120"};
+						arrSynth.onmessage(evt1);
+						
+						const evt2 = {data: "midi," + eventTypeByte + ",121"};				
+					}
+
+					clearAllSffNotes();		
+				});					
+
 			}	
 
 			if (requestArrEnd) {
 				currentSffVar = "Ending A";
+				if (!arrSequence.data["Ending A"]) currentSffVar = "Ending B";
 				orinayo_section.innerHTML = currentSffVar;					
 			}				
 			
@@ -3491,7 +3579,9 @@ function songScheduler() {
 	}
 }
 
-function setupSongSequence(flag) {
+function setupSongSequence() {
+	const flag = songSequence || arrSequence;
+	
 	if (!songSequence && !arrSequence) return;	
 	
 	if (songSequence) {
