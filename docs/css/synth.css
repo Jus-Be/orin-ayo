@@ -1,0 +1,83 @@
+body {
+  background-color: white;
+}
+.synthtable table {
+  font-size: 5px;
+  table-layout: fixed;
+  width: 100%;
+  border-spacing: 0;
+}
+ .synthtable th {
+  padding: 0;
+}
+.synthtable tbody > tr:nth-child(odd) {
+  background-color: #eee;
+}
+.synthtable th:first-child,  .synthtable td:first-child {
+  width: 128px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.synthtable th:nth-child(2), .synthtable td:nth-child(2) {
+  width: 32px;
+  overflow: hidden;
+  white-space: nowrap; 
+  text-align: right;
+}
+.synthtable th:nth-child(3), .synthtable td:nth-child(3) {
+  width: 32px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: right;
+}
+.synthtable th:nth-child(4), .synthtable td:nth-child(4) {
+  width: 48px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: right;
+}
+.synthtable th:nth-child(5), .synthtable td:nth-child(5) {
+  width: 48px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: right;
+}
+/*
+td:nth-child(65) {
+  background-color: #afa;
+}
+*/
+.synthtable td:nth-child(12n+10) {
+  border-right: 1px dashed #ccc;
+}
+.synthtable td:nth-child(12n+5) {
+  border-right: 1px solid #888;
+}
+.synthtable td:nth-child(12n+7), .synthtable td:nth-child(12n+9), .synthtable td:nth-child(12n+12), .synthtable td:nth-child(12n+14), .synthtable td:nth-child(12n+16) {
+  background-color: #ccc;
+  border-right: none;
+}
+.synthtable td.note-on {
+  background-color: red;
+}
+
+#message {
+  display: none;
+}
+#message.show {
+  padding: 1em;
+  display: block;
+  font-weight: bold;
+  color: darkred;
+  border-radius: 1em;
+  border: 1px solid darkred;
+  background-color: #fcc;
+}
+div.load {
+  border-top: 1px solid #08f;
+  border-bottom: 1px solid #08f;
+  background-color: #def;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding: 0.5em;
+}

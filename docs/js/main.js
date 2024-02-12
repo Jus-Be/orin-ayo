@@ -2058,7 +2058,7 @@ function playChord(chord, root, type, bass) {
 }
 
 function clearAllSffNotes() {
-	console.debug("clearAllSffNotes");
+	//console.debug("clearAllSffNotes");
 	
 	var events = Object.getOwnPropertyNames(tempVariation);
 
@@ -3563,7 +3563,7 @@ function songScheduler() {
 	} 
 	else 
 	
-	if (arrSequence && arrSequence?.data[currentSffVar]) {
+	if (arrSequence && arrSequence?.data && arrSequence.data[currentSffVar]) {
 		arrangerBeat++;	
 		
 		if (arrangerBeat >=  9600 / tempo) {
