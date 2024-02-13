@@ -25,9 +25,8 @@ function parseMidi(data) {
 }
 
 function parseCasm(data) {
-  var styles = [];
-  var ctabs = [];
   var p = new Parser(data);
+  var csegs = [];
   //console.debug("parseCasm", p);
   
   while (!p.eof()) {
@@ -35,8 +34,9 @@ function parseCasm(data) {
 	  var s = new Parser(csegChunk.data);		  
 	  var sdecChunk = s.readChunk()
 	  var d = new Parser(sdecChunk.data);
-
-	  styles = d.readString(sdecChunk.length).split(","); 
+	  var cseg = {}; 
+	  cseg.ctabs = [];
+	  cseg.styles = d.readString(sdecChunk.length).split(","); 
 
       while (!s.eof()) {
 		 var ctabChunk = s.readChunk();
@@ -71,12 +71,14 @@ function parseCasm(data) {
 				 //console.debug("parseCasm ctb2", ctab); 				 
 			 }
 
-			 ctabs.push(ctab);			 
+			 cseg.ctabs.push(ctab);			 
 		 }
-	  }		  
+	  }
+	
+	  csegs.push(cseg);	
   }
   
-  return {styles, ctabs};
+  return csegs;
 }
 
 function getNotes(t) {

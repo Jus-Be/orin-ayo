@@ -48,6 +48,7 @@ var output = null;
 var input = null;
 var forward = null;
 var padsDevice = null;
+var padsInitialised = false;
 var chordTracker = null;
 var orinayo = null;
 var orinayo_section = null;
@@ -338,7 +339,7 @@ function handleFileContent(event) {
 		var reader = new FileReader();
 
 		reader.onload = function(event)	{
-			if (file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs")) {
+			if (file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs")) {
 				handleStyleFile(file, event.target.result);
 			}
 			else
@@ -722,12 +723,27 @@ function handleNoteOn(note, device, velocity) {
 				}
 				
 				if (!styleStarted && forward) {											// change real guitar strum style
-					if (note.number == artiphonI1Base) fretButton = (127);	
-					if (note.number == artiphonI1Base + 2) fretButton =(126);
-					if (note.number == artiphonI1Base + 4) fretButton =(125);	
-					if (note.number == artiphonI1Base + 5) fretButton =(124);	
-					if (note.number == artiphonI1Base + 7) fretButton = (123);
-					 
+					if (note.number == artiphonI1Base) {
+						fretButton = (127);
+						padsMode = 1;						
+					}
+					if (note.number == artiphonI1Base + 2) {
+						fretButton =(126);
+						padsMode = 2;	
+					}
+					if (note.number == artiphonI1Base + 4) {
+						fretButton =(125);	
+						padsMode = 3;	
+					}
+					if (note.number == artiphonI1Base + 5) {
+						fretButton =(124);	
+						padsMode = 4;
+					}
+					if (note.number == artiphonI1Base + 7) {
+						fretButton = (123);
+						 padsMode = 5;
+					}
+
 					if (fretButton) {
 						const fwdChord = [119];
 						fwdChord.push(fretButton);	
@@ -1476,7 +1492,8 @@ function getArrSynth(sf2Name) {
 			
 			arrSynth = new SoundFont.WebMidiLink();
 			arrSynth.loadSoundFont(new Uint8Array(data));	
-			arrSynth.name = sf2Name;			
+			arrSynth.name = sf2Name;
+			//arrSynth.setReverb(false);			
 		}			
 	}).catch(function (err) {
 		console.error('sf2 get failed!', err)
@@ -1818,6 +1835,15 @@ function setSffVar(changed) {
 		currentSffVar = "Fill In DD";	
 	}
 }
+
+function doSffSInt() {
+	for (let evt in arrSequence.data["SInt"]) {			
+		const event = arrSequence.data["SInt"][evt];
+		
+		if (event.type == "programChange") sendProgramChange(event);	
+		if (event.type == "controller") sendControlChange(event);				
+	}	
+}
 	
 function doSffFill(changed) {
 	if (!styleStarted) return;
@@ -1843,6 +1869,7 @@ function doSffFill(changed) {
 	}
 	
 	clearAllSffNotes();
+	doSffSInt();
 
 	//console.debug("doSffFill", currentSffVar, arrangerBeat, currentPlayNote, arrSequence.data[currentSffVar].length);	
 }
@@ -1896,43 +1923,51 @@ function checkForTouchArea() {
 	}			
 }
 
-function playSynthNote(note, channel, velocity) {
+function playPadSynthNote(note, channel, velocity) {
 	const eventTypeByte = 0x90 | channel;
 	const evt = {data: "midi," + eventTypeByte + "," + note + "," + velocity}
 	arrSynth.onmessage(evt);	
 }
 
-function stopSynthNote(note, channel, velocity) {
+function stopPadSynthNote(note, channel, velocity) {
 	const eventTypeByte = 0x80 | channel;
 	const evt = {data: "midi," + eventTypeByte + "," + note + "," + velocity}
 	arrSynth.onmessage(evt);	
 }
 
 function playPads(chords, channel, opts) {
-	
-	if (arrSynth.w) 
-	{
-		if (chords instanceof Array) 
+
+	if (padsDevice && !styleStarted) 
+	{	
+		if (!padsInitialised) {
+			padsInitialised = true;
+			sendProgramChange({programNumber: 89, channel: 0});
+		}
+		
+		if (arrSynth) 
 		{
-			for (note of chords) {
-				playSynthNote(note, channel - 1, opts.velocity * 127);
-			}
-			
+			if (chords instanceof Array) 
+			{
+				for (note of chords) {
+					playPadSynthNote(note, channel - 1, opts.velocity * 127);
+				}
+				
+			} else {
+				playPadSynthNote(chords, channel - 1, opts.velocity * 127);
+			}			
 		} else {
-			playSynthNote(chords, channel - 1, opts.velocity * 127);
-		}			
-	} else {
-		padsDevice.playNote(chords, channel, opts);			
+			padsDevice.playNote(chords, channel, opts);			
+		}
 	}
 }
 
 function stopPads() {
 	
-	if (padsDevice) 
+	if (padsDevice && !styleStarted) 
 	{
-		if (arrSynth.w) {
-			stopSynthNote(firstChord, 0, 0.5 * 127);
-			if (firstChord.length == 4) stopSynthNote(firstChord[0] + 24, 0, 0.5 * 127);		
+		if (arrSynth) {
+			stopPadSynthNote(firstChord, 0, 0.5 * 127);
+			if (firstChord.length == 4) stopPadSynthNote(firstChord[0] + 24, 0, 0.5 * 127);		
 		} else {
 			padsDevice.stopNote(firstChord, 1, {velocity: 0.5}); 
 			if (firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 1, {velocity: 0.5}); 		
@@ -2064,15 +2099,16 @@ function clearAllSffNotes() {
 
 	for (var i=0; i<events.length; i++) {
 		const event = tempVariation[events[i]].event;
+		const channel = getCasmChannel(currentSffVar, event.channel);
 		const note = tempVariation[events[i]].note;
 		
 		if (output) {						
-			output.stopNote(note, event.channel + 1, {velocity: event.velocity});
+			output.stopNote(note, channel + 1, {velocity: event.velocity});
 		}
 		else
 			
 		if (arrSynth) {
-			const eventTypeByte = 0x80 | event.channel;
+			const eventTypeByte = 0x80 | channel;
 			const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity};
 			arrSynth.onmessage(evt);
 		}							
@@ -3162,39 +3198,34 @@ function startStopSequencer() {
 	}
 }
 
-function handleStyleFileEvent(event) {
-	//console.debug("handleStyleFileEvent", event);
+function sendProgramChange(event) {
+	const channel = getCasmChannel(currentSffVar, event.channel);
+		
+	if (output) {
+		output.sendProgramChange(event.programNumber, channel + 1);
+	}
+	else 
+		
+	if (arrSynth) {
+		const eventTypeByte = 0xC0 | channel;
+		const evt = {data: "midi," + eventTypeByte + "," + event.programNumber};
+		arrSynth.onmessage(evt);
+	}	
+}
+
+function sendControlChange(event) {
+	const channel = getCasmChannel(currentSffVar, event.channel);
 	
-	if (event.type == "programChange") 
-	{
-		if (output) {
-			output.sendProgramChange(event.programNumber, event.channel + 1);
-		}
-		else 
-			
-		if (arrSynth) {
-			const eventTypeByte = 0xC0 | event.channel;
-			const evt = {data: "midi," + eventTypeByte + "," + event.programNumber};
-			arrSynth.onmessage(evt);
-		}				
-			
+	if (output) {				
+		output.sendControlChange(event.controllerType, event.value, channel + 1);
 	}
 	else
 		
-	if (event.type == "controller") 
-	{
-		if (output) {				
-			output.sendControlChange(event.controllerType, event.value, event.channel + 1);
-		}
-		else
-			
-		if (arrSynth) {
-			const eventTypeByte = 0xB0 | event.channel;
-			const evt = {data: "midi," + eventTypeByte + "," + event.controllerType + "," + event.value};
-			arrSynth.onmessage(evt);
-		}					
-		
-	}			
+	if (arrSynth) {
+		const eventTypeByte = 0xB0 | channel;
+		const evt = {data: "midi," + eventTypeByte + "," + event.controllerType + "," + event.value};
+		arrSynth.onmessage(evt);
+	}	
 }
 
 function doStartStopSequencer() {
@@ -3211,9 +3242,7 @@ function doStartStopSequencer() {
 				return;
 			}
 			
-			for (let evt in arrSequence.data["SInt"]) {			
-				handleStyleFileEvent(arrSequence.data["SInt"][evt]);	
-			}			
+			doSffSInt();	
 		}
 		
 		currentSffVar = "Intro A";		
@@ -3459,18 +3488,21 @@ function scheduleSongNote() {
 		const event = arrSequence.data[currentSffVar][currentPlayNote];
 		//console.debug("scheduleSongNote", event);
 		// TODO implement CASM
+		const channel = getCasmChannel(currentSffVar, event.channel); 
 		
-		if (event.channel < 0 || event.noteNumber > 84) return;
+		if ((channel < 8) || event.noteNumber > 84) return;
+		if (channel != 9 && !document.getElementById("arr-instrument-" + channel)?.checked) return;
 			
-		if (event?.type == "noteOn") {
+		if (event?.type == "noteOn") 
+		{
 			if (output) {
-				output.playNote(harmoniseNote(event), event.channel + 1, {velocity: event.velocity});
+				output.playNote(harmoniseNote(event, channel), channel + 1, {velocity: event.velocity});
 			}
 			else
 				
 			if (arrSynth) {
-				const eventTypeByte = 0x90 | event.channel;
-				const evt = {data: "midi," + eventTypeByte + "," + harmoniseNote(event) + "," + event.velocity}
+				const eventTypeByte = 0x90 | channel;
+				const evt = {data: "midi," + eventTypeByte + "," + harmoniseNote(event, channel) + "," + event.velocity}
 				arrSynth.onmessage(evt);
 				//console.debug("noteOn", evt);
 			}
@@ -3479,17 +3511,17 @@ function scheduleSongNote() {
 		else
 			
 		if (event?.type == "noteOff") {	
-			const note = tempVariation[event.channel + "-" + event.noteNumber]?.note;
+			const note = tempVariation[channel + "-" + event.noteNumber]?.note;
 			
 			if (note) 
 			{		
 				if (output) {		
-					output.stopNote(note, event.channel + 1, {velocity: event.velocity});	
+					output.stopNote(note, channel + 1, {velocity: event.velocity});	
 				}
 				else
 					
 				if (arrSynth) {
-					const eventTypeByte = 0x80 | event.channel;
+					const eventTypeByte = 0x80 | channel;
 					const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity}
 					arrSynth.onmessage(evt);	
 					//console.debug("noteOff", evt);					
@@ -3507,13 +3539,13 @@ function balanceNote(root) {
 	}	
 }
 
-function harmoniseNote(event) {
+function harmoniseNote(event, channel) {
 	const root = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 	const bass = firstChord[0] % 12;
 	
 	let note = event.noteNumber;
 
-	if (event.channel != 9 && event.channel != 9) 
+	if (channel != 9 && channel != 9) 
 	{	
 		if (!currentSffVar.startsWith("Ending") && !currentSffVar.startsWith("Intro")) {
 			if (arrChordType != "7" && (note % 12) == 9) note = note + 3;	// change A to C unless 7
@@ -3522,7 +3554,7 @@ function harmoniseNote(event) {
 			if (arrChordType == "sus" && (note % 12) == 4) note = note + 1;	// change E to F when sus4	
 			if (arrChordType == "maj" && (note % 12) == 3) note = note + 1;	// change D# to E when maj	
 
-			if (event.channel == 10) 
+			if (channel == 10) 
 			{
 				if ((note % 12) == 0) {
 					note = note + bass;
@@ -3538,7 +3570,7 @@ function harmoniseNote(event) {
 		}
 	}
 	
-	tempVariation[event.channel + "-" + event.noteNumber] = {note, event};	
+	tempVariation[channel + "-" + event.noteNumber] = {note, event};	
 		
 	//if (event.channel == 10) console.debug("harmoniseNote", arrChordType, root, bass, note, event.noteNumber, event.channel);	
 	return note;
@@ -3582,7 +3614,7 @@ function songScheduler() {
 function setupSongSequence() {
 	const flag = songSequence || arrSequence;
 	
-	if (!songSequence && !arrSequence) return;	
+	//if (!songSequence && !arrSequence) return;
 	
 	if (songSequence) {
 		console.log("setupSongSequence", flag, songSequence);	
@@ -3630,7 +3662,7 @@ function setupSongSequence() {
 		};
 		timerWorker.postMessage({"interval":lookahead});	
 	}	
-	
+		
 	playButton.innerText = "Play";		
 }
 
@@ -3686,3 +3718,28 @@ function eventStatus(event, id) {
 	}
 }
 
+function getCasmChannel(style, source) {
+	let found = null;
+	let destination = source;
+	
+	for (casm of arrSequence.casm) 
+	{
+		if (casm.styles.indexOf(style) > -1) {
+			found = casm;
+			break;
+		}
+	}
+	
+	if (found) 
+	{
+		for (ctab of found.ctabs) 
+		{	
+			if (ctab.source == source) {
+				destination = ctab.destination;
+				break;
+			}
+		}	
+	}
+	//console.debug("getCasmChannel", style, source, destination, found);
+	return destination;
+}
