@@ -1824,15 +1824,19 @@ function doQY100Fill() {
 function setSffVar(changed) {
 	if (sectionChange == 0) {
 		currentSffVar = "Fill In AA";
+		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main A";
 	}
 	if (sectionChange == 1) {
 		currentSffVar = "Fill In BB";
+		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main B";		
 	}
 	if (sectionChange == 2) {		
 		currentSffVar = "Fill In CC";
+		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main C";		
 	}		
 	if (sectionChange == 3) {
-		currentSffVar = "Fill In DD";	
+		currentSffVar = "Fill In DD";
+		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main D";		
 	}
 }
 
@@ -3165,7 +3169,7 @@ function enableSequencer(flag) {
 }
 
 function startStopSequencer() {
-	console.debug("startStopSequencer", styleStarted);
+	//console.debug("startStopSequencer", styleStarted);
 	
 	if (!audioContext) audioContext = new AudioContext();	
 		
@@ -3229,7 +3233,7 @@ function sendControlChange(event) {
 }
 
 function doStartStopSequencer() {
-	console.debug("doStartStopSequencer", styleStarted);
+	//console.debug("doStartStopSequencer", styleStarted);
 	
 	if (!styleStarted) 	
 	{
@@ -3485,8 +3489,9 @@ function scheduleSongNote() {
 	else
 		
 	if (arrSequence) {
-		const event = arrSequence.data[currentSffVar][currentPlayNote];
-		//console.debug("scheduleSongNote", event);
+		let event = arrSequence.data[currentSffVar][currentPlayNote];
+				
+		//console.debug("scheduleSongNote", event, currentPlayNote);
 		// TODO implement CASM
 		const channel = getCasmChannel(currentSffVar, event.channel); 
 		
@@ -3513,8 +3518,9 @@ function scheduleSongNote() {
 		if (event?.type == "noteOff") {	
 			const note = tempVariation[channel + "-" + event.noteNumber]?.note;
 			
-			if (note) 
-			{		
+			if (note) {	
+				delete tempVariation[channel + "-" + event.noteNumber];
+				
 				if (output) {		
 					output.stopNote(note, channel + 1, {velocity: event.velocity});	
 				}
@@ -3741,5 +3747,6 @@ function getCasmChannel(style, source) {
 		}	
 	}
 	//console.debug("getCasmChannel", style, source, destination, found);
+	if (destination == 8) destination = 9;
 	return destination;
 }

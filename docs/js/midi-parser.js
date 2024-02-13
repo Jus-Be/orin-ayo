@@ -222,12 +222,12 @@ function parseData(data) {
         event.type = 'sysEx'
         var length = p.readVarInt()
         event.data = p.readBytes(length)
-        return null; //event
+        return event
       } else if (eventTypeByte == 0xf7) {
         event.type = 'endSysEx'
         var length = p.readVarInt()
         event.data = p.readBytes(length)
-        return null; //event
+        return event
       } else {
         throw "Unrecognised MIDI event type byte: " + eventTypeByte
       }
@@ -238,7 +238,8 @@ function parseData(data) {
         // running status - reuse lastEventTypeByte as the event type.
         // eventTypeByte is actually the first parameter
         if (lastEventTypeByte === null)
-          throw "Running status byte encountered before status byte"
+          //throw "Running status byte encountered before status byte"
+		  return null;
         param1 = eventTypeByte
         eventTypeByte = lastEventTypeByte
         event.running = true
@@ -303,6 +304,7 @@ function parseData(data) {
 		if (event.type == 'marker') {
 			variation = event.text;
 			events[variation] = [];
+			lastEventTypeByte = null;
 		}
 		else
 			
