@@ -746,7 +746,7 @@ function handleNoteOn(note, device, velocity) {
 					}					
 
 					if (padFretButton) {
-						if (padsDevice) stopPads();
+						if (padsDevice?.stopNote) stopPads();
 						const fwdChord = [119];
 						fwdChord.push(padFretButton);	
 						forward.playNote(fwdChord, 1, {velocity});	
@@ -1943,7 +1943,7 @@ function stopPadSynthNote(note, channel, velocity) {
 
 function playPads(chords, channel, opts) {
 
-	if (padsDevice && !styleStarted) 
+	if (padsDevice?.stopNote && !styleStarted) 
 	{	
 		if (!padsInitialised) {
 			padsInitialised = true;
@@ -1969,7 +1969,7 @@ function playPads(chords, channel, opts) {
 
 function stopPads() {
 	
-	if (padsDevice && !styleStarted) 
+	if (padsDevice?.stopNote && !styleStarted) 
 	{
 		if (arrSynth) 
 		{
@@ -2005,7 +2005,7 @@ function playChord(chord, root, type, bass) {
 		const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 
 	
-		if (padsDevice) {
+		if (padsDevice?.stopNote) {
 			//console.debug("playChord pads", chord);
 		
 			const rootNote = (chord.length == 4 ? chord[0] + 24 : chord[0]);			
@@ -2458,7 +2458,7 @@ function stopChord() {
 			
 			if (output) output.stopNote(activeChord, [4], {velocity: 0.5}); 
 			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: 0.5});		
-			if (padsDevice) stopPads();
+			if (padsDevice?.stopNote) stopPads();
 			
 			if (!guitarAvailable && forward) 
 			{
@@ -3417,13 +3417,16 @@ function nextSongNote() {
 				setTimeout(() => {
 					console.debug("nextSongNote clear notes", currentSffVar);
 					
-					for (let i=0; i<16; i++) {
-						const eventTypeByte = 0xB0 | i;
-						
-						const evt1 = {data: "midi," + eventTypeByte + ",120"};
-						arrSynth.onmessage(evt1);
-						
-						const evt2 = {data: "midi," + eventTypeByte + ",121"};				
+					for (let i=0; i<16; i++) 
+					{
+						if (arrSynth) {						
+							const eventTypeByte = 0xB0 | i;
+							
+							const evt1 = {data: "midi," + eventTypeByte + ",120"};
+							arrSynth.onmessage(evt1);
+							
+							const evt2 = {data: "midi," + eventTypeByte + ",121"};	
+						}							
 					}
 
 					clearAllSffNotes();		
@@ -3505,17 +3508,17 @@ function scheduleSongNote() {
 	if (arrSequence) {
 		let event = arrSequence.data[currentSffVar][currentPlayNote];
 				
-		//console.debug("scheduleSongNote", event, currentPlayNote);
 		// TODO implement CASM
 		const channel = getCasmChannel(currentSffVar, event.channel); 
+		//console.debug("scheduleSongNote", channel, event, currentPlayNote);
 		
 		if ((channel < 8) || event.noteNumber > 84) return;
-		if (channel != 9 && !document.getElementById("arr-instrument-" + channel)?.checked) return;
+		if (arrSynth && channel != 9 && !document.getElementById("arr-instrument-" + channel)?.checked) return;
 			
 		if (event?.type == "noteOn") 
 		{
 			if (output) {
-				output.playNote(harmoniseNote(event, channel), channel + 1, {velocity: event.velocity});
+				output.playNote(harmoniseNote(event, channel), channel + 1, {velocity: event.velocity / 127});
 			}
 			else
 				
@@ -3536,7 +3539,7 @@ function scheduleSongNote() {
 				delete tempVariation[channel + "-" + event.noteNumber];
 				
 				if (output) {		
-					output.stopNote(note, channel + 1, {velocity: event.velocity});	
+					output.stopNote(note, channel + 1, {velocity: event.velocity / 127});	
 				}
 				else
 					
@@ -3565,7 +3568,7 @@ function harmoniseNote(event, channel) {
 	
 	let note = event.noteNumber;
 
-	if (channel != 9 && channel != 9) 
+	if (channel != 9) 
 	{	
 		if (!currentSffVar.startsWith("Ending") && !currentSffVar.startsWith("Intro")) {
 			if (arrChordType != "7" && (note % 12) == 9) note = note + 3;	// change A to C unless 7
@@ -3592,7 +3595,7 @@ function harmoniseNote(event, channel) {
 	
 	tempVariation[channel + "-" + event.noteNumber] = {note, event};	
 		
-	//if (event.channel == 10) console.debug("harmoniseNote", arrChordType, root, bass, note, event.noteNumber, event.channel);	
+	//console.debug("harmoniseNote", arrChordType, root, bass, note, event.noteNumber, event.channel, channel);	
 	return note;
 }
 
