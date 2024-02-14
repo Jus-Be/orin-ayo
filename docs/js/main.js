@@ -57,7 +57,7 @@ var statusMsg = null;
 var base = BASE;
 var key = "C"
 var keyChange = 0;
-var padsMode = 1;
+var padsMode = 0;
 var sectionChange = 0;
 var rgIndex = 0;
 var nextRgIndex = 0;
@@ -724,27 +724,28 @@ function handleNoteOn(note, device, velocity) {
 				
 				if (!styleStarted && forward) {											// change real guitar strum style
 					if (note.number == artiphonI1Base) {
-						fretButton = (127);
-						padsMode = 1;						
+						fretButton = (0);
+						padsMode = 0;						
 					}
 					if (note.number == artiphonI1Base + 2) {
 						fretButton =(126);
-						padsMode = 2;	
+						padsMode = 1;	
 					}
 					if (note.number == artiphonI1Base + 4) {
 						fretButton =(125);	
-						padsMode = 3;	
+						padsMode = 2;	
 					}
 					if (note.number == artiphonI1Base + 5) {
 						fretButton =(124);	
-						padsMode = 4;
+						padsMode = 3;
 					}
 					if (note.number == artiphonI1Base + 7) {
 						fretButton = (123);
-						 padsMode = 5;
-					}
+						padsMode = 4;
+					}					
 
 					if (fretButton) {
+						if (padsDevice) stopPads();
 						const fwdChord = [119];
 						fwdChord.push(fretButton);	
 						forward.playNote(fwdChord, 1, {velocity});	
@@ -1969,12 +1970,23 @@ function stopPads() {
 	
 	if (padsDevice && !styleStarted) 
 	{
-		if (arrSynth) {
-			stopPadSynthNote(firstChord, 0, 0.5 * 127);
-			if (firstChord.length == 4) stopPadSynthNote(firstChord[0] + 24, 0, 0.5 * 127);		
+		if (arrSynth) 
+		{
+			if (firstChord instanceof Array) 
+			{
+				for (note of firstChord) {
+					stopPadSynthNote(note, 0, 0.5 * 127);
+				}
+				
+				if (firstChord.length == 4) stopPadSynthNote(firstChord[0] + 24, 0, 0.5 * 127);		
+							
+			} else {
+				stopPadSynthNote(firstChord, 0, 0.5 * 127);
+			}			
+
 		} else {
 			padsDevice.stopNote(firstChord, 1, {velocity: 0.5}); 
-			if (firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 1, {velocity: 0.5}); 		
+			if (firstChord instanceof Array && firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 1, {velocity: 0.5}); 		
 		}
 	}
 }
@@ -3219,6 +3231,7 @@ function sendProgramChange(event) {
 
 function sendControlChange(event) {
 	const channel = getCasmChannel(currentSffVar, event.channel);
+	//console.debug("sendControlChange",  event.channel, channel, currentSffVar, event);
 	
 	if (output) {				
 		output.sendControlChange(event.controllerType, event.value, channel + 1);
