@@ -28,6 +28,7 @@ var tempVariation = {};
 var currentSffVar = "Intro A";
 var loadFile = null;
 var fretButton = 127;
+var padFretButton = 127;
 var artiphonStrumUp = false;
 var artiphonI1Base = 36;
 var footSwCode7Enabled = false;
@@ -628,9 +629,9 @@ function handleNoteOff(note, device, velocity) {
 			pad.buttons[STARPOWER] = false;	
 			pad.axis[TOUCH] = 0;	
 
-			if (fretButton) {
+			if (padFretButton) {
 				const fwdChord = [119];
-				fwdChord.push(fretButton);	
+				fwdChord.push(padFretButton);	
 				forward.stopNote(fwdChord, 1, {velocity});	
 			}			
 		}	
@@ -722,32 +723,32 @@ function handleNoteOn(note, device, velocity) {
 					pad.buttons[STARPOWER] = false;						
 				}
 				
-				if (!styleStarted && forward) {											// change real guitar strum style
+				if (!styleStarted && forward) {						
 					if (note.number == artiphonI1Base) {
-						fretButton = (0);
+						padFretButton = (127);
 						padsMode = 0;						
 					}
 					if (note.number == artiphonI1Base + 2) {
-						fretButton =(126);
+						padFretButton =(126);
 						padsMode = 1;	
 					}
 					if (note.number == artiphonI1Base + 4) {
-						fretButton =(125);	
+						padFretButton =(125);	
 						padsMode = 2;	
 					}
 					if (note.number == artiphonI1Base + 5) {
-						fretButton =(124);	
+						padFretButton =(124);	
 						padsMode = 3;
 					}
 					if (note.number == artiphonI1Base + 7) {
-						fretButton = (123);
+						padFretButton = (123);
 						padsMode = 4;
 					}					
 
-					if (fretButton) {
+					if (padFretButton) {
 						if (padsDevice) stopPads();
 						const fwdChord = [119];
-						fwdChord.push(fretButton);	
+						fwdChord.push(padFretButton);	
 						forward.playNote(fwdChord, 1, {velocity});	
 						return;
 					}
