@@ -1,6 +1,6 @@
 // data can be any array-like object.  It just needs to support .length, .slice, and an element getter []
 
-function parseMidi(data) {
+function parseMidi(data, arrName) {
   var p = new Parser(data)
   var headerChunk = p.readChunk();
   var trackChunk = p.readChunk()
@@ -12,15 +12,20 @@ function parseMidi(data) {
   if (trackChunk.id != 'MTrk')
     throw "Bad MIDI file.  Expected 'MTrk', got: '" + trackChunk.id + "'"
 
-  if (casmChunk.id != 'CASM')
-    throw "Bad MIDI file.  Expected 'CASM', got: '" + casmChunk.id + "'"
+  var casm = [];
+  
+  if (!arrName.toLowerCase().endsWith(".kst")) {
+	  if (casmChunk.id != 'CASM')
+		throw "Bad MIDI file.  Expected 'CASM', got: '" + casmChunk.id + "'"
 
-  //console.debug("parseCasm casm", casmChunk.id, casmChunk.length); 
+	  //console.debug("parseCasm casm", casmChunk.id, casmChunk.length); 
+	  casm = parseCasm(casmChunk.data);
+  }
 	  
   return {
     header: parseHeader(headerChunk.data),
-    data: parseData(trackChunk.data),
-	casm: parseCasm(casmChunk.data)
+    data: parseData(trackChunk.data, arrName),
+	casm: casm
   }
 }
 
@@ -113,7 +118,7 @@ function parseHeader(data) {
   return result
 }
 
-function parseData(data) {
+function parseData(data, arrName) {
   function readEvent() {
     var event = {}
    
@@ -136,6 +141,7 @@ function parseData(data) {
           case 0x01:
             event.type = 'text'
             event.text = p.readString(length)
+            return null; //event			
           case 0x02:
             event.type = 'copyrightNotice'
             event.text = p.readString(length)
@@ -222,12 +228,12 @@ function parseData(data) {
         event.type = 'sysEx'
         var length = p.readVarInt()
         event.data = p.readBytes(length)
-        return event
+        return event;
       } else if (eventTypeByte == 0xf7) {
         event.type = 'endSysEx'
         var length = p.readVarInt()
         event.data = p.readBytes(length)
-        return event
+        return event;
       } else {
         throw "Unrecognised MIDI event type byte: " + eventTypeByte
       }
@@ -301,7 +307,32 @@ function parseData(data) {
 	
 	if (event) 
 	{
-		if (event.type == 'marker') {
+		if (event.type == 'marker') 
+		{
+			if (arrName.toLowerCase().endsWith(".kst")) {			
+				if (event.text == 'ARRA_MAJ') event.text = 'Main A';
+				if (event.text == 'ARRB_MAJ') event.text = 'Main B';
+				if (event.text == 'ARRC_MAJ') event.text = 'Main C';
+				if (event.text == 'ARRD_MAJ') event.text = 'Main D';			
+				if (event.text == 'FILA_MAJ') event.text = 'Fill In AA';
+				if (event.text == 'FILB_MAJ') event.text = 'Fill In BB';
+				if (event.text == 'FILC_MAJ') event.text = 'Fill In CC';
+				if (event.text == 'FILD_MAJ') event.text = 'Fill In DD';
+				if (event.text == 'INT1_MAJ') event.text = 'Intro A';			
+				if (event.text == 'INT2_MAJ') event.text = 'Intro B';
+				if (event.text == 'INT3_MAJ') event.text = 'Intro C';			
+				if (event.text == 'END1_MAJ') event.text = 'Ending A';		
+				if (event.text == 'END2_MAJ') event.text = 'Ending B';			
+				if (event.text == 'END3_MAJ') event.text = 'Ending C';						
+				if (event.text == 'BRKA_MAJ') event.text = 'Fill In AB';
+				if (event.text == 'BRKB_MAJ') event.text = 'Fill In BA';
+				
+				if (event.text == 'Audya Style 1.0') {
+					event.text = 'SInt';
+					events['SFF1'] = [];
+				}
+			}
+			
 			variation = event.text;
 			events[variation] = [];
 			lastEventTypeByte = null;
@@ -316,8 +347,18 @@ function parseData(data) {
 		if (event.type == "timeSignature") {
 			events.Hdr.timeSignature = event;
 		}			
-		else {		
-			if (variation) events[variation].push(event);
+		else {	
+		
+		  if (arrName.toLowerCase().endsWith(".kst")) {
+			  if (event.channel == 4) event.channel = 10; 		// Bass  
+			  else if (event.channel == 5) event.channel = 11; 	// Keyboard	    
+			  else if (event.channel == 6) event.channel = 12; 	// Guitar  
+			  else if (event.channel == 7) event.channel = 13; 	// Pad		  
+			  else if (event.channel == 10) event.channel = 14; // Phrase 1  
+			  else if (event.channel == 11) event.channel = 15; // Phrase 2	
+		  }
+		
+		  if (variation) events[variation].push(event);
 		}
 	}
   }

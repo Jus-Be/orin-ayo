@@ -340,7 +340,7 @@ function handleFileContent(event) {
 		var reader = new FileReader();
 
 		reader.onload = function(event)	{
-			if (file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs")) {
+			if (file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs")) {
 				handleStyleFile(file, event.target.result);
 			}
 			else
@@ -384,13 +384,12 @@ function handleStyleFile(file, data) {
 	const store = new idbKeyval.Store(file.name, file.name);
 
 	idbKeyval.set(file.name, data, store).then(function () {
-		console.debug("sff set", file.name, data);
 		arrSequence = {name: file.name};
 		saveConfig();
 		location.reload();			
 		
 	}).catch(function (err) {
-		console.error('sff set failed!', err)
+		console.error('handleStyleFile db set failed!', err)
 	});	
 }
 
@@ -1038,6 +1037,24 @@ function normaliseStyle() {
 	
 	const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
 	setTempo(bpm);	
+	
+	const initHdr = arrSequence.data["SFF1"] || arrSequence.data["SFF2"];
+	
+	if (initHdr && output) 
+	{
+		for (let event of initHdr) 
+		{			
+			if (event.type == "sysEx") {
+				const params = new Uint8Array(event.data);
+				const manufacturer = params[0];
+				const ops = [];
+				for (let i=1; i<params.length - 1; i++) ops.push(params[i]);
+				
+				console.debug("SFF sysEx", manufacturer, ops)	
+				output.sendSysex(manufacturer, ops);				
+			}				
+		}
+	}		
 }
 
 async function setupUI(config,err) {	
@@ -1094,7 +1111,7 @@ async function setupUI(config,err) {
 			}
 			else
 				
-			if (db.name.toLowerCase().endsWith(".sty") || db.name.toLowerCase().endsWith(".prs")) {
+			if (db.name.toLowerCase().endsWith(".kst") || db.name.toLowerCase().endsWith(".sty") || db.name.toLowerCase().endsWith(".prs")  || db.name.toLowerCase().endsWith(".bcs")) {
 				iStyle++;
 				styleSelected = config.arrName == db.name;
 				arrangerStyle.options[iStyle] = new Option(db.name, db.name, styleSelected, styleSelected);				
@@ -1470,7 +1487,7 @@ function getArrSequence(arrName, callback) {
 	{
 		if (data) {
 			console.debug("sff get", arrName, data);
-			arrSequence = parseMidi(data);
+			arrSequence = parseMidi(data, arrName);
 			normaliseStyle();	
 			arrSequence.name = arrName;	
 			
@@ -1495,7 +1512,7 @@ function getArrSynth(sf2Name) {
 			arrSynth = new SoundFont.WebMidiLink();
 			arrSynth.loadSoundFont(new Uint8Array(data));	
 			arrSynth.name = sf2Name;
-			//arrSynth.setReverb(false);			
+			//arrSynth.setReverb(true);			
 		}			
 	}).catch(function (err) {
 		console.error('sf2 get failed!', err)
@@ -3234,8 +3251,12 @@ function sendControlChange(event) {
 	const channel = getCasmChannel(currentSffVar, event.channel);
 	//console.debug("sendControlChange",  event.channel, channel, currentSffVar, event);
 	
-	if (output) {				
-		output.sendControlChange(event.controllerType, event.value, channel + 1);
+	if (output) {
+		if (event.controllerType < 120) {
+			output.sendControlChange(event.controllerType, event.value, channel + 1);
+		} else  {
+			output.sendChannelMode(event.controllerType, event.value, channel + 1);			
+		}
 	}
 	else
 		
@@ -3377,6 +3398,7 @@ function guitarScheduler() {
 }
 
 function nextSongNote() {	
+	let offset = 0;
 	currentPlayNote++;	
 	
 	if (songSequence) {
@@ -3395,6 +3417,9 @@ function nextSongNote() {
 			
 		if (currentPlayNote >= arrSequence.data[currentSffVar].length) {			
 			currentPlayNote = 0;
+			// TODO HACK
+			// KST files need padding at end of loop
+			if (arrSequence.name.toLowerCase().endsWith(".kst")) offset = tempo / 8;
 
 			if ("Intro A" == currentSffVar) currentSffVar = "Main A";
 			if ("Intro B" == currentSffVar) currentSffVar = "Main B";			
@@ -3406,7 +3431,7 @@ function nextSongNote() {
 			if ("Fill In DD" == currentSffVar) currentSffVar = "Main D";			
 			if ("Fill In BA" == currentSffVar) currentSffVar = "Main A";
 			
-			//console.debug("nextSongNote new", currentSffVar);
+			console.debug("nextSongNote new", currentSffVar);
 
 			if (currentSffVar.startsWith("Ending")) {
 				requestArrEnd = false;
@@ -3426,11 +3451,17 @@ function nextSongNote() {
 							arrSynth.onmessage(evt1);
 							
 							const evt2 = {data: "midi," + eventTypeByte + ",121"};	
-						}							
+						}
+						else
+							
+						if (output) {
+							output.sendChannelMode (120, 0, i + 1);
+							output.sendChannelMode (121, 0, i + 1);							
+						}
 					}
 
 					clearAllSffNotes();		
-				});					
+				}, 1000);					
 
 			}	
 
@@ -3443,7 +3474,7 @@ function nextSongNote() {
 		}
 		
 		if (arrSequence.data[currentSffVar]) {
-			const timestamp = arrSequence.data[currentSffVar][currentPlayNote].deltaTime * (60 / (tempo * arrSequence.header.ticksPerBeat));
+			const timestamp = (offset + arrSequence.data[currentSffVar][currentPlayNote].deltaTime) * (60 / (tempo * arrSequence.header.ticksPerBeat));
 			nextNoteTime = nextNoteTime + timestamp;
 		}			
 	}
@@ -3512,7 +3543,15 @@ function scheduleSongNote() {
 		const channel = getCasmChannel(currentSffVar, event.channel); 
 		//console.debug("scheduleSongNote", channel, event, currentPlayNote);
 		
-		if ((channel < 8) || event.noteNumber > 84) return;
+		/*if ((channel < 8) || event.noteNumber > 84) {
+			currentPlayNote++;	
+			
+			if (currentPlayNote >= arrSequence.data[currentSffVar].length) {			
+				currentPlayNote = 0;
+			}			
+			return;
+		}*/
+		
 		if (arrSynth && channel != 9 && !document.getElementById("arr-instrument-" + channel)?.checked) return;
 			
 		if (event?.type == "noteOn") 
@@ -3550,7 +3589,17 @@ function scheduleSongNote() {
 					//console.debug("noteOff", evt);					
 				}
 			}				
-		}		
+		}
+		else
+			
+		if (event?.type == "programChange") {
+			sendProgramChange(event);	
+		}
+		else
+			
+		if (event?.type == "controller") {
+			sendControlChange(event);	
+		}			
 	}
 }
 
