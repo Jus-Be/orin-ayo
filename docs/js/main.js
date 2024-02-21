@@ -228,7 +228,7 @@ function onConnected() {
 
 	navigator.bluetooth.requestDevice({
 		filters: [{
-		  //services: [MIDI_SERVICE_UID],
+		  services: [MIDI_SERVICE_UID],
 		  name: "Artiphon"
 		}]
 	})
