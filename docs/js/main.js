@@ -22,6 +22,7 @@ const TOUCH = 5;
 const LOGO = 12;
 const CONTROL = 100;
 
+var bluetoothDevice = null;
 var arrSynth = null;
 var requestArrEnd = false;
 var tempVariation = {};
@@ -219,6 +220,62 @@ function messageHandler(evt) {
 	console.debug("messageHandler", evt);	
 }
 
+function onConnected() {
+	console.log('onConnected');			
+	
+	const MIDI_SERVICE_UID            = '03B80E5A-EDE8-4B33-A751-6CE34EC4C700'.toLowerCase();
+	const MIDI_IO_CHARACTERISTIC_UID  = '7772E5DB-3868-4112-A1A9-F2669D106BF3'.toLowerCase();
+
+	navigator.bluetooth.requestDevice({
+		filters: [{
+		  //services: [MIDI_SERVICE_UID],
+		  name: "Artiphon"
+		}]
+	})
+	.then(device => {
+		bluetoothDevice = device;
+		// Set up event listener for when device gets disconnected.
+		console.log('Connecting to GATT server of ' + device.name);
+		device.addEventListener('gattserverdisconnected', onDisconnected);
+		return device.gatt.connect();
+	})
+	.then(server => {
+		console.log('Getting Service...');
+		return server.getPrimaryService(MIDI_SERVICE_UID);
+	})
+	.then(service => {
+		console.log('Getting Characteristic...');
+		return service.getCharacteristic(MIDI_IO_CHARACTERISTIC_UID);
+	})
+	.then(characteristic => {
+		console.log('Found Characteristic...');
+		return characteristic.startNotifications();
+	})
+	.then(characteristic => {
+		// Set up event listener for when characteristic value changes.
+		characteristic.addEventListener('characteristicvaluechanged',	handleMidiMessageRecieved);
+		console.log('Bluetooth MIDI Notifications have been started.')
+	})
+	.catch(error => { console.log('ERRORCODE: ' + error); });	
+}
+
+function onDisconnected(event) {
+	if (!bluetoothDevice || !bluetoothDevice.gatt.connected) return;
+	bluetoothDevice.gatt.disconnect();
+	let device = event.target;
+	console.log('Device ' + device.name + ' is disconnected.');
+}
+
+function handleMidiMessageRecieved(event) {
+	const {buffer}  = event.target.value;
+	const eventData = new Uint8Array(buffer);
+	
+	console.log('handleMidiMessageRecieved ', eventData);	
+
+	//handleNoteOn(e.note, midiIn.value, e.velocity);
+	//handleNoteOff(e.note, midiIn.value, e.velocity);
+}
+
 function onloadHandler() {
 	console.debug("onloadHandler");
 		
@@ -263,12 +320,19 @@ function onloadHandler() {
 		setTimeout(() => output.sendControlChange (107, 127, 4), 220000);
 			
 	});
-	
+
 	const upload = document.getElementById("load-midifile");
 	
 	upload.addEventListener('change', function(event) {
 		handleFileContent(event);
 	});	
+	
+  
+	const chordaBluetooth = document.querySelector(".chorda_bluetooth");
+	
+	chordaBluetooth.addEventListener('click', function(event) {
+		onConnected(event);
+	});		
 
 	resetApp = document.querySelector(".reset_app")
 		
@@ -1407,12 +1471,12 @@ async function setupUI(config,err) {
 	if (input)
 	{
 		input.addListener('noteon', "all", function (e) {		
-			//console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note, e);
+			console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note, e);
 			handleNoteOn(e.note, midiIn.value, e.velocity);
 		});
 
 		input.addListener("noteoff", "all", function (e) {
-			//console.log("Received noteoff message", e);
+			console.log("Received noteoff message", e);
 			handleNoteOff(e.note, midiIn.value, e.velocity);			
 		});	
 		
@@ -1421,16 +1485,16 @@ async function setupUI(config,err) {
 		});		
 		
 		input.addListener("programchange", "all", function (e) {
-			console.log("Received program change message", e.value);
+			//console.log("Received program change message", e.value);
 		});		
 
 		
 		input.addListener("pitchbend", "all", function (e) {
-			console.log("Received pitchbend", e);
+			//console.log("Received pitchbend", e);
 		});		
 
 		input.addListener('controlchange', "all", function (e) {
-			console.debug("Received control-change (CC)", e?.controller?.number, e.value);	
+			//console.debug("Received control-change (CC)", e?.controller?.number, e.value);	
 					
 			if (arranger == "aeroslooper" && e?.controller.number == 113) 
 			{					
@@ -1541,6 +1605,15 @@ function saveConfig() {
 	config.sf2Name = arrSynth ? arrSynth.name : null;
 
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
+	
+	if (!bluetoothDevice) {
+		return;
+	}
+	console.log('Disconnecting from Artiphone Bluetooth Chorda Device...');
+	
+	if (bluetoothDevice.gatt.connected) {
+		bluetoothDevice.gatt.disconnect();
+	}	
 }
 
 function doBreak() {

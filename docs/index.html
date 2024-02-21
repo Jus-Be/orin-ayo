@@ -13,7 +13,17 @@
   <div style="margin: 10px">
     <input style="display:none" id="load-midifile" type="file" />
 	<table width="90%">	
-	<tr><td><h2 id="statusMsg"></h2></td><td><a class="play">On</a><a class="style_type">Normal</a><a class="gamepad_mode">Color Tabs</a><a class="load_file">Load</a><a class="reset_app">Refresh</a><span style="font-size: 24px;display:none;margin-left:100px" id="sequencer">Tempo:<span id="showTempo">100</span></span><div style="margin:10px">BPM <input id="tempo" type="range" min="30.0" max="160.0" step="1" value="100" style="height: 20px; width: 200px"></div><td></td></td></tr>		
+	<tr>
+		<td><h2 id="statusMsg"></h2></td>
+		<td>
+			<a class="play">On</a><a class="style_type">Normal</a>
+			<a class="gamepad_mode">Color Tabs</a><a class="load_file">Load</a>
+			<a class="chorda_bluetooth">Bluetooth</a>			
+			<a class="reset_app">Refresh</a>			
+			<span style="font-size: 24px;display:none;margin-left:100px" id="sequencer">Tempo:<span id="showTempo">100</span></span>
+			<div style="margin:10px">BPM <input id="tempo" type="range" min="30.0" max="160.0" step="1" value="100" style="height: 20px; width: 200px"></div>
+		</td>
+	</tr>		
 	</table>
 	<table width="90%">	
 	<tr><td><b>Arranger Type</b></td><td><select id="arrangerType" type="text" class="form-control input"></select></td><td rowspan="10" ><span id="synth"></span></td></tr>	
