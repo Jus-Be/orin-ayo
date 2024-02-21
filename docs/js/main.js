@@ -229,7 +229,7 @@ function onConnected() {
 	navigator.bluetooth.requestDevice({
 		filters: [{
 		  services: [MIDI_SERVICE_UID],
-		  name: "Artiphon"
+		  name: "Artiphon Chorda"
 		}]
 	})
 	.then(device => {
