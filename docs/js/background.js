@@ -84,12 +84,12 @@ if (location.protocol == "chrome-extension:") {
 
 const createOrinAyoWindow = () => {
 	console.debug("createOrinAyoWindow");		
-	const data = {url: chrome.runtime.getURL("index.html"), type: "popup"};
+	const data = {url: chrome.runtime.getURL("index.html")};
 	
 	chrome.windows.create(data, (win) => {
 		chrome.storage.local.set({orinAyoWin: win.id});			
-		chrome.windows.update(win.id, {width: 1100, height: 1000});
-	});	
+		chrome.windows.update(win.id, {width: 1200, height: 1000});
+	});
 }
 
 const openOrinAyoWindow = () => {	

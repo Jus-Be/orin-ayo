@@ -220,8 +220,8 @@ function messageHandler(evt) {
 	console.debug("messageHandler", evt);	
 }
 
-function onConnected() {
-	console.log('onConnected');			
+function onChordaConnect() {
+	console.log('onChordaConnect');			
 	
 	const MIDI_SERVICE_UID            = '03B80E5A-EDE8-4B33-A751-6CE34EC4C700'.toLowerCase();
 	const MIDI_IO_CHARACTERISTIC_UID  = '7772E5DB-3868-4112-A1A9-F2669D106BF3'.toLowerCase();
@@ -236,7 +236,7 @@ function onConnected() {
 		bluetoothDevice = device;
 		// Set up event listener for when device gets disconnected.
 		console.log('Connecting to GATT server of ' + device.name);
-		device.addEventListener('gattserverdisconnected', onDisconnected);
+		device.addEventListener('gattserverdisconnected', onChordaDisconnected);
 		return device.gatt.connect();
 	})
 	.then(server => {
@@ -253,27 +253,24 @@ function onConnected() {
 	})
 	.then(characteristic => {
 		// Set up event listener for when characteristic value changes.
-		characteristic.addEventListener('characteristicvaluechanged',	handleMidiMessageRecieved);
+		characteristic.addEventListener('characteristicvaluechanged',	handleChordaMidiMessage);
 		console.log('Bluetooth MIDI Notifications have been started.')
 	})
 	.catch(error => { console.log('ERRORCODE: ' + error); });	
 }
 
-function onDisconnected(event) {
+function onChordaDisconnected(event) {
 	if (!bluetoothDevice || !bluetoothDevice.gatt.connected) return;
 	bluetoothDevice.gatt.disconnect();
 	let device = event.target;
 	console.log('Device ' + device.name + ' is disconnected.');
 }
 
-function handleMidiMessageRecieved(event) {
-	const {buffer}  = event.target.value;
+function handleChordaMidiMessage(evt) {
+	const {buffer}  = evt.target.value;
 	const eventData = new Uint8Array(buffer);
-	
-	console.log('handleMidiMessageRecieved ', eventData);	
 
-	//handleNoteOn(e.note, midiIn.value, e.velocity);
-	//handleNoteOff(e.note, midiIn.value, e.velocity);
+	bleMIDIrx(eventData);	
 }
 
 function onloadHandler() {
@@ -331,7 +328,7 @@ function onloadHandler() {
 	const chordaBluetooth = document.querySelector(".chorda_bluetooth");
 	
 	chordaBluetooth.addEventListener('click', function(event) {
-		onConnected(event);
+		onChordaConnect(event);
 	});		
 
 	resetApp = document.querySelector(".reset_app")
@@ -644,7 +641,7 @@ function toggleStrumUpDown() {
 }
 
 function handleNoteOff(note, device, velocity) {	
-	//console.debug("handleNoteOff", note);
+	console.debug("handleNoteOff", note);
 	
 	if (device == "INSTRUMENT1") {
 		const fwdChord = [];
@@ -658,7 +655,7 @@ function handleNoteOff(note, device, velocity) {
 			if (pad.axis[STRUM] == STRUM_UP) fwdChord.push(122);								
 			if (pad.axis[STRUM] == STRUM_DOWN) fwdChord.push(121);	
 			
-			forward.stopNote(fwdChord, 1, {velocity});	
+			if (forward) forward.stopNote(fwdChord, 1, {velocity});	
 			stopPads();
 			
 			if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {
@@ -681,7 +678,7 @@ function handleNoteOff(note, device, velocity) {
 			if (fretButton) {
 				fwdChord.push(fretButton);
 			}
-			forward.stopNote(fwdChord, 1, {velocity});
+			if (forward) forward.stopNote(fwdChord, 1, {velocity});
 			stopPads();			
 		}			
 						
@@ -692,7 +689,7 @@ function handleNoteOff(note, device, velocity) {
 			pad.buttons[STARPOWER] = false;	
 			pad.axis[TOUCH] = 0;	
 
-			if (padFretButton) {
+			if (padFretButton && forward) {
 				const fwdChord = [119];
 				fwdChord.push(padFretButton);	
 				forward.stopNote(fwdChord, 1, {velocity});	
@@ -748,7 +745,7 @@ function handleNoteOff(note, device, velocity) {
 }
 
 function handleNoteOn(note, device, velocity) {
-	//console.debug("handleNoteOn", note);
+	console.debug("handleNoteOn", note, device, velocity);
 
 	if (device == "INSTRUMENT1") {
 		
@@ -759,7 +756,7 @@ function handleNoteOn(note, device, velocity) {
 		}	
 			
 		if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {			// STRUM UP/DOWN (BRIDGE Buttons)
-			//console.debug("handleNoteOn - strum up/down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);	
+			console.debug("handleNoteOn - strum up/down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);	
 
 			if (!pad.buttons[GREEN] && !pad.buttons[RED] && !pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[CONTROL] && !pad.buttons[LOGO]) {
 				
@@ -911,7 +908,7 @@ function handleNoteOn(note, device, velocity) {
 			pad.buttons[LOGO] = true;				
 		}		
 		
-		if (gamePadModeButton.innerText == "Color Tabs") {
+		if (forward && gamePadModeButton.innerText == "Color Tabs") {
 			const fwdChord = [];
 			if (pad.buttons[GREEN]) fwdChord.push(127);						
 			if (pad.buttons[RED]) fwdChord.push(126);
@@ -2742,6 +2739,7 @@ function doChord() {
 		
 	} else {	
 		toggleStartStop();
+		return;		
 	}
   }  
 
