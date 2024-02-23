@@ -190,18 +190,34 @@ function translateChordaToI1(callback, flag, midiMessage) {
 
 	  else if (trigger == 59) callback({number: 71}, "INSTRUMENT1", velocity)	// 7 - start/stop
 
-	  if (trigger == 64 || (trigger == 65 && triad[50]) || (trigger == 67 && triad[52]) || (trigger == 69 && triad[53]) || (trigger == 71 && triad[55]) || (trigger == 74 && triad[59])) {
-		  callback({number: 38}, "INSTRUMENT1", velocity)	// prev style		  
-	  }
-	  else 
-		  
-	  if (trigger == 67 || (trigger == 69 && triad[50]) || (trigger == 71 && triad[52]) || (trigger == 72 && triad[53]) || (trigger == 74 && triad[55]) || (trigger == 79 && triad[59])) {
-		  callback({number: 36}, "INSTRUMENT1", velocity)	// next style			  
-	  }
-	  else 
-		  
-	  if (trigger == 60 || (trigger == 62 && triad[50]) || (trigger == 64 && triad[52]) || (trigger == 65 && triad[53]) || (trigger == 67 && triad[55])) {
-		  callback({number: 45}, "INSTRUMENT1", velocity)	// FILL			  	  
+	  if (flag) {
+		  if (trigger == 64 || (trigger == 65 && triad[50]) || (trigger == 67 && triad[52]) || (trigger == 69 && triad[53]) || (trigger == 71 && triad[55]) || (trigger == 74 && triad[59])) {
+			  callback({number: 43}, "INSTRUMENT1", velocity)	// next style/strum down	  
+		  }
+		  else 
+			  
+		  if (trigger == 67 || (trigger == 69 && triad[50]) || (trigger == 71 && triad[52]) || (trigger == 72 && triad[53]) || (trigger == 74 && triad[55]) || (trigger == 79 && triad[59])) {
+			  callback({number: 41}, "INSTRUMENT1", velocity)	// prev style/ strum up				  
+		  }
+		  else 
+			  
+		  if (trigger == 60 || (trigger == 62 && triad[50]) || (trigger == 64 && triad[52]) || (trigger == 65 && triad[53]) || (trigger == 67 && triad[55])) {
+			  callback({number: 45}, "INSTRUMENT1", velocity)	// FILL			  	  
+		  }
+	  } else {
+		  if (trigger == 64 || (trigger == 65) || (trigger == 67) || (trigger == 69) || (trigger == 71) || (trigger == 74)) {
+			  callback({number: 43}, "INSTRUMENT1", velocity)			  
+		  }
+		  else 
+			  
+		  if (trigger == 67 || (trigger == 69) || (trigger == 71) || (trigger == 72) || (trigger == 74) || (trigger == 79)) {
+			  callback({number: 41}, "INSTRUMENT1", velocity)			  
+		  }
+		  else 
+			  
+		  if (trigger == 60 || (trigger == 62) || (trigger == 64) || (trigger == 65) || (trigger == 67)) {
+			  callback({number: 45}, "INSTRUMENT1", velocity)				  	  
+		  }		  
 	  }
   } 	
 }

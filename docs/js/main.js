@@ -255,15 +255,20 @@ function onChordaConnect() {
 		// Set up event listener for when characteristic value changes.
 		characteristic.addEventListener('characteristicvaluechanged',	handleChordaMidiMessage);
 		console.debug('Bluetooth MIDI Notifications have been started.')
+		document.querySelector(".chorda_bluetooth").innerHTML = "BT ON";
 	})
-	.catch(error => { console.error('ERRORCODE: ' + error); });	
+	.catch(error => { 
+		console.error('ERRORCODE: ' + error); 
+		document.querySelector(".chorda_bluetooth").innerHTML = "BT Error";		
+	});	
 }
 
 function onChordaDisconnected(event) {
+	document.querySelector(".chorda_bluetooth").innerHTML = "BT OFF";	
 	if (!bluetoothDevice || !bluetoothDevice.gatt.connected) return;
 	bluetoothDevice.gatt.disconnect();
 	let device = event.target;
-	console.debug('Device ' + device.name + ' is disconnected.');
+	console.debug('Device ' + device.name + ' is disconnected.');	
 }
 
 function handleChordaMidiMessage(evt) {
@@ -645,6 +650,12 @@ function handleNoteOff(note, device, velocity) {
 	
 	if (device == "INSTRUMENT1") {
 		const fwdChord = [];
+		
+		if (!game) {
+			setup();
+			resetArtiphonI1Buttons();	
+			resetArtiphonI1Axis();		
+		}		
 			
 		if (gamePadModeButton.innerText == "Color Tabs") {
 			if (pad.buttons[GREEN]) fwdChord.push(127);						
@@ -766,19 +777,19 @@ function handleNoteOn(note, device, velocity) {
 				}
 				else
 					
-				if (note.number == artiphonI1Base + 4) {
+				if (note.number == artiphonI1Base) {
 					pad.axis[TOUCH] = -0.7;
 					pad.axis[STRUM] = STRUM_UP;				// break
 				}
 				else				
 					
-				if (note.number == artiphonI1Base) {
+				if (note.number == artiphonI1Base + 5) {
 					pad.buttons[START] = false;	
 					pad.buttons[STARPOWER] = true;			// next var				
 				}				
 				else
 					
-				if (note.number == artiphonI1Base + 2) {
+				if (note.number == artiphonI1Base + 7) {
 					pad.buttons[START] = true;				// prev var
 					pad.buttons[STARPOWER] = false;						
 				}
@@ -788,25 +799,25 @@ function handleNoteOn(note, device, velocity) {
 						padFretButton = (127);
 						padsMode = 0;						
 					}
-					if (note.number == artiphonI1Base + 2) {
+					if (note.number == artiphonI1Base + 4) {
 						padFretButton =(126);
 						padsMode = 1;	
 					}
-					if (note.number == artiphonI1Base + 4) {
+					if (note.number == artiphonI1Base + 5) {
 						padFretButton =(125);	
 						padsMode = 2;	
 					}
-					if (note.number == artiphonI1Base + 5) {
+					if (note.number == artiphonI1Base + 7) {
 						padFretButton =(124);	
 						padsMode = 3;
 					}
-					if (note.number == artiphonI1Base + 7) {
+					if (note.number == artiphonI1Base + 9) {
 						padFretButton = (123);
 						padsMode = 4;
 					}					
 
 					if (padFretButton) {
-						if (padsDevice?.stopNote) stopPads();
+						if (padsDevice?.stopNote || padsDevice.name == "soundfont") stopPads();
 						const fwdChord = [119];
 						fwdChord.push(padFretButton);	
 						forward.playNote(fwdChord, 1, {velocity});	
@@ -2029,8 +2040,9 @@ function stopPadSynthNote(note, channel, velocity) {
 }
 
 function playPads(chords, channel, opts) {
-
-	if (padsDevice?.stopNote && !styleStarted) 
+	console.debug("playPads", chords, channel, opts);
+	
+	if (!styleStarted) 
 	{	
 		if (!padsInitialised) {
 			padsInitialised = true;
@@ -2048,15 +2060,19 @@ function playPads(chords, channel, opts) {
 			} else {
 				playPadSynthNote(chords, channel - 1, opts.velocity * 127);
 			}			
-		} else {
+		} 
+		else 
+		
+		if (padsDevice?.stopNote) {
 			padsDevice.playNote(chords, channel, opts);			
 		}
 	}
 }
 
 function stopPads() {
+	console.debug("stopPads");
 	
-	if (padsDevice?.stopNote && !styleStarted) 
+	if (!styleStarted) 
 	{
 		if (arrSynth) 
 		{
@@ -2072,7 +2088,10 @@ function stopPads() {
 				stopPadSynthNote(firstChord, 0, 0.5 * 127);
 			}			
 
-		} else {
+		} 
+		else 
+			
+		if (padsDevice?.stopNote) {
 			padsDevice.stopNote(firstChord, 1, {velocity: 0.5}); 
 			if (firstChord instanceof Array && firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 1, {velocity: 0.5}); 		
 		}
@@ -2092,7 +2111,7 @@ function playChord(chord, root, type, bass) {
 		const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 
 	
-		if (padsDevice?.stopNote) {
+		if (padsDevice?.stopNote || padsDevice.name == "soundfont") {
 			//console.debug("playChord pads", chord);
 		
 			const rootNote = (chord.length == 4 ? chord[0] + 24 : chord[0]);			
@@ -2545,7 +2564,7 @@ function stopChord() {
 			
 			if (output) output.stopNote(activeChord, [4], {velocity: 0.5}); 
 			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: 0.5});		
-			if (padsDevice?.stopNote) stopPads();
+			if (padsDevice?.stopNote || padsDevice.name == "soundfont") stopPads();
 			
 			if (!guitarAvailable && forward) 
 			{
