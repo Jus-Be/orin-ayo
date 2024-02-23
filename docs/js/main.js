@@ -817,7 +817,7 @@ function handleNoteOn(note, device, velocity) {
 					}					
 
 					if (padFretButton) {
-						if (padsDevice?.stopNote || padsDevice.name == "soundfont") stopPads();
+						if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
 						const fwdChord = [119];
 						fwdChord.push(padFretButton);	
 						forward.playNote(fwdChord, 1, {velocity});	
@@ -2111,7 +2111,7 @@ function playChord(chord, root, type, bass) {
 		const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 
 	
-		if (padsDevice?.stopNote || padsDevice.name == "soundfont") {
+		if (padsDevice?.stopNote || padsDevice?.name == "soundfont") {
 			//console.debug("playChord pads", chord);
 		
 			const rootNote = (chord.length == 4 ? chord[0] + 24 : chord[0]);			
@@ -2564,7 +2564,7 @@ function stopChord() {
 			
 			if (output) output.stopNote(activeChord, [4], {velocity: 0.5}); 
 			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: 0.5});		
-			if (padsDevice?.stopNote || padsDevice.name == "soundfont") stopPads();
+			if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
 			
 			if (!guitarAvailable && forward) 
 			{
