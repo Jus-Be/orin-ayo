@@ -221,8 +221,8 @@ function messageHandler(evt) {
 }
 
 function onChordaConnect() {
-	console.log('onChordaConnect');			
-	
+	console.debug('onChordaConnect');	
+
 	const MIDI_SERVICE_UID            = '03B80E5A-EDE8-4B33-A751-6CE34EC4C700'.toLowerCase();
 	const MIDI_IO_CHARACTERISTIC_UID  = '7772E5DB-3868-4112-A1A9-F2669D106BF3'.toLowerCase();
 
@@ -235,35 +235,35 @@ function onChordaConnect() {
 	.then(device => {
 		bluetoothDevice = device;
 		// Set up event listener for when device gets disconnected.
-		console.log('Connecting to GATT server of ' + device.name);
+		console.debug('Connecting to GATT server of ' + device.name);
 		device.addEventListener('gattserverdisconnected', onChordaDisconnected);
 		return device.gatt.connect();
 	})
 	.then(server => {
-		console.log('Getting Service...');
+		console.debug('Getting Service...');
 		return server.getPrimaryService(MIDI_SERVICE_UID);
 	})
 	.then(service => {
-		console.log('Getting Characteristic...');
+		console.debug('Getting Characteristic...');
 		return service.getCharacteristic(MIDI_IO_CHARACTERISTIC_UID);
 	})
 	.then(characteristic => {
-		console.log('Found Characteristic...');
+		console.debug('Found Characteristic...');
 		return characteristic.startNotifications();
 	})
 	.then(characteristic => {
 		// Set up event listener for when characteristic value changes.
 		characteristic.addEventListener('characteristicvaluechanged',	handleChordaMidiMessage);
-		console.log('Bluetooth MIDI Notifications have been started.')
+		console.debug('Bluetooth MIDI Notifications have been started.')
 	})
-	.catch(error => { console.log('ERRORCODE: ' + error); });	
+	.catch(error => { console.error('ERRORCODE: ' + error); });	
 }
 
 function onChordaDisconnected(event) {
 	if (!bluetoothDevice || !bluetoothDevice.gatt.connected) return;
 	bluetoothDevice.gatt.disconnect();
 	let device = event.target;
-	console.log('Device ' + device.name + ' is disconnected.');
+	console.debug('Device ' + device.name + ' is disconnected.');
 }
 
 function handleChordaMidiMessage(evt) {
@@ -424,7 +424,7 @@ function handleFileContent(event) {
 }
 
 function handleSF2File(file, data) {
-	console.log("handleSF2File", file, data);
+	console.debug("handleSF2File", file, data);
 	
 	const store = new idbKeyval.Store(file.name, file.name);
 
@@ -440,7 +440,7 @@ function handleSF2File(file, data) {
 }
 
 function handleStyleFile(file, data) {
-	console.log("handleStyleFile", file, input);
+	console.debug("handleStyleFile", file, input);
 	
 	const store = new idbKeyval.Store(file.name, file.name);
 
@@ -905,7 +905,7 @@ function handleNoteOn(note, device, velocity) {
 		else 
 			
 		if (note.number == artiphonI1Base + 35) {			// INTRO, END, START, STOP			
-			pad.buttons[LOGO] = true;				
+			pad.buttons[LOGO] = true;						// requires strum up/down to execute
 		}		
 		
 		if (forward && gamePadModeButton.innerText == "Color Tabs") {
@@ -1473,21 +1473,21 @@ async function setupUI(config,err) {
 		});
 
 		input.addListener("noteoff", "all", function (e) {
-			console.log("Received noteoff message", e);
+			console.debug("Received noteoff message", e);
 			handleNoteOff(e.note, midiIn.value, e.velocity);			
 		});	
 		
 		input.addListener("keyaftertouch", "all", function (e) {
-			//console.log("Received after touch message", e);
+			//console.debug("Received after touch message", e);
 		});		
 		
 		input.addListener("programchange", "all", function (e) {
-			//console.log("Received program change message", e.value);
+			//console.debug("Received program change message", e.value);
 		});		
 
 		
 		input.addListener("pitchbend", "all", function (e) {
-			//console.log("Received pitchbend", e);
+			//console.debug("Received pitchbend", e);
 		});		
 
 		input.addListener('controlchange', "all", function (e) {
@@ -1606,7 +1606,7 @@ function saveConfig() {
 	if (!bluetoothDevice) {
 		return;
 	}
-	console.log('Disconnecting from Artiphone Bluetooth Chorda Device...');
+	console.debug('Disconnecting from Artiphone Bluetooth Chorda Device...');
 	
 	if (bluetoothDevice.gatt.connected) {
 		bluetoothDevice.gatt.disconnect();
@@ -3760,7 +3760,7 @@ function setupSongSequence() {
 	//if (!songSequence && !arrSequence) return;
 	
 	if (songSequence) {
-		console.log("setupSongSequence", flag, songSequence);	
+		console.debug("setupSongSequence", flag, songSequence);	
 		
 		playButton.innerText = "Wait..";
 		setTempo(songSequence.bpm);
@@ -3773,7 +3773,7 @@ function setupSongSequence() {
 		setTempo(bpm);
 
 		if (arrSequence.data[currentSffVar]) {
-			console.log("setupSongSequence", flag, currentSffVar, arrSequence.data[currentSffVar]);
+			console.debug("setupSongSequence", flag, currentSffVar, arrSequence.data[currentSffVar]);
 
 		}		
 	}
@@ -3834,7 +3834,7 @@ function setupRealDrums() {
 }
 
 function soundsLoaded() {
-	console.log("audio loaded ok");
+	console.debug("audio loaded ok");
 	playButton.innerText = "Play";	
 }
 
