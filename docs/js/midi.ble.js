@@ -153,7 +153,7 @@ function bleMIDIrx(blepacket) {
   
         if(midiMessage === undefined) {
           /** Previous message was not complete */
-          console.log('Incomplete message: pos ' + pos);
+          console.error('Incomplete message: pos ' + pos);
         }
 
     } else {
@@ -164,23 +164,19 @@ function bleMIDIrx(blepacket) {
         if (midiMessage) {
           /** Message completed */
           parserMessage         = [];
-          displayMIDImessage(midiMessage, delay);
+          handleChordaMidiMessage(midiMessage);
         }
     }
   }
 }
 
-function translateChordaToI1(callback, flag, midiMessage) {
-  const trigger = midiMessage[1];	
-  const velocity = midiMessage[2];
-  const channel = 1 + (midiMessage[0] & 0b00001111);
-  
+function translateChordaToI1(callback, flag, trigger, velocity, channel) { 
+  //console.log("translateChordaToI1", flag, velocity, channel, trigger)	
   // Chorda in BASS mode (single notes on pads and harmony notes bridge)
   // Harmony interval is 4,3,5,4,3 on major chords and 3,4,5,3,4 on minor chords
   
   if (channel == 9) {			
 	  triad[trigger] = flag;
-	  console.log("translateChordaToI1", flag, velocity, channel, trigger)	
 
 	  if (trigger == 48) callback({number: 60}, "INSTRUMENT1", velocity)	  	// 5 (G)
 	  else if (trigger == 50) callback({number: 62}, "INSTRUMENT1", velocity)   // 6m (Am)  
@@ -191,50 +187,56 @@ function translateChordaToI1(callback, flag, midiMessage) {
 	  else if (trigger == 59) callback({number: 71}, "INSTRUMENT1", velocity)	// 7 - start/stop
 
 	  if (flag) {
-		  if (trigger == 64 || (trigger == 65 && triad[50]) || (trigger == 67 && triad[52]) || (trigger == 69 && triad[53]) || (trigger == 71 && triad[55]) || (trigger == 74 && triad[59])) {
+		  if ((trigger == 64 && !triad[52]) || (trigger == 65 && triad[50]) || (trigger == 67 && triad[52]) || (trigger == 69 && triad[53]) || (trigger == 71 && triad[55]) || (trigger == 74 && triad[59])) {
 			  callback({number: 43}, "INSTRUMENT1", velocity)	// next style/strum down	  
 		  }
 		  else 
 			  
 		  if (trigger == 67 || (trigger == 69 && triad[50]) || (trigger == 71 && triad[52]) || (trigger == 72 && triad[53]) || (trigger == 74 && triad[55]) || (trigger == 79 && triad[59])) {
-			  callback({number: 41}, "INSTRUMENT1", velocity)	// prev style/ strum up				  
+			  callback({number: 45}, "INSTRUMENT1", velocity)	// prev style/ strum up				  
 		  }
 		  else 
 			  
 		  if (trigger == 60 || (trigger == 62 && triad[50]) || (trigger == 64 && triad[52]) || (trigger == 65 && triad[53]) || (trigger == 67 && triad[55])) {
-			  callback({number: 45}, "INSTRUMENT1", velocity)	// FILL			  	  
+			  callback({number: 41}, "INSTRUMENT1", velocity)	// FILL			  	  
 		  }
 	  } else {
 		  if (trigger == 64 || (trigger == 65) || (trigger == 67) || (trigger == 69) || (trigger == 71) || (trigger == 74)) {
-			  callback({number: 43}, "INSTRUMENT1", velocity)			  
+			  callback({number: 43}, "INSTRUMENT1", velocity)				  
 		  }
 		  else 
 			  
 		  if (trigger == 67 || (trigger == 69) || (trigger == 71) || (trigger == 72) || (trigger == 74) || (trigger == 79)) {
-			  callback({number: 41}, "INSTRUMENT1", velocity)			  
+			  callback({number: 45}, "INSTRUMENT1", velocity)				  
 		  }
 		  else 
 			  
 		  if (trigger == 60 || (trigger == 62) || (trigger == 64) || (trigger == 65) || (trigger == 67)) {
-			  callback({number: 45}, "INSTRUMENT1", velocity)				  	  
-		  }		  
+			  callback({number: 41}, "INSTRUMENT1", velocity)				  	  
+		  }			  
 	  }
   } 	
 }
 
 
-function displayMIDImessage(midiMessage, delay) {
-	//console.log('displayMIDImessage', midiMessage);
+function handleChordaMidiMessage(midiMessage) {
+	//console.log('handleChordaMidiMessage', midiMessage);
 	// handleNoteOff({number: note, device, velocity)
-	let trigger, stored
+	let note, velocity, channel;
 	
 	switch(midiMessage[0] >>> 4) {	  
 	case 0b1000:  // Note off
-		translateChordaToI1(handleNoteOff, false, midiMessage);  		  
+	    note = midiMessage[1];	
+	    velocity = midiMessage[2];
+	    channel = 1 + (midiMessage[0] & 0b00001111);	
+		translateChordaToI1(handleNoteOff, false, note, velocity, channel);  		  
 	  break;
 	  
 	case 0b1001:  // Note on
-		translateChordaToI1(handleNoteOn, true, midiMessage); 		  
+	    note = midiMessage[1];	
+	    velocity = midiMessage[2];
+	    channel = 1 + (midiMessage[0] & 0b00001111);		
+		translateChordaToI1(handleNoteOn, true, note, velocity, channel); 		  
 	  break;	
 	  
     case 0b1011:  // Control Change
@@ -242,7 +244,7 @@ function displayMIDImessage(midiMessage, delay) {
 	  break;
 
     case 0b1100: // Program Change
-      console.debug('Program Changed to: ' + padString(midiMessage[1],3) + '......| Channel: ' + padString((1 + midiMessage[0]&0b00001111),2));
+      //console.debug('Program Changed to: ' + padString(midiMessage[1],3) + '......| Channel: ' + padString((1 + midiMessage[0]&0b00001111),2));
       break;
 	  
     case 0b1101: // Channel Pressure (After-touch)

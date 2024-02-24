@@ -645,9 +645,15 @@ function toggleStrumUpDown() {
 	artiphonStrumUp = !artiphonStrumUp;
 }
 
-function handleNoteOff(note, device, velocity) {	
-	console.debug("handleNoteOff", note);
+function handleNoteOff(note, device, velocity, channel) {	
+	//console.debug("handleNoteOff", note);
 	
+	if (device == "WIDI Uhost") {
+		//console.debug("WIDI - chorda handleNoteOff", note.number, device, velocity, channel);
+		translateChordaToI1(handleNoteOff, false, note.number, velocity, channel) 	// calls handleNoteOff again with device == INSTRUMENT1			
+	}
+	else
+		
 	if (device == "INSTRUMENT1") {
 		const fwdChord = [];
 		
@@ -755,9 +761,15 @@ function handleNoteOff(note, device, velocity) {
 	
 }
 
-function handleNoteOn(note, device, velocity) {
-	console.debug("handleNoteOn", note, device, velocity);
-
+function handleNoteOn(note, device, velocity, channel) {
+	//console.debug("handleNoteOn", note, device, velocity, channel);
+	
+	if (device == "WIDI Uhost") {
+		//console.debug("WIDI - chorda handleNoteOn", note.number, device, velocity);		
+		translateChordaToI1(handleNoteOn, true, note.number, velocity, channel) 	// calls handleNoteOn again with device == INSTRUMENT1	
+	}
+	else
+		
 	if (device == "INSTRUMENT1") {
 		
 		if (!game) {
@@ -767,7 +779,7 @@ function handleNoteOn(note, device, velocity) {
 		}	
 			
 		if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {			// STRUM UP/DOWN (BRIDGE Buttons)
-			console.debug("handleNoteOn - strum up/down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);	
+			//console.debug("handleNoteOn - strum up/down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);	
 
 			if (!pad.buttons[GREEN] && !pad.buttons[RED] && !pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[CONTROL] && !pad.buttons[LOGO]) {
 				
@@ -1479,13 +1491,13 @@ async function setupUI(config,err) {
 	if (input)
 	{
 		input.addListener('noteon', "all", function (e) {		
-			console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note, e);
-			handleNoteOn(e.note, midiIn.value, e.velocity);
+			//console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note, e);
+			handleNoteOn(e.note, midiIn.value, e.velocity, e.channel);
 		});
 
 		input.addListener("noteoff", "all", function (e) {
-			console.debug("Received noteoff message", e);
-			handleNoteOff(e.note, midiIn.value, e.velocity);			
+			//console.debug("Received noteoff message", e);
+			handleNoteOff(e.note, midiIn.value, e.velocity, e.channel);			
 		});	
 		
 		input.addListener("keyaftertouch", "all", function (e) {
@@ -2040,7 +2052,7 @@ function stopPadSynthNote(note, channel, velocity) {
 }
 
 function playPads(chords, channel, opts) {
-	console.debug("playPads", chords, channel, opts);
+	//console.debug("playPads", chords, channel, opts);
 	
 	if (!styleStarted) 
 	{	
@@ -2070,7 +2082,7 @@ function playPads(chords, channel, opts) {
 }
 
 function stopPads() {
-	console.debug("stopPads");
+	//console.debug("stopPads");
 	
 	if (!styleStarted) 
 	{
