@@ -2763,7 +2763,7 @@ function doChord() {
   }  
 
    if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) {
-		checkForTouchArea();
+		if (styleStarted) checkForTouchArea();
    }
 
   if ((pad.axis[STRUM] != STRUM_UP && pad.axis[STRUM] != STRUM_DOWN) || pad.buttons[STARPOWER] || pad.buttons[START]) {

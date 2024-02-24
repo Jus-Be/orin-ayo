@@ -4,7 +4,10 @@
 Orin Ayo is an Arranger/Looper Controller. 
 
 It turns a Guitar Hero game controller HID device into a chord based MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a Guitar Hero games controller.
-It recognises other non-keyboard USB MIDI controllers (like Artiphon Instrument 1) and enables them to be used as an arranger controller.
+It recognises other non-keyboard USB MIDI controllers (like Artiphon Instrument 1 or Chorda) and enables them to be used as an arranger controller. Note that only the first five pads are used like a guitar controller. The strum bridge pads are used to provide control (strum, start/stop, fill, next/prev section).
+It has an internal arranger engine that can play Yamaha SFFx or Ketron KST files. 
+It has an internal synth engine (based on [https://github.com/gree/sf2synth.js/](sf2synth.js)) that can play the styles using sound font (sf2) files with WebAudio.
+The internal synth and style engines are experimental and require a bit more work to be usable.
 
 https://github.com/Jus-Be/orin-ayo/assets/110731/cd309c44-3d11-4fe2-b19d-0ca406c18fa5
 
@@ -30,7 +33,7 @@ Currently, the following devices and applications are supported and confirmed wo
 - Korg Micro Arranger
 - Giglad (Application)
 
-The Yamaha MODX and Montage are not really arrangers, but have arpeggios that can be triggeresd via MIDI making them suitable for Orin Ayo. Only the high-end Yamaha PSR arrangers can be controlled by MIDI and only PSR SX-600 has been tested. If your Yamaha PSR  uses the same sysex messages like the SX-600 or QR100, itshould work. The same applies for Korg. It has been tested with the Micro Arranger, but not with the high-end PA series. The new Korg I3 was promising as it has same engine as a Micro Arranger, but midi control of styles was dropped like Yamaha PSR E series arrangers.
+The Yamaha MODX and Montage are not really arrangers, but have arpeggios that can be triggeresd via MIDI making them suitable for Orin Ayo. The high-end Yamaha PSR arrangers can be controlled by MIDI and only PSR SX-600 has been tested. If your Yamaha PSR  uses the same sysex messages like the SX-600 or QR100, it should work. The same applies for Korg. It has been tested with the Micro Arranger, but not with the high-end PA series. The new Korg I3 was promising as it has same engine as a Micro Arranger, but midi control of styles was dropped like Yamaha PSR E series arrangers (aarrgh!!).
 
 ### Loopers
 - Boss RC 600 Loop Station
@@ -38,6 +41,7 @@ The Yamaha MODX and Montage are not really arrangers, but have arpeggios that ca
 
 ### MIDI Controllers
 - Artiphon Instrument 1
+- Artiphon Chorda (wireless bluetooth mode only)
 
 Orin Ayo can also play the strum/pick patterns for the virtual guitars from Music Labs like RealGuitar, RealLPC, etc in joystick mode along with the arranger or looper patterns.
 
