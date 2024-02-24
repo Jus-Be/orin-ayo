@@ -4,9 +4,12 @@
 Orin Ayo is an Arranger/Looper Controller. 
 
 It turns a Guitar Hero game controller HID device into a chord based MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a Guitar Hero games controller.
-It recognises other non-keyboard USB MIDI controllers (like Artiphon Instrument 1 or Chorda) and enables them to be used as an arranger controller. Note that only the first five pads are used like a guitar controller. The strum bridge pads are used to provide control (strum, start/stop, fill, next/prev section).
-It has an internal arranger engine that can play Yamaha SFFx or Ketron KST files. 
+
+It recognises other non-keyboard USB MIDI controllers (like Artiphon Instrument 1 or Chorda) and enables them to be used as an arranger controller as well. Note that only the first five pads are used like a guitar controller. The strum bridge pads are used to provide control (strum, start/stop, fill, next/prev section).
+
+It has an internal arranger engine implemented in JavaScript that can play Yamaha SFFx or Ketron KST files. 
 It has an internal synth engine (based on [https://github.com/gree/sf2synth.js/](sf2synth.js)) that can play the styles using sound font (sf2) files with WebAudio.
+
 The internal synth and style engines are experimental and require a bit more work to be usable.
 
 https://github.com/Jus-Be/orin-ayo/assets/110731/cd309c44-3d11-4fe2-b19d-0ca406c18fa5
