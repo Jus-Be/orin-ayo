@@ -23,6 +23,7 @@ const LOGO = 12;
 const CONTROL = 100;
 
 var bluetoothDevice = null;
+var midiSynth = null;
 var arrSynth = null;
 var requestArrEnd = false;
 var tempVariation = {};
@@ -278,9 +279,26 @@ function handleChordaMidiMessage(evt) {
 	bleMIDIrx(eventData);	
 }
 
+function loadMidiSynth() {
+	var xhr = new XMLHttpRequest();
+
+	xhr.open('GET', "./assets/gmgsx.sf2", true);
+	xhr.responseType = 'arraybuffer';
+
+	xhr.addEventListener('load', function(ev) {
+		const midiSf2 = new Uint8Array(ev.target.response);
+		console.debug("loadMidiSynth", midiSf2);
+		
+		midiSynth = new SoundFont.WebMidiLink();
+		midiSynth.loadSoundFont(new Uint8Array(midiSf2));			
+	});
+
+	xhr.send();	
+}
+
 function onloadHandler() {
 	console.debug("onloadHandler");
-		
+
 	playButton = document.querySelector(".play");
 	gamePadModeButton = document.querySelector(".gamepad_mode");
 	styleType = document.querySelector(".style_type");
@@ -294,32 +312,32 @@ function onloadHandler() {
 	window.addEventListener("gamepaddisconnected", disconnectHandler);
 
 	document.querySelector('#giglad').addEventListener("click", () => {			
-		setTimeout(() => output.sendControlChange (85, 127, 4), 10000);	// FADE IN
-		setTimeout(() => output.sendControlChange (86, 127, 4), 20000);	// FADE OUT
-		setTimeout(() => output.sendControlChange (87, 127, 4), 30000);	// PLAY
-		setTimeout(() => output.sendControlChange (88, 127, 4), 40000);	// STOP		
+		setTimeout(() => outputSendControlChange (85, 127, 4), 10000);	// FADE IN
+		setTimeout(() => outputSendControlChange (86, 127, 4), 20000);	// FADE OUT
+		setTimeout(() => outputSendControlChange (87, 127, 4), 30000);	// PLAY
+		setTimeout(() => outputSendControlChange (88, 127, 4), 40000);	// STOP		
 		
-		setTimeout(() => output.sendControlChange (102, 127, 4), 50000);	// intro
-		setTimeout(() => output.sendControlChange (103, 127, 4), 60000);
-		setTimeout(() => output.sendControlChange (104, 127, 4), 70000);
+		setTimeout(() => outputSendControlChange (102, 127, 4), 50000);	// intro
+		setTimeout(() => outputSendControlChange (103, 127, 4), 60000);
+		setTimeout(() => outputSendControlChange (104, 127, 4), 70000);
 		
-		setTimeout(() => output.sendControlChange (108, 127, 4), 80000);	// Main
-		setTimeout(() => output.sendControlChange (109, 127, 4), 90000);
-		setTimeout(() => output.sendControlChange (110, 127, 4), 100000);
-		setTimeout(() => output.sendControlChange (111, 127, 4), 110000);		
+		setTimeout(() => outputSendControlChange (108, 127, 4), 80000);	// Main
+		setTimeout(() => outputSendControlChange (109, 127, 4), 90000);
+		setTimeout(() => outputSendControlChange (110, 127, 4), 100000);
+		setTimeout(() => outputSendControlChange (111, 127, 4), 110000);		
 			
-		setTimeout(() => output.sendControlChange (112, 127, 4), 120000);	// Fill/Break
-		setTimeout(() => output.sendControlChange (113, 127, 4), 130000);
-		setTimeout(() => output.sendControlChange (114, 127, 4), 140000);
-		setTimeout(() => output.sendControlChange (115, 127, 4), 150000);
-		setTimeout(() => output.sendControlChange (116, 127, 4), 160000);
-		setTimeout(() => output.sendControlChange (117, 127, 4), 170000);
-		setTimeout(() => output.sendControlChange (118, 127, 4), 180000);
-		setTimeout(() => output.sendControlChange (119, 127, 4), 190000);	
+		setTimeout(() => outputSendControlChange (112, 127, 4), 120000);	// Fill/Break
+		setTimeout(() => outputSendControlChange (113, 127, 4), 130000);
+		setTimeout(() => outputSendControlChange (114, 127, 4), 140000);
+		setTimeout(() => outputSendControlChange (115, 127, 4), 150000);
+		setTimeout(() => outputSendControlChange (116, 127, 4), 160000);
+		setTimeout(() => outputSendControlChange (117, 127, 4), 170000);
+		setTimeout(() => outputSendControlChange (118, 127, 4), 180000);
+		setTimeout(() => outputSendControlChange (119, 127, 4), 190000);	
 
-		setTimeout(() => output.sendControlChange (105, 127, 4), 200000);	// End
-		setTimeout(() => output.sendControlChange (106, 127, 4), 210000);
-		setTimeout(() => output.sendControlChange (107, 127, 4), 220000);
+		setTimeout(() => outputSendControlChange (105, 127, 4), 200000);	// End
+		setTimeout(() => outputSendControlChange (106, 127, 4), 210000);
+		setTimeout(() => outputSendControlChange (107, 127, 4), 220000);
 			
 	});
 
@@ -515,7 +533,8 @@ function handleKeyboard(name, code) {
 		else 
 			
 		if (keyboard.get("Backspace") && keyboard.get("1")) {	// Mute Drums
-			pad.axis[TOUCH] = 1.0;		
+			pad.axis[TOUCH] = 1.0;	
+			pad.axis[STRUM] = STRUM_DOWN;			
 		}
 		else 
 			
@@ -1520,7 +1539,7 @@ async function setupUI(config,err) {
 			{					
 				if (e.value == 0) {
 					console.debug("Aeros section change message", aerosChordTrack);			  
-					output.sendControlChange (39, aerosChordTrack, 4); 	// play current chord on new part					
+					outputSendControlChange (39, aerosChordTrack, 4); 	// play current chord on new part					
 					
 					if (aerosAux) {	
 						aerosAux = false;
@@ -1529,13 +1548,13 @@ async function setupUI(config,err) {
 						
 						if (aerosChordTrack == 1) { // intro
 							console.debug("Aeros section intro message");						
-							setTimeout(() => output.sendControlChange (113, 91, 4), 300); // switch to main part at end of loop
+							setTimeout(() => outputSendControlChange (113, 91, 4), 300); // switch to main part at end of loop
 						}
 						else
 							
 						if (aerosChordTrack == 6) { // end
 							console.debug("Aeros section end message");							
-							setTimeout(() => output.sendControlChange (43, 3, 4), 300); // stop at end of loop
+							setTimeout(() => outputSendControlChange (43, 3, 4), 300); // stop at end of loop
 						}					
 						
 					}					
@@ -1557,8 +1576,13 @@ async function setupUI(config,err) {
 	}
 	
 	if (config.sf2Name) {					
-		getArrSynth(config.sf2Name);
-	}	
+		getArrSynth(config.sf2Name);	// load sf2 file
+	}
+	else
+
+	if (arranger == "sff") {	// use gmgsx.sf2 as dummy midiSynth
+		loadMidiSynth();
+	}		
 };
 
 function getArrSequence(arrName, callback) {
@@ -1599,7 +1623,7 @@ function getArrSynth(sf2Name) {
 			//arrSynth.setReverb(true);			
 		}			
 	}).catch(function (err) {
-		console.error('sf2 get failed!', err)
+		console.error('getArrSynth failed!', err)
 	});	
 }
 
@@ -1668,7 +1692,7 @@ function doBreak() {
 	else 
 		
 	if (arranger == "microarranger") {
-        if (output) output.sendProgramChange(90, 4);
+        if (output) outputSendProgramChange(90, 4);
 	} 
 	else 
 		
@@ -1692,9 +1716,9 @@ function doBreak() {
 		aerosChordTrack = 4;
 		
 		if (aerosAuxMode) {
-			output.sendControlChange (39, aerosChordTrack, 4);
+			outputSendControlChange (39, aerosChordTrack, 4);
 		} else  {
-			output.sendControlChange (113, 73, 4);	// switch to aux part												
+			outputSendControlChange (113, 73, 4);	// switch to aux part												
 		}
 		
 	} 	
@@ -1751,9 +1775,9 @@ function doFill() {
 		aerosChordTrack = 5;
 		
 		if (aerosAuxMode) {
-			output.sendControlChange (39, aerosChordTrack, 4);
+			outputSendControlChange (39, aerosChordTrack, 4);
 		} else  {
-			output.sendControlChange (113, 73, 4);	// switch to aux part												
+			outputSendControlChange (113, 73, 4);	// switch to aux part												
 		}								
 	}	
 	else
@@ -1780,35 +1804,35 @@ function doRcLooperFill(newSection) {
 
 	if (sectionChange == 0) {
 		if (newSection) {
-			output.sendControlChange (64, 127, 4); 			
+			outputSendControlChange (64, 127, 4); 			
 		} else {
-			output.sendControlChange (66, 127, 4); 
-			setTimeout(() => output.sendControlChange (64, 127, 4), 1000); 		
+			outputSendControlChange (66, 127, 4); 
+			setTimeout(() => outputSendControlChange (64, 127, 4), 1000); 		
 		}
 	}
 	
 	if (sectionChange == 1) {
 		if (newSection) {
-			output.sendControlChange (65, 127, 4); 			
+			outputSendControlChange (65, 127, 4); 			
 		} else {		
-			output.sendControlChange (67, 127, 4); 	
-			setTimeout(() => output.sendControlChange (65, 127, 4), 1000); 	
+			outputSendControlChange (67, 127, 4); 	
+			setTimeout(() => outputSendControlChange (65, 127, 4), 1000); 	
 		}			
 	}
 	if (sectionChange == 2) {
 		if (newSection) {
-			output.sendControlChange (66, 127, 4); 			
+			outputSendControlChange (66, 127, 4); 			
 		} else {		
-			output.sendControlChange (64, 127, 4); 
-			setTimeout(() => output.sendControlChange (66, 127, 4), 1000); 			
+			outputSendControlChange (64, 127, 4); 
+			setTimeout(() => outputSendControlChange (66, 127, 4), 1000); 			
 		}
 	}		
 	if (sectionChange == 3) {
 		if (newSection) {
-			output.sendControlChange (67, 127, 4); 			
+			outputSendControlChange (67, 127, 4); 			
 		} else {		
-			output.sendControlChange (65, 127, 4); 
-			setTimeout(() => output.sendControlChange (67, 127, 4), 1000); 	
+			outputSendControlChange (65, 127, 4); 
+			setTimeout(() => outputSendControlChange (67, 127, 4), 1000); 	
 		}			
 	}	
 }
@@ -1818,20 +1842,20 @@ function doGigladFill() {
 	console.debug("doGigladFill " + sectionChange);	
 
 	if (sectionChange == 0) {
-		output.sendControlChange (112, 127, 4); 			
-		setTimeout(() => output.sendControlChange (108, 127, 4), 2000); 
+		outputSendControlChange (112, 127, 4); 			
+		setTimeout(() => outputSendControlChange (108, 127, 4), 2000); 
 	}
 	if (sectionChange == 1) {
-		output.sendControlChange (113, 127, 4); 	
-		setTimeout(() => output.sendControlChange (109, 127, 4), 2000);  			
+		outputSendControlChange (113, 127, 4); 	
+		setTimeout(() => outputSendControlChange (109, 127, 4), 2000);  			
 	}
 	if (sectionChange == 2) {
-		output.sendControlChange (114, 127, 4); 			
-		setTimeout(() => output.sendControlChange (110, 127, 4), 2000);  
+		outputSendControlChange (114, 127, 4); 			
+		setTimeout(() => outputSendControlChange (110, 127, 4), 2000);  
 	}		
 	if (sectionChange == 3) {
-		output.sendControlChange (115, 127, 4); 			
-		setTimeout(() => output.sendControlChange (111, 127, 4), 2000); 
+		outputSendControlChange (115, 127, 4); 			
+		setTimeout(() => outputSendControlChange (111, 127, 4), 2000); 
 	}	
 }
 
@@ -1842,20 +1866,20 @@ function doModxFill() {
 	if (arranger == "modx") 
 	{
 		if (sectionChange == 0) {
-			output.sendControlChange (92, 32, 4); 			
-			setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
+			outputSendControlChange (92, 32, 4); 			
+			setTimeout(() => outputSendControlChange (92, 16, 4), 2000); 
 		}
 		if (sectionChange == 1) {
-			output.sendControlChange (92, 32, 4); 	
-			setTimeout(() => output.sendControlChange (92, 48, 4), 2000);  			
+			outputSendControlChange (92, 32, 4); 	
+			setTimeout(() => outputSendControlChange (92, 48, 4), 2000);  			
 		}
 		if (sectionChange == 2) {
-			output.sendControlChange (92, 64, 4); 			
-			setTimeout(() => output.sendControlChange (92, 80, 4), 2000);  
+			outputSendControlChange (92, 64, 4); 			
+			setTimeout(() => outputSendControlChange (92, 80, 4), 2000);  
 		}		
 		if (sectionChange == 3) {
-			output.sendControlChange (92, 96, 4); 			
-			setTimeout(() => output.sendControlChange (92, 80, 4), 2000); 
+			outputSendControlChange (92, 96, 4); 			
+			setTimeout(() => outputSendControlChange (92, 80, 4), 2000); 
 		}	
 	} 
 	
@@ -1863,20 +1887,20 @@ function doModxFill() {
 		
 	if (arranger == "montage") 	{	
 		if (sectionChange == 0) {
-			output.sendControlChange (92, 64, 4); 			
-			setTimeout(() => output.sendControlChange (92, 16, 4), 2000); 
+			outputSendControlChange (92, 64, 4); 			
+			setTimeout(() => outputSendControlChange (92, 16, 4), 2000); 
 		}
 		if (sectionChange == 1) {
-			output.sendControlChange (92, 64, 4); 	
-			setTimeout(() => output.sendControlChange (92, 32, 4), 2000);  			
+			outputSendControlChange (92, 64, 4); 	
+			setTimeout(() => outputSendControlChange (92, 32, 4), 2000);  			
 		}
 		if (sectionChange == 2) {
-			output.sendControlChange (92, 80, 4); 			
-			setTimeout(() => output.sendControlChange (92, 48, 4), 2000);  
+			outputSendControlChange (92, 80, 4); 			
+			setTimeout(() => outputSendControlChange (92, 48, 4), 2000);  
 		}		
 		if (sectionChange == 3) {
-			output.sendControlChange (92, 96, 4); 			
-			setTimeout(() => output.sendControlChange (92, 48, 4), 2000); 
+			outputSendControlChange (92, 96, 4); 			
+			setTimeout(() => outputSendControlChange (92, 48, 4), 2000); 
 		}		
 	}
 }
@@ -1887,12 +1911,12 @@ function doKorgFill() {
 	const tempArr = sectionChange % 2;
 	
 	if (tempArr == 0) {
-		if (output) output.sendProgramChange(86, 4);
-		setTimeout(() => output.sendProgramChange(80 + sectionChange, 4), 1000);			
+		if (output) outputSendProgramChange(86, 4);
+		setTimeout(() => outputSendProgramChange(80 + sectionChange, 4), 1000);			
 		console.debug("doKorgFill A");		
 	} else {
-		if (output) output.sendProgramChange(87, 4);
-		setTimeout(() => output.sendProgramChange(80 + sectionChange, 4), 1000);			
+		if (output) outputSendProgramChange(87, 4);
+		setTimeout(() => outputSendProgramChange(80 + sectionChange, 4), 1000);			
 		console.debug("doKorgFill B");					
 	}		
 }
@@ -2184,7 +2208,7 @@ function playChord(chord, root, type, bass) {
 					if (rcLooperChord != root) 
 					{					
 						if (root > 48 && root < 55) {					
-							output.sendControlChange ((root - 28), 127, 4);	
+							outputSendControlChange ((root - 28), 127, 4);	
 						}
 
 						rcLooperChord = root;	
@@ -2197,7 +2221,7 @@ function playChord(chord, root, type, bass) {
 					if (root > 48 && root < 55) {
 						aerosChordTrack = root - 48;	
 						//console.debug("playChord aeros looper ", aerosChordTrack, aerosPart);						
-						output.sendControlChange (39, aerosChordTrack, 4);
+						outputSendControlChange (39, aerosChordTrack, 4);
 					}						
 				}	
 				
@@ -2207,8 +2231,8 @@ function playChord(chord, root, type, bass) {
 					if (styleStarted) setTimeout(clearAllSffNotes);
 					
 				} else if (output) {
-					if (pad.axis[STRUM] == STRUM_UP) output.playNote(chord, [4], {velocity: 0.5});		// up
-					if (pad.axis[STRUM] == STRUM_DOWN) output.playNote(chord, [4], {velocity: 0.5});   	// down	
+					if (pad.axis[STRUM] == STRUM_UP) outputPlayNote(chord, [4], {velocity: 0.5});		// up
+					if (pad.axis[STRUM] == STRUM_DOWN) outputPlayNote(chord, [4], {velocity: 0.5});   	// down	
 				}
 				
 				if (!guitarAvailable && forward) 
@@ -2238,7 +2262,12 @@ function clearAllSffNotes() {
 		const note = tempVariation[events[i]].note;
 		
 		if (output) {						
-			output.stopNote(note, channel + 1, {velocity: event.velocity});
+			outputStopNote(note, channel + 1, {velocity: event.velocity});
+			
+			if (midiSynth) {
+				const instrumentNode = document.getElementById("arr-instrument-" + channel);
+				if (instrumentNode) instrumentNode.parentNode.parentNode.parentNode.parentNode.querySelector("tbody > tr:nth-child(" + (parseInt(channel) + 1) + ") > td:nth-child(" + (4 + parseInt(note) + 1) + ")").classList.remove("note-on");				
+			}
 		}
 		else
 			
@@ -2434,8 +2463,36 @@ function sendKetronSysex(code) {
 function pressFootSwitch(code) {
 	console.debug("pressFootSwitch", code)	
 
-	if (arranger == "sff") {
-	
+	if (arranger == "sff") 
+	{				
+		if (code == 6) {	// drum toggle
+			const instrumentNode = document.getElementById("arr-instrument-9");		
+			instrumentNode.checked = !instrumentNode.checked;			
+		}
+		else
+			
+		if (code == 7) {	// drum toggle
+			const instrumentNode = document.getElementById("arr-instrument-10");		
+			instrumentNode.checked = !instrumentNode.checked;			
+		}
+		
+		if (code == 8 || code == 9) {	// chord toggle
+			const chord1 = document.getElementById("arr-instrument-11");		
+			chord1.checked = !chord1.checked;
+
+			const chord2 = document.getElementById("arr-instrument-12");		
+			chord2.checked = !chord2.checked;
+
+			const chord3 = document.getElementById("arr-instrument-13");		
+			chord3.checked = !chord3.checked;
+
+			const chord4 = document.getElementById("arr-instrument-14");		
+			chord4.checked = !chord4.checked;
+
+			const chord5 = document.getElementById("arr-instrument-15");		
+			chord5.checked = !chord5.checked;			
+		}		
+		
 	} 	
 	else 
 		
@@ -2461,23 +2518,23 @@ function pressFootSwitch(code) {
 		}
 		
 		if (aerosAuxMode) {
-			output.sendControlChange (39, aerosChordTrack, 4);
+			outputSendControlChange (39, aerosChordTrack, 4);
 		} else  {
-			output.sendControlChange (113, 73, 4);	// switch to aux part												
+			outputSendControlChange (113, 73, 4);	// switch to aux part												
 		}
 		
 	}
 	else	
 		
 	if (arranger == "rclooper" && output) {
-		if (code == 7) output.sendControlChange (69, 127, 4);	// mute/unmute drums
+		if (code == 7) outputSendControlChange (69, 127, 4);	// mute/unmute drums
 		
 		if (code == 6) 
 		{
 			if (footSwCode7Enabled) {
-				output.sendControlChange (71, 127, 4);			// loop volume off 
+				outputSendControlChange (71, 127, 4);			// loop volume off 
 			} else {
-				output.sendControlChange (70, 127, 4)			// loop volume on
+				outputSendControlChange (70, 127, 4)			// loop volume on
 			}
 			footSwCode7Enabled = !footSwCode7Enabled;			
 		}
@@ -2522,7 +2579,7 @@ function resetArrToA() {
 	else 
 		
 	if (arranger == "microarranger") {
-		if (output) output.sendProgramChange(80, 4);	
+		if (output) outputSendProgramChange(80, 4);	
 		console.debug("resetArrToA Micro Arranger " + sectionChange);			
 	} 	
 	else	
@@ -2531,32 +2588,32 @@ function resetArrToA() {
 		if (output) {
 			aerosPart = 1;	
 			aerosChordTrack = 1;
-			//output.sendControlChange (113, 70 + aerosPart, 4);				// switch to main part	
+			//outputSendControlChange (113, 70 + aerosPart, 4);				// switch to main part	
 		}
 		console.debug("resetArrToA Aeros Looper " + sectionChange);			
 	}
 	else	
 	
 	if (arranger == "rclooper") {
-		if (output) output.sendControlChange (64, 127, 4);
+		if (output) outputSendControlChange (64, 127, 4);
 		console.debug("resetArrToA RC Looper " + sectionChange);			
 	}	
 	else	
 	
 	if (arranger == "giglad") {
-		if (output) output.sendControlChange (108, 127, 4);
+		if (output) outputSendControlChange (108, 127, 4);
 		console.debug("resetArrToA Giglad " + sectionChange);			
 	}	
 	else	
 	
 	if (arranger == "modx") {
-		if (output) output.sendControlChange (92, 16, 4);
+		if (output) outputSendControlChange (92, 16, 4);
 		console.debug("resetArrToA MODX " + sectionChange);			
 	}
 	else
 		
 	if (arranger == "montage") {
-		if (output) output.sendControlChange (92, 16, 4);
+		if (output) outputSendControlChange (92, 16, 4);
 		console.debug("resetArrToA Montage " + sectionChange);			
 	}
 	
@@ -2574,7 +2631,7 @@ function stopChord() {
 		{
 			//console.debug("stopChord", pad)
 			
-			if (output) output.stopNote(activeChord, [4], {velocity: 0.5}); 
+			if (output) outputStopNote(activeChord, [4], {velocity: 0.5}); 
 			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: 0.5});		
 			if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
 			
@@ -2679,7 +2736,7 @@ function changeArrSection(changed) {
 		if (changed) {
 			aerosAuxMode = false;			
 			aerosPart = (sectionChange == 0 || sectionChange == 2) ? 1 : 2;
-			output.sendControlChange (113, 80 + aerosPart, 4);			
+			outputSendControlChange (113, 80 + aerosPart, 4);			
 		}
 		console.debug("changeArrSection Aeros Looper " + sectionChange);			
 	}
@@ -3011,7 +3068,7 @@ function toggleStartStop() {
 
 	if (output) { 			
 		if (arranger == "ketron") {		
-			output.playNote(firstChord, [4], {velocity: 0.5});
+			outputPlayNote(firstChord, [4], {velocity: 0.5});
 				
 			let startEndType = 0x12; // default start/stop
 		
@@ -3032,14 +3089,14 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed");  
-				output.playNote(firstChord, [4], {velocity: 0.5});				
-				output.sendControlChange (92, 0, 4);  				    
+				outputPlayNote(firstChord, [4], {velocity: 0.5});				
+				outputSendControlChange (92, 0, 4);  				    
 				styleStarted = true;
 			}
 			else {
 				console.debug("stop key pressed");				
-				output.sendControlChange (92, 96, 4); 			
-				setTimeout(() => output.sendControlChange (92, 112, 4), 2000);        
+				outputSendControlChange (92, 96, 4); 			
+				setTimeout(() => outputSendControlChange (92, 112, 4), 2000);        
 				styleStarted = false;
 			}
 		}	
@@ -3057,13 +3114,13 @@ function toggleStartStop() {
 						aerosChordTrack = 1;
 						aerosPart = 1;
 						console.debug("Aeros intro start"); 
-						output.sendControlChange (113, 73, 4);	// switch to aux part	
-						setTimeout(() => output.sendControlChange (39, aerosChordTrack, 4), 500);						
-						setTimeout(() => output.sendControlChange (113, 90 + aerosChordTrack, 4), 1000);
+						outputSendControlChange (113, 73, 4);	// switch to aux part	
+						setTimeout(() => outputSendControlChange (39, aerosChordTrack, 4), 500);						
+						setTimeout(() => outputSendControlChange (113, 90 + aerosChordTrack, 4), 1000);
 						
 					} else {	
 						console.debug("Aeros main start"); 
-						output.sendControlChange (113, 71, 4);	// switch to main part													
+						outputSendControlChange (113, 71, 4);	// switch to main part													
 					}										
 					
 				}     
@@ -3076,10 +3133,10 @@ function toggleStartStop() {
 					if (pad.buttons[YELLOW] || pad.buttons[ORANGE] || pad.buttons[GREEN] || pad.buttons[RED] || pad.buttons[BLUE]) {
 						aerosChordTrack = 6;
 						aerosAux = true
-						output.sendControlChange (113, 73, 4);	// switch to aux part
+						outputSendControlChange (113, 73, 4);	// switch to aux part
 
 					} else {
-						output.sendControlChange (43, 0, 4);	// stop all						
+						outputSendControlChange (43, 0, 4);	// stop all						
 					}
 										
 				}	      
@@ -3089,7 +3146,7 @@ function toggleStartStop() {
 		else
 
 		if (arranger == "rclooper") {		
-			output.sendControlChange (68, 127, 4);						
+			outputSendControlChange (68, 127, 4);						
 			console.debug("RC looper start/stop key pressed"); 
 			styleStarted = !styleStarted; 			
 		}
@@ -3102,22 +3159,22 @@ function toggleStartStop() {
 				console.debug("start key pressed");  
 				
 				if (output) {
-					output.playNote(firstChord, [4], {velocity: 0.5});
+					outputPlayNote(firstChord, [4], {velocity: 0.5});
 				
 					if (pad.buttons[YELLOW]) {
-						output.sendControlChange (102, 127, 4); 	// INTRO 1
+						outputSendControlChange (102, 127, 4); 	// INTRO 1
 						sectionChange = 0;						
 					} else if (pad.buttons[RED]) {
-						output.sendControlChange (103, 127, 4); 	// INTRO 2	
+						outputSendControlChange (103, 127, 4); 	// INTRO 2	
 						sectionChange = 1;							
 					} else if (pad.buttons[GREEN]){
-						output.sendControlChange (104, 127, 4); 	// INTRO 3
+						outputSendControlChange (104, 127, 4); 	// INTRO 3
 						sectionChange = 2;							
 					} else if (pad.buttons[ORANGE]){
-						output.sendControlChange (85, 127, 4); 		// FADE IN				
+						outputSendControlChange (85, 127, 4); 		// FADE IN				
 					}
 					orinayo_section.innerHTML = SECTIONS[sectionChange];						
-					output.sendControlChange (87, 127, 4);			// START
+					outputSendControlChange (87, 127, 4);			// START
 					
 				}     
 				styleStarted = true;
@@ -3127,15 +3184,15 @@ function toggleStartStop() {
 				
 				if (output) {
 					if (pad.buttons[YELLOW]) {
-						output.sendControlChange (105, 127, 4); 
+						outputSendControlChange (105, 127, 4); 
 					} else if (pad.buttons[RED]) {
-						output.sendControlChange (106, 127, 4); 						
+						outputSendControlChange (106, 127, 4); 						
 					} else  if (pad.buttons[GREEN]) {
-						output.sendControlChange (107, 127, 4); 	
+						outputSendControlChange (107, 127, 4); 	
 					} else if (pad.buttons[ORANGE]){
-						output.sendControlChange (86, 127, 4); 		// FADE OUT						
+						outputSendControlChange (86, 127, 4); 		// FADE OUT						
 					} else {
-						output.sendControlChange (88, 127, 4);		// STOP
+						outputSendControlChange (88, 127, 4);		// STOP
 					}				
 				}	      
 				styleStarted = false;
@@ -3148,7 +3205,7 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed"); 
-				output.playNote(firstChord, [4], {velocity: 0.5});
+				outputPlayNote(firstChord, [4], {velocity: 0.5});
 				
 				let startEndType = 0x00;
 				if (pad.buttons[YELLOW]) startEndType = 0x00;	// INTRO-1
@@ -3188,7 +3245,7 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed");  
-				output.playNote(firstChord, [4], {velocity: 0.5});				
+				outputPlayNote(firstChord, [4], {velocity: 0.5});				
 				sendYamahaSysEx(0x08);	
 				output.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start				
 				styleStarted = true;
@@ -3214,14 +3271,14 @@ function toggleStartStop() {
 				console.debug("start key pressed");  				
 				
 				if (output) {
-					output.playNote(firstChord, [4], {velocity: 0.5});
+					outputPlayNote(firstChord, [4], {velocity: 0.5});
 				
 					if (pad.buttons[YELLOW]) {
-						output.sendProgramChange(85, 4);
+						outputSendProgramChange(85, 4);
 					} else if (pad.buttons[ORANGE]) {
-						output.sendProgramChange(91, 4);							
+						outputSendProgramChange(91, 4);							
 					} else if (pad.buttons[GREEN]){
-						output.sendProgramChange(84, 4);						
+						outputSendProgramChange(84, 4);						
 					} else {
 						output.sendStart();
 					}
@@ -3233,14 +3290,14 @@ function toggleStartStop() {
 				console.debug("stop key pressed");
 				
 				if (output) {
-					output.playNote(firstChord, [4], {velocity: 0.5});
+					outputPlayNote(firstChord, [4], {velocity: 0.5});
 				
 					if (pad.buttons[YELLOW]) {
-						output.sendProgramChange(89, 4);
+						outputSendProgramChange(89, 4);
 					} else if (pad.buttons[ORANGE]) {
-						output.sendProgramChange(91, 4);						
+						outputSendProgramChange(91, 4);						
 					} else  if (pad.buttons[GREEN]) {
-						output.sendProgramChange(88, 4);
+						outputSendProgramChange(88, 4);
 					} else {
 						output.sendStop();						
 					}
@@ -3338,7 +3395,13 @@ function sendProgramChange(event) {
 	const channel = getCasmChannel(currentSffVar, event.channel);
 		
 	if (output) {
-		output.sendProgramChange(event.programNumber, channel + 1);
+		outputSendProgramChange(event.programNumber, channel + 1);
+		
+		if (midiSynth) {
+			const eventTypeByte = 0xC0 | channel;
+			const evt = {data: "midi," + eventTypeByte + "," + event.programNumber};
+			midiSynth.onmessage(evt);
+		}		
 	}
 	else 
 		
@@ -3355,10 +3418,16 @@ function sendControlChange(event) {
 	
 	if (output) {
 		if (event.controllerType < 120) {
-			output.sendControlChange(event.controllerType, event.value, channel + 1);
+			outputSendControlChange(event.controllerType, event.value, channel + 1);
 		} else  {
-			output.sendChannelMode(event.controllerType, event.value, channel + 1);			
+			outputSendChannelMode(event.controllerType, event.value, channel + 1);			
 		}
+		
+		if (midiSynth) {
+			const eventTypeByte = 0xB0 | channel;
+			const evt = {data: "midi," + eventTypeByte + "," + event.controllerType + "," + event.value};
+			midiSynth.onmessage(evt);
+		}		
 	}
 	else
 		
@@ -3557,8 +3626,8 @@ function nextSongNote() {
 						else
 							
 						if (output) {
-							output.sendChannelMode (120, 0, i + 1);
-							output.sendChannelMode (121, 0, i + 1);							
+							outputSendChannelMode (120, 0, i + 1);
+							outputSendChannelMode (121, 0, i + 1);							
 						}
 					}
 
@@ -3654,22 +3723,27 @@ function scheduleSongNote() {
 			return;
 		}*/
 		
-		if (arrSynth && channel != 9 && !document.getElementById("arr-instrument-" + channel)?.checked) return;
+		const instrumentNode = document.getElementById("arr-instrument-" + channel);				
+		if (!instrumentNode?.checked) return;
 			
-		if (event?.type == "noteOn") 
-		{
+		if (event?.type == "noteOn") {
+			const note = harmoniseNote(event, channel);
+				
 			if (output) {
-				output.playNote(harmoniseNote(event, channel), channel + 1, {velocity: event.velocity / 127});
+				outputPlayNote(note, channel + 1, {velocity: event.velocity / 127});
+				
+				if (midiSynth && instrumentNode) {
+					instrumentNode.parentNode.parentNode.parentNode.parentNode.querySelector("tbody > tr:nth-child(" + (parseInt(channel) + 1) + ") > td:nth-child(" + (4 + parseInt(note) + 1) + ")").classList.add("note-on");
+				}				
 			}
 			else
 				
 			if (arrSynth) {
 				const eventTypeByte = 0x90 | channel;
-				const evt = {data: "midi," + eventTypeByte + "," + harmoniseNote(event, channel) + "," + event.velocity}
+				const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity}
 				arrSynth.onmessage(evt);
 				//console.debug("noteOn", evt);
-			}
-	
+			}	
 		}
 		else
 			
@@ -3680,7 +3754,11 @@ function scheduleSongNote() {
 				delete tempVariation[channel + "-" + event.noteNumber];
 				
 				if (output) {		
-					output.stopNote(note, channel + 1, {velocity: event.velocity / 127});	
+					outputStopNote(note, channel + 1, {velocity: event.velocity / 127});
+
+					if (midiSynth && instrumentNode) {
+						instrumentNode.parentNode.parentNode.parentNode.parentNode.querySelector("tbody > tr:nth-child(" + (parseInt(channel) + 1) + ") > td:nth-child(" + (4 + parseInt(note) + 1) + ")").classList.remove("note-on");
+					}					
 				}
 				else
 					
@@ -3890,6 +3968,26 @@ function eventStatus(event, id) {
 		}
 */		
 	}
+}
+
+function outputSendProgramChange(program, channel) {
+	output.sendProgramChange(program, channel);	
+}
+
+function outputSendControlChange(cc, value, channel) {
+	output.sendControlChange(cc, value, channel);	
+}
+
+function outputSendChannelMode(cc, value, channel) {
+	output.sendChannelMode(cc, value, channel);	
+}
+
+function outputPlayNote(chord, channel, options) {
+	output.playNote(chord, channel, options);	
+}
+
+function outputStopNote(chord, channel, options) {
+	output.stopNote(chord, channel, options)	
 }
 
 function getCasmChannel(style, source) {
