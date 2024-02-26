@@ -3485,8 +3485,8 @@ function doStartStopSequencer() {
 
 function resetCanvas (e) {
     // resize the canvas - but remember - this clears the canvas too.
-    tempoCanvas.width = 800;
-    tempoCanvas.height = 100;
+    tempoCanvas.width = 1100;
+    tempoCanvas.height = 50;
 
     //make sure we scroll to the top left.
     window.scrollTo(0,0); 
@@ -3509,7 +3509,7 @@ function draw() {
             for (var i=0; i<16; i++) {
                 canvasContext.fillStyle = ( currentNote == i ) ? 
                     ((currentNote%4 === 0)?"red":"blue") : "black";
-                canvasContext.fillRect( x * (i+1), x, x/2, x/2 );
+                canvasContext.fillRect( x * (i), 5, x/2, x/2 );
             }
             last16thNoteDrawn = currentNote;
         }
