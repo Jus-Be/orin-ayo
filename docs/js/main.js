@@ -814,13 +814,13 @@ function handleNoteOn(note, device, velocity, channel) {
 				}
 				else				
 					
-				if (note.number == artiphonI1Base + 5) {
+				if (note.number == artiphonI1Base + 7) {
 					pad.buttons[START] = false;	
 					pad.buttons[STARPOWER] = true;			// next var				
 				}				
 				else
 					
-				if (note.number == artiphonI1Base + 7) {
+				if (note.number == artiphonI1Base + 5) {
 					pad.buttons[START] = true;				// prev var
 					pad.buttons[STARPOWER] = false;						
 				}

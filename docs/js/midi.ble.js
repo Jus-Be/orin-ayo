@@ -188,7 +188,7 @@ function translateChordaToI1(callback, flag, trigger, velocity, channel) {
 
 	  if (flag) {
 		  if ((trigger == 64 && !triad[52]) || (trigger == 65 && triad[50]) || (trigger == 67 && triad[52]) || (trigger == 69 && triad[53]) || (trigger == 71 && triad[55]) || (trigger == 74 && triad[59])) {
-			  callback({number: 41}, "INSTRUMENT1", velocity)	// next style/strum down	  
+			  callback({number: 43}, "INSTRUMENT1", velocity)	// next style/strum down	  
 		  }
 		  else 
 			  
@@ -198,11 +198,11 @@ function translateChordaToI1(callback, flag, trigger, velocity, channel) {
 		  else 
 			  
 		  if (trigger == 60 || (trigger == 62 && triad[50]) || (trigger == 64 && triad[52]) || (trigger == 65 && triad[53]) || (trigger == 67 && triad[55])) {
-			  callback({number: 43}, "INSTRUMENT1", velocity)	// FILL			  	  
+			  callback({number: 41}, "INSTRUMENT1", velocity)	// FILL			  	  
 		  }
 	  } else {
 		  if (trigger == 64 || (trigger == 65) || (trigger == 67) || (trigger == 69) || (trigger == 71) || (trigger == 74)) {
-			  callback({number: 41}, "INSTRUMENT1", velocity)				  
+			  callback({number: 43}, "INSTRUMENT1", velocity)				  
 		  }
 		  else 
 			  
@@ -212,7 +212,7 @@ function translateChordaToI1(callback, flag, trigger, velocity, channel) {
 		  else 
 			  
 		  if (trigger == 60 || (trigger == 62) || (trigger == 64) || (trigger == 65) || (trigger == 67)) {
-			  callback({number: 43}, "INSTRUMENT1", velocity)				  	  
+			  callback({number: 41}, "INSTRUMENT1", velocity)				  	  
 		  }			  
 	  }
   } 	
