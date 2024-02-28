@@ -3455,8 +3455,12 @@ function doStartStopSequencer() {
 			doSffSInt();	
 		}
 		
-		currentSffVar = "Intro A";		
+		currentSffVar = "Intro A";	
+		if (pad.buttons[BLUE]) currentSffVar = "Intro B";	
+		if (pad.buttons[ORANGE]) currentSffVar = "Intro C";
+		
 		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main A";
+		orinayo_section.innerHTML = currentSffVar;			
 		
 		arrangerBeat = 0;
         current16thNote = 0;
@@ -3602,6 +3606,8 @@ function nextSongNote() {
 			if ("Fill In DD" == currentSffVar) currentSffVar = "Main D";			
 			if ("Fill In BA" == currentSffVar) currentSffVar = "Main A";
 			
+			orinayo_section.innerHTML = currentSffVar;				
+			
 			console.debug("nextSongNote new", currentSffVar);
 
 			if (currentSffVar.startsWith("Ending")) {
@@ -3638,7 +3644,9 @@ function nextSongNote() {
 
 			if (requestArrEnd) {
 				currentSffVar = "Ending A";
-				if (!arrSequence.data["Ending A"]) currentSffVar = "Ending B";
+				if (pad.buttons[BLUE]) currentSffVar = "Ending B";	
+				if (pad.buttons[ORANGE]) currentSffVar = "Ending C";
+
 				orinayo_section.innerHTML = currentSffVar;					
 			}				
 			
@@ -3712,17 +3720,7 @@ function scheduleSongNote() {
 				
 		// TODO implement CASM
 		const channel = getCasmChannel(currentSffVar, event.channel); 
-		//console.debug("scheduleSongNote", channel, event, currentPlayNote);
-		
-		/*if ((channel < 8) || event.noteNumber > 84) {
-			currentPlayNote++;	
-			
-			if (currentPlayNote >= arrSequence.data[currentSffVar].length) {			
-				currentPlayNote = 0;
-			}			
-			return;
-		}*/
-		
+
 		const instrumentNode = document.getElementById("arr-instrument-" + channel);				
 		if (!instrumentNode?.checked) return;
 			
@@ -3742,7 +3740,6 @@ function scheduleSongNote() {
 				const eventTypeByte = 0x90 | channel;
 				const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity}
 				arrSynth.onmessage(evt);
-				//console.debug("noteOn", evt);
 			}	
 		}
 		else
@@ -3765,8 +3762,7 @@ function scheduleSongNote() {
 				if (arrSynth) {
 					const eventTypeByte = 0x80 | channel;
 					const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity}
-					arrSynth.onmessage(evt);	
-					//console.debug("noteOff", evt);					
+					arrSynth.onmessage(evt);						
 				}
 			}				
 		}
