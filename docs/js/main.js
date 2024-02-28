@@ -26,6 +26,7 @@ var bluetoothDevice = null;
 var midiSynth = null;
 var arrSynth = null;
 var requestArrEnd = false;
+var requestedEnd = "Ending A"
 var tempVariation = {};
 var currentSffVar = "Intro A";
 var loadFile = null;
@@ -3471,6 +3472,9 @@ function doStartStopSequencer() {
         timerWorker.postMessage("start");	
 	} else {		
 		requestArrEnd = true;
+		requestedEnd = "Ending A";	
+		if (pad.buttons[BLUE]) requestedEnd = "Ending B";	
+		if (pad.buttons[ORANGE]) requestedEnd = "Ending C";		
 		
 		if (songSequence) {
 			timerWorker.postMessage("stop");	
@@ -3643,10 +3647,7 @@ function nextSongNote() {
 			}	
 
 			if (requestArrEnd) {
-				currentSffVar = "Ending A";
-				if (pad.buttons[BLUE]) currentSffVar = "Ending B";	
-				if (pad.buttons[ORANGE]) currentSffVar = "Ending C";
-
+				currentSffVar = requestedEnd;
 				orinayo_section.innerHTML = currentSffVar;					
 			}				
 			
@@ -3990,7 +3991,7 @@ function getCasmChannel(style, source) {
 	let found = null;
 	let destination = source;
 	
-	for (casm of arrSequence.casm) 
+	if (arrSequence.casm) for (casm of arrSequence.casm) 
 	{
 		if (casm.styles.indexOf(style) > -1) {
 			found = casm;
