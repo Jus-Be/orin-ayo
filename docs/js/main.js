@@ -1975,19 +1975,19 @@ function setSffVar(changed) {
 	
 	if (sectionChange == 0) {
 		currentSffVar = "Main A";		
-		if (autoFill && changed) currentSffVar = "Fill In AA";
+		if ((autoFill && changed) || !changed) currentSffVar = "Fill In AA";
 	}
 	if (sectionChange == 1) {
 		currentSffVar = "Main B";			
-		if (autoFill && changed) currentSffVar = "Fill In BB";	
+		if ((autoFill && changed) || !changed) currentSffVar = "Fill In BB";	
 	}
 	if (sectionChange == 2) {		
 		currentSffVar = "Main C";
-		if (autoFill && changed) currentSffVar = "Fill In CC";		
+		if ((autoFill && changed) || !changed) currentSffVar = "Fill In CC";		
 	}		
 	if (sectionChange == 3) {
 		currentSffVar = "Main D";	
-		if (autoFill && changed) currentSffVar = "Fill In DD";		
+		if ((autoFill && changed) || !changed) currentSffVar = "Fill In DD";		
 	}
 	
 	orinayo_section.innerHTML = currentSffVar;		
