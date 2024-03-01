@@ -1971,21 +1971,23 @@ function doQY100Fill() {
 }
 
 function setSffVar(changed) {
+	const autoFill = document.querySelector("#autoFill").checked;
+	
 	if (sectionChange == 0) {
-		currentSffVar = "Fill In AA";
-		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main A";
+		currentSffVar = "Main A";		
+		if (autoFill && changed) currentSffVar = "Fill In AA";
 	}
 	if (sectionChange == 1) {
-		currentSffVar = "Fill In BB";
-		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main B";		
+		currentSffVar = "Main B";			
+		if (autoFill && changed) currentSffVar = "Fill In BB";	
 	}
 	if (sectionChange == 2) {		
-		currentSffVar = "Fill In CC";
-		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main C";		
+		currentSffVar = "Main C";
+		if (autoFill && changed) currentSffVar = "Fill In CC";		
 	}		
 	if (sectionChange == 3) {
-		currentSffVar = "Fill In DD";
-		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main D";		
+		currentSffVar = "Main D";	
+		if (autoFill && changed) currentSffVar = "Fill In DD";		
 	}
 	
 	orinayo_section.innerHTML = currentSffVar;		
@@ -2722,7 +2724,7 @@ function playSectionCheck() {
 function changeArrSection(changed) {
 	
 	if (arranger == "sff") {
-		doSffFill(false);		
+		doSffFill(changed);		
 		console.debug("changeArrSection SFF " + sectionChange);	
 	} 	
 	else 	
@@ -3346,6 +3348,7 @@ function enableSequencer(flag) {
 	console.debug("enableSequencer", flag);
 	
 	document.querySelector("#sequencer").style.display = flag ? "" : "none";
+	document.querySelector("#sequencer2").style.display = flag ? "" : "none";	
 	document.querySelector("#tempoCanvas").style.display = flag ? "" : "none";
 
 	if (!canvasContext && flag) {
@@ -3901,6 +3904,7 @@ function setupSongSequence() {
     dokeyChange();
 
 	document.querySelector("#sequencer").style.display = flag ? "" : "none";
+	document.querySelector("#sequencer2").style.display = flag ? "" : "none";
 	document.querySelector("#tempoCanvas").style.display = flag ? "" : "none";
 
 	if (!canvasContext && flag) {
