@@ -425,9 +425,9 @@ function handleFileContent(event) {
 		var reader = new FileReader();
 
 		reader.onload = function(event)	{
-			if (file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs")) {
+			if (file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs") || file.name.toLowerCase().endsWith(".ac7")) {
 				handleStyleFile(file, event.target.result);
-			}
+			}			
 			else
 				
 			if (file.name.toLowerCase().endsWith(".sf2")) {
@@ -1139,6 +1139,18 @@ function normaliseStyle() {
 		arrSequence.data["Fill In DD"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In BB"]));		
 	}	
 	
+	if (!arrSequence.data["Fill In BB"]) {
+		arrSequence.data["Fill In BB"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
+	}		
+
+	if (!arrSequence.data["Fill In DD"]) {
+		arrSequence.data["Fill In DD"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In BB"]));		
+	}
+
+	if (!arrSequence.data["Fill In CC"]) {
+		arrSequence.data["Fill In CC"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
+	}	
+			
 	const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
 	setTempo(bpm);	
 	
@@ -1215,7 +1227,7 @@ async function setupUI(config,err) {
 			}
 			else
 				
-			if (db.name.toLowerCase().endsWith(".kst") || db.name.toLowerCase().endsWith(".sty") || db.name.toLowerCase().endsWith(".prs")  || db.name.toLowerCase().endsWith(".bcs")) {
+			if (db.name.toLowerCase().endsWith(".kst") || db.name.toLowerCase().endsWith(".sty") || db.name.toLowerCase().endsWith(".prs")  || db.name.toLowerCase().endsWith(".bcs") || db.name.toLowerCase().endsWith(".ac7")) {
 				iStyle++;
 				styleSelected = config.arrName == db.name;
 				arrangerStyle.options[iStyle] = new Option(db.name, db.name, styleSelected, styleSelected);				
@@ -1595,7 +1607,7 @@ function getArrSequence(arrName, callback) {
 	idbKeyval.get(arrName, store).then(function (data) 
 	{
 		if (data) {
-			console.debug("sff get", arrName, data);
+			console.debug("getArrSequence", arrName, data);
 			arrSequence = parseMidi(data, arrName);
 			normaliseStyle();	
 			arrSequence.name = arrName;	
@@ -1603,7 +1615,7 @@ function getArrSequence(arrName, callback) {
 			if (callback) callback();				
 		}			
 	}).catch(function (err) {
-		console.error('sff get failed!', err)
+		console.error('getArrSequence failed!', err)
 	});	
 }
 
@@ -1975,6 +1987,8 @@ function setSffVar(changed) {
 		currentSffVar = "Fill In DD";
 		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main D";		
 	}
+	
+	orinayo_section.innerHTML = currentSffVar;		
 }
 
 function doSffSInt() {
@@ -3598,7 +3612,7 @@ function nextSongNote() {
 			currentPlayNote = 0;
 			// TODO HACK
 			// KST files need padding at end of loop
-			if (arrSequence.name.toLowerCase().endsWith(".kst")) offset = tempo / 8;
+			if (arrSequence.name.toLowerCase().endsWith(".kst")) offset = arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000;;
 
 			if ("Intro A" == currentSffVar) currentSffVar = "Main A";
 			if ("Intro B" == currentSffVar) currentSffVar = "Main B";			

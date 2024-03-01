@@ -3,29 +3,58 @@
 function parseMidi(data, arrName) {
   var p = new Parser(data)
   var headerChunk = p.readChunk();
-  var trackChunk = p.readChunk()
-  var casmChunk = p.readChunk()
-	
-  if (headerChunk.id != 'MThd')
-    throw "Bad MIDI file.  Expected 'MHdr', got: '" + headerChunk.id + "'"
-	
-  if (trackChunk.id != 'MTrk')
-    throw "Bad MIDI file.  Expected 'MTrk', got: '" + trackChunk.id + "'"
-
-  var casm = [];
   
-  if (!arrName.toLowerCase().endsWith(".kst")) {
-	  if (casmChunk.id != 'CASM')
-		throw "Bad MIDI file.  Expected 'CASM', got: '" + casmChunk.id + "'"
+  if (headerChunk.id == 'MThd') {  
+	  var trackChunk = p.readChunk()
+	  var casmChunk = p.readChunk()
+		
+	  if (trackChunk.id != 'MTrk')
+		throw "Bad MIDI file.  Expected 'MTrk', got: '" + trackChunk.id + "'"
 
-	  //console.debug("parseCasm casm", casmChunk.id, casmChunk.length); 
-	  casm = parseCasm(casmChunk.data);
-  }
+	  var casm = [];
 	  
-  return {
-    header: parseHeader(headerChunk.data),
-    data: parseData(trackChunk.data, arrName),
-	casm: casm
+	  if (!arrName.toLowerCase().endsWith(".kst")) {
+		  if (casmChunk.id != 'CASM')
+			throw "Bad MIDI file.  Expected 'CASM', got: '" + casmChunk.id + "'"
+
+		  //console.debug("parseCasm casm", casmChunk.id, casmChunk.length); 
+		  casm = parseCasm(casmChunk.data);
+	  }
+		  
+	  return {
+		header: parseHeader(headerChunk.data),
+		data: parseData(trackChunk.data, arrName),
+		casm: casm
+	  }
+  }
+  else
+	  
+  if (headerChunk.id == 'AC07') { 
+	  var ac7 = new Parser(data)
+	  var id = ac7.readString(4)
+	  var length = ac7.readUInt32LE() 
+	  var elementsOffset = ac7.readUInt32LE();
+	  var mixrOffset = ac7.readUInt32LE();
+	  var drumOffset = ac7.readUInt32LE();
+	  var otherOffset = ac7.readUInt32LE();	  
+	  var endMarker = ac7.readUInt32LE();	
+	  
+	  var eleMarker = ac7.readUInt32LE();
+	  var eleSize = ac7.readUInt16LE();
+	  var eleCount = ac7.readUInt8();
+	  
+	  console.debug("parseMidi ac7", id, eleMarker, eleSize, eleCount);
+	  
+	  return {
+		header: {},
+		elements: {},
+		mixr: {},
+		drum: {},
+		other: {}		
+	  }
+  } 
+  else {
+	throw "Bad style file.  Expected 'MHdr or AC07', got: '" + headerChunk.id + "'"	  
   }
 }
 
@@ -398,6 +427,13 @@ Parser.prototype.readUInt16 = function() {
     return (b0 << 8) + b1
 }
 
+Parser.prototype.readUInt16LE = function() {
+  var b0 = this.readUInt8(),
+      b1 = this.readUInt8()
+
+    return (b1 << 8) + b0
+}
+
 Parser.prototype.readInt16 = function() {
   var u = this.readUInt16()
   if (u & 0x8000)
@@ -429,6 +465,15 @@ Parser.prototype.readUInt32 = function() {
       b3 = this.readUInt8()
 
     return (b0 << 24) + (b1 << 16) + (b2 << 8) + b3
+}
+
+Parser.prototype.readUInt32LE = function() {
+  var b0 = this.readUInt8(),
+      b1 = this.readUInt8(),
+      b2 = this.readUInt8(),
+      b3 = this.readUInt8()
+
+    return (b3 << 24) + (b2 << 16) + (b1 << 8) + b0
 }
 
 Parser.prototype.readBytes = function(len) {
