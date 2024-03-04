@@ -30,32 +30,146 @@ function parseMidi(data, arrName) {
   else
 	  
   if (headerChunk.id == 'AC07') { 
-	  var ac7 = new Parser(data)
-	  var id = ac7.readString(4)
-	  var length = ac7.readUInt32LE() 
-	  var elementsOffset = ac7.readUInt32LE();
-	  var mixrOffset = ac7.readUInt32LE();
-	  var drumOffset = ac7.readUInt32LE();
-	  var otherOffset = ac7.readUInt32LE();	  
-	  var endMarker = ac7.readUInt32LE();	
-	  
-	  var eleMarker = ac7.readUInt32LE();
-	  var eleSize = ac7.readUInt16LE();
-	  var eleCount = ac7.readUInt8();
-	  
-	  console.debug("parseMidi ac7", id, eleMarker, eleSize, eleCount);
-	  
-	  return {
-		header: {},
-		elements: {},
-		mixr: {},
-		drum: {},
-		other: {}		
-	  }
+	  return parseAc7(data);
   } 
   else {
 	throw "Bad style file.  Expected 'MHdr or AC07', got: '" + headerChunk.id + "'"	  
   }
+}
+
+function parseAc7(data) {
+  var ac7 = new Parser(data)
+  var id = ac7.readString(4)
+  var length = ac7.readUInt32LE() 
+  var elementsOffset = ac7.readUInt32LE();
+  var mixrOffset = ac7.readUInt32LE();
+  var drumOffset = ac7.readUInt32LE();
+  var otherOffset = ac7.readUInt32LE();	  
+  var endMarker = ac7.readUInt32LE();	
+  
+  var eleMarker = ac7.readUInt32LE();
+  var eleSize = ac7.readUInt16LE();
+  var eleCount = ac7.readUInt8();
+  var eleDefn = [];
+  
+  for (let i=0; i<eleCount; i++) {
+	  eleDefn[i] = ac7.readUInt32LE();
+  }
+  
+  var rhythmName = ac7.readAtom(); 
+  var timeSignature = ac7.readAtom(); 
+  var tempo = ac7.readAtom(); 
+  var volume = ac7.readAtom();   
+  
+  console.debug("parseMidi ac7 header", id, eleCount, rhythmName, tempo, volume);
+  var style = [];
+  
+  for (let i=0; i<eleCount; i++) {
+	  ac7.pos = elementsOffset + eleDefn[i];
+      var eleId = ac7.readString(4);
+	  var eleLen = ac7.readUInt16LE();
+	  
+	  style[i] = {};	  
+      style[i].elemTimeSignature = ac7.readAtom(); 	
+      style[i].elemNoOfMeasures = ac7.readAtom(); 
+      style[i].elemNoOfTracks = ac7.readAtom(); 
+	  
+      style[i].trackIndex = new Uint16Array(ac7.readAtom()); 	  
+      style[i].mixerIndex = new Uint16Array(ac7.readAtom()); 
+	  style[i].partIndicator = new Uint8Array(ac7.readAtom()); 
+	  	  
+	  for (let j=0; j<style[i].elemNoOfTracks; j++) {
+		  //console.debug("parseMidi ac7 element part/track", i, j, style[i].partIndicator[j], style[i].mixerIndex[j] - 0x8000, style[i].trackIndex[j] - 0x8000);
+	  }
+  }
+  
+  console.debug("parseMidi ac7 element segment", style);  
+
+  var mixer = [];  	
+  ac7.pos = mixrOffset;
+  var mixrId = ac7.readString(4);
+  var mixrLen = ac7.readUInt32LE();  
+  var mixrEntries = ac7.readUInt16LE(); 
+
+  var mixrDefn = [];
+  
+  for (let i=0; i<mixrEntries; i++) {
+	  mixrDefn[i] = ac7.readUInt32LE();
+  }  
+  
+  for (let i=0; i<mixrEntries; i++) {
+	  ac7.pos = mixrDefn[i];
+	  mixer[i] = {};
+	  mixer[i].patch = ac7.readUInt8();
+	  mixer[i].bank = ac7.readUInt8();
+	  mixer[i].volume = ac7.readUInt8();
+	  mixer[i].pan = ac7.readUInt8();
+	  mixer[i].reverb = ac7.readUInt8();
+	  mixer[i].chorus = ac7.readUInt8();	  
+  }   
+
+  console.debug("parseMidi ac7 element mixer segment", mixrId, mixrEntries, mixer);  
+
+  var drum = [];  	
+  ac7.pos = drumOffset;
+  var drumId = ac7.readString(4);
+  var drumLen = ac7.readUInt32LE();  
+  var drumEntries = ac7.readUInt16LE(); 
+
+  var drumDefn = [];
+  
+  for (let i=0; i<drumEntries; i++) {
+	  drumDefn[i] = ac7.readUInt32LE();
+  }  
+  
+  for (let i=0; i<drumEntries; i++) {
+	  ac7.pos = drumDefn[i];
+	  drum[i] = {events: []};
+	  
+	  var event = ac7.readEvent();
+	  
+	  while (event.type != 252) {
+		  drum[i].events.push(event);
+		  event = ac7.readEvent();		  
+	  }
+  }   
+
+  console.debug("parseMidi ac7 element drum segment", drumId, drum);   
+  
+  var other = [];  	
+  ac7.pos = otherOffset;
+  var otherId = ac7.readString(4);
+  var otherLen = ac7.readUInt32LE();  
+  var otherEntries = ac7.readUInt16LE(); 
+
+  var otherDefn = [];
+  
+  for (let i=0; i<otherEntries; i++) {
+	  otherDefn[i] = ac7.readUInt32LE();
+  }  
+  
+  for (let i=0; i<otherEntries; i++) {
+	  ac7.pos = otherDefn[i];
+	  
+	  var starter = ac7.readBytes(3); 
+	  other[i] = {events: [], starter};
+	  
+	  var event = ac7.readEvent();
+	  
+	  while (event.type != 252) {
+		  other[i].events.push(event);
+		  event = ac7.readEvent();		  
+	  }
+  }   
+
+  console.debug("parseMidi ac7 element other segment", otherId, other);   
+  
+  
+  return {
+	header: {format: 0, numTracks: 1, ticksPerBeat: 96},
+	data: [],
+	casm: []		
+  }	
 }
 
 function parseCasm(data) {
@@ -514,4 +628,26 @@ Parser.prototype.readChunk = function() {
     length: length,
     data: data
   }
+}
+
+Parser.prototype.readAtom = function() {
+	var type = this.readUInt8();
+	var length = this.readUInt8();
+
+	if (type == 0) return this.readString(length);
+	if (type == 1) return this.readUInt8();  
+	if (type == 2) return this.readUInt8(); 
+	if (type == 6) return this.readUInt8(); 	
+	if (type == 7) return this.readUInt8(); 	
+	if (type == 9) return this.readUInt8(); 
+	if (type == 32) return this.readBytes(length); 	
+	if (type == 33) return this.readBytes(length); 
+	if (type == 34) return this.readBytes(length); 
+}
+
+Parser.prototype.readEvent = function() {
+	var delta = this.readUInt8();
+	var type = this.readUInt8();
+	var value = this.readUInt8();
+	return {delta, type, value};
 }

@@ -1124,52 +1124,55 @@ function letsGo() {
 }
 
 function normaliseStyle() {
-	if (!arrSequence.data["Main B"]) {
-		arrSequence.data["Main B"] = JSON.parse(JSON.stringify(arrSequence.data["Main A"]));
-		arrSequence.data["Fill In BB"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
-	}
-	
-	if (!arrSequence.data["Main C"]) {
-		arrSequence.data["Main C"] = JSON.parse(JSON.stringify(arrSequence.data["Main A"]));
-		arrSequence.data["Fill In CC"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
-	}	
-	
-	if (!arrSequence.data["Main D"]) {
-		arrSequence.data["Main D"] = JSON.parse(JSON.stringify(arrSequence.data["Main B"]));
-		arrSequence.data["Fill In DD"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In BB"]));		
-	}	
-	
-	if (!arrSequence.data["Fill In BB"]) {
-		arrSequence.data["Fill In BB"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
-	}		
-
-	if (!arrSequence.data["Fill In DD"]) {
-		arrSequence.data["Fill In DD"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In BB"]));		
-	}
-
-	if (!arrSequence.data["Fill In CC"]) {
-		arrSequence.data["Fill In CC"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
-	}	
-			
-	const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
-	setTempo(bpm);	
-	
-	const initHdr = arrSequence.data["SFF1"] || arrSequence.data["SFF2"];
-	
-	if (initHdr && output) 
+	if (arrSequence.data["Main A"] && arrSequence.data["Fill In AA"]) 
 	{
-		for (let event of initHdr) 
-		{			
-			if (event.type == "sysEx") {
-				const params = new Uint8Array(event.data);
-				const manufacturer = params[0];
-				const ops = [];
-				for (let i=1; i<params.length - 1; i++) ops.push(params[i]);
-				
-				console.debug("SFF sysEx", manufacturer, ops)	
-				output.sendSysex(manufacturer, ops);				
-			}				
+		if (!arrSequence.data["Main B"]) {
+			arrSequence.data["Main B"] = JSON.parse(JSON.stringify(arrSequence.data["Main A"]));
+			arrSequence.data["Fill In BB"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
 		}
+		
+		if (!arrSequence.data["Main C"]) {
+			arrSequence.data["Main C"] = JSON.parse(JSON.stringify(arrSequence.data["Main A"]));
+			arrSequence.data["Fill In CC"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
+		}	
+		
+		if (!arrSequence.data["Main D"]) {
+			arrSequence.data["Main D"] = JSON.parse(JSON.stringify(arrSequence.data["Main B"]));
+			arrSequence.data["Fill In DD"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In BB"]));		
+		}	
+		
+		if (!arrSequence.data["Fill In BB"]) {
+			arrSequence.data["Fill In BB"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
+		}		
+
+		if (!arrSequence.data["Fill In DD"]) {
+			arrSequence.data["Fill In DD"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In BB"]));		
+		}
+
+		if (!arrSequence.data["Fill In CC"]) {
+			arrSequence.data["Fill In CC"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
+		}	
+				
+		const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
+		setTempo(bpm);	
+		
+		const initHdr = arrSequence.data["SFF1"] || arrSequence.data["SFF2"];
+		
+		if (initHdr && output) 
+		{
+			for (let event of initHdr) 
+			{			
+				if (event.type == "sysEx") {
+					const params = new Uint8Array(event.data);
+					const manufacturer = params[0];
+					const ops = [];
+					for (let i=1; i<params.length - 1; i++) ops.push(params[i]);
+					
+					console.debug("SFF sysEx", manufacturer, ops)	
+					output.sendSysex(manufacturer, ops);				
+				}				
+			}
+		}	
 	}		
 }
 
@@ -2823,7 +2826,7 @@ function doChord() {
 
   if (pad.buttons[START] || pad.buttons[STARPOWER])
   {
-	if (pad.buttons[START]) {
+	if (pad.buttons[START]) {	// start + button activates pad mode
 		padsMode = 0;
 		
 		if (pad.buttons[GREEN]) padsMode = 1;	// full chord up/down
@@ -3486,7 +3489,7 @@ function doStartStopSequencer() {
         nextNoteTime = audioContext.currentTime;
 		nextBeatTime = nextNoteTime;
 		playStartTime = nextNoteTime;		
-        timerWorker.postMessage("start");	
+        if (timerWorker) timerWorker.postMessage("start");	
 	} else {		
 		requestArrEnd = true;
 		requestedEnd = "Ending A";	
@@ -3494,7 +3497,7 @@ function doStartStopSequencer() {
 		if (pad.buttons[ORANGE]) requestedEnd = "Ending C";		
 		
 		if (songSequence) {
-			timerWorker.postMessage("stop");	
+			if (timerWorker) timerWorker.postMessage("stop");	
 			notesInQueue = []; 	
 		} 
 		else 
@@ -3891,7 +3894,7 @@ function setupSongSequence() {
 	} 
 	else
 		
-	if (arrSequence) {
+	if (arrSequence.data.Hdr) {
 		const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
 		setTempo(bpm);
 
