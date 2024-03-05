@@ -1126,30 +1126,30 @@ function letsGo() {
 function normaliseStyle() {
 	if (arrSequence.data["Main A"] && arrSequence.data["Fill In AA"]) 
 	{
-		if (!arrSequence.data["Main B"]) {
+		if (!arrSequence.data["Main B"] || arrSequence.data["Main B"].length == 0) {
 			arrSequence.data["Main B"] = JSON.parse(JSON.stringify(arrSequence.data["Main A"]));
 			arrSequence.data["Fill In BB"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
 		}
 		
-		if (!arrSequence.data["Main C"]) {
+		if (!arrSequence.data["Main C"] || arrSequence.data["Main C"].length == 0) {
 			arrSequence.data["Main C"] = JSON.parse(JSON.stringify(arrSequence.data["Main A"]));
 			arrSequence.data["Fill In CC"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
 		}	
 		
-		if (!arrSequence.data["Main D"]) {
+		if (!arrSequence.data["Main D"] || arrSequence.data["Main D"].length == 0) {
 			arrSequence.data["Main D"] = JSON.parse(JSON.stringify(arrSequence.data["Main B"]));
 			arrSequence.data["Fill In DD"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In BB"]));		
 		}	
 		
-		if (!arrSequence.data["Fill In BB"]) {
+		if (!arrSequence.data["Fill In BB"] || arrSequence.data["Fill In BB"].length == 0) {
 			arrSequence.data["Fill In BB"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
 		}		
 
-		if (!arrSequence.data["Fill In DD"]) {
+		if (!arrSequence.data["Fill In DD"] || arrSequence.data["Fill In DD"].length == 0) {
 			arrSequence.data["Fill In DD"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In BB"]));		
 		}
 
-		if (!arrSequence.data["Fill In CC"]) {
+		if (!arrSequence.data["Fill In CC"] || arrSequence.data["Fill In CC"].length == 0) {
 			arrSequence.data["Fill In CC"] = JSON.parse(JSON.stringify(arrSequence.data["Fill In AA"]));		
 		}	
 				
@@ -3480,7 +3480,7 @@ function doStartStopSequencer() {
 		if (pad.buttons[BLUE]) currentSffVar = "Intro B";	
 		if (pad.buttons[ORANGE]) currentSffVar = "Intro C";
 		
-		if (!arrSequence.data[currentSffVar]) currentSffVar = "Main A";
+		if (!arrSequence.data[currentSffVar] || arrSequence.data[currentSffVar].length == 0) currentSffVar = "Main A";
 		orinayo_section.innerHTML = currentSffVar;			
 		
 		arrangerBeat = 0;
@@ -3738,6 +3738,7 @@ function scheduleSongNote() {
 		
 	if (arrSequence) {
 		let event = arrSequence.data[currentSffVar][currentPlayNote];
+		//console.debug("scheduleSongNote", event);
 				
 		// TODO implement CASM
 		const channel = getCasmChannel(currentSffVar, event.channel); 
@@ -3898,10 +3899,9 @@ function setupSongSequence() {
 		const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
 		setTempo(bpm);
 
-		if (arrSequence.data[currentSffVar]) {
-			console.debug("setupSongSequence", flag, currentSffVar, arrSequence.data[currentSffVar]);
-
-		}		
+		if (arrSequence.data[currentSffVar]?.length) {
+			console.debug("setupSongSequence", flag, currentSffVar, arrSequence.data[currentSffVar]);						
+		}			
 	}
 	
     dokeyChange();

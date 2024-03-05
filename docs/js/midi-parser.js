@@ -52,6 +52,7 @@ function parseAc7(data) {
   var eleCount = ac7.readUInt8();
   var eleDefn = [];
   
+  
   for (let i=0; i<eleCount; i++) {
 	  eleDefn[i] = ac7.readUInt32LE();
   }
@@ -79,6 +80,8 @@ function parseAc7(data) {
 	  style[i].partIndicator = new Uint8Array(ac7.readAtom()); 
 	  	  
 	  for (let j=0; j<style[i].elemNoOfTracks; j++) {
+		  style[i].mixerIndex[j] = style[i].mixerIndex[j] - 0x8000;
+		  style[i].trackIndex[j] = style[i].trackIndex[j] - 0x8000;
 		  //console.debug("parseMidi ac7 element part/track", i, j, style[i].partIndicator[j], style[i].mixerIndex[j] - 0x8000, style[i].trackIndex[j] - 0x8000);
 	  }
   }
@@ -162,12 +165,73 @@ function parseAc7(data) {
 	  }
   }   
 
-  console.debug("parseMidi ac7 element other segment", otherId, other);   
+  console.debug("parseMidi ac7 element other segment", otherId, other);  
+  let styleData = {};  
+	
+  for (let i=0; i<eleCount; i++)  {
+	  let section = "Intro A";
+	  if (i == 1) section = "Main A";
+	  if (i == 2) section = "Main B";
+	  if (i == 3) section = "Fill In AA";
+	  if (i == 4) section = "Fill In BB";
+	  if (i == 5) section = "Ending A";
+	  if (i == 7) section = "Main C";
+	  if (i == 8) section = "Main D";
+	  if (i == 9) section = "Fill In CC";
+	  if (i == 10) section = "Fill In DD";
+
+	  styleData[section] = [];
+	  
+	  for (let j=0; j<style[i].elemNoOfTracks; j++) {
+		  let channel = 8;
+		  if (style[i].partIndicator[j] == 0) channel = 9;
+		  if (style[i].partIndicator[j] == 1) channel = 10;
+		  if (style[i].partIndicator[j] == 2) channel = 11;
+		  if (style[i].partIndicator[j] == 3) channel = 12;
+		  if (style[i].partIndicator[j] == 4) channel = 13;
+		  if (style[i].partIndicator[j] == 5) channel = 14;		  
+		  if (style[i].partIndicator[j] == 6) channel = 15;	
+
+		  let midi = drum[style[i].trackIndex[j]];
+		  if (channel > 9) midi = other[style[i].trackIndex[j]]; 
+		  let ticks = 0;		  
+
+		  for (let k=0; k<midi.events.length; k++) {
+			  ticks = ticks + midi.events[k].delta;
+			  
+			  if (midi.events[k].type < 128) {
+				styleData[section].push({channel, ticks, delta: midi.events[k].delta, type: midi.events[k].type, value: midi.events[k].value});
+			  }
+		  }
+	  }
+	  
+	  styleData[section].sort((a, b) => {
+		  return a.ticks - b.ticks;
+	  });
+	  
+	  let oldTicks = 0;
+	  
+	  for (let j=0; j<styleData[section].length; j++) 
+	  {
+		  styleData[section][j].deltaTime = styleData[section][j].ticks - oldTicks;
+		  oldTicks = styleData[section][j].ticks;
+		  
+		  if (styleData[section][j].type < 128) {
+			  styleData[section][j].noteNumber = styleData[section][j].type;
+			  styleData[section][j].type = styleData[section][j].value == 0 ? "noteOff" : "noteOn";	
+			  styleData[section][j].velocity = styleData[section][j].value;				  
+		  }
+	  }		  
+  }
   
+  styleData["SFF1"] = [];
+  styleData["SInt"] = [];
+  styleData["Hdr"] = {setTempo: {microsecondsPerBeat:  60 / tempo * 1000000}}  
+  console.debug("parseMidi ac7 styleData", styleData);   
   
   return {
 	header: {format: 0, numTracks: 1, ticksPerBeat: 96},
-	data: [],
+	data: styleData,
 	casm: []		
   }	
 }
