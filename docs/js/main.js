@@ -2703,7 +2703,7 @@ function playSectionCheck() {
 		}			
 	}	
 	
-	console.debug("playSectionCheck pressed " + arrChanged, sectionChange);
+	//console.debug("playSectionCheck pressed " + arrChanged, sectionChange);
 	orinayo_section.innerHTML = SECTIONS[sectionChange];		
 			
 	if (drumLoop && realdrumLoop) {
@@ -3475,10 +3475,16 @@ function doStartStopSequencer() {
 			
 			doSffSInt();	
 		}
-		
-		currentSffVar = "Intro A";	
-		if (pad.buttons[BLUE]) currentSffVar = "Intro B";	
-		if (pad.buttons[ORANGE]) currentSffVar = "Intro C";
+
+		const introEnd = document.querySelector("#introEnd").checked;
+
+		if (introEnd) {
+			currentSffVar = "Intro A";	
+			if (pad.buttons[BLUE]) currentSffVar = "Intro B";	
+			if (pad.buttons[ORANGE]) currentSffVar = "Intro C";
+		} else {
+			currentSffVar = "Main A";	
+		}
 		
 		if (!arrSequence.data[currentSffVar] || arrSequence.data[currentSffVar].length == 0) currentSffVar = "Main A";
 		orinayo_section.innerHTML = currentSffVar;			
@@ -3492,7 +3498,8 @@ function doStartStopSequencer() {
         if (timerWorker) timerWorker.postMessage("start");	
 	} else {		
 		requestArrEnd = true;
-		requestedEnd = "Ending A";	
+		requestedEnd = "Ending A";
+		
 		if (pad.buttons[BLUE]) requestedEnd = "Ending B";	
 		if (pad.buttons[ORANGE]) requestedEnd = "Ending C";		
 		
@@ -3618,7 +3625,9 @@ function nextSongNote() {
 			currentPlayNote = 0;
 			// TODO HACK
 			// KST files need padding at end of loop
-			if (arrSequence.name.toLowerCase().endsWith(".kst")) offset = arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000;;
+			if (arrSequence.name.toLowerCase().endsWith(".kst") || arrSequence.name.toLowerCase().endsWith(".ac6")) {
+				offset = arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000;;
+			}
 
 			if ("Intro A" == currentSffVar) currentSffVar = "Main A";
 			if ("Intro B" == currentSffVar) currentSffVar = "Main B";			
@@ -3632,43 +3641,21 @@ function nextSongNote() {
 			
 			orinayo_section.innerHTML = currentSffVar;				
 			
-			console.debug("nextSongNote new", currentSffVar);
+			//console.debug("nextSongNote new", currentSffVar);
 
 			if (currentSffVar.startsWith("Ending")) {
-				requestArrEnd = false;
-				
-				timerWorker.postMessage("stop");	
-				notesInQueue = [];				
-				
-				setTimeout(() => {
-					console.debug("nextSongNote clear notes", currentSffVar);
-					
-					for (let i=0; i<16; i++) 
-					{
-						if (arrSynth) {						
-							const eventTypeByte = 0xB0 | i;
-							
-							const evt1 = {data: "midi," + eventTypeByte + ",120"};
-							arrSynth.onmessage(evt1);
-							
-							const evt2 = {data: "midi," + eventTypeByte + ",121"};	
-						}
-						else
-							
-						if (output) {
-							outputSendChannelMode (120, 0, i + 1);
-							outputSendChannelMode (121, 0, i + 1);							
-						}
-					}
-
-					clearAllSffNotes();		
-				}, 1000);					
-
+				endSffStyle();
 			}	
 
 			if (requestArrEnd) {
-				currentSffVar = requestedEnd;
-				orinayo_section.innerHTML = currentSffVar;					
+				const introEnd = document.querySelector("#introEnd").checked;
+
+				if (introEnd) {					
+					currentSffVar = requestedEnd;
+					orinayo_section.innerHTML = currentSffVar;	
+				} else {
+					endSffStyle();
+				}					
 			}				
 			
 		}
@@ -3678,6 +3665,37 @@ function nextSongNote() {
 			nextNoteTime = nextNoteTime + timestamp;
 		}			
 	}
+}
+
+function endSffStyle() {
+	requestArrEnd = false;
+
+	timerWorker.postMessage("stop");	
+	notesInQueue = [];				
+
+	setTimeout(() => {
+		console.debug("nextSongNote clear notes", currentSffVar);
+		
+		for (let i=0; i<16; i++) 
+		{
+			if (arrSynth) {						
+				const eventTypeByte = 0xB0 | i;
+				
+				const evt1 = {data: "midi," + eventTypeByte + ",120"};
+				arrSynth.onmessage(evt1);
+				
+				const evt2 = {data: "midi," + eventTypeByte + ",121"};	
+			}
+			else
+				
+			if (output) {
+				outputSendChannelMode (120, 0, i + 1);
+				outputSendChannelMode (121, 0, i + 1);							
+			}
+		}
+
+		clearAllSffNotes();		
+	}, 1000);
 }
 
 function scheduleSongNote() {

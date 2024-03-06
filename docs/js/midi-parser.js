@@ -80,6 +80,10 @@ function parseAc7(data) {
 	  style[i].partIndicator = new Uint8Array(ac7.readAtom()); 
 	  	  
 	  for (let j=0; j<style[i].elemNoOfTracks; j++) {
+		  //if (style[i].partIndicator[j] > 0xA0) style[i].partIndicator[j] -= 0xA0;
+		  //if (style[i].partIndicator[j] > 0x80) style[i].partIndicator[j] -= 0x80;
+		  //if (style[i].partIndicator[j] > 0x10) style[i].partIndicator[j] -= 0x10;
+		  
 		  style[i].mixerIndex[j] = style[i].mixerIndex[j] - 0x8000;
 		  style[i].trackIndex[j] = style[i].trackIndex[j] - 0x8000;
 		  //console.debug("parseMidi ac7 element part/track", i, j, style[i].partIndicator[j], style[i].mixerIndex[j] - 0x8000, style[i].trackIndex[j] - 0x8000);
@@ -131,7 +135,7 @@ function parseAc7(data) {
 	  
 	  var event = ac7.readEvent();
 	  
-	  while (event.type != 252) {
+	  while (event.code != 252) {
 		  drum[i].events.push(event);
 		  event = ac7.readEvent();		  
 	  }
@@ -159,16 +163,19 @@ function parseAc7(data) {
 	  
 	  var event = ac7.readEvent();
 	  
-	  while (event.type != 252) {
+	  while (event.code != 252) {
 		  other[i].events.push(event);
 		  event = ac7.readEvent();		  
 	  }
   }   
 
   console.debug("parseMidi ac7 element other segment", otherId, other);  
-  let styleData = {};  
+  let styleData = {}; 
+  styleData["SInt"] = []; 
 	
   for (let i=0; i<eleCount; i++)  {
+	  if (i == 6 || i == 11) continue; // parts 7 & 12 are empty
+	  
 	  let section = "Intro A";
 	  if (i == 1) section = "Main A";
 	  if (i == 2) section = "Main B";
@@ -181,46 +188,68 @@ function parseAc7(data) {
 	  if (i == 10) section = "Fill In DD";
 
 	  styleData[section] = [];
+	  let empty = true;	  
 	  
 	  for (let j=0; j<style[i].elemNoOfTracks; j++) {
-		  let channel = 8;
-		  if (style[i].partIndicator[j] == 0) channel = 9;
-		  if (style[i].partIndicator[j] == 1) channel = 10;
-		  if (style[i].partIndicator[j] == 2) channel = 11;
-		  if (style[i].partIndicator[j] == 3) channel = 12;
-		  if (style[i].partIndicator[j] == 4) channel = 13;
-		  if (style[i].partIndicator[j] == 5) channel = 14;		  
-		  if (style[i].partIndicator[j] == 6) channel = 15;	
-
-		  let midi = drum[style[i].trackIndex[j]];
-		  if (channel > 9) midi = other[style[i].trackIndex[j]]; 
-		  let ticks = 0;		  
-
-		  for (let k=0; k<midi.events.length; k++) {
-			  ticks = ticks + midi.events[k].delta;
+		  let channel = -1;	// only selecting major 0x8n
+		  if (style[i].partIndicator[j] == 0x0f || style[i].partIndicator[j] == 0x85) channel = 8;		  
+		  if (style[i].partIndicator[j] == 0x00 || style[i].partIndicator[j] == 0x80) channel = 9;
+		  if (style[i].partIndicator[j] == 0x01 || style[i].partIndicator[j] == 0x81) channel = 10;
+		  if (style[i].partIndicator[j] == 0x02 || style[i].partIndicator[j] == 0x82) channel = 11;
+		  if (style[i].partIndicator[j] == 0x03 || style[i].partIndicator[j] == 0x83) channel = 12;
+		  if (style[i].partIndicator[j] == 0x04 || style[i].partIndicator[j] == 0x84) channel = 13;
+		  if (style[i].partIndicator[j] == 0x05 || style[i].partIndicator[j] == 0x85) channel = 14;		  
+		  if (style[i].partIndicator[j] == 0x06 || style[i].partIndicator[j] == 0x86) channel = 15;		  
+		  
+		  if (channel > -1) {
+			  let midi = drum[style[i].trackIndex[j]];
+			  if (channel > 9) midi = other[style[i].trackIndex[j]]; 
+			  let ticks = 0;
 			  
-			  if (midi.events[k].type < 128) {
-				styleData[section].push({channel, ticks, delta: midi.events[k].delta, type: midi.events[k].type, value: midi.events[k].value});
+			  if (midi?.events.length > 0) {
+				  let mixr = mixer[style[i].mixerIndex[j]];
+				  
+				  if (mixr) {
+					  styleData[section].push({channel, code: 256, ticks: 0, delta: 0, type: "controller", controllerType: 32, value: mixr.bank});		  
+					  styleData[section].push({channel, code: 256, ticks: 0, delta: 0, type: "programChange", programNumber: mixr.patch});
+					  styleData[section].push({channel, code: 256, ticks: 0, delta: 0, type: "controller", controllerType: 7, value: mixr.volume});
+					  styleData[section].push({channel, code: 256, ticks: 0, delta: 0, type: "controller", controllerType: 10, value: mixr.pan});			  
+				  }
+
+				  for (let k=0; k<midi.events.length; k++) {
+					  ticks = ticks + midi.events[k].delta;
+					  
+					  if (midi.events[k].code < 128) {
+						  empty = false;
+						styleData[section].push({channel, ticks, delta: midi.events[k].delta, code: midi.events[k].code, value: midi.events[k].value});
+					  }
+				  }
 			  }
 		  }
 	  }
 	  
-	  styleData[section].sort((a, b) => {
-		  return a.ticks - b.ticks;
-	  });
-	  
-	  let oldTicks = 0;
-	  
-	  for (let j=0; j<styleData[section].length; j++) 
-	  {
-		  styleData[section][j].deltaTime = styleData[section][j].ticks - oldTicks;
-		  oldTicks = styleData[section][j].ticks;
+	  if (empty) {
+		  styleData[section] = [];
 		  
-		  if (styleData[section][j].type < 128) {
-			  styleData[section][j].noteNumber = styleData[section][j].type;
-			  styleData[section][j].type = styleData[section][j].value == 0 ? "noteOff" : "noteOn";	
-			  styleData[section][j].velocity = styleData[section][j].value;				  
-		  }
+	  } else {
+	  
+		  styleData[section].sort((a, b) => {
+			  return a.ticks - b.ticks;
+		  });
+		  
+		  let oldTicks = 0;
+		  
+		  for (let j=0; j<styleData[section].length; j++) 
+		  {
+			  styleData[section][j].deltaTime = styleData[section][j].ticks - oldTicks;
+			  oldTicks = styleData[section][j].ticks;
+			  
+			  if (styleData[section][j].code < 128) {
+				  styleData[section][j].noteNumber = styleData[section][j].code;
+				  styleData[section][j].type = styleData[section][j].value == 0 ? "noteOff" : "noteOn";	
+				  styleData[section][j].velocity = styleData[section][j].value;				  
+			  }
+		  }	
 	  }		  
   }
   
@@ -711,7 +740,7 @@ Parser.prototype.readAtom = function() {
 
 Parser.prototype.readEvent = function() {
 	var delta = this.readUInt8();
-	var type = this.readUInt8();
+	var code = this.readUInt8();
 	var value = this.readUInt8();
-	return {delta, type, value};
+	return {delta, code, value};
 }

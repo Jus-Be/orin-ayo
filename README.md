@@ -121,7 +121,7 @@ Orange | Ketron FS-7  | Ketron FS-6
 
 It recognises other non-keyboard USB MIDI controllers (like Artiphon Instrument 1 or Chorda) and enables them to be used as an arranger controller as well. Note that only the first five pads are used like a guitar controller. The strum bridge pads are used to provide control (strum, start/stop, fill, next/prev section).
 
-It has an internal arranger engine implemented in JavaScript that can play Yamaha SFFx or Ketron KST files. 
+It has an internal arranger engine implemented in JavaScript that can play Yamaha SFFx, Casio AC7 or Ketron KST files. 
 
 It has an internal synth engine (based on [https://github.com/gree/sf2synth.js/](sf2synth.js)) that can play the styles using sound font (sf2) files with WebAudio.
 
