@@ -1603,7 +1603,7 @@ async function setupUI(config,err) {
 	enableSequencer(!!forward && realGuitarStyle != "none");
 	
 	if (config.arrName) {		
-		getArrSequence(config.arrName, setupSongSequence);	
+		getArrSequence(config.arrName, arrSequenceLoaded);	
 		document.querySelector(".delete_style").style.display = "";		
 	}
 	
@@ -1616,6 +1616,15 @@ async function setupUI(config,err) {
 		loadMidiSynth();
 	}		
 };
+
+function arrSequenceLoaded() {
+	
+	if (realdrumLoop) {
+		setupRealDrums()
+	}
+	
+	setupSongSequence();
+}
 
 function getArrSequence(arrName, callback) {
 	console.debug("getArrSequence", arrName);
@@ -1695,12 +1704,7 @@ function saveConfig() {
 function doBreak() {
 	console.debug("doBreak " + arranger);	
 
-	if (arranger == "sff") {
-	
-	} 	
-	else 
-		
-	if (arranger == "webaudio" && realdrumLoop) 
+	if (drumLoop && realdrumLoop && (!arranger == "sff" || document.getElementById("arr-instrument-18")?.checked)) 	
 	{
 		if (sectionChange == 0) {
 			drumLoop.update('brka', false);		
@@ -1716,7 +1720,11 @@ function doBreak() {
 			drumLoop.update('brkd', false);			
 		}
 	}
-	else
+	
+	if (arranger == "sff") {
+	
+	} 	
+	else 	
 		
 	if (arranger == "ketron") {
 		sendKetronSysex(0x0B + sectionChange);		
@@ -1769,18 +1777,18 @@ function doBreak() {
 function doFill() {
 	//console.debug("doFill " + arranger);
 	
-	if (arranger == "sff") {
-		doSffFill(false);
-	} 	
-	else 	
 	
-	if (arranger == "webaudio" &&  drumLoop) {
+	if (drumLoop && realdrumLoop && (!arranger == "sff" || document.getElementById("arr-instrument-18")?.checked)) {
 		if (sectionChange == 0) drumLoop.update('fila', false);
 		if (sectionChange == 1) drumLoop.update('filb', false);
 		if (sectionChange == 2) drumLoop.update('filc', false);
 		if (sectionChange == 3) drumLoop.update('fild', false);
 	}
-	else
+	
+	if (arranger == "sff") {
+		doSffFill(false);
+	} 	
+	else 
 			
 	if (arranger == "ketron") {
 		sendKetronSysex(0x07 + sectionChange);		
@@ -2270,6 +2278,10 @@ function playChord(chord, root, type, bass) {
 			} else {
 
 				if (arranger == "sff") {
+					if (realdrumLoop) {				
+						if (bassLoop && document.getElementById("arr-instrument-17")?.checked) bassLoop.update(bassKey, false);
+						if (chordLoop && document.getElementById("arr-instrument-18")?.checked) chordLoop.update(key, false);		
+					}					
 					if (styleStarted) setTimeout(clearAllSffNotes);
 					
 				} else if (output) {
@@ -2728,17 +2740,16 @@ function playSectionCheck() {
 	//console.debug("playSectionCheck pressed " + arrChanged, sectionChange);
 	orinayo_section.innerHTML = SECTIONS[sectionChange];		
 			
-	if (drumLoop && realdrumLoop) {
+	if (drumLoop && realdrumLoop && (!arranger == "sff" || document.getElementById("arr-instrument-18")?.checked)) {
 		orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
 		
 		if (sectionChange == 0) drumLoop.update(arrChanged ? 'arra': 'fila', false);
 		if (sectionChange == 1) drumLoop.update(arrChanged ? 'arrb': 'filb', false);
 		if (sectionChange == 2) drumLoop.update(arrChanged ? 'arrc': 'filc', false);
-		if (sectionChange == 3) drumLoop.update(arrChanged ? 'arrd': 'fild', false);	
+		if (sectionChange == 3) drumLoop.update(arrChanged ? 'arrd': 'fild', false);		
 	}
-	else {
-		changeArrSection(arrChanged);		
-	}
+	
+	changeArrSection(arrChanged);		
 
 	if (window[realGuitarStyle]) {
 		orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;	
@@ -3493,7 +3504,8 @@ function doStartStopSequencer() {
 				requestArrEnd = false;
 				styleStarted = !styleStarted;	
 				playButton.innerText = !styleStarted ? "Play" : "Stop";	
-				orinayo_section.innerHTML = currentSffVar;				
+				orinayo_section.innerHTML = currentSffVar;	
+				endAudioStyle();
 				return;
 			}
 			
@@ -3691,9 +3703,29 @@ function nextSongNote() {
 	}
 }
 
+function endAudioStyle() {
+
+	if (chordLoop) {
+		chordLoop.finished = true;		
+		chordLoop.stop();
+	}
+
+	if (bassLoop) {	
+		bassLoop.finished = true;
+		bassLoop.stop();
+	}
+	
+	if (drumLoop) {
+		drumLoop.finished = true;		
+		drumLoop.stop();
+	}
+
+}
+
 function endSffStyle() {
 	requestArrEnd = false;
-
+	
+	endAudioStyle();	
 	timerWorker.postMessage("stop");	
 	notesInQueue = [];				
 
@@ -3781,6 +3813,18 @@ function scheduleSongNote() {
 	if (arrSequence) {
 		let event = arrSequence.data[currentSffVar][currentPlayNote];
 		//console.debug("scheduleSongNote", event);
+			
+		if (drumLoop && !drumLoop.looping && document.getElementById("arr-instrument-16")?.checked) {
+			drumLoop.start("arra");
+		}	
+
+		if (bassLoop && !bassLoop.looping && document.getElementById("arr-instrument-17")?.checked) {
+			bassLoop.start("key" + (keyChange % 12));
+		}
+		
+		if (chordLoop && !chordLoop.looping && document.getElementById("arr-instrument-18")?.checked) {
+			chordLoop.start("key" + (keyChange % 12));
+		}		
 				
 		// TODO implement CASM
 		const channel = getCasmChannel(currentSffVar, event.channel); 
@@ -3938,8 +3982,13 @@ function setupSongSequence() {
 	else
 		
 	if (arrSequence.data.Hdr) {
-		const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
-		setTempo(bpm);
+		
+		if (realdrumLoop) {
+			setTempo(realdrumLoop.bpm);	
+		} else {
+			const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
+			setTempo(bpm);			
+		}
 
 		if (arrSequence.data[currentSffVar]?.length) {
 			console.debug("setupSongSequence", flag, currentSffVar, arrSequence.data[currentSffVar]);						
@@ -3999,7 +4048,8 @@ function setupRealDrums() {
 		chordLoop = new AudioLooper("chord");
 		chordLoop.callback(soundsLoaded, eventStatus);		
 		chordLoop.addUri(realdrumLoop.chords, realdrumDevice, realdrumLoop.bpm);		
-	}	
+	}
+	
 }
 
 function soundsLoaded() {

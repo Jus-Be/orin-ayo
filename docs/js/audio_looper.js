@@ -47,7 +47,7 @@ function AudioLooper(styleType) {
 			
 			if (this.id == "int1") 	this.id = "arra";	
 			
-			if (id == "end1") 	{
+			if (id == "end1" || this.finished) 	{
 				this.looping = false;	
 				this.mute();
 				this.source.stop();
@@ -94,30 +94,31 @@ AudioLooper.prototype.unmute = function(id) {
 
 AudioLooper.prototype.update = function(id, sync) {
 		
-	if (this.source) {		
+	if (this.source) {	
+		this.id = id;		
 		const loop = this.getLoop(id);
-		const beginTime =  loop.start /1000;
-		const endTime = loop.stop / 1000;
-		const howLong = endTime - beginTime;
-		const duration = this.audioContext.currentTime - this.startTime;	
 		
-		if (sync) {	
-			this.reloop = true;			
-			this.offset = 0;
-			this.id = id;
-			console.debug("update sync", id);				
+		if (loop) {
+			const beginTime =  loop.start /1000;
+			const endTime = loop.stop / 1000;
+			const howLong = endTime - beginTime;
+			const duration = this.audioContext.currentTime - this.startTime;	
 			
-		} else {	
-			this.reloop = false;	
-			this.offset = ((duration * 1000) % (howLong * 1000)) / 1000;			
+			if (sync) {	
+				this.reloop = true;			
+				this.offset = 0;
+				console.debug("update sync", id);				
+				
+			} else {	
+				this.reloop = false;	
+				this.offset = ((duration * 1000) % (howLong * 1000)) / 1000;							
+				console.debug("update demand", id, howLong, duration, this.offset);			
 
-			this.id = id;				
-			console.debug("update demand", id, howLong, duration, this.offset);			
-
-			const gain = this.gainNode.gain;		
-			const old = this.source;					
-			this.doLoop(id, beginTime, howLong);
-			old.stop();		
+				const gain = this.gainNode.gain;		
+				const old = this.source;					
+				this.doLoop(id, beginTime, howLong);
+				old.stop();		
+			}
 		}
 	}
 };
@@ -127,7 +128,7 @@ AudioLooper.prototype.start = function(id) {
 	this.reloop = true;
 	this.offset = 0;
 	this.id = id;
-	this.vol = vol = 0.75;
+	this.vol = this.styleType == "bass" ? 0.95 : ( this.styleType == "chord" ? 0.5 : 0.75);
 	this.prevVol = this.vol;
 
 	const loop = this.getLoop(this.id);
