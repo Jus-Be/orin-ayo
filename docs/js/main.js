@@ -388,7 +388,7 @@ function onloadHandler() {
 	playButton.addEventListener("click", function() {	
 		if (arranger == "webaudio" && realdrumLoop) {
 			
-			if (drumLoop) {
+			if (drumLoop || chordLoop || bassLoop) {
 				toggleStartStop();
 			} else {
 				setupRealDrums();	
@@ -1468,6 +1468,8 @@ async function setupUI(config,err) {
 			console.debug("selected song sequence", songSequence, songSeq.value);
 		}
 	});	
+	
+	normaliseStyle();
 	
 	for (var i=0; i<drum_loops.length; i++) {
 		let selectedDrum = false;	
@@ -2737,10 +2739,10 @@ function playSectionCheck() {
 		}			
 	}	
 	
-	//console.debug("playSectionCheck pressed " + arrChanged, sectionChange);
 	orinayo_section.innerHTML = SECTIONS[sectionChange];		
 			
-	if (drumLoop && realdrumLoop && (!arranger == "sff" || document.getElementById("arr-instrument-18")?.checked)) {
+	if (drumLoop && realdrumLoop && (arranger != "sff" || document.getElementById("arr-instrument-18")?.checked)) {
+		console.debug("playSectionCheck pressed " + arrChanged, sectionChange);		
 		orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
 		
 		if (sectionChange == 0) drumLoop.update(arrChanged ? 'arra': 'fila', false);
@@ -4030,13 +4032,16 @@ function setupSongSequence() {
 function setupRealDrums() {
 	playButton.innerText = "Wait..";	
 	setTempo(realdrumLoop.bpm);
-	
-	drumLoop = new AudioLooper("drum");
-	drumLoop.callback(soundsLoaded, eventStatus);				
-	drumLoop.addUri(realdrumLoop.drums, realdrumDevice, realdrumLoop.bpm);
-	
+
+	drumLoop = null;	
 	bassLoop = null;
 	chordLoop = null;
+	
+	if (realdrumLoop.drums) {	
+		drumLoop = new AudioLooper("drum");
+		drumLoop.callback(soundsLoaded, eventStatus);				
+		drumLoop.addUri(realdrumLoop.drums, realdrumDevice, realdrumLoop.bpm);
+	}
 	
 	if (realdrumLoop.bass) {
 		bassLoop = new AudioLooper("bass");
@@ -4124,4 +4129,29 @@ function getCasmChannel(style, source) {
 	}
 	//console.debug("getCasmChannel", style, source, destination, found);
 	return destination;
+}
+
+function normaliseStyle() {
+	for (drum_loop of drum_loops) 
+	{
+		if (drum_loop?.chords && !drum_loop.chords.key0) {
+			const size = drum_loop.chords.duration / 36;
+			let start = 0;
+			let stop = size;
+			
+			for (let i=0; i<3; i++) 
+			{
+				for (let j=0; j<12; j++) {
+					let key = "key" + j;
+					if (i ==1) key = "key" + j + "_min";
+					if (i ==2) key = "key" + j + "_sus";	
+				
+					drum_loop.chords[key] = {start, stop};
+					start += size;
+					stop += size;
+				}				
+			}
+			
+		}
+	}		
 }

@@ -49,6 +49,7 @@ function AudioLooper(styleType) {
 			
 			if (id == "end1" || this.finished) 	{
 				this.looping = false;	
+				this.finished = false;
 				this.mute();
 				this.source.stop();
 			}

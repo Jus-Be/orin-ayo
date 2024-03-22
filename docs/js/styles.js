@@ -874,6 +874,75 @@ var drum_loops = [
 	}	
 },
 {
+	name: "u2guitars",
+	label: "U2 Guitars",
+	bpm: 105,
+	chords: {
+		url: "assets/chords/u2guitars.ogg",
+		duration: 822858
+	},
+	drums: {
+		url: "assets/drums/u2drums.ogg",
+		duration: 61714,
+		int1: {
+			start: 0,
+			stop: 2286
+		},
+		arra: {
+			start: 2286,
+			stop: 11429
+		},	
+		arrb: {
+			start: 11429,
+			stop:  20571
+		},	
+		arrc: {
+			start: 20571,
+			stop:  29714
+		},	
+		arrd: {
+			start: 29714,
+			stop:  38857
+		},	
+		end1: {
+			start: 38857,
+			stop:  43429
+		},
+		brka: {
+			start: 43429,
+			stop:  45714
+		},	
+		brkb: {
+			start: 45714,
+			stop:  48000
+		},	
+		brkc: {
+			start: 48000,
+			stop:  50286
+		},	
+		brkd: {
+			start: 50286,
+			stop:  52571
+		},	
+		fila: {
+			start: 52571,
+			stop:  54857
+		},	
+		filb: {
+			start: 54857,
+			stop:  57143
+		},	
+		filc: {
+			start: 57143,
+			stop:  59429
+		},	
+		fild: {
+			start: 59429,
+			stop:  61714
+		}		
+	}	
+},
+{
 	name: "midtempo100",
 	label: "Mid Tempo",
 	bpm: 90,
@@ -936,8 +1005,7 @@ var drum_loops = [
 			start: 127200,
 			stop:  129600
 		}		
-	},
-	
+	},	
 	chords: {
 		url: "assets/chords/midtempo100.ogg",
 		duration: 288000,
