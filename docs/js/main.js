@@ -1138,7 +1138,7 @@ function letsGo() {
     }, true);
 }
 
-function normaliseStyle() {
+function normaliseSffStyle() {
 	if (arrSequence.data["Main A"] && arrSequence.data["Fill In AA"]) 
 	{
 		if (!arrSequence.data["Main B"] || arrSequence.data["Main B"].length == 0) {
@@ -1469,7 +1469,7 @@ async function setupUI(config,err) {
 		}
 	});	
 	
-	normaliseStyle();
+	normaliseAudioStyle();
 	
 	for (var i=0; i<drum_loops.length; i++) {
 		let selectedDrum = false;	
@@ -1639,7 +1639,7 @@ function getArrSequence(arrName, callback) {
 		if (data) {
 			console.debug("getArrSequence", arrName, data);
 			arrSequence = parseMidi(data, arrName);
-			normaliseStyle();	
+			normaliseSffStyle();	
 			arrSequence.name = arrName;	
 			
 			if (callback) callback();				
@@ -4131,7 +4131,7 @@ function getCasmChannel(style, source) {
 	return destination;
 }
 
-function normaliseStyle() {
+function normaliseAudioStyle() {
 	for (drum_loop of drum_loops) 
 	{
 		if (drum_loop?.chords && !drum_loop.chords.key0) {
