@@ -172,10 +172,12 @@ function bleMIDIrx(blepacket) {
 
 function translateChordaToI1(callback, flag, trigger, velocity, channel) { 
   //console.log("translateChordaToI1", flag, velocity, channel, trigger)	
-  // Chorda in BASS mode (single notes on pads and harmony notes bridge)
-  // Harmony interval is 4,3,5,4,3 on major chords and 3,4,5,3,4 on minor chords
+
   
-  if (channel == 9) {			
+  if (channel == 9) {	
+	  // Chorda in BASS mode (single notes on pads and harmony notes bridge)
+	  // Harmony interval is 4,3,5,4,3 on major chords and 3,4,5,3,4 on minor chords
+	  
 	  triad[trigger] = flag;
 
 	  if (trigger == 48) callback({number: 60}, "INSTRUMENT1", velocity)	  	// 5 (G)

@@ -80,10 +80,6 @@ function parseAc7(data) {
 	  style[i].partIndicator = new Uint8Array(ac7.readAtom()); 
 	  	  
 	  for (let j=0; j<style[i].elemNoOfTracks; j++) {
-		  //if (style[i].partIndicator[j] > 0xA0) style[i].partIndicator[j] -= 0xA0;
-		  //if (style[i].partIndicator[j] > 0x80) style[i].partIndicator[j] -= 0x80;
-		  //if (style[i].partIndicator[j] > 0x10) style[i].partIndicator[j] -= 0x10;
-		  
 		  style[i].mixerIndex[j] = style[i].mixerIndex[j] - 0x8000;
 		  style[i].trackIndex[j] = style[i].trackIndex[j] - 0x8000;
 		  //console.debug("parseMidi ac7 element part/track", i, j, style[i].partIndicator[j], style[i].mixerIndex[j] - 0x8000, style[i].trackIndex[j] - 0x8000);
@@ -210,7 +206,7 @@ function parseAc7(data) {
 				  let mixr = mixer[style[i].mixerIndex[j]];
 				  
 				  if (mixr) {
-					  styleData[section].push({channel, code: 256, ticks: 0, delta: 0, type: "controller", controllerType: 32, value: mixr.bank});		  
+					  styleData[section].push({channel, code: 256, ticks: 0, delta: 0, type: "controller", controllerType: 0, value: mixr.bank});		  
 					  styleData[section].push({channel, code: 256, ticks: 0, delta: 0, type: "programChange", programNumber: mixr.patch});
 					  styleData[section].push({channel, code: 256, ticks: 0, delta: 0, type: "controller", controllerType: 7, value: mixr.volume});
 					  styleData[section].push({channel, code: 256, ticks: 0, delta: 0, type: "controller", controllerType: 10, value: mixr.pan});			  
@@ -220,7 +216,7 @@ function parseAc7(data) {
 					  ticks = ticks + midi.events[k].delta;
 					  
 					  if (midi.events[k].code < 128) {
-						  empty = false;
+						empty = false;
 						styleData[section].push({channel, ticks, delta: midi.events[k].delta, code: midi.events[k].code, value: midi.events[k].value});
 					  }
 				  }

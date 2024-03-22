@@ -19,6 +19,7 @@ const START = 9;
 
 const STRUM = 9;
 const TOUCH = 5;
+const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
@@ -347,7 +348,15 @@ function onloadHandler() {
 	upload.addEventListener('change', function(event) {
 		handleFileContent(event);
 	});	
+
+	const deleteStyle = document.querySelector(".delete_style");
 	
+	deleteStyle.addEventListener('click', function(event) {
+		if (arrSequence?.name) {
+			indexedDB.deleteDatabase(arrSequence.name);
+			location.reload();			
+		}
+	});		
   
 	const chordaBluetooth = document.querySelector(".chorda_bluetooth");
 	
@@ -661,20 +670,20 @@ function handleKeyboard(name, code) {
 
 function toggleStrumUpDown() {
 	pad.axis[STRUM] = artiphonStrumUp ? STRUM_UP : STRUM_DOWN;
-	if (forward) forward.playNote(artiphonStrumUp ? 122 : 121, 1, {velocity: 0.5, duration: 1000});				
+	if (forward) forward.playNote(artiphonStrumUp ? 122 : 121, 1, {velocity: getVelocity(), duration: 1000});				
 	artiphonStrumUp = !artiphonStrumUp;
 }
 
 function handleNoteOff(note, device, velocity, channel) {	
 	//console.debug("handleNoteOff", note);
 	
-	if (device == "WIDI Uhost") {
+	if (device == "WIDI Uhost TODO") {
 		//console.debug("WIDI - chorda handleNoteOff", note.number, device, velocity, channel);
 		translateChordaToI1(handleNoteOff, false, note.number, velocity, channel) 	// calls handleNoteOff again with device == INSTRUMENT1			
 	}
 	else
 		
-	if (device == "INSTRUMENT1") {
+	if (device == "INSTRUMENT1" || (device == "WIDI Uhost")) {
 		const fwdChord = [];
 		
 		if (!game) {
@@ -784,13 +793,13 @@ function handleNoteOff(note, device, velocity, channel) {
 function handleNoteOn(note, device, velocity, channel) {
 	//console.debug("handleNoteOn", note, device, velocity, channel);
 	
-	if (device == "WIDI Uhost") {
+	if (device == "WIDI Uhost TODO") {
 		//console.debug("WIDI - chorda handleNoteOn", note.number, device, velocity);		
 		translateChordaToI1(handleNoteOn, true, note.number, velocity, channel) 	// calls handleNoteOn again with device == INSTRUMENT1	
 	}
 	else
 		
-	if (device == "INSTRUMENT1") {
+	if (device == "INSTRUMENT1" || device == "WIDI Uhost") {
 		
 		if (!game) {
 			setup();
@@ -1093,6 +1102,12 @@ function updateStatus() {
 			if (pad.axis[TOUCH] != guitar.axes[TOUCH].toFixed(1)) {
 				//console.debug("touch", guitar.axes[TOUCH].toFixed(1));							
 				pad.axis[TOUCH] = guitar.axes[TOUCH].toFixed(1);
+				updated = updated || true;				
+			}	
+
+			if (pad.axis[WHAMMY] != guitar.axes[WHAMMY].toFixed(1)) {
+				//console.debug("whammy", guitar.axes[WHAMMY].toFixed(1));							
+				pad.axis[WHAMMY] = guitar.axes[WHAMMY].toFixed(1);
 				updated = updated || true;				
 			}			
 		}				
@@ -1531,7 +1546,7 @@ async function setupUI(config,err) {
 		});
 
 		input.addListener("noteoff", "all", function (e) {
-			//console.debug("Received noteoff message", e);
+			//debug("Received noteoff message", e);
 			handleNoteOff(e.note, midiIn.value, e.velocity, e.channel);			
 		});	
 		
@@ -1588,7 +1603,8 @@ async function setupUI(config,err) {
 	enableSequencer(!!forward && realGuitarStyle != "none");
 	
 	if (config.arrName) {		
-		getArrSequence(config.arrName, setupSongSequence);		
+		getArrSequence(config.arrName, setupSongSequence);	
+		document.querySelector(".delete_style").style.display = "";		
 	}
 	
 	if (config.sf2Name) {					
@@ -2135,23 +2151,29 @@ function stopPads() {
 			if (firstChord instanceof Array) 
 			{
 				for (note of firstChord) {
-					stopPadSynthNote(note, 0, 0.5 * 127);
+					stopPadSynthNote(note, 0, getVelocity() * 127);
 				}
 				
-				if (firstChord.length == 4) stopPadSynthNote(firstChord[0] + 24, 0, 0.5 * 127);		
+				if (firstChord.length == 4) stopPadSynthNote(firstChord[0] + 24, 0, getVelocity() * 127);		
 							
 			} else {
-				stopPadSynthNote(firstChord, 0, 0.5 * 127);
+				stopPadSynthNote(firstChord, 0, getVelocity() * 127);
 			}			
 
 		} 
 		else 
 			
 		if (padsDevice?.stopNote) {
-			padsDevice.stopNote(firstChord, 1, {velocity: 0.5}); 
-			if (firstChord instanceof Array && firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 1, {velocity: 0.5}); 		
+			padsDevice.stopNote(firstChord, 1, {velocity: getVelocity()}); 
+			if (firstChord instanceof Array && firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 1, {velocity: getVelocity()}); 		
 		}
 	}
+}
+
+function getVelocity() {
+	//return 0.5;	
+	//return 1.00 - pad.axis[WHAMMY];
+	return 0.5 + (Math.random() * 0.5);
 }
 
 function playChord(chord, root, type, bass) {	
@@ -2175,32 +2197,32 @@ function playChord(chord, root, type, bass) {
 			const fifthNote = (chord.length == 4 ? chord[3] : chord[2]);				
 
 			if (padsMode == 1) {
-				if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 1, {velocity: 0.5});		// up root
-				if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: 0.5});   // down	root				
+				if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 1, {velocity: getVelocity()});		// up root
+				if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: getVelocity()});   // down	root				
 			}		
 			else
 				
 			if (padsMode == 2) {
-				if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 1, {velocity: 0.5});		// down chord
-				if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 1, {velocity: 0.5});     // up	root				
+				if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 1, {velocity: getVelocity()});		// down chord
+				if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 1, {velocity: getVelocity()});     // up	root				
 			}	
 			else
 				
 			if (padsMode == 3) {
-				if (pad.axis[STRUM] == STRUM_UP) playPads(thirdNote, 1, {velocity: 0.5});	// up third
-				if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: 0.5});   // down	root				
+				if (pad.axis[STRUM] == STRUM_UP) playPads(thirdNote, 1, {velocity: getVelocity()});	// up third
+				if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: getVelocity()});   // down	root				
 			}
 			else
 				
 			if (padsMode == 4) {
-				if (pad.axis[STRUM] == STRUM_UP) playPads(fifthNote, 1, {velocity: 0.5});	// up fifth
-				if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: 0.5});   // down	root				
+				if (pad.axis[STRUM] == STRUM_UP) playPads(fifthNote, 1, {velocity: getVelocity()});	// up fifth
+				if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: getVelocity()});   // down	root				
 			}
 			else
 				
 			if (padsMode == 5) {
-				if (pad.axis[STRUM] == STRUM_UP) playPads(chord, 1, {velocity: 0.5});		// up chord
-				if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 1, {velocity: 0.5});   	// down	chord				
+				if (pad.axis[STRUM] == STRUM_UP) playPads(chord, 1, {velocity: getVelocity()});		// up chord
+				if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 1, {velocity: getVelocity()});   	// down	chord				
 			}			
 		}
 		
@@ -2251,14 +2273,14 @@ function playChord(chord, root, type, bass) {
 					if (styleStarted) setTimeout(clearAllSffNotes);
 					
 				} else if (output) {
-					if (pad.axis[STRUM] == STRUM_UP) outputPlayNote(chord, [4], {velocity: 0.5});		// up
-					if (pad.axis[STRUM] == STRUM_DOWN) outputPlayNote(chord, [4], {velocity: 0.5});   	// down	
+					if (pad.axis[STRUM] == STRUM_UP) outputPlayNote(chord, [4], {velocity: getVelocity()});		// up
+					if (pad.axis[STRUM] == STRUM_DOWN) outputPlayNote(chord, [4], {velocity: getVelocity()});   	// down	
 				}
 				
 				if (!guitarAvailable && forward) 
 				{
 					if (gamePadModeButton.innerText != "Color Tabs") {					
-						forward.playNote(chord, 1, {velocity: 0.5});
+						forward.playNote(chord, 1, {velocity: getVelocity()});
 					}
 				}					
 			}
@@ -2651,8 +2673,8 @@ function stopChord() {
 		{
 			//console.debug("stopChord", pad)
 			
-			if (output) outputStopNote(activeChord, [4], {velocity: 0.5}); 
-			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: 0.5});		
+			if (output) outputStopNote(activeChord, [4], {velocity: getVelocity()}); 
+			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: getVelocity()});		
 			if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
 			
 			if (!guitarAvailable && forward) 
@@ -2807,7 +2829,7 @@ function dokeyChange() {
     key = KEYS[keyChange];
     base = BASE + keyChange;
 
-    if (forward) forward.playNote(84 + keyChange, 1, {velocity: 0.5, duration: 1000});
+    if (forward) forward.playNote(84 + keyChange, 1, {velocity: getVelocity(), duration: 1000});
 }
 
 function doChord() {
@@ -3047,15 +3069,16 @@ function toggleStartStop() {
 	if (arranger == "webaudio") {				
 		if (drumLoop && realdrumLoop) {
 			if (!styleStarted) {
-				orinayo_section.innerHTML = ">Arr A";
 				setTempo(realdrumLoop.bpm);	
 
 				if (songSequence) {
+					orinayo_section.innerHTML = ">Arr A";					
 					drumLoop.start('arra');
 					if (bassLoop) bassLoop.start("key" + (keyChange % 12));
 					if (chordLoop) chordLoop.start("key" + (keyChange % 12));
 						
 				} else {
+					orinayo_section.innerHTML = ">Arr A";					
 					drumLoop.start('int1');
 					//if (bassLoop) bassLoop.start('int1');
 					//if (chordLoop) chordLoop.start('int1');					
@@ -3088,7 +3111,7 @@ function toggleStartStop() {
 
 	if (output) { 			
 		if (arranger == "ketron") {		
-			outputPlayNote(firstChord, [4], {velocity: 0.5});
+			outputPlayNote(firstChord, [4], {velocity: getVelocity()});
 				
 			let startEndType = 0x12; // default start/stop
 		
@@ -3109,7 +3132,7 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed");  
-				outputPlayNote(firstChord, [4], {velocity: 0.5});				
+				outputPlayNote(firstChord, [4], {velocity: getVelocity()});				
 				outputSendControlChange (92, 0, 4);  				    
 				styleStarted = true;
 			}
@@ -3179,7 +3202,7 @@ function toggleStartStop() {
 				console.debug("start key pressed");  
 				
 				if (output) {
-					outputPlayNote(firstChord, [4], {velocity: 0.5});
+					outputPlayNote(firstChord, [4], {velocity: getVelocity()});
 				
 					if (pad.buttons[YELLOW]) {
 						outputSendControlChange (102, 127, 4); 	// INTRO 1
@@ -3225,7 +3248,7 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed"); 
-				outputPlayNote(firstChord, [4], {velocity: 0.5});
+				outputPlayNote(firstChord, [4], {velocity: getVelocity()});
 				
 				let startEndType = 0x00;
 				if (pad.buttons[YELLOW]) startEndType = 0x00;	// INTRO-1
@@ -3265,7 +3288,7 @@ function toggleStartStop() {
 			if (!styleStarted)
 			{
 				console.debug("start key pressed");  
-				outputPlayNote(firstChord, [4], {velocity: 0.5});				
+				outputPlayNote(firstChord, [4], {velocity: getVelocity()});				
 				sendYamahaSysEx(0x08);	
 				output.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start				
 				styleStarted = true;
@@ -3291,7 +3314,7 @@ function toggleStartStop() {
 				console.debug("start key pressed");  				
 				
 				if (output) {
-					outputPlayNote(firstChord, [4], {velocity: 0.5});
+					outputPlayNote(firstChord, [4], {velocity: getVelocity()});
 				
 					if (pad.buttons[YELLOW]) {
 						outputSendProgramChange(85, 4);
@@ -3310,7 +3333,7 @@ function toggleStartStop() {
 				console.debug("stop key pressed");
 				
 				if (output) {
-					outputPlayNote(firstChord, [4], {velocity: 0.5});
+					outputPlayNote(firstChord, [4], {velocity: getVelocity()});
 				
 					if (pad.buttons[YELLOW]) {
 						outputSendProgramChange(89, 4);
@@ -3467,6 +3490,7 @@ function doStartStopSequencer() {
 		if (arrSequence) 
 		{	
 			if (requestArrEnd) {
+				requestArrEnd = false;
 				styleStarted = !styleStarted;	
 				playButton.innerText = !styleStarted ? "Play" : "Stop";	
 				orinayo_section.innerHTML = currentSffVar;				
@@ -3625,7 +3649,7 @@ function nextSongNote() {
 			currentPlayNote = 0;
 			// TODO HACK
 			// KST files need padding at end of loop
-			if (arrSequence.name.toLowerCase().endsWith(".kst") || arrSequence.name.toLowerCase().endsWith(".ac6")) {
+			if (arrSequence.name.toLowerCase().endsWith(".kst") || arrSequence.name.toLowerCase().endsWith(".ac7")) {
 				offset = arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000;;
 			}
 
@@ -4049,6 +4073,5 @@ function getCasmChannel(style, source) {
 		}	
 	}
 	//console.debug("getCasmChannel", style, source, destination, found);
-	if (destination == 8) destination = 9;
 	return destination;
 }
