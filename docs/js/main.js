@@ -434,7 +434,7 @@ function handleFileContent(event) {
 		var reader = new FileReader();
 
 		reader.onload = function(event)	{
-			if (file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs") || file.name.toLowerCase().endsWith(".ac7")) {
+			if (file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs") || file.name.toLowerCase().endsWith(".ac7") || file.name.toLowerCase().endsWith(".sas")) {
 				handleStyleFile(file, event.target.result);
 			}			
 			else
@@ -1245,7 +1245,7 @@ async function setupUI(config,err) {
 			}
 			else
 				
-			if (db.name.toLowerCase().endsWith(".kst") || db.name.toLowerCase().endsWith(".sty") || db.name.toLowerCase().endsWith(".prs")  || db.name.toLowerCase().endsWith(".bcs") || db.name.toLowerCase().endsWith(".ac7")) {
+			if (db.name.toLowerCase().endsWith(".kst") || db.name.toLowerCase().endsWith(".sty") || db.name.toLowerCase().endsWith(".prs")  || db.name.toLowerCase().endsWith(".bcs") || db.name.toLowerCase().endsWith(".ac7") || db.name.toLowerCase().endsWith(".sas")) {
 				iStyle++;
 				styleSelected = config.arrName == db.name;
 				arrangerStyle.options[iStyle] = new Option(db.name, db.name, styleSelected, styleSelected);				
@@ -3664,8 +3664,12 @@ function nextSongNote() {
 			// TODO HACK
 			// KST files need padding at end of loop
 			if (arrSequence.name.toLowerCase().endsWith(".kst") || arrSequence.name.toLowerCase().endsWith(".ac7")) {
-				offset = arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000;;
+				offset = arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000;
 			}
+			else if ( arrSequence.name.toLowerCase().endsWith(".sas")) {
+				offset = (16 - current16thNote) * 16;				
+			}
+				
 
 			if ("Intro A" == currentSffVar) currentSffVar = "Main A";
 			if ("Intro B" == currentSffVar) currentSffVar = "Main B";			

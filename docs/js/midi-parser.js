@@ -1,30 +1,38 @@
 // data can be any array-like object.  It just needs to support .length, .slice, and an element getter []
-
+var lastEventTypeByte = null; 
+  
 function parseMidi(data, arrName) {
+  console.debug("parseMidi", arrName);
+  
   var p = new Parser(data)
   var headerChunk = p.readChunk();
   
-  if (headerChunk.id == 'MThd') {  
-	  var trackChunk = p.readChunk()
-	  var casmChunk = p.readChunk()
-		
-	  if (trackChunk.id != 'MTrk')
-		throw "Bad MIDI file.  Expected 'MTrk', got: '" + trackChunk.id + "'"
+  if (headerChunk.id == 'MThd') {
+      var casm = [];	  
+	  var header = parseHeader(headerChunk.data);
 
-	  var casm = [];
+	  if (header.numTracks == 1) {			//type 0, single track
 	  
-	  if (!arrName.toLowerCase().endsWith(".kst")) {
-		  if (casmChunk.id != 'CASM')
-			throw "Bad MIDI file.  Expected 'CASM', got: '" + casmChunk.id + "'"
+		  if (arrName.toLowerCase().endsWith(".sas")) {
+		     return {header, data: parseSas(p, arrName), casm: []};
+			 
+		  }	else {		  
+			  var trackChunk = p.readChunk()
+			  var casmChunk = p.readChunk()
+				
+			  if (trackChunk.id != 'MTrk')
+				throw "Bad MIDI file.  Expected 'MTrk', got: '" + trackChunk.id + "'"
+			  
+			  if (!arrName.toLowerCase().endsWith(".kst")) {
+				  if (casmChunk.id != 'CASM')
+					throw "Bad MIDI file.  Expected 'CASM', got: '" + casmChunk.id + "'"
 
-		  //console.debug("parseCasm casm", casmChunk.id, casmChunk.length); 
-		  casm = parseCasm(casmChunk.data);
-	  }
-		  
-	  return {
-		header: parseHeader(headerChunk.data),
-		data: parseData(trackChunk.data, arrName),
-		casm: casm
+				  //console.debug("parseCasm casm", casmChunk.id, casmChunk.length); 
+				  casm = parseCasm(casmChunk.data);
+			  }
+				  
+			  return {header, data: parseData(trackChunk.data, arrName), casm};
+		  }	  
 	  }
   }
   else
@@ -35,6 +43,86 @@ function parseMidi(data, arrName) {
   else {
 	throw "Bad style file.  Expected 'MHdr or AC07', got: '" + headerChunk.id + "'"	  
   }
+}
+
+function parseSas(parser, arrName) {
+  console.debug("parseSas", arrName);
+  
+  let cc111Num = 1, temp = [], variation = "SInt";
+  var events = {Hdr : {}, "SInt": [], "Intro A": [], "Intro B": [], "Intro C": [], "Ending A": [], "Main A": [], "Main B": [], "Main C": [], "Main D": [], "Fill In AA": [], "Fill In BB": [], "Fill In CC": [], "Fill In DD": [], "Fill In BA": []}, markers = []; 			  
+  
+  while (!parser.eof()) {
+    const event = readEvent(parser);
+	
+	if (event) {		
+
+		if (event.channel == 1) event.channel = 10; 		// Bass  
+		else if (event.channel == 2) event.channel = 11; 	// Keyboard	    
+		else if (event.channel == 3) event.channel = 12; 	// Guitar  
+		else if (event.channel == 4) event.channel = 13; 	// Pad		  
+		else if (event.channel == 5) event.channel = 14; 	// Phrase 1  	
+		else if (event.channel == 6) event.channel = 15; 	// Phrase 2
+		else if (event.channel == 8) event.channel = 9; 	// Percussion	
+			
+		if (event.type == "setTempo") {
+			events.Hdr.setTempo = event;
+		}
+		else
+			
+		if (event.type == "timeSignature") {
+			events.Hdr.timeSignature = event;
+		}				  
+		else
+			
+		if (event.type == "controller") 
+		{
+		  if (event.controllerType == 110) {
+			  cc111Num = event.value;
+			  
+			  if (cc111Num == 01)  variation = "Intro A";
+			  if (cc111Num == 10)  variation = "Intro B";
+			  if (cc111Num == 11)  variation = "Intro C";
+			  
+			  if (cc111Num == 2)  variation = "Main A";
+			  if (cc111Num == 3)  variation = "Main B";	
+			  if (cc111Num == 4)  variation = "Main C";
+			  if (cc111Num == 5)  variation = "Main D";		
+			  if (cc111Num == 32)  variation = "Ending A";				  
+
+			  if (cc111Num == 11)  variation = "Fill In AA";
+			  if (cc111Num == 12)  variation = "Fill In BB";
+			  if (cc111Num == 13)  variation = "Fill In CC";	
+			  if (cc111Num == 14)  variation = "Fill In DD";
+			  
+			  if (cc111Num == 15)  variation = "Fill In BA";			  
+			  
+			  console.debug("Start of pattern " + cc111Num);
+			  lastEventTypeByte = null;			  
+			  continue;
+		  }
+		  else
+			  
+		  if (event.controllerType == 111) {	
+			  variation = null;  
+			  console.debug("End of pattern " + cc111Num + " goto pattern " + event.value);	
+		  }		  
+		}
+		
+		if (variation) {
+			if (variation == "SInt" && (event.type == "controller" && event.controllerType != 110 && event.controllerType != 111) || event.type == "programChange") {	
+				events[variation].push(event);
+			}
+			else
+				
+			if (variation != "SInt") {
+				console.debug(variation);
+				events[variation].push(event);
+			}	
+		}			
+	}
+	
+  }	  
+  return events 
 }
 
 function parseAc7(data) {
@@ -351,10 +439,77 @@ function parseHeader(data) {
 }
 
 function parseData(data, arrName) {
-  function readEvent() {
+  const p = new Parser(data);
+  let variation = null;
+  var events = {Hdr : {}};
+  
+  while (!p.eof()) {
+    const event = readEvent(p);
+	
+	if (event) 
+	{
+		if (event.type == 'marker') 
+		{
+			if (arrName.toLowerCase().endsWith(".kst")) {			
+				if (event.text == 'ARRA_MAJ') event.text = 'Main A';
+				if (event.text == 'ARRB_MAJ') event.text = 'Main B';
+				if (event.text == 'ARRC_MAJ') event.text = 'Main C';
+				if (event.text == 'ARRD_MAJ') event.text = 'Main D';			
+				if (event.text == 'FILA_MAJ') event.text = 'Fill In AA';
+				if (event.text == 'FILB_MAJ') event.text = 'Fill In BB';
+				if (event.text == 'FILC_MAJ') event.text = 'Fill In CC';
+				if (event.text == 'FILD_MAJ') event.text = 'Fill In DD';
+				if (event.text == 'INT1_MAJ') event.text = 'Intro A';			
+				if (event.text == 'INT2_MAJ') event.text = 'Intro B';
+				if (event.text == 'INT3_MAJ') event.text = 'Intro C';			
+				if (event.text == 'END1_MAJ') event.text = 'Ending A';		
+				if (event.text == 'END2_MAJ') event.text = 'Ending B';			
+				if (event.text == 'END3_MAJ') event.text = 'Ending C';						
+				if (event.text == 'BRKA_MAJ') event.text = 'Fill In AB';
+				if (event.text == 'BRKB_MAJ') event.text = 'Fill In BA';
+				
+				if (event.text == 'Audya Style 1.0') {
+					event.text = 'SInt';
+					events['SFF1'] = [];
+				}
+			}
+			
+			variation = event.text;
+			events[variation] = [];
+			lastEventTypeByte = null;
+		}
+		else
+			
+		if (event.type == "setTempo") {
+			events.Hdr.setTempo = event;
+		}
+		else
+			
+		if (event.type == "timeSignature") {
+			events.Hdr.timeSignature = event;
+		}			
+		else {	
+		
+		  if (arrName.toLowerCase().endsWith(".kst")) {
+			  if (event.channel == 4) event.channel = 10; 		// Bass  
+			  else if (event.channel == 5) event.channel = 11; 	// Keyboard	    
+			  else if (event.channel == 6) event.channel = 12; 	// Guitar  
+			  else if (event.channel == 7) event.channel = 13; 	// Pad		  
+			  else if (event.channel == 10) event.channel = 14; // Phrase 1  
+			  else if (event.channel == 11) event.channel = 15; // Phrase 2	
+		  }		  
+		
+		  if (variation) events[variation].push(event);
+		}
+	}
+  }
+  return events  
+}
+
+function readEvent(p) {
     var event = {}
-   
     event.deltaTime = p.readVarInt()
+	
     var eventTypeByte = p.readUInt8()
 
     if ((eventTypeByte & 0xf0) === 0xf0) {
@@ -381,12 +536,12 @@ function parseData(data, arrName) {
           case 0x03:
             event.type = 'trackName'
             event.text = p.readString(length)
-			console.debug(event.text, event.deltaTime);				
+			console.debug(event.type, event.text, event.deltaTime);				
             return event
           case 0x04:
             event.type = 'instrumentName'
             event.text = p.readString(length)
-			console.debug(event.text, event.deltaTime);				
+			console.debug(event.type, event.text, event.deltaTime);				
             return event
           case 0x05:
             event.type = 'lyrics'
@@ -395,7 +550,7 @@ function parseData(data, arrName) {
           case 0x06:
             event.type = 'marker'
             event.text = p.readString(length)	
-			console.debug(event.text, event.deltaTime);	
+			console.debug(event.type, event.text, event.deltaTime);	
             return event;
           case 0x07:
             event.type = 'cuePoint'
@@ -411,9 +566,10 @@ function parseData(data, arrName) {
             if (length != 1) throw "Expected length for portPrefix event is 1, got " + length
             event.port = p.readUInt8()
             return event
-          case 0x2f:
+          case 0x2f:			
             event.type = 'endOfTrack'
             if (length != 0) throw "Expected length for endOfTrack event is 0, got " + length
+			console.debug(event.type,event.deltaTime);				
             return event
           case 0x51:
             event.type = 'setTempo';
@@ -467,7 +623,8 @@ function parseData(data, arrName) {
         event.data = p.readBytes(length)
         return event;
       } else {
-        throw "Unrecognised MIDI event type byte: " + eventTypeByte
+        console.debug("Unrecognised MIDI event type byte: " + eventTypeByte);
+		return null;
       }
     } else {
       // channel event
@@ -524,77 +681,10 @@ function parseData(data, arrName) {
           event.value = (param1 + (p.readUInt8() << 7)) - 0x2000
           return event
         default:
-          throw "Unrecognised MIDI event type: " + eventType	  
+          console.error("Unrecognised MIDI event type: " + eventType);
+		  return null;
       }
     }
-  }
-  
-  const p = new Parser(data);
-  let variation = null;
-  var events = {Hdr : {}};
-  var lastEventTypeByte = null  
-  
-  while (!p.eof()) {
-    const event = readEvent();
-	
-	if (event) 
-	{
-		if (event.type == 'marker') 
-		{
-			if (arrName.toLowerCase().endsWith(".kst")) {			
-				if (event.text == 'ARRA_MAJ') event.text = 'Main A';
-				if (event.text == 'ARRB_MAJ') event.text = 'Main B';
-				if (event.text == 'ARRC_MAJ') event.text = 'Main C';
-				if (event.text == 'ARRD_MAJ') event.text = 'Main D';			
-				if (event.text == 'FILA_MAJ') event.text = 'Fill In AA';
-				if (event.text == 'FILB_MAJ') event.text = 'Fill In BB';
-				if (event.text == 'FILC_MAJ') event.text = 'Fill In CC';
-				if (event.text == 'FILD_MAJ') event.text = 'Fill In DD';
-				if (event.text == 'INT1_MAJ') event.text = 'Intro A';			
-				if (event.text == 'INT2_MAJ') event.text = 'Intro B';
-				if (event.text == 'INT3_MAJ') event.text = 'Intro C';			
-				if (event.text == 'END1_MAJ') event.text = 'Ending A';		
-				if (event.text == 'END2_MAJ') event.text = 'Ending B';			
-				if (event.text == 'END3_MAJ') event.text = 'Ending C';						
-				if (event.text == 'BRKA_MAJ') event.text = 'Fill In AB';
-				if (event.text == 'BRKB_MAJ') event.text = 'Fill In BA';
-				
-				if (event.text == 'Audya Style 1.0') {
-					event.text = 'SInt';
-					events['SFF1'] = [];
-				}
-			}
-			
-			variation = event.text;
-			events[variation] = [];
-			lastEventTypeByte = null;
-		}
-		else
-			
-		if (event.type == "setTempo") {
-			events.Hdr.setTempo = event;
-		}
-		else
-			
-		if (event.type == "timeSignature") {
-			events.Hdr.timeSignature = event;
-		}			
-		else {	
-		
-		  if (arrName.toLowerCase().endsWith(".kst")) {
-			  if (event.channel == 4) event.channel = 10; 		// Bass  
-			  else if (event.channel == 5) event.channel = 11; 	// Keyboard	    
-			  else if (event.channel == 6) event.channel = 12; 	// Guitar  
-			  else if (event.channel == 7) event.channel = 13; 	// Pad		  
-			  else if (event.channel == 10) event.channel = 14; // Phrase 1  
-			  else if (event.channel == 11) event.channel = 15; // Phrase 2	
-		  }
-		
-		  if (variation) events[variation].push(event);
-		}
-	}
-  }
-  return events  
 }
 
 function Parser(data) {
