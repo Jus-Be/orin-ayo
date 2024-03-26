@@ -1,3 +1,10 @@
+var internal_styles = [
+	"assets/styles/yamaha/DuckGroove_E443.sty",	
+	"assets/styles/yamaha/HoldOnAMinute_E443.sty",	
+	"assets/styles/yamaha/JackDoesItAgain_E443.sty",	
+	"assets/styles/yamaha/SmoothItOver_E443.sty",	
+]
+
 var drum_loops = [
 {
 	name: "analog_ballad",

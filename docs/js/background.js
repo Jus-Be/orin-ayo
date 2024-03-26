@@ -84,7 +84,7 @@ if (location.protocol == "chrome-extension:") {
 
 const createOrinAyoWindow = () => {
 	console.debug("createOrinAyoWindow");		
-	const data = {url: chrome.runtime.getURL("index.html")};
+	const data = {url: chrome.runtime.getURL("index.html"), type: 'popup'};
 	
 	chrome.windows.create(data, (win) => {
 		chrome.storage.local.set({orinAyoWin: win.id});			

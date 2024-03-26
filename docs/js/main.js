@@ -354,7 +354,9 @@ function onloadHandler() {
 	deleteStyle.addEventListener('click', function(event) {
 		if (arrSequence?.name) {
 			indexedDB.deleteDatabase(arrSequence.name);
-			location.reload();			
+			setTimeout(() => {
+				location.reload();	
+			}, 1000)				
 		}
 	});		
   
@@ -1228,6 +1230,13 @@ async function setupUI(config,err) {
 	let styleSelected = false;
 	let iStyle = 0;
 	
+	for (internalStyle of internal_styles) {
+		iStyle++;
+		const styleName = "*" + internalStyle.substring(internalStyle.lastIndexOf("/") + 1);
+		styleSelected = config.arrName == internalStyle;
+		arrangerStyle.options[iStyle] = new Option(styleName, internalStyle, styleSelected, styleSelected);			
+	}
+	
 	const arrangerSf2 =  document.getElementById("arrangerSf2");
 	arrangerSf2.options[0] = new Option("**UNUSED**", "arrangerSf2");	
 	let sf2Selected = false;
@@ -1604,18 +1613,10 @@ async function setupUI(config,err) {
 	
 	enableSequencer(!!forward && realGuitarStyle != "none");
 	
-	if (config.arrName) {		
+	if (config.arrName) {	
+		arrSynth = {name: config.sf2Name};	
 		getArrSequence(config.arrName, arrSequenceLoaded);	
 		document.querySelector(".delete_style").style.display = "";		
-	}
-	
-	if (config.sf2Name) {					
-		getArrSynth(config.sf2Name);	// load sf2 file
-	}
-	else
-
-	if (arranger == "sff") {	// use gmgsx.sf2 as dummy midiSynth
-		loadMidiSynth();
 	}		
 };
 
@@ -1623,7 +1624,16 @@ function arrSequenceLoaded() {
 	
 	if (realdrumLoop) {
 		setupRealDrums()
+	}	
+	
+	if (arrSynth?.name) {					
+		getArrSynth(arrSynth.name);	// load sf2 file
 	}
+	else
+
+	if (arranger == "sff") {	// use gmgsx.sf2 as dummy midiSynth
+		loadMidiSynth();
+	}	
 	
 	setupSongSequence();
 }
@@ -1632,21 +1642,42 @@ function getArrSequence(arrName, callback) {
 	console.debug("getArrSequence", arrName);
 	arrSequence = {name: arrName};
 	
-	const store = new idbKeyval.Store(arrName, arrName);		
+	if (arrName.startsWith("assets/styles/")) {
+		var xhr = new XMLHttpRequest();
 
-	idbKeyval.get(arrName, store).then(function (data) 
-	{
-		if (data) {
+		xhr.open('GET', arrName, true);
+		xhr.responseType = 'arraybuffer';
+
+		xhr.addEventListener('load', function(ev) {
+			const data = new Uint8Array(ev.target.response);
 			console.debug("getArrSequence", arrName, data);
+
 			arrSequence = parseMidi(data, arrName);
 			normaliseSffStyle();	
 			arrSequence.name = arrName;	
 			
-			if (callback) callback();				
-		}			
-	}).catch(function (err) {
-		console.error('getArrSequence failed!', err)
-	});	
+			if (callback) callback();							
+		});
+
+		xhr.send();			
+		
+	} else {	
+		const store = new idbKeyval.Store(arrName, arrName);		
+
+		idbKeyval.get(arrName, store).then(function (data) 
+		{
+			if (data) {
+				console.debug("getArrSequence", arrName, data);
+				arrSequence = parseMidi(data, arrName);
+				normaliseSffStyle();	
+				arrSequence.name = arrName;	
+				
+				if (callback) callback();				
+			}			
+		}).catch(function (err) {
+			console.error('getArrSequence failed!', err)
+		});	
+	}
 }
 
 function getArrSynth(sf2Name) {
@@ -2131,7 +2162,7 @@ function playPads(chords, channel, opts) {
 			sendProgramChange({programNumber: 89, channel: 0});
 		}
 		
-		if (arrSynth) 
+		if (arrSynth?.onmessage) 
 		{
 			if (chords instanceof Array) 
 			{
@@ -2156,7 +2187,7 @@ function stopPads() {
 	
 	if (!styleStarted) 
 	{
-		if (arrSynth) 
+		if (arrSynth?.onmessage) 
 		{
 			if (firstChord instanceof Array) 
 			{
@@ -2327,7 +2358,7 @@ function clearAllSffNotes() {
 		}
 		else
 			
-		if (arrSynth) {
+		if (arrSynth?.onmessage) {
 			const eventTypeByte = 0x80 | channel;
 			const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity};
 			arrSynth.onmessage(evt);
@@ -3462,7 +3493,7 @@ function sendProgramChange(event) {
 	}
 	else 
 		
-	if (arrSynth) {
+	if (arrSynth?.onmessage) {
 		const eventTypeByte = 0xC0 | channel;
 		const evt = {data: "midi," + eventTypeByte + "," + event.programNumber};
 		arrSynth.onmessage(evt);
@@ -3488,7 +3519,7 @@ function sendControlChange(event) {
 	}
 	else
 		
-	if (arrSynth) {
+	if (arrSynth?.onmessage) {
 		const eventTypeByte = 0xB0 | channel;
 		const evt = {data: "midi," + eventTypeByte + "," + event.controllerType + "," + event.value};
 		arrSynth.onmessage(evt);
@@ -3667,7 +3698,7 @@ function nextSongNote() {
 				offset = arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000;
 			}
 			else if ( arrSequence.name.toLowerCase().endsWith(".sas")) {
-				offset = (16 - current16thNote) * 16;				
+				offset = (15 - current16thNote) * arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000;				
 			}
 				
 
@@ -3740,7 +3771,7 @@ function endSffStyle() {
 		
 		for (let i=0; i<16; i++) 
 		{
-			if (arrSynth) {						
+			if (arrSynth?.onmessage) {						
 				const eventTypeByte = 0xB0 | i;
 				
 				const evt1 = {data: "midi," + eventTypeByte + ",120"};
@@ -3850,7 +3881,7 @@ function scheduleSongNote() {
 			}
 			else
 				
-			if (arrSynth) {
+			if (arrSynth?.onmessage) {
 				const eventTypeByte = 0x90 | channel;
 				const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity}
 				arrSynth.onmessage(evt);
@@ -3873,7 +3904,7 @@ function scheduleSongNote() {
 				}
 				else
 					
-				if (arrSynth) {
+				if (arrSynth?.onmessage) {
 					const eventTypeByte = 0x80 | channel;
 					const evt = {data: "midi," + eventTypeByte + "," + note + "," + event.velocity}
 					arrSynth.onmessage(evt);						
