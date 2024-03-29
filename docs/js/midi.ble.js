@@ -171,7 +171,7 @@ function bleMIDIrx(blepacket) {
 }
 
 function translateChordaToI1(callback, flag, trigger, velocity, channel) { 
-  //console.log("translateChordaToI1", flag, velocity, channel, trigger)	
+  console.log("translateChordaToI1", flag, velocity, channel, trigger)	
 
   
   if (channel == 9) {	

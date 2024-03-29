@@ -48,6 +48,7 @@ var songSequence = null;
 var arrSequence = null;
 var realdrumDevice = null;
 var arranger = "webaudio";
+var inputDeviceType = "logitech-gh";
 var realGuitarStyle = "none";
 var output = null;
 var input = null;
@@ -677,15 +678,15 @@ function toggleStrumUpDown() {
 }
 
 function handleNoteOff(note, device, velocity, channel) {	
-	//console.debug("handleNoteOff", note);
+	console.debug("handleNoteOff", inputDeviceType, note);
 	
-	if (device == "WIDI Uhost TODO") {
-		//console.debug("WIDI - chorda handleNoteOff", note.number, device, velocity, channel);
+	if (inputDeviceType == "chorda" && device != "INSTRUMENT1") {
+		//console.debug("chorda handleNoteOff", note.number, device, velocity, channel);
 		translateChordaToI1(handleNoteOff, false, note.number, velocity, channel) 	// calls handleNoteOff again with device == INSTRUMENT1			
 	}
 	else
 		
-	if (device == "INSTRUMENT1" || (device == "WIDI Uhost")) {
+	if (inputDeviceType == "instrument1" || device == "INSTRUMENT1") {
 		const fwdChord = [];
 		
 		if (!game) {
@@ -793,15 +794,15 @@ function handleNoteOff(note, device, velocity, channel) {
 }
 
 function handleNoteOn(note, device, velocity, channel) {
-	//console.debug("handleNoteOn", note, device, velocity, channel);
+	console.debug("handleNoteOn", inputDeviceType, note, device, velocity, channel);
 	
-	if (device == "WIDI Uhost TODO") {
-		//console.debug("WIDI - chorda handleNoteOn", note.number, device, velocity);		
+	if (inputDeviceType == "chorda" && device != "INSTRUMENT1") {
+		//console.debug("chorda handleNoteOn", note.number, device, velocity);		
 		translateChordaToI1(handleNoteOn, true, note.number, velocity, channel) 	// calls handleNoteOn again with device == INSTRUMENT1	
 	}
 	else
 		
-	if (device == "INSTRUMENT1" || device == "WIDI Uhost") {
+	if (inputDeviceType == "instrument1" || device == "INSTRUMENT1") {
 		
 		if (!game) {
 			setup();
@@ -1289,6 +1290,18 @@ async function setupUI(config,err) {
 	arrangerType.selectedIndex = arrangerIndex;			
 	arranger = config.arranger;	
 	
+	const midiInType = document.getElementById("midiInType");	
+	midiInType.options[0] = new Option("Logitech Guitar Hero", "logitech-gh", config.inputDeviceType == "logitech-gh");		
+	midiInType.options[1] = new Option("Artiphon Instrument 1", "instrument1", config.inputDeviceType == "instrument1");		
+	midiInType.options[2] = new Option("Artiphon Chorda", "chorda", config.inputDeviceType == "chorda");		
+
+	let deviceIndex = 0;
+	deviceIndex = config.inputDeviceType == "logitech-gh" ? 0 : deviceIndex;
+	deviceIndex = config.inputDeviceType == "instrument1" ? 1 : deviceIndex;
+	deviceIndex = config.inputDeviceType == "chorda" ? 2 : deviceIndex;	
+	midiInType.selectedIndex = deviceIndex;			
+	inputDeviceType = config.inputDeviceType;		
+	
 	setGigladUI();
    
 	midiOut.options[0] = new Option("**UNUSED**", "midiOutSel");
@@ -1414,6 +1427,13 @@ async function setupUI(config,err) {
 			saveConfig();			
 			console.debug("selected chordTracker midi port", chordTracker, midiChordTracker.value);
 		}
+	});
+	
+	midiInType.addEventListener("click", function()
+	{
+		inputDeviceType = midiInType.value;
+		console.debug("selected midi device type", inputDeviceType, midiInType.value);				
+		saveConfig();
 	});
 	
 	arrangerType.addEventListener("click", function()
@@ -1715,6 +1735,7 @@ function saveConfig() {
 	config.chordTracker = chordTracker ? chordTracker.name : null;
     config.input = input ? input.name : null;
 	config.arranger = arranger;
+	config.inputDeviceType = inputDeviceType;
 	config.realGuitarStyle = realGuitarStyle;
 	config.realdrumLoop = realdrumLoop ? realdrumLoop.name : null;
 	config.realdrumDevice = realdrumDevice ? realdrumDevice.deviceId : null;
