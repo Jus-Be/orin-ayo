@@ -48,6 +48,7 @@ var songSequence = null;
 var arrSequence = null;
 var realdrumDevice = null;
 var arranger = "webaudio";
+var arrangerGroup = "imported";
 var inputDeviceType = "logitech-gh";
 var realGuitarStyle = "none";
 var output = null;
@@ -678,7 +679,7 @@ function toggleStrumUpDown() {
 }
 
 function handleNoteOff(note, device, velocity, channel) {	
-	console.debug("handleNoteOff", inputDeviceType, note);
+	//console.debug("handleNoteOff", inputDeviceType, note);
 	
 	if (inputDeviceType == "chorda" && device != "INSTRUMENT1") {
 		//console.debug("chorda handleNoteOff", note.number, device, velocity, channel);
@@ -794,7 +795,7 @@ function handleNoteOff(note, device, velocity, channel) {
 }
 
 function handleNoteOn(note, device, velocity, channel) {
-	console.debug("handleNoteOn", inputDeviceType, note, device, velocity, channel);
+	//console.debug("handleNoteOn", inputDeviceType, note, device, velocity, channel);
 	
 	if (inputDeviceType == "chorda" && device != "INSTRUMENT1") {
 		//console.debug("chorda handleNoteOn", note.number, device, velocity);		
@@ -1225,19 +1226,32 @@ async function setupUI(config,err) {
 	realGuitarIndex = config.realGuitarStyle == "Basic_P44_16T_50_90" ? 4 : realGuitarIndex;			
 	realguitar.selectedIndex = realGuitarIndex;			
 	realGuitarStyle = config.realGuitarStyle;	
-	
+
 	const arrangerStyle =  document.getElementById("arrangerStyle");
-	arrangerStyle.options[0] = new Option("**UNUSED**", "arrangerStyle");	
-	let styleSelected = false;
-	let iStyle = 0;
+	const arrangerGrp = document.getElementById("arrangerGroup");
+	arrangerGroup = config.arrangerGroup;	
 	
-	for (internalStyle of internal_styles) {
-		iStyle++;
-		const styleName = "*" + internalStyle.substring(internalStyle.lastIndexOf("/") + 1);
-		styleSelected = config.arrName == internalStyle;
-		arrangerStyle.options[iStyle] = new Option(styleName, internalStyle, styleSelected, styleSelected);			
-	}
+	arrangerGrp.options[0] = new Option("Imported Styles", "imported", arrangerGroup == "imported", arrangerGroup == "imported");
+	arrangerGrp.options[1] = new Option("Yamaha PSR", "yamaha", arrangerGroup == "yamaha", arrangerGroup == "yamaha");
+	arrangerGrp.options[2] = new Option("Ketron KST", "ketron", arrangerGroup == "ketron", arrangerGroup == "ketron");
+	arrangerGrp.options[3] = new Option("Casio AC7", "casio", arrangerGroup == "casio", arrangerGroup == "casio");	
+	arrangerGrp.options[4] = new Option("JJazzLab Community", "jjazzlab", arrangerGroup == "jjazzlab", arrangerGroup == "jjazzlab");
+	arrangerGrp.options[5] = new Option("Soft Arranger", "sas", arrangerGroup == "sas", arrangerGroup == "sas");
 	
+	arrangerGrp.addEventListener("click", function()
+	{
+		createStyleList(config, arrangerStyle, arrangerGrp);
+		if (arrangerGrp.selectedIndex == 0) arrangerGroup = "imported";
+		if (arrangerGrp.selectedIndex == 1) arrangerGroup = "yamaha";
+		if (arrangerGrp.selectedIndex == 2) arrangerGroup = "ketron";
+		if (arrangerGrp.selectedIndex == 3) arrangerGroup = "casio";
+		if (arrangerGrp.selectedIndex == 4) arrangerGroup = "jjazzlab";	
+		if (arrangerGrp.selectedIndex == 5) arrangerGroup = "sas";		
+		saveConfig();			
+	});		
+	
+	createStyleList(config, arrangerStyle, arrangerGrp);
+		
 	const arrangerSf2 =  document.getElementById("arrangerSf2");
 	arrangerSf2.options[0] = new Option("**UNUSED**", "arrangerSf2");	
 	let sf2Selected = false;
@@ -1252,13 +1266,6 @@ async function setupUI(config,err) {
 				iSf2++;
 				sf2Selected = config.sf2Name == db.name;
 				arrangerSf2.options[iSf2] = new Option(db.name, db.name, sf2Selected, sf2Selected);				
-			}
-			else
-				
-			if (db.name.toLowerCase().endsWith(".kst") || db.name.toLowerCase().endsWith(".sty") || db.name.toLowerCase().endsWith(".prs")  || db.name.toLowerCase().endsWith(".bcs") || db.name.toLowerCase().endsWith(".ac7") || db.name.toLowerCase().endsWith(".sas")) {
-				iStyle++;
-				styleSelected = config.arrName == db.name;
-				arrangerStyle.options[iStyle] = new Option(db.name, db.name, styleSelected, styleSelected);				
 			}
 		})
 	})		
@@ -1300,8 +1307,8 @@ async function setupUI(config,err) {
 	deviceIndex = config.inputDeviceType == "instrument1" ? 1 : deviceIndex;
 	deviceIndex = config.inputDeviceType == "chorda" ? 2 : deviceIndex;	
 	midiInType.selectedIndex = deviceIndex;			
-	inputDeviceType = config.inputDeviceType;		
-	
+	inputDeviceType = config.inputDeviceType;
+
 	setGigladUI();
    
 	midiOut.options[0] = new Option("**UNUSED**", "midiOutSel");
@@ -1573,7 +1580,7 @@ async function setupUI(config,err) {
 	{
 		input.addListener('noteon', "all", function (e) {		
 			//console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note, e);
-			handleNoteOn(e.note, midiIn.value, e.velocity, e.channel);
+			(e.note, midiIn.value, e.velocity, e.channel);
 		});
 
 		input.addListener("noteoff", "all", function (e) {
@@ -1639,6 +1646,38 @@ async function setupUI(config,err) {
 		document.querySelector(".delete_style").style.display = "";		
 	}		
 };
+
+function createStyleList(config, arrangerStyle, arrangerGrp) {
+	arrangerStyle.innerHTML = "<select id='arrangerStyle' type='text' class='form-control input'></select>";
+	arrangerStyle.options[0] = new Option("**UNUSED**", "arrangerStyle");	
+	let styleSelected = false;
+	let iStyle = 0;
+	
+	if (arrangerGrp.selectedIndex == 0) 
+	{
+		indexedDB.databases().then(function (databases) 
+		{
+			databases.forEach(function (db) {
+				console.debug("found database", db.name);
+					
+				if (db.name.toLowerCase().endsWith(".kst") || db.name.toLowerCase().endsWith(".sty") || db.name.toLowerCase().endsWith(".prs")  || db.name.toLowerCase().endsWith(".bcs") || db.name.toLowerCase().endsWith(".ac7") || db.name.toLowerCase().endsWith(".sas")) {
+					iStyle++;
+					styleSelected = config.arrName == db.name;
+					arrangerStyle.options[iStyle] = new Option(db.name, db.name, styleSelected, styleSelected);				
+				}
+			})	
+		});
+		
+	} else {
+	
+		for (internalStyle of internal_styles[arrangerGrp.selectedIndex - 1]) {
+			iStyle++;
+			const styleName = internalStyle.substring(internalStyle.lastIndexOf("/") + 1);
+			styleSelected = config.arrName == internalStyle;
+			arrangerStyle.options[iStyle] = new Option(styleName, internalStyle, styleSelected, styleSelected);			
+		}	
+	}		
+}
 
 function arrSequenceLoaded() {
 	
@@ -1742,6 +1781,7 @@ function saveConfig() {
 	config.songName = songSequence ? songSequence.name : null;
 	config.arrName = arrSequence ? arrSequence.name : null;
 	config.sf2Name = arrSynth ? arrSynth.name : null;
+	config.arrangerGroup = arrangerGroup;
 
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 	
@@ -3959,7 +3999,7 @@ function harmoniseNote(event, channel) {
 	
 	let note = event.noteNumber;
 
-	if (channel != 9) 
+	if (channel != 9 && channel != 8) 
 	{	
 		if (!currentSffVar.startsWith("Ending") && !currentSffVar.startsWith("Intro")) {
 			if (arrChordType != "7" && (note % 12) == 9) note = note + 3;	// change A to C unless 7

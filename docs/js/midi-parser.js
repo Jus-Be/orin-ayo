@@ -62,7 +62,7 @@ function parseSas(parser, arrName) {
 		else if (event.channel == 4) event.channel = 13; 	// Pad		  
 		else if (event.channel == 5) event.channel = 14; 	// Phrase 1  	
 		else if (event.channel == 6) event.channel = 15; 	// Phrase 2
-		else if (event.channel == 8) event.channel = 9; 	// Percussion	
+		//else if (event.channel == 8) event.channel = 9; 	// Percussion	
 			
 		if (event.type == "setTempo") {
 			events.Hdr.setTempo = event;
