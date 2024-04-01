@@ -16,7 +16,14 @@ function parseMidi(data, arrName) {
 		  if (arrName.toLowerCase().endsWith(".sas")) {
 		     return {header, data: parseSas(p, arrName), casm: []};
 			 
-		  }	else {		  
+		  }	
+		  else
+			  
+		  if (arrName.toLowerCase().endsWith(".mid")) {
+		     return {header, data: parseSmf(p, arrName)};
+			 
+		  }			  
+		  else {		  
 			  var trackChunk = p.readChunk()
 			  var casmChunk = p.readChunk()
 				
@@ -43,6 +50,65 @@ function parseMidi(data, arrName) {
   else {
 	throw "Bad style file.  Expected 'MHdr or AC07', got: '" + headerChunk.id + "'"	  
   }
+}
+
+function parseSmf(parser, arrName) {
+	console.debug("parseSmf", arrName);	
+  var events = {Hdr : {}, music: []};
+	
+	while (!parser.eof()) {
+		const event = readEvent(parser);
+
+		if (event) {	
+			if (event.type == "sysEx" && event.data[0] == 0x43 && event.data[1] == 0x7E && event.data[2] == 0x02) {
+				console.debug("chord type", event.data[3], event.data[4], event.data[5]);
+				event.sysexType = "chord";
+				event.chordRoot = event.data[3];
+				event.chordType = event.data[4];
+				event.chordBass = event.data[5];
+				events.music.push(event);				
+			}
+			else
+				
+			if (event.type == "sysEx" && event.data[0] == 0x43 && event.data[1] == 0x7E && event.data[2] == 0x00) {
+				console.debug("section control", event.data[3]);
+				event.sysexType = "section-control";
+				event.section = event.data[3];	
+				events.music.push(event);				
+			}
+			else
+				
+			if (event.type == "sysEx" && event.data[0] == 0x43 && event.data[1] == 0x60 && event.data[2] == 0x7A) {
+				console.debug("start sequence");
+				event.sysexType = "start-sequence";	
+				events.music.push(event);				
+			}
+			else
+				
+			if (event.type == "sysEx" && event.data[0] == 0x43 && event.data[1] == 0x60 && event.data[2] == 0x7D) {
+				console.debug("stop sequence");
+				event.sysexType = "stop-sequence";	
+				events.music.push(event);				
+			}
+			else
+				
+			if (event.type == "lyrics") {
+				console.debug("lyrics", event.text);	
+				events.music.push(event);				
+			}
+			else
+				
+			if (event.type == "setTempo") {
+				events.Hdr.setTempo = event;
+			}
+			else
+				
+			if (event.type == "timeSignature") {
+				events.Hdr.timeSignature = event;
+			}			
+		}					
+	}
+	return events;
 }
 
 function parseSas(parser, arrName) {
@@ -528,6 +594,7 @@ function readEvent(p) {
           case 0x01:
             event.type = 'text'
             event.text = p.readString(length)
+			//console.debug(event.type, event.text, event.deltaTime);				
             return null; //event			
           case 0x02:
             event.type = 'copyrightNotice'
@@ -536,21 +603,22 @@ function readEvent(p) {
           case 0x03:
             event.type = 'trackName'
             event.text = p.readString(length)
-			console.debug(event.type, event.text, event.deltaTime);				
+			//console.debug(event.type, event.text, event.deltaTime);				
             return event
           case 0x04:
             event.type = 'instrumentName'
             event.text = p.readString(length)
-			console.debug(event.type, event.text, event.deltaTime);				
+			//console.debug(event.type, event.text, event.deltaTime);				
             return event
           case 0x05:
             event.type = 'lyrics'
             event.text = p.readString(length)
+			//console.debug(event.type, event.deltaTime, event.text);				
             return event
           case 0x06:
             event.type = 'marker'
             event.text = p.readString(length)	
-			console.debug(event.type, event.text, event.deltaTime);	
+			//console.debug(event.type, event.deltaTime, event.text);	
             return event;
           case 0x07:
             event.type = 'cuePoint'
@@ -569,12 +637,13 @@ function readEvent(p) {
           case 0x2f:			
             event.type = 'endOfTrack'
             if (length != 0) throw "Expected length for endOfTrack event is 0, got " + length
-			console.debug(event.type,event.deltaTime);				
+			//console.debug(event.type,event.deltaTime);				
             return event
           case 0x51:
             event.type = 'setTempo';
             if (length != 3) throw "Expected length for setTempo event is 3, got " + length
             event.microsecondsPerBeat = p.readUInt24()
+			//console.debug(event.type, event.deltaTime);				
             return event
           case 0x54:
             event.type = 'smpteOffset';
@@ -587,6 +656,7 @@ function readEvent(p) {
             event.sec = p.readUInt8()
             event.frame = p.readUInt8()
             event.subFrame = p.readUInt8()
+			//console.debug(event.type, event.deltaTime);				
             return event
           case 0x58:
             event.type = 'timeSignature'
@@ -595,32 +665,38 @@ function readEvent(p) {
             event.denominator = (1 << p.readUInt8())
             event.metronome = p.readUInt8()
             event.thirtyseconds = p.readUInt8()
+			//console.debug(event.type, event.deltaTime);				
             return event
           case 0x59:
             event.type = 'keySignature'
             if (length != 2) throw "Expected length for keySignature event is 2, got " + length
             event.key = p.readInt8()
             event.scale = p.readUInt8()
+			//console.debug(event.type, event.deltaTime);				
             return event
           case 0x7f:
             event.type = 'sequencerSpecific'
             event.data = p.readBytes(length)
+			//console.debug(event.type, event.deltaTime);				
             return event
           default:
             event.type = 'unknownMeta'
             event.data = p.readBytes(length)
             event.metatypeByte = metatypeByte
+			//console.debug(event.type, event.deltaTime);				
             return event
         }
       } else if (eventTypeByte == 0xf0) {
         event.type = 'sysEx'
         var length = p.readVarInt()
-        event.data = p.readBytes(length)
+        event.data = p.readBytes(length)	
+		//console.debug(event.type, event.deltaTime, event.data);			
         return event;
       } else if (eventTypeByte == 0xf7) {
         event.type = 'endSysEx'
         var length = p.readVarInt()
         event.data = p.readBytes(length)
+		//console.debug(event.type, event.deltaTime);			
         return event;
       } else {
         console.debug("Unrecognised MIDI event type byte: " + eventTypeByte);

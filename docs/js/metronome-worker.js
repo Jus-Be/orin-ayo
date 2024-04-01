@@ -3,20 +3,20 @@ var interval=100;
 
 self.onmessage=function(e){
 	if (e.data=="start") {
-		console.log("starting");
+		console.debug("starting");
 		timerID=setInterval(function(){postMessage("tick");},interval)
 	}
 	else if (e.data.interval) {
-		console.log("setting interval");
+		console.debug("setting interval");
 		interval=e.data.interval;
-		console.log("interval="+interval);
+		console.debug("interval="+interval);
 		if (timerID) {
 			clearInterval(timerID);
 			timerID=setInterval(function(){postMessage("tick");},interval)
 		}
 	}
 	else if (e.data=="stop") {
-		console.log("stopping");
+		console.debug("stopping");
 		clearInterval(timerID);
 		timerID=null;
 	}

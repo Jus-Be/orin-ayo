@@ -24,10 +24,46 @@ var internal_styles = [
 		"assets/styles/yamaha/Thrust_E443.sty"
 	],
 	[
+		"assets/styles/ketron/70DISCO3.KST",                                                         
+		"assets/styles/ketron/80DISCO3.KST",                                                          
+		"assets/styles/ketron/COOLTHIN.KST",                                                          
+		"assets/styles/ketron/DECMBRDS.KST",                                                          
+		"assets/styles/ketron/DSCFUNK.KST",                                                           
+		"assets/styles/ketron/DURANDUR.KST",                                                          
+		"assets/styles/ketron/HOTSTUFF.KST",                                                          
+		"assets/styles/ketron/MYPARTY.KST",                                                           
+		"assets/styles/ketron/PETSHOP.KST",                                                           
+		"assets/styles/ketron/PHILLY.KST",                                                            
+		"assets/styles/ketron/SOULDSC.KST",                                                           
+		"assets/styles/ketron/STAYDSC.KST"   	
 	],
 	[
+		"assets/styles/casio/16 Beat Pop X3000.AC7",                                                
+		"assets/styles/casio/16 Beat Shuffle 2 X3000.AC7",                                          
+		"assets/styles/casio/16 Beat Shuffle X3000.AC7",                                            
+		"assets/styles/casio/16 Beat X3000.AC7",                                                    
+		"assets/styles/casio/60's 8 Beat X3000.AC7",                                                
+		"assets/styles/casio/Acoustic Guitar 8 Beat X3000.AC7",
+		"assets/styles/casio/Funk 16 Beat X3000.AC7",                                               
+		"assets/styles/casio/Funk Soul X3000.AC7",                                                  
+		"assets/styles/casio/Guitar 8 Beat X3000.AC7",                                              
+		"assets/styles/casio/Mellow 8 Beat X3000.AC7",                                              
+		"assets/styles/casio/Oldies 8 Beat X3000.AC7",                                              
+		"assets/styles/casio/Smooth Jazz X3000.AC7",                                                
+		"assets/styles/casio/Straight 8 Beat X3000.AC7"  	
 	],
 	[
+		"assets/styles/jjazzlab/16beat.S556.prs",                                                      
+		"assets/styles/jjazzlab/16BeatBallad2.S014.prs",                                        
+		"assets/styles/jjazzlab/AfroCuban.S730.prs",                                                   
+		"assets/styles/jjazzlab/Cantabile.prs",                                                        
+		"assets/styles/jjazzlab/JazzRock_Cz2k.S563.sty",                                               
+		"assets/styles/jjazzlab/JazzWaltzSlow.S423.prs",                                               
+		"assets/styles/jjazzlab/LingusFunk.S066.sty",                                                  
+		"assets/styles/jjazzlab/PopBossa1.S629.prs",                                                   
+		"assets/styles/jjazzlab/PopShuffle1.S552.prs",                                                 
+		"assets/styles/jjazzlab/SambaCity213.s460.sty",                                                
+		"assets/styles/jjazzlab/Urban Funk.S066.STY"                                                                                                               
 	],	
 	[
 		"assets/styles/soft-arranger/80s Rock n Roll.sas",                                                  

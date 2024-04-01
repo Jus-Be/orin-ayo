@@ -129,7 +129,7 @@ AudioLooper.prototype.start = function(id) {
 	this.reloop = true;
 	this.offset = 0;
 	this.id = id;
-	this.vol = this.styleType == "bass" ? 0.95 : ( this.styleType == "chord" ? 0.5 : 0.75);
+	this.vol = this.styleType == "bass" ? 0.95 : ( this.styleType == "chord" ? 0.4 : 0.85);
 	this.prevVol = this.vol;
 
 	const loop = this.getLoop(this.id);

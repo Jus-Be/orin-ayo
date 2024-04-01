@@ -78,11 +78,13 @@ var aerosPart = 1;
 var aerosChordTrack = 1;
 var aerosAux = false;
 var aerosAuxMode = false;
-var currentPlayNote;
+var currentPlayNote = 0;
+var currentSongNote = 0;
 var startofVariation;
 var tempoCanvas = null;
 var nextBeatTime = 0;
 var playStartTime = 0;
+var songStartTime = 0;
 var audioContext = null;
 var unlocked = false;
 var arrangerBeat;
@@ -93,7 +95,8 @@ var lookahead = 25.0;       		// How frequently to call scheduling function
 var scheduleAheadTime = 0.1;		// How far ahead to schedule audio (sec)
 									// This is calculated from lookahead, and overlaps 
 									// with next interval (in case the timer is late)
-var nextNoteTime = 0.0;     		// when the next note is due.
+var nextNoteTime = 0.0;     		// when the next arranger note is due.
+var nextSongNoteTime = 0.0;     	// when the next song note is due.
 var canvasContext;          		// canvasContext is the canvas' context 2D
 var last16thNoteDrawn = -1; 		// the last "box" we drew on the screen
 var notesInQueue = [];      		// the notes that have been put into the web audio,
@@ -437,17 +440,13 @@ function handleFileContent(event) {
 	for (const file of files) {
 		var reader = new FileReader();
 
-		reader.onload = function(event)	{
-			if (file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs") || file.name.toLowerCase().endsWith(".ac7") || file.name.toLowerCase().endsWith(".sas")) {
-				handleStyleFile(file, event.target.result);
-			}			
-			else
-				
-			if (file.name.toLowerCase().endsWith(".sf2")) {
-				handleSF2File(file, event.target.result);
-			}			
+		reader.onload = function(event)	
+		{
+			if (file.name.toLowerCase().endsWith(".mid") || file.name.toLowerCase().endsWith(".sf2") || file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs") || file.name.toLowerCase().endsWith(".ac7") || file.name.toLowerCase().endsWith(".sas")) {
+				handleBinaryFile(file, event.target.result);
+			}						
 			else {
-				alert("Only soundfonts or style files supported");
+				alert("Only soundfonts, midi file or style files supported");
 			}
 		};
 
@@ -460,35 +459,33 @@ function handleFileContent(event) {
 	}
 }
 
-function handleSF2File(file, data) {
-	console.debug("handleSF2File", file, data);
+function handleBinaryFile(file, data) {
+	console.debug("handleBinaryFile", file, data);
 	
 	const store = new idbKeyval.Store(file.name, file.name);
 
 	idbKeyval.set(file.name, data, store).then(function () {
-		console.debug("sf2 set", file.name, data);
-		arrSynth = {name: file.name};
+		console.debug("handleBinaryFile set", file.name, data);
+		
+		if (file.name.toLowerCase().endsWith(".sf2")) {		
+			arrSynth = {name: file.name};
+		}
+		else
+			
+		if (file.name.toLowerCase().endsWith(".mid")) {		
+			songSequence = {name: file.name};
+		}
+		else {
+			arrSequence = {name: file.name};
+			arrangerGroup = "imported";				
+		}
+
 		saveConfig();
 		location.reload();			
 		
 	}).catch(function (err) {
-		console.error('sf2 set failed!', err)
+		console.error('handleBinaryFile set failed!', err)
 	});			
-}
-
-function handleStyleFile(file, data) {
-	console.debug("handleStyleFile", file, input);
-	
-	const store = new idbKeyval.Store(file.name, file.name);
-
-	idbKeyval.set(file.name, data, store).then(function () {
-		arrSequence = {name: file.name};
-		saveConfig();
-		location.reload();			
-		
-	}).catch(function (err) {
-		console.error('handleStyleFile db set failed!', err)
-	});	
 }
 
 function setTempo(tmpo) {
@@ -1267,7 +1264,26 @@ async function setupUI(config,err) {
 				sf2Selected = config.sf2Name == db.name;
 				arrangerSf2.options[iSf2] = new Option(db.name, db.name, sf2Selected, sf2Selected);				
 			}
-		})
+			else 
+				
+			if (db.name.toLowerCase().endsWith(".mid")) {
+				song_sequences.unshift("*" + db.name);
+			}				
+		});
+		
+		songSeq.options[0] = new Option("**UNUSED**", "songSeq");
+
+		for (var i=0; i<song_sequences.length; i++) {
+			let selectedSong = false;
+			const url = song_sequences[i];
+			const songName = url.substring(url.lastIndexOf("/") + 1);	
+			
+			if (config?.songName == url) {
+				selectedSong = true;
+				songSequence = {name: url};				
+			}
+			songSeq.options[i + 1] = new Option(songName, url, selectedSong, selectedSong);
+		}			
 	})		
 
 	const arrangerType =  document.getElementById("arrangerType");	
@@ -1319,7 +1335,6 @@ async function setupUI(config,err) {
 	midiIn.options[0] = new Option("**UNUSED**", "midiInSel");
 	realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice");
 	realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop");	
-	songSeq.options[0] = new Option("**UNUSED**", "songSeq");
 
 	midiPads.options[1] = new Option("Sound Font", "soundfont");	
 	
@@ -1454,9 +1469,10 @@ async function setupUI(config,err) {
 	arrangerStyle.addEventListener("click", function()
 	{
 		arrSequence = null
-		if (arrangerStyle.value == "arrangerStyle") return;
 		
-		arrSequence = {name: arrangerStyle.value};
+		if (arrangerStyle.value != "arrangerStyle") {		
+			arrSequence = {name: arrangerStyle.value};
+		}
 		saveConfig();			
 	});	
 	
@@ -1475,34 +1491,16 @@ async function setupUI(config,err) {
 		console.debug("selected realguitar style", realGuitarStyle, realguitar.value);				
 		saveConfig();
 	});
-	
-	for (var i=0; i<song_sequences.length; i++) {
-		let selectedSong = false;		
-		
-		if (config.songName && config.songName == song_sequences[i].name) {
-			selectedSong = true;
-			songSequence = song_sequences[i];
-		}
-		songSeq.options[i + 1] = new Option(song_sequences[i].label, song_sequences[i].name, selectedSong, selectedSong);
-	}	
 
 	songSeq.addEventListener("click", function()
 	{
 		songSequence = null;
 
-		if (songSeq.value != "songSeq")
-		{
-			for (let song of song_sequences) 
-			{
-				if (songSeq.value == song.name) {
-					songSequence = song
-					setupSongSequence();
-					saveConfig();						
-					break;
-				}						
-			}		
+		if (songSeq.value != "songSeq") {
+			songSequence = {name: songSeq.value};			
 			console.debug("selected song sequence", songSequence, songSeq.value);
 		}
+		saveConfig();		
 	});	
 	
 	normaliseAudioStyle();
@@ -1639,12 +1637,17 @@ async function setupUI(config,err) {
 	}									
 	
 	enableSequencer(!!forward && realGuitarStyle != "none");
-	
+
+	if (config.songName) {	
+		songSequence = {name: config.songName};
+		getSongSequence(config.songName);		
+	}
+
 	if (config.arrName) {	
 		arrSynth = {name: config.sf2Name};	
 		getArrSequence(config.arrName, arrSequenceLoaded);	
 		document.querySelector(".delete_style").style.display = "";		
-	}		
+	}	
 };
 
 function createStyleList(config, arrangerStyle, arrangerGrp) {
@@ -1697,6 +1700,46 @@ function arrSequenceLoaded() {
 	setupSongSequence();
 }
 
+function getSongSequence(songName, callback) {
+	console.debug("getSongSequence", songName);
+
+	if (songName.startsWith("assets/songs/")) {
+		var xhr = new XMLHttpRequest();
+
+		xhr.open('GET', escape(songName), true);
+		xhr.responseType = 'arraybuffer';
+
+		xhr.addEventListener('load', function(ev) {
+			const data = new Uint8Array(ev.target.response);
+			console.debug("getSongSequence", songName, data);
+
+			songSequence = parseMidi(data, songName);	
+			songSequence.name = songName;	
+			
+			if (callback) callback();							
+		});
+
+		xhr.send();			
+		
+	} else {
+		const dbName = songName.substring(1);	// remove *
+		const store = new idbKeyval.Store(dbName, dbName);		
+
+		idbKeyval.get(dbName, store).then(function (data) 
+		{
+			if (data) {
+				console.debug("getSongSequence", dbName, data);
+				songSequence = parseMidi(data, dbName);	
+				songSequence.name = songName;	
+				
+				if (callback) callback();				
+			}			
+		}).catch(function (err) {
+			console.error('getSongSequence failed!', err)
+		});	
+	}	
+}
+
 function getArrSequence(arrName, callback) {
 	console.debug("getArrSequence", arrName);
 	arrSequence = {name: arrName};
@@ -1704,11 +1747,11 @@ function getArrSequence(arrName, callback) {
 	if (arrName.startsWith("assets/styles/")) {
 		var xhr = new XMLHttpRequest();
 
-		xhr.open('GET', arrName, true);
+		xhr.open('GET', escape(arrName), true);
 		xhr.responseType = 'arraybuffer';
 
 		xhr.addEventListener('load', function(ev) {
-			const data = new Uint8Array(ev.target.response);
+			const data = ev.target.response;
 			console.debug("getArrSequence", arrName, data);
 
 			arrSequence = parseMidi(data, arrName);
@@ -2279,7 +2322,7 @@ function getVelocity() {
 }
 
 function playChord(chord, root, type, bass) {	
-	//console.debug("playChord", chord, root, type, bass);
+	console.debug("playChord", chord, root, type, bass);
 	
 	firstChord = chord;
 	arrChordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")));
@@ -2329,7 +2372,7 @@ function playChord(chord, root, type, bass) {
 		}
 		
 		if (styleType.innerText == "Normal" && (styleStarted  || (arranger != "aeroslooper" && arranger != "rclooper"))) {		
-			//console.debug("playChord output", chord);
+			console.debug("playChord output", chord, key, bassKey);
 								
 			if (chordTracker) {		
 				const trasposedRoot = transposeNote(root);
@@ -3513,14 +3556,22 @@ function startStopSequencer() {
 		
 	if (songSequence) 
 	{
-		if (!unlocked) {
-		  // play silent buffer to unlock the audio
-		  var buffer = audioContext.createBuffer(1, 1, 22050);
-		  var node = audioContext.createBufferSource();
-		  node.buffer = buffer;
-		  node.start(0);
-		  unlocked = true;
-		}
+		if (!styleStarted) 	
+		{		
+			if (!unlocked) {
+			  // play silent buffer to unlock the audio
+			  var buffer = audioContext.createBuffer(1, 1, 22050);
+			  var node = audioContext.createBufferSource();
+			  node.buffer = buffer;
+			  node.start(0);
+			  unlocked = true;
+			}
+			getSongSequence(songSequence.name, doStartStopSequencer);
+
+		} else {
+			if (timerWorker) timerWorker.postMessage("stop");	
+			notesInQueue = []; 		
+		}		
 	}
 	else
 		
@@ -3622,9 +3673,15 @@ function doStartStopSequencer() {
 		arrangerBeat = 0;
         current16thNote = 0;
 		currentPlayNote = 0;
+		currentSongNote = 0;
+		
         nextNoteTime = audioContext.currentTime;
 		nextBeatTime = nextNoteTime;
-		playStartTime = nextNoteTime;		
+		playStartTime = nextNoteTime;
+		
+		nextSongNoteTime = audioContext.currentTime;
+		songStartTime = nextSongNoteTime;
+		
         if (timerWorker) timerWorker.postMessage("start");	
 	} else {		
 		requestArrEnd = true;
@@ -3733,23 +3790,30 @@ function guitarScheduler() {
     }
 }
 
-function nextSongNote() {	
-	let offset = 0;
-	currentPlayNote++;	
-	
+function nextSongNote() {			
+
 	if (songSequence) {
-		if (currentPlayNote >= songSequence.music.length) {			
+		currentSongNote++;			
+		console.debug("nextSongNote", currentSongNote, nextSongNoteTime);	
+		
+		if (currentSongNote >= songSequence.data.music.length) {			
 			toggleStartStop();
-			return;
+			//if (timerWorker) timerWorker.postMessage("stop");
+			//notesInQueue = [];
+			
+		} else {		
+			const timestamp = songSequence.data.music[currentSongNote].deltaTime * (60 / (tempo * songSequence.header.ticksPerBeat));
+			nextSongNoteTime = nextSongNoteTime + timestamp;	
 		}
-		
-		const timestamp = songSequence.music[currentPlayNote].tick * (60 / (tempo * 1920));
-		nextNoteTime = playStartTime + timestamp;	
 	}
-	else
-		
+}
+
+function nextArrNote() {			
+
 	if (arrSequence) {
-		//console.debug("nextSongNote old", currentSffVar);
+		let offset = 0;		
+		currentPlayNote++;		
+		//console.debug("nextArrNote old", currentSffVar);
 			
 		if (currentPlayNote >= arrSequence.data[currentSffVar].length) {			
 			currentPlayNote = 0;
@@ -3775,7 +3839,7 @@ function nextSongNote() {
 			
 			orinayo_section.innerHTML = currentSffVar;				
 			
-			//console.debug("nextSongNote new", currentSffVar);
+			//console.debug("nextArrNote new", currentSffVar);
 
 			if (currentSffVar.startsWith("Ending")) {
 				endSffStyle();
@@ -3852,62 +3916,169 @@ function endSffStyle() {
 	}, 1000);
 }
 
+function getChordType(type) {
+    if (type == 0x00)  return ""	
+    if (type == 0x01)  return "6";	
+    if (type == 0x02)  return "7";
+    if (type == 0x03)  return "7#11";
+    if (type == 0x04)  return "9";
+    if (type == 0x05)  return "7-9";
+    if (type == 0x06)  return "6-9";
+    if (type == 0x07)  return "aug";
+    if (type == 0x08)  return "min";		
+    if (type == 0x09)  return "min6";
+    if (type == 0x0A)  return "min7";
+    if (type == 0x0B)  return "min7b5";
+	if (type == 0x0C)  return "min9";
+    if (type == 0x0D)  return "min7-9";
+    if (type == 0x0E)  return "min7-11";	
+    if (type == 0x0F)  return "minmaj7";
+    if (type == 0x10)  return "minmaj7-9";	
+    if (type == 0x11)  return "dim";		
+    if (type == 0x12)  return "dim7";	
+    if (type == 0x13)  return "7";
+    if (type == 0x14)  return "7sus4";
+    if (type == 0x15)  return "7b5";
+    if (type == 0x16)  return "7-9";
+    if (type == 0x17)  return "7#11";
+    if (type == 0x18)  return "7-13";
+    if (type == 0x19)  return "7b9";
+    if (type == 0x1A)  return "7b13";
+    if (type == 0x1B)  return "7#9";
+    if (type == 0x1D)  return "7aug";
+    if (type == 0x1E)  return "8";
+    if (type == 0x1F)  return "5";
+    if (type == 0x20)  return "sus4";
+    if (type == 0x21)  return "sus2";
+}
+
+function getNoteName(chordRoot) {	
+	let note = BASE;
+	let shape = "C";
+	
+	if (false) note = BASE;	
+	else if (chordRoot == 33) { note = BASE - 1;  shape = "B"; } // b
+	else if (chordRoot == 34) { note = BASE + 1;  shape = "Db"; } // db	
+	else if (chordRoot == 35) { note = BASE + 3;  shape = "Eb"; } // eb
+	else if (chordRoot == 36) { note = BASE + 4;  shape = "E"; } // e				
+	else if (chordRoot == 37) { note = BASE + 6;  shape = "Gb"; } // gb				
+	else if (chordRoot == 38) { note = BASE + 8;  shape = "Ab"; } // ab			
+	else if (chordRoot == 39) { note = BASE + 10; shape = "Bb"; } // bb				
+	
+	else if (chordRoot == 49) { note = BASE;  	  shape = "C"; } // c
+	else if (chordRoot == 50) { note = BASE + 2;  shape = "D"; } // d	
+	else if (chordRoot == 51) { note = BASE + 4;  shape = "E"; } // e
+	else if (chordRoot == 52) { note = BASE + 5;  shape = "F"; } // f	
+	else if (chordRoot == 53) { note = BASE + 7;  shape = "G"; } // g	
+	else if (chordRoot == 54) { note = BASE + 9;  shape = "A"; } // a
+	else if (chordRoot == 55) { note = BASE + 11; shape = "B"; } // b			
+
+	else if (chordRoot == 65) { note = BASE + 1;  shape = "C#"; } // c#
+	else if (chordRoot == 66) { note = BASE + 3;  shape = "D#"; } // d#	
+	else if (chordRoot == 67) { note = BASE + 5;  shape = "F"; } // f
+	else if (chordRoot == 68) { note = BASE + 6;  shape = "F#"; } // f#				
+	else if (chordRoot == 69) { note = BASE + 8;  shape = "G#"; } // g#				
+	else if (chordRoot == 70) { note = BASE + 10; shape = "A#"; } // a#	
+	
+	return {note, shape};
+}
+
 function scheduleSongNote() {
 
-	if (songSequence?.music[currentPlayNote]) {
-		const message = songSequence.music[currentPlayNote].message;
-		console.debug("scheduleSongNote", message);		
+	if (songSequence?.data.music[currentSongNote]) {
+		const event = songSequence.data.music[currentSongNote];	
 		
-		if (message.id == "Chord") {
+		if (event?.sysexType == "section-control") 
+		{		
+			if (event.section == 0x08) {
+				 sectionChange = 0; 
+				 changeArrSection(true);
+			}
+			else 
+				
+			if (event.section == 0x09) {
+				sectionChange = 1;
+				 changeArrSection(true);				
+			}			
+			else 
+				
+			if (event.section == 0x0A) {
+				sectionChange = 2;
+				 changeArrSection(true);				
+			}	
+			else 
+				
+			if (event.section == 0x0B) {
+				sectionChange = 3;
+				 changeArrSection(true);				
+			}
+			else 
+				
+			if (event.section == 0x10 || event.section == 0x11 || event.section == 0x12 || event.section == 0x13) {
+				 doFill();				
+			}						
+			else 
+				
+			if (event.section == 0x18) {
+				 doBreak();				
+			}
+			
+			if (event.section == 0x20 || event.section == 0x21 || event.section == 0x22 || event.section == 0x23) {			
+				toggleStartStop()
+			}	
+		}
+		else
+		
+		if (event?.sysexType == "chord") {
+			console.debug("scheduleSongNote - chord", event);				
 			let chord = [];
-			let note = BASE;
+			const chordShape = getNoteName(event.chordRoot);	
+			const bassShape = getNoteName(event.chordBass);
 			
-			if (false) note = BASE;	
-			
-			else if (message.element.chordRoot == 33) note = BASE - 1;	// b
-			else if (message.element.chordRoot == 34) note = BASE + 1;	// db	
-			else if (message.element.chordRoot == 35) note = BASE + 3;	// eb
-			else if (message.element.chordRoot == 36) note = BASE + 4;	// e				
-			else if (message.element.chordRoot == 37) note = BASE + 6;	// gb				
-			else if (message.element.chordRoot == 38) note = BASE + 8;	// ab			
-			else if (message.element.chordRoot == 39) note = BASE + 10;	// bb				
-			
-			else if (message.element.chordRoot == 49) note = BASE;		// c
-			else if (message.element.chordRoot == 50) note = BASE + 2;	// d	
-			else if (message.element.chordRoot == 51) note = BASE + 4;	// e
-			else if (message.element.chordRoot == 52) note = BASE + 5;	// f	
-			else if (message.element.chordRoot == 53) note = BASE + 7;	// g	
-			else if (message.element.chordRoot == 54) note = BASE + 9;	// a
-			else if (message.element.chordRoot == 55) note = BASE + 11;	// b			
-
-			else if (message.element.chordRoot == 65) note = BASE + 1;	// c#
-			else if (message.element.chordRoot == 66) note = BASE + 3;	// d#	
-			else if (message.element.chordRoot == 67) note = BASE + 5;	// f
-			else if (message.element.chordRoot == 68) note = BASE + 6;	// f#				
-			else if (message.element.chordRoot == 69) note = BASE + 8;	// g#				
-			else if (message.element.chordRoot == 70) note = BASE + 10;	// a#			
+			const note = chordShape.note;
 			
 			chord = [note, note + 4, note + 7];
 			
-			if (message.element.chordType == 0) 			// maj
+			if (event.chordType == 0) 			// maj
 				chord = [note, note + 4, note + 7];
 			
-			else if (message.element.chordType == 8)		// min
+			else if (event.chordType == 8)		// min
 				chord = [note, note + 3, note + 7];	
 
-			else if (message.element.chordType == 32)		// sus
-				chord = [note, note + 5, note + 7];			
+			else if (event.chordType == 32)		// sus
+				chord = [note, note + 5, note + 7];	
+				
+			let displayShape = chordShape.shape +  " " + getChordType(event.chordType);
+
+			if (event.chordRoot != event.chordBass) {
+				chord.unshift(bassShape.note);
+				displayShape = displayShape + "/" + bassShape.shape;
+			}
 			
 			if (chord.length > 0) {
 				activeChord = null;
 				pad.axis[STRUM] = STRUM_UP;
-				orinayo.innerHTML = message.element.elementText;				
-				playChord(chord, message.element.chordRoot,  message.element.chordType, message.element.chordBass);
+				orinayo.innerHTML = displayShape;				
+				playChord(chord, event.chordRoot,  event.chordType, event.chordBass);
 			}
 		}
+		else
+			
+		if (event.type == "lyrics") {
+			const cntrl = document.getElementById("lyrics");
+			let lyrics = cntrl.innerHTML + event.text;
+			
+			if (cntrl.innerHTML.length > 80) {
+				lyrics = event.text;
+			}
+
+			cntrl.innerHTML = lyrics;
+		}		
 	}
-	else
-		
+}
+
+function scheduleArrNote() {
+	
 	if (arrSequence) {
 		let event = arrSequence.data[currentSffVar][currentPlayNote];
 		//console.debug("scheduleSongNote", event);
@@ -4031,7 +4202,7 @@ function harmoniseNote(event, channel) {
 }
 
 function songScheduler() {
-	//console.debug("songScheduler", nextNoteTime, currentPlayNote);
+	//console.debug("songScheduler", nextNoteTime, currentPlayNote, currentSongNote);
 
     var secondsPerBeat = 60.0 / tempo; 
     nextBeatTime += (0.25 * secondsPerBeat); 	
@@ -4039,16 +4210,7 @@ function songScheduler() {
     current16thNote++; 
 	if (current16thNote == 16) current16thNote = 0;
 	notesInQueue.push( { note: current16thNote, time: nextBeatTime } );	
-	
-	if (songSequence) 
-	{
-		while ((nextNoteTime < audioContext.currentTime + scheduleAheadTime) && currentPlayNote < songSequence.music.length ) {
-			scheduleSongNote();
-			nextSongNote();
-		}
-	} 
-	else 
-	
+			
 	if (arrSequence && arrSequence?.data && arrSequence.data[currentSffVar]) {
 		arrangerBeat++;	
 		
@@ -4058,11 +4220,20 @@ function songScheduler() {
 		}	
 		
 		while ((nextNoteTime < audioContext.currentTime + scheduleAheadTime) && currentPlayNote < arrSequence.data[currentSffVar].length ) {
-			scheduleSongNote();
-			nextSongNote();
+			scheduleArrNote();
+			nextArrNote();
 			if (!arrSequence.data[currentSffVar]) break;
 		}		
 	}
+	
+	if (songSequence) 
+	{
+		while ((nextSongNoteTime < audioContext.currentTime + scheduleAheadTime) && currentSongNote < songSequence.data.music.length ) {
+			scheduleSongNote();
+			nextSongNote();
+		}
+	} 
+	
 }
 
 function setupSongSequence() {
@@ -4074,12 +4245,11 @@ function setupSongSequence() {
 		console.debug("setupSongSequence", flag, songSequence);	
 		
 		playButton.innerText = "Wait..";
-		setTempo(songSequence.bpm);
-		keyChange = songSequence.key;
+		const bpm = Math.floor(60 /(songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
+		setTempo(bpm);	
 	} 
-	else
 		
-	if (arrSequence.data.Hdr) {
+	if (arrSequence.data?.Hdr) {
 		
 		if (realdrumLoop) {
 			setTempo(realdrumLoop.bpm);	
