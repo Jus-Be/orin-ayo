@@ -27,7 +27,12 @@
 	</tr>		
 	</table>
 	<table width="90%">	
-	<tr><td><b>Arranger Type</b></td><td><select id="arrangerType" type="text" class="form-control input"></select></td><td valign="top" rowspan="14" ><div id="synth"></div></td></tr>	
+	<tr><td><b>Guitar Strum</b></td><td><select id="guitarType" type="text" class="form-control input"></select></td>	
+	    <td><select id="guitarStrum1" type="text" class="form-control input"></select></td>	
+	    <td><select id="guitarStrum2" type="text" class="form-control input"></select></td>
+	    <td><select id="guitarStrum3" type="text" class="form-control input"></select></td>
+	</tr>	
+	<tr><td><b>Arranger Type</b></td><td><select id="arrangerType" type="text" class="form-control input"></select></td><td valign="top" rowspan="14" colspan="4"><div id="synth"></div></td></tr>	
 	<tr><td><b>Arranger Group</b></td><td><select id="arrangerGroup" type="text" class="form-control input"></select></td><td></td></tr>	
 	<tr><td><b>Arranger Style</b></td><td><select id="arrangerStyle" type="text" class="form-control input"></select></td><td></td></tr>	
 	<tr><td><b>Sound Font File</b></td><td><select id="arrangerSf2" type="text" class="form-control input"></select></td><td></td></tr>	
@@ -62,6 +67,15 @@
 	  FADE-IN | FADE-OUT | PLAY | STOP | INTRO 1-3 | MAIN 1-4 | FILL 1-4 | BREAK 1-4
   </div>
 
+  <script src='./js/0250_Acoustic_Guitar_sf2_file.js'></script>
+  <script src='./js/0251_Acoustic_Guitar_sf2_file.js'></script>
+  <script src='./js/0252_Acoustic_Guitar_sf2_file.js'></script>
+  <script src='./js/0253_Acoustic_Guitar_sf2_file.js'></script>
+  <script src='./js/0250_Aspirin_sf2_file.js'></script>
+  <script src='./js/0250_Chaos_sf2_file.js'></script>
+  <script src='./js/0250_LK_AcousticSteel_SF2_file.js'></script>  
+  
+  <script src='./js/webaudio-font-player.js'></script>  
   <script src="./js/web-components.min.js" type="module"></script>
   <script src="./js/note.js"></script>
   <script src="./js/hitBar.js"></script>

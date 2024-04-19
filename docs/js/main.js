@@ -103,6 +103,34 @@ var notesInQueue = [];      		// the notes that have been put into the web audio
 									// and may or may not have played yet. {note, time}
 var timerWorker = null;     		// The Web Worker used to fire timer messages
 
+var guitarName = "0250_Chaos_sf2_file";
+var player = new WebAudioFontPlayer();
+var midiGuitar = window["_tone_" + guitarName];
+var guitarContext = new AudioContext();
+var guitarDuration = 3.0;
+var guitarVolume = 0.25;
+//var channelGuitar = player.createChannel(guitarContext);
+var seqIndex = 0;
+
+var O = 12;
+var C = 0, Cs = 1, Db = 1, D = 2, Ds = 3, Eb = 3, E = 4, F = 5, Fs = 6, Gb = 6, G = 7, Gs = 8, Ab = 8, A = 9, As = 10, Bb = 10, B = 11;
+var __6th = E +O*3, __5th = A +O*3, __4th = D +O*4, __3rd = G +O*4, __2nd = B +O*4, __1st = E +O*5;
+
+var chordChart = [
+	[{base:  C +O*3, strings: [ 3,  3, 2, 0, 1, 0]}, {base:  C +O*3, strings: [-1,  3, 5, 5, 4, 3]}, {base:  C +O*3, strings: [-1, -1, 3, 0, 1, 3]}],
+	[{base: Cs +O*3, strings: [-1, -1, 3, 1, 2, 1]}, {base: Cs +O*3, strings: [-1, -1, 2, 1, 2, 0]}, {base: Cs +O*3, strings: [-1, -1, 3, 3, 4, 1]}],
+	[{base:  D +O*2, strings: [-1, -1, 0, 2, 3, 2]}, {base:  D +O*2, strings: [-1, -1, 0, 2, 3, 1]}, {base:  D +O*2, strings: [-1, -1, 0, 2, 3, 3]}],
+	[{base: Ds +O*2, strings: [-1, -1, 3, 1, 2, 1]}, {base: Ds +O*2, strings: [-1, -1, 4, 3, 4, 2]}, {base: Ds +O*2, strings: [-1, -1, 1, 3, 4, 4]}],
+	[{base:  E +O*2, strings: [ 0,  2, 2, 1, 0, 0]}, {base:  E +O*2, strings: [ 0,  2, 2, 0, 0, 0]}, {base:  E +O*2, strings: [ 0,  2, 2, 2, 0, 0]}],
+	[{base:  F +O*2, strings: [ 1,  3, 3, 2, 1, 1]}, {base:  F +O*2, strings: [ 1,  3, 3, 1, 1, 1]}, {base:  F +O*2, strings: [-1, -1, 3, 3, 1, 1]}],
+	[{base: Fs +O*2, strings: [ 2,  4, 4, 3, 2, 2]}, {base: Fs +O*2, strings: [ 2,  4, 4, 2, 2, 2]}, {base: Fs +O*2, strings: [-1, -1, 4, 4, 2, 2]}],
+	[{base:  G +O*2, strings: [ 3,  2, 0, 0, 0, 3]}, {base:  G +O*2, strings: [ 3,  5, 5, 3, 3, 3]}, {base:  G +O*2, strings: [-1, -1, 0, 0, 1, 3]}],
+	[{base: Gs +O*2, strings: [ 4,  6, 6, 5, 4, 4]}, {base: Gs +O*2, strings: [ 4,  6, 6, 4, 4, 4]}, {base: Gs +O*2, strings: [-1, -1, 1, 1, 2, 4]}],
+	[{base:  A +O*2, strings: [-1,  0, 2, 2, 2, 0]}, {base:  A +O*2, strings: [-1,  0, 2, 2, 1, 0]}, {base:  A +O*2, strings: [-1,  0, 2, 2, 3, 0]}],
+	[{base: As +O*2, strings: [-1,  1, 3, 3, 3, 1]}, {base: As +O*2, strings: [-1,  1, 3, 3, 2, 1]}, {base: As +O*2, strings: [-1, -1, 3, 3, 4, 1]}],
+	[{base:  B +O*2, strings: [-1,  2, 4, 4, 4, 2]}, {base:  B +O*2, strings: [-1,  2, 4, 4, 3, 2]}, {base:  B +O*2, strings: [-1, -1, 4, 4, 5, 2]}]
+]
+			
 var canvas = {
   context : null,
   gameWidth : null,
@@ -198,7 +226,7 @@ window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
 window.addEventListener("beforeunload", () => saveConfig());
 window.addEventListener('message', messageHandler);
-
+			
 function myWorkerTimer(evt) {
   var data = evt.data,
       id = data.id,
@@ -305,6 +333,12 @@ function loadMidiSynth() {
 
 function onloadHandler() {
 	console.debug("onloadHandler");
+
+	if (player) {
+		//channelGuitar.output.gain.setValueAtTime(0.5, guitarContext.currentTime);
+		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);
+		padsMode = 2;
+	}
 
 	playButton = document.querySelector(".play");
 	gamePadModeButton = document.querySelector(".gamepad_mode");
@@ -839,7 +873,8 @@ function handleNoteOn(note, device, velocity, channel) {
 				if (!styleStarted && forward) {						
 					if (note.number == artiphonI1Base) {
 						padFretButton = (127);
-						padsMode = 0;						
+						padsMode = 0;	
+						seqIndex = 0;						
 					}
 					if (note.number == artiphonI1Base + 4) {
 						padFretButton =(126);
@@ -1285,7 +1320,83 @@ async function setupUI(config,err) {
 			songSeq.options[i + 1] = new Option(songName, url, selectedSong, selectedSong);
 		}			
 	})		
+	
+	const guitarType = document.getElementById("guitarType");
+	guitarType.options[0] = new Option("**UNUSED**", "none", config.guitarName == "none");	
+	guitarType.options[1] = new Option("Acoustic Guitar 250", "0250_Acoustic_Guitar_sf2_file", config.guitarName == "0250_Acoustic_Guitar_sf2_file", config.guitarName == "0250_Acoustic_Guitar_sf2_file");	
+	guitarType.options[2] = new Option("Aspirin", "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file");	
+	guitarType.options[3] = new Option("Chaos Steel", "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file");	
+	guitarType.options[4] = new Option("LK Acoustic Steel", "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file");	
+	guitarType.options[5] = new Option("Acoustic Guitar 251", "0251_Acoustic_Guitar_sf2_file", config.guitarName == "0251_Acoustic_Guitar_sf2_file", config.guitarName == "0251_Acoustic_Guitar_sf2_file");	
+	guitarType.options[6] = new Option("Acoustic Guitar 252", "0252_Acoustic_Guitar_sf2_file", config.guitarName == "0252_Acoustic_Guitar_sf2_file", config.guitarName == "0252_Acoustic_Guitar_sf2_file");	
+	guitarType.options[7] = new Option("Acoustic Guitar 253", "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file");	
+	guitarName = config.guitarName
 
+	guitarType.addEventListener("click", function()
+	{
+		guitarName = guitarType.value;
+		midiGuitar = window["_tone_" + guitarName];		
+		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);		
+		console.debug("selected guitar", guitarName, guitarType.value);				
+		saveConfig();
+	});
+	
+	const guitarStrum = [];
+	
+	for (let i=1; i<4; i++) {
+		guitarStrum[i] = document.getElementById("guitarStrum" + i);		
+		guitarStrum[i].options[0] = new Option("3-2-1-2", "3-2-1-2", config["strum" + i] == "3-2-1-2", config["strum" + i] == "3-2-1-2");			
+		guitarStrum[i].options[1] = new Option("3-2-1-B2-3-2-1-B1", "3-2-1-B2-3-2-1-B1", config["strum" + i] == "3-2-1-B2-3-2-1-B1", config["strum" + i] == "3-2-1-B2-3-2-1-B1");	
+		guitarStrum[i].options[2] = new Option("4-3-2-1-2-3", "4-3-2-1-2-3", config["strum" + i] == "4-3-2-1-2-3", config["strum" + i] == "4-3-2-1-2-3");
+		guitarStrum[i].options[3] = new Option("4-3-4-2-4-3-1-3-2", "4-3-4-2-4-3-1-3-2", config["strum" + i] == "4-3-4-2-4-3-1-3-2", config["strum" + i] == "4-3-4-2-4-3-1-3-2");
+		guitarStrum[i].options[4] = new Option("1-2-3-1-3-2 ", "1-2-3-1-3-2", config["strum" + i] == "1-2-3-1-3-2", config["strum" + i] == "1-2-3-1-3-2");
+		guitarStrum[i].options[5] = new Option("1-3-1-2-3-1-2-1-3-2", "1-3-1-2-3-1-2-1-3-2", config["strum" + i] == "1-3-1-2-3-1-2-1-3-2", config["strum" + i] == "1-3-1-2-3-1-2-1-3-2");
+		guitarStrum[i].options[6] = new Option("1-3-4-2", "1-3-4-2", config["strum" + i] == "1-3-4-2", config["strum" + i] == "1-3-4-2");
+		guitarStrum[i].options[7] = new Option("1-3-4-2-3-1-3", "1-3-4-2-3-1-3", config["strum" + i] == "1-3-4-2-3-1-3", config["strum" + i] == "1-3-4-2-3-1-3");
+		guitarStrum[i].options[8] = new Option("3-2-1-2-3-4-3-2", "3-2-1-2-3-4-3-2", config["strum" + i] == "3-2-1-2-3-4-3-2", config["strum" + i] == "3-2-1-2-3-4-3-2");
+		guitarStrum[i].options[9] = new Option("3-2-1-2-3-1-2-3-1-2", "3-2-1-2-3-1-2-3-1-2", config["strum" + i] == "3-2-1-2-3-1-2-3-1-2", config["strum" + i] == "3-2-1-2-3-1-2-3-1-2");
+		guitarStrum[i].options[10] = new Option("3-2-4-1-4-2-4", "3-2-4-1-4-2-4", config["strum" + i] == "3-2-4-1-4-2-4", config["strum" + i] == "3-2-4-1-4-2-4");
+		guitarStrum[i].options[11] = new Option("3-2-4-2-3-1-3-1", "3-2-4-2-3-1-3-1", config["strum" + i] == "3-2-4-2-3-1-3-1", config["strum" + i] == "3-2-4-2-3-1-3-1");
+		guitarStrum[i].options[12] = new Option("3-2-4-1-2-3-1-2-1", "3-2-4-1-2-3-1-2-1", config["strum" + i] == "3-2-4-1-2-3-1-2-1", config["strum" + i] == "3-2-4-1-2-3-1-2-1");
+		guitarStrum[i].options[13] = new Option("3-[2+1]", "3-[2+1]", config["strum" + i] == "3-[2+1]", config["strum" + i] == "3-[2+1]");
+		guitarStrum[i].options[14] = new Option("3-[2+1]-3-B2-3-[2+1]-3-B1", "3-[2+1]-3-B2-3-[2+1]-3-B1", config["strum" + i] == "3-[2+1]-3-B2-3-[2+1]-3-B1", config["strum" + i] == "3-[2+1]-3-B2-3-[2+1]-3-B1");  
+		guitarStrum[i].options[15] = new Option("3-[2+1]-B2-[2+1]-B1", "3-[2+1]-B2-[2+1]-B1", config["strum" + i] == "3-[2+1]-B2-[2+1]-B1", config["strum" + i] == "3-[2+1]-B2-[2+1]-B1");
+		guitarStrum[i].options[16] = new Option("4-[1+2+3]", "4-[1+2+3]", config["strum" + i] == "4-[1+2+3]", config["strum" + i] == "4-[1+2+3]");
+		guitarStrum[i].options[17] = new Option("3-2-1-B2-3-[2+1]-3-B1", "3-2-1-B2-3-[2+1]-3-B1", config["strum" + i] == "3-2-1-B2-3-[2+1]-3-B1", config["strum" + i] == "3-2-1-B2-3-[2+1]-3-B1");
+		guitarStrum[i].options[18] = new Option("2-str.chord", "[3+2]", config["strum" + i] == "[3+2]", config["strum" + i] == "[3+2]");
+		guitarStrum[i].options[19] = new Option("3-str.chord", "[3+2+1]", config["strum" + i] == "[3+2+1]", config["strum" + i] == "[3+2+1]");
+		guitarStrum[i].options[20] = new Option("lower 3-str.chord", "[4+3+2]", config["strum" + i] == "[4+3+2]", config["strum" + i] == "[4+3+2]");
+		guitarStrum[i].options[21] = new Option("3-str.chord,BassII", "[3+2+1]-B2-[3+2+1]-B1", config["strum" + i] == "[3+2+1]-B2-[3+2+1]-B1", config["strum" + i] == "[3+2+1]-B2-[3+2+1]-B1");
+		guitarStrum[i].options[22] = new Option("3-str.chord,4th", "[3+2+1]-4-[3+2]", config["strum" + i] == "[3+2+1]-4-[3+2]", config["strum" + i] == "[3+2+1]-4-[3+2]");	
+	}
+	
+		
+	strum1 = config.strum1;
+	strum2 = config.strum2;
+	strum3 = config.strum3;
+	
+	guitarStrum[1].addEventListener("click", function()
+	{
+		strum1 = guitarStrum[1].value;
+		console.debug("selected guitar strum1", strum1, guitarStrum[1].value);				
+		saveConfig();
+	});		
+
+	guitarStrum[2].addEventListener("click", function()
+	{
+		strum2 = guitarStrum[2].value;
+		console.debug("selected guitar strum2", strum2, guitarStrum[2].value);				
+		saveConfig();
+	});	
+
+	guitarStrum[3].addEventListener("click", function()
+	{
+		strum3 = guitarStrum[3].value;
+		console.debug("selected guitar strum3", strum3, guitarStrum[3].value);				
+		saveConfig();
+	});	
+
+	
 	const arrangerType =  document.getElementById("arrangerType");	
 	arrangerType.options[0] = new Option("Style Files Format", "sff", config.arranger == "sff");		
 	arrangerType.options[1] = new Option("Web Audio Files", "webaudio", config.arranger == "webaudio");		
@@ -1810,6 +1921,10 @@ function setGigladUI() {
 
 function saveConfig() {
     let config = {};
+	config.guitarName = guitarName;
+	config.strum1 = strum1;
+	config.strum2 = strum2;	
+	config.strum3 = strum3;	
 	config.keyChange = keyChange;
     config.output = output ? output.name : null;
     config.forward = forward ? forward.name : null;
@@ -2321,26 +2436,85 @@ function getVelocity() {
 	return 0.5 + (Math.random() * 0.5);
 }
 
+function getPitches(arrChord, arrChordType, seq) {
+	const p = [];	
+	const chordType = (arrChordType == "sus" ? 2 : (arrChordType == "min" ? 1 : 0));
+	const frets = chordChart[arrChord][chordType].strings;
+	const stringFrets = [__6th,__5th,__4th,__3rd,__2nd,__1st];
+	if (!seq) seq = "6+5+4+3+2+1";
+	if (seq.startsWith("[")) seq = seq.substring(1, seq.length - 1);
+	
+	const seqList = seq.split("+");
+	console.debug("getPitches", arrChord, chordType, seqList, frets);
+	
+	for(var i=0;i<seqList.length;i++){
+		const z = 6 - parseInt(seqList[i]);
+		
+		if(frets[z]>-1){
+			p.push(stringFrets[z] + frets[z]);
+		}
+	}
+	return p;
+}
+
 function playChord(chord, root, type, bass) {	
 	console.debug("playChord", chord, root, type, bass);
+
+	const bassNote = (chord.length == 4 ? chord[0] + 12 : chord[0] - 12);
+	const rootNote = (chord.length == 4 ? chord[0] + 24 : chord[0]);			
+	const thirdNote = (chord.length == 4 ? chord[2] : chord[1]);	
+	const fifthNote = (chord.length == 4 ? chord[3] : chord[2]);				
 	
 	firstChord = chord;
-	arrChordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")));
-	
+	arrChordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")));	
 	
 	if ((pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && !activeChord) {
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 		const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 
+		if (player) 
+		{				
+			if (padsMode == 1) {
+				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
+				if (pad.axis[STRUM] == STRUM_DOWN) player.queueStrumDown(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
+			}		
+			else
+				
+			if (padsMode == 2) {
+				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
+				if (pad.axis[STRUM] == STRUM_DOWN) 	player.queueWaveTable(guitarContext, guitarContext.destination, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
+			}	
+			else
+				
+			if (padsMode == 3 || padsMode == 4 || padsMode == 5) {
+				const guitarSeq = window["strum" + (padsMode - 2)].split("-"); 
+				const arpChord = guitarSeq[seqIndex++];							
+				if (seqIndex >= guitarSeq.length) seqIndex = 0;
+				
+				if (pad.axis[STRUM] == STRUM_UP) 
+				{
+					if (arpChord.startsWith("B")) {
+						player.queueWaveTable(guitarContext, guitarContext.destination, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
+					} else {						
+						player.queueStrum(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType, arpChord), guitarDuration, guitarVolume);
+					}
+				}
+				else
+					
+				if (pad.axis[STRUM] == STRUM_DOWN) {
+					player.queueWaveTable(guitarContext, guitarContext.destination, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
+					seqIndex = 0;					
+				}
+			}
+			else {
+				player.queueSnap(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume/4);			
+			}
+		}
 	
 		if (padsDevice?.stopNote || padsDevice?.name == "soundfont") {
 			//console.debug("playChord pads", chord);
 		
-			const rootNote = (chord.length == 4 ? chord[0] + 24 : chord[0]);			
-			const thirdNote = (chord.length == 4 ? chord[2] : chord[1]);	
-			const fifthNote = (chord.length == 4 ? chord[3] : chord[2]);				
-
 			if (padsMode == 1) {
 				if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 1, {velocity: getVelocity()});		// up root
 				if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: getVelocity()});   // down	root				
@@ -2825,6 +2999,7 @@ function stopChord() {
 			if (output) outputStopNote(activeChord, [4], {velocity: getVelocity()}); 
 			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: getVelocity()});		
 			if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
+			if (player) player.cancelQueue(guitarContext);
 			
 			if (!guitarAvailable && forward) 
 			{
@@ -2984,20 +3159,29 @@ function doChord() {
   //console.debug("doChord", pad)
   stopChord();
 
-  if (pad.axis[STRUM] == STRUM_LEFT && !pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN])
+  if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) 
   {
-	dokeyDown();
-  }
+	  if (pad.axis[STRUM] == STRUM_LEFT)
+	  {
+		dokeyDown();
+	  }
 
-  if (pad.axis[STRUM] == STRUM_RIGHT && !pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN])
-  {
-	dokeyUp();
+	  if (pad.axis[STRUM] == STRUM_RIGHT)
+	  {
+		dokeyUp();
+	  }
+	  
+	  if (player && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && padsMode != 3 && padsMode != 4 && padsMode != 5) {
+		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
+		player.queueSnap(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume/4);					  
+	  }
   }
-
+  
   if (pad.buttons[START] || pad.buttons[STARPOWER])
   {
 	if (pad.buttons[START]) {	// start + button activates pad mode
 		padsMode = 0;
+		seqIndex = 0;
 		
 		if (pad.buttons[GREEN]) padsMode = 1;	// full chord up/down
 		if (pad.buttons[RED]) padsMode = 2;		// chord up/root note down	
