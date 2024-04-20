@@ -125,6 +125,9 @@ It has an internal arranger engine implemented in JavaScript that can play Yamah
 
 It has an internal synth engine (based on [https://github.com/gree/sf2synth.js/](sf2synth.js)) that can play the styles using sound font (sf2) files with WebAudio.
 
-The internal synth and style engines are experimental and require a bit more work to be usable.
+It has an internal strumable guitar using [https://github.com/surikov/webaudiofont](WebAudioFont). It behaves just like RealGuitar does with a guitar hero controller.
+
+The internal guitar, synth and style engines are experimental and require a bit more work to be usable.
+
 
 
