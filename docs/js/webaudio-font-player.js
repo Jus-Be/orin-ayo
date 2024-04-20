@@ -600,7 +600,7 @@ var WebAudioFontLoader = /** @class */ (function () {
                 return i;
             }
         }
-        console.log('program', program, 'not found');
+        console.error('program', program, 'not found');
         return 0;
     };
     ;
@@ -866,7 +866,7 @@ var WebAudioFontPlayer = /** @class */ (function () {
     WebAudioFontPlayer.prototype.resumeContext = function (audioContext) {
         try {
             if (audioContext.state == 'suspended') {
-                console.log('audioContext.resume', audioContext);
+                console.debug('audioContext.resume', audioContext);
                 audioContext.resume();
             }
         }
@@ -880,7 +880,7 @@ var WebAudioFontPlayer = /** @class */ (function () {
         var zone = this.findZone(audioContext, preset, pitch);
         if (zone) {
             if (!(zone.buffer)) {
-                console.log('empty buffer ', zone);
+                console.debug('empty buffer ', zone);
                 return null;
             }
             var baseDetune = zone.originalPitch - 100.0 * zone.coarseTune - zone.fineTune;
@@ -1060,7 +1060,7 @@ var WebAudioFontPlayer = /** @class */ (function () {
                 this.adjustZone(audioContext, zone);
         }
         catch (ex) {
-            console.log('adjustZone', ex);
+            console.error('adjustZone', ex);
         }
         return zone;
     };
@@ -1076,7 +1076,7 @@ var WebAudioFontPlayer = /** @class */ (function () {
                     e.audioBufferSourceNode.disconnect();
             }
             catch (ex) {
-                console.log(ex);
+                console.error(ex);
             }
         }
     };
@@ -1136,7 +1136,7 @@ var WebAudioFontReverberator = /** @class */ (function () {
             me.wet.connect(c);
             c.connect(me.output);
             me.convolver = c;
-            console.log('convolver audioBuffer', audioBuffer);
+            console.debug('convolver audioBuffer', audioBuffer);
         });
     }
     return WebAudioFontReverberator;

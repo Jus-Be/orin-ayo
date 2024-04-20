@@ -109,7 +109,10 @@ var midiGuitar = window["_tone_" + guitarName];
 var guitarContext = new AudioContext();
 var guitarDuration = 3.0;
 var guitarVolume = 0.25;
-//var channelGuitar = player.createChannel(guitarContext);
+var guitarReverb = true;
+var reverberator = player.createReverberator(guitarContext);	
+var channelGuitar = player.createChannel(guitarContext);
+var guitarSource = guitarContext.destination;
 var seqIndex = 0;
 
 var O = 12;
@@ -334,12 +337,6 @@ function loadMidiSynth() {
 function onloadHandler() {
 	console.debug("onloadHandler");
 
-	if (player) {
-		//channelGuitar.output.gain.setValueAtTime(0.5, guitarContext.currentTime);
-		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);
-		padsMode = 2;
-	}
-
 	playButton = document.querySelector(".play");
 	gamePadModeButton = document.querySelector(".gamepad_mode");
 	styleType = document.querySelector(".style_type");
@@ -348,6 +345,32 @@ function onloadHandler() {
 	orinayo_section = document.querySelector('#orinayo-section');
 	orinayo_strum = document.querySelector('#orinayo-strum');	
 	statusMsg = document.querySelector('#statusMsg');
+	guitarReverb = document.querySelector("#reverb");
+
+	if (guitarName != "none") 
+	{
+		reverberator.output.connect(guitarContext.destination);
+		channelGuitar.output.connect(reverberator.input);	
+			
+		if (guitarReverb.checked) {		
+			//channelGuitar.output.gain.setValueAtTime(0.5, guitarContext.currentTime);
+			guitarSource = channelGuitar.input;
+		}
+		
+		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);
+		padsMode = 2;
+		orinayo_strum.innerHTML = "Strum " + padsMode;			
+	}
+	
+	guitarReverb.addEventListener('click', function(event) 
+	{
+		if (guitarReverb.checked) {		
+			guitarSource = channelGuitar.input;
+		} else {
+			guitarSource = guitarContext.destination;			
+		}
+	});		
+	
 
 	window.addEventListener("gamepadconnected", connectHandler);
 	window.addEventListener("gamepaddisconnected", disconnectHandler);
@@ -438,6 +461,10 @@ function onloadHandler() {
 			toggleStartStop();					
 		}
 	});	
+
+	document.querySelector("#volume").addEventListener("input", function(event) {
+		guitarVolume = +event.target.value / 100; 
+	});
 	
 	document.querySelector("#tempo").addEventListener("input", function(event) {
 		tempo = +event.target.value; 
@@ -874,7 +901,8 @@ function handleNoteOn(note, device, velocity, channel) {
 					if (note.number == artiphonI1Base) {
 						padFretButton = (127);
 						padsMode = 0;	
-						seqIndex = 0;						
+						seqIndex = 0;	
+						orinayo_strum.innerHTML = "None";	
 					}
 					if (note.number == artiphonI1Base + 4) {
 						padFretButton =(126);
@@ -891,7 +919,9 @@ function handleNoteOn(note, device, velocity, channel) {
 					if (note.number == artiphonI1Base + 9) {
 						padFretButton = (123);
 						padsMode = 4;
-					}					
+					}
+					
+					if (padsMode != 0) orinayo_strum.innerHTML = "Strum " + padsMode;						
 
 					if (padFretButton) {
 						if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
@@ -1335,8 +1365,20 @@ async function setupUI(config,err) {
 	guitarType.addEventListener("click", function()
 	{
 		guitarName = guitarType.value;
-		midiGuitar = window["_tone_" + guitarName];		
-		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);		
+		
+		if (guitarName != "none") {
+			reverberator.output.connect(guitarContext.destination);
+			channelGuitar.output.connect(reverberator.input);	
+			
+			if (guitarReverb.checked) {		
+				guitarSource = channelGuitar.input;
+			} else {
+				guitarSource = guitarContext.destination;			
+			}	
+
+			midiGuitar = window["_tone_" + guitarName];		
+			player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);				
+		}			
 		console.debug("selected guitar", guitarName, guitarType.value);				
 		saveConfig();
 	});
@@ -2473,21 +2515,21 @@ function playChord(chord, root, type, bass) {
 		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 		const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 
-		if (player) 
-		{				
+		if (guitarName != "none") 
+		{	
 			if (padsMode == 1) {
-				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
-				if (pad.axis[STRUM] == STRUM_DOWN) player.queueStrumDown(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
+				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
+				if (pad.axis[STRUM] == STRUM_DOWN) player.queueStrumDown(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
 			}		
 			else
 				
 			if (padsMode == 2) {
-				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
-				if (pad.axis[STRUM] == STRUM_DOWN) 	player.queueWaveTable(guitarContext, guitarContext.destination, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
+				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
+				if (pad.axis[STRUM] == STRUM_DOWN) 	player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
 			}	
 			else
 				
-			if (padsMode == 3 || padsMode == 4 || padsMode == 5) {
+			if (padsMode == 3 || padsMode == 4 || padsMode == 5) {			
 				const guitarSeq = window["strum" + (padsMode - 2)].split("-"); 
 				const arpChord = guitarSeq[seqIndex++];							
 				if (seqIndex >= guitarSeq.length) seqIndex = 0;
@@ -2495,20 +2537,20 @@ function playChord(chord, root, type, bass) {
 				if (pad.axis[STRUM] == STRUM_UP) 
 				{
 					if (arpChord.startsWith("B")) {
-						player.queueWaveTable(guitarContext, guitarContext.destination, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
+						player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
 					} else {						
-						player.queueStrum(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType, arpChord), guitarDuration, guitarVolume);
+						player.queueStrum(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType, arpChord), guitarDuration, guitarVolume);
 					}
 				}
 				else
 					
 				if (pad.axis[STRUM] == STRUM_DOWN) {
-					player.queueWaveTable(guitarContext, guitarContext.destination, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
+					player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
 					seqIndex = 0;					
 				}
 			}
 			else {
-				player.queueSnap(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume/4);			
+				player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume/4);			
 			}
 		}
 	
@@ -2999,7 +3041,7 @@ function stopChord() {
 			if (output) outputStopNote(activeChord, [4], {velocity: getVelocity()}); 
 			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: getVelocity()});		
 			if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
-			if (player) player.cancelQueue(guitarContext);
+			if (guitarName != "none") player.cancelQueue(guitarContext);
 			
 			if (!guitarAvailable && forward) 
 			{
@@ -3171,23 +3213,29 @@ function doChord() {
 		dokeyUp();
 	  }
 	  
-	  if (player && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && padsMode != 3 && padsMode != 4 && padsMode != 5) {
+	  if (guitarName != "none" && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && padsMode != 3 && padsMode != 4 && padsMode != 5) {
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
-		player.queueSnap(guitarContext, guitarContext.destination, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume/4);					  
+		player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume/4);					  
 	  }
   }
   
   if (pad.buttons[START] || pad.buttons[STARPOWER])
   {
 	if (pad.buttons[START]) {	// start + button activates pad mode
-		padsMode = 0;
-		seqIndex = 0;
+	
+		if (!styleStarted) { // ignore while beat is playing. prev style is being selected
+			padsMode = 0;
+			seqIndex = 0;
+			orinayo_strum.innerHTML = "None"; 				
+		}
 		
 		if (pad.buttons[GREEN]) padsMode = 1;	// full chord up/down
 		if (pad.buttons[RED]) padsMode = 2;		// chord up/root note down	
 		if (pad.buttons[YELLOW]) padsMode = 3;	// root note up/down
 		if (pad.buttons[BLUE]) padsMode = 4;	// 3rd note up/root note down
 		if (pad.buttons[ORANGE]) padsMode = 5;	// 5th note up/root note down
+		
+		if (padsMode != 0) orinayo_strum.innerHTML = "Strum " + padsMode;			
 	}
     playSectionCheck()
   }
