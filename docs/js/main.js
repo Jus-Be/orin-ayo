@@ -1410,6 +1410,7 @@ async function setupUI(config,err) {
 		guitarStrum[i].options[20] = new Option("lower 3-str.chord", "[4+3+2]", config["strum" + i] == "[4+3+2]", config["strum" + i] == "[4+3+2]");
 		guitarStrum[i].options[21] = new Option("3-str.chord,BassII", "[3+2+1]-B2-[3+2+1]-B1", config["strum" + i] == "[3+2+1]-B2-[3+2+1]-B1", config["strum" + i] == "[3+2+1]-B2-[3+2+1]-B1");
 		guitarStrum[i].options[22] = new Option("3-str.chord,4th", "[3+2+1]-4-[3+2]", config["strum" + i] == "[3+2+1]-4-[3+2]", config["strum" + i] == "[3+2+1]-4-[3+2]");	
+		guitarStrum[i].options[22] = new Option("Bass", "B1", config["strum" + i] == "B1", config["strum" + i] == "B1");	
 	}
 	
 		
@@ -2502,7 +2503,7 @@ function getPitches(arrChord, arrChordType, seq) {
 function playChord(chord, root, type, bass) {	
 	console.debug("playChord", chord, root, type, bass);
 
-	const bassNote = (chord.length == 4 ? chord[0] + 12 : chord[0] - 12);
+	const bassNote = (chord.length == 4 ? chord[0] : chord[0] - 12);
 	const rootNote = (chord.length == 4 ? chord[0] + 24 : chord[0]);			
 	const thirdNote = (chord.length == 4 ? chord[2] : chord[1]);	
 	const fifthNote = (chord.length == 4 ? chord[3] : chord[2]);				
@@ -2534,19 +2535,22 @@ function playChord(chord, root, type, bass) {
 				const arpChord = guitarSeq[seqIndex++];							
 				if (seqIndex >= guitarSeq.length) seqIndex = 0;
 				
-				if (pad.axis[STRUM] == STRUM_UP) 
-				{
-					if (arpChord.startsWith("B")) {
-						player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
-					} else {						
-						player.queueStrum(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType, arpChord), guitarDuration, guitarVolume);
+				if (arpChord) 
+				{				
+					if (pad.axis[STRUM] == STRUM_UP) 
+					{
+						if (arpChord.startsWith("B")) {
+							player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
+						} else {						
+							player.queueStrum(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType, arpChord), guitarDuration, guitarVolume);
+						}
 					}
-				}
-				else
-					
-				if (pad.axis[STRUM] == STRUM_DOWN) {
-					player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
-					seqIndex = 0;					
+					else
+						
+					if (pad.axis[STRUM] == STRUM_DOWN) {
+						player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
+						seqIndex = 0;					
+					}
 				}
 			}
 			else {
@@ -3077,7 +3081,7 @@ function playSectionCheck() {
 	} 
 	else 
 		
-	if (pad.buttons[START]) {		// prev variation. do nothing if button pressed (used by realguitar)
+	if (pad.buttons[START]) {		// prev variation. do nothing if button pressed (used by guitar and realguitar)
 	
 		if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) {
 			sectionChange--;		
@@ -3088,7 +3092,10 @@ function playSectionCheck() {
 				if (nextRgIndex < 0) nextRgIndex = window[realGuitarStyle].length - 1;		
 			}
 			arrChanged = true;		
-		}			
+			
+		} else {	// guitar - do nothing with style
+			return;
+		}		
 	}	
 	
 	orinayo_section.innerHTML = SECTIONS[sectionChange];		
