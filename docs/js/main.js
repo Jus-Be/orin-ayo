@@ -1360,6 +1360,7 @@ async function setupUI(config,err) {
 	guitarType.options[5] = new Option("Acoustic Guitar 251", "0251_Acoustic_Guitar_sf2_file", config.guitarName == "0251_Acoustic_Guitar_sf2_file", config.guitarName == "0251_Acoustic_Guitar_sf2_file");	
 	guitarType.options[6] = new Option("Acoustic Guitar 252", "0252_Acoustic_Guitar_sf2_file", config.guitarName == "0252_Acoustic_Guitar_sf2_file", config.guitarName == "0252_Acoustic_Guitar_sf2_file");	
 	guitarType.options[7] = new Option("Acoustic Guitar 253", "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file");	
+	guitarType.options[8] = new Option("Electric Bass Guitar (pick)", "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file");	
 	guitarName = config.guitarName
 
 	guitarType.addEventListener("click", function()
