@@ -103,7 +103,9 @@ var notesInQueue = [];      		// the notes that have been put into the web audio
 									// and may or may not have played yet. {note, time}
 var timerWorker = null;     		// The Web Worker used to fire timer messages
 
-var strum1, strum2, strum3;
+var strum1 = "3-2-1-2";
+var strum2 = "[3+2+1]";
+var strum3 = "3-2-4-1-4-2-4";
 var guitarName = "0250_Chaos_sf2_file";
 var player = new WebAudioFontPlayer();
 var midiGuitar = window["_tone_" + guitarName];
@@ -1362,6 +1364,7 @@ async function setupUI(config,err) {
 	guitarType.options[6] = new Option("Acoustic Guitar 252", "0252_Acoustic_Guitar_sf2_file", config.guitarName == "0252_Acoustic_Guitar_sf2_file", config.guitarName == "0252_Acoustic_Guitar_sf2_file");	
 	guitarType.options[7] = new Option("Acoustic Guitar 253", "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file");	
 	guitarType.options[8] = new Option("Electric Bass Guitar (pick)", "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file");	
+	guitarType.options[8] = new Option("Gibson Les Paul", "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file");		
 	guitarName = config.guitarName
 
 	guitarType.addEventListener("click", function()
@@ -1416,9 +1419,9 @@ async function setupUI(config,err) {
 	}
 	
 		
-	strum1 = config.strum1;
-	strum2 = config.strum2;
-	strum3 = config.strum3;
+	strum1 = config.strum1 || strum1;
+	strum2 = config.strum2 || strum2;
+	strum3 = config.strum3 || strum3;
 	
 	guitarStrum[1].addEventListener("click", function()
 	{
