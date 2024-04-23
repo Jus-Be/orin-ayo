@@ -1356,18 +1356,15 @@ async function setupUI(config,err) {
 	
 	const guitarType = document.getElementById("guitarType");
 	guitarType.options[0] = new Option("**UNUSED**", "none", config.guitarName == "none");	
-	guitarType.options[1] = new Option("Acoustic Guitar 250", "0250_Acoustic_Guitar_sf2_file", config.guitarName == "0250_Acoustic_Guitar_sf2_file", config.guitarName == "0250_Acoustic_Guitar_sf2_file");	
-	guitarType.options[2] = new Option("Aspirin", "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file");	
-	guitarType.options[3] = new Option("Chaos Steel", "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file");	
-	guitarType.options[4] = new Option("LK Acoustic Steel", "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file");	
-	guitarType.options[5] = new Option("Acoustic Guitar 251", "0251_Acoustic_Guitar_sf2_file", config.guitarName == "0251_Acoustic_Guitar_sf2_file", config.guitarName == "0251_Acoustic_Guitar_sf2_file");	
-	guitarType.options[6] = new Option("Acoustic Guitar 252", "0252_Acoustic_Guitar_sf2_file", config.guitarName == "0252_Acoustic_Guitar_sf2_file", config.guitarName == "0252_Acoustic_Guitar_sf2_file");	
-	guitarType.options[7] = new Option("Acoustic Guitar 253", "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file");	
-	guitarType.options[8] = new Option("Electric Bass Guitar (pick)", "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file");	
-	guitarType.options[8] = new Option("Gibson Les Paul", "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file");		
+	guitarType.options[1] = new Option("Aspirin", "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file");	
+	guitarType.options[2] = new Option("Chaos Steel", "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file");	
+	guitarType.options[3] = new Option("LK Acoustic Steel", "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file");	
+	guitarType.options[4] = new Option("Electric Bass Guitar (pick)", "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file");	
+	guitarType.options[5] = new Option("Acoustic Guitar", "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file");	
+	guitarType.options[6] = new Option("Gibson Les Paul", "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file");	
 	guitarName = config.guitarName
 
-	guitarType.addEventListener("click", function()
+	guitarType.addEventListener("click", function()  
 	{
 		guitarName = guitarType.value;
 		
@@ -2553,7 +2550,7 @@ function playChord(chord, root, type, bass) {
 					else
 						
 					if (pad.axis[STRUM] == STRUM_DOWN) {
-						player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
+						player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, arpChord.startsWith("B") ? bassNote : rootNote, guitarDuration, guitarVolume);
 						seqIndex = 0;					
 					}
 				}
