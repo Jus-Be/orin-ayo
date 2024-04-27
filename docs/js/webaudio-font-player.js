@@ -899,10 +899,32 @@ var WebAudioFontPlayer = /** @class */ (function () {
                     waveDuration = zone.buffer.duration / playbackRate;
                 }
             }
+			
+			if (guitarEffects != "none") {
+				stage.input.disconnect();	
+				stage.input = new pb.io.Input(stage.getContext());
+				stage.input.source.playbackRate.setValueAtTime(playbackRate, 0);				
+				stage.input.setSourceBuffer(zone.buffer);
+				stage.route();	
+				
+				if (loop) {
+					stage.input.source.loop = true;
+					stage.input.source.loopStart = zone.loopStart / zone.sampleRate + ((zone.delay) ? zone.delay : 0);
+					stage.input.source.loopEnd = zone.loopEnd / zone.sampleRate + ((zone.delay) ? zone.delay : 0);
+				}
+				else {
+					stage.input.source.loop = false;
+				}
+				stage.input.source.start(startWhen, zone.delay);
+				stage.input.source.stop(startWhen + waveDuration);			
+				return null;
+			}
+			
             var envelope = this.findEnvelope(audioContext, target);
             this.setupEnvelope(audioContext, envelope, zone, volume, startWhen, waveDuration, duration);
             envelope.audioBufferSourceNode = audioContext.createBufferSource();
             envelope.audioBufferSourceNode.playbackRate.setValueAtTime(playbackRate, 0);
+			
             if (slides) {
                 if (slides.length > 0) {
                     envelope.audioBufferSourceNode.playbackRate.setValueAtTime(playbackRate, when);
@@ -914,7 +936,9 @@ var WebAudioFontPlayer = /** @class */ (function () {
                     }
                 }
             }
+			
             envelope.audioBufferSourceNode.buffer = zone.buffer;
+			
             if (loop) {
                 envelope.audioBufferSourceNode.loop = true;
                 envelope.audioBufferSourceNode.loopStart = zone.loopStart / zone.sampleRate + ((zone.delay) ? zone.delay : 0);
@@ -1066,19 +1090,25 @@ var WebAudioFontPlayer = /** @class */ (function () {
     };
     ;
     WebAudioFontPlayer.prototype.cancelQueue = function (audioContext) {
-        for (var i = 0; i < this.envelopes.length; i++) {
-            var e = this.envelopes[i];
-            e.gain.cancelScheduledValues(0);
-            e.gain.setValueAtTime(this.nearZero, audioContext.currentTime);
-            e.when = -1;
-            try {
-                if (e.audioBufferSourceNode)
-                    e.audioBufferSourceNode.disconnect();
-            }
-            catch (ex) {
-                console.error(ex);
-            }
-        }
+		
+		if (guitarEffects == "none")
+		{
+			for (var i = 0; i < this.envelopes.length; i++) {
+				var e = this.envelopes[i];
+				e.gain.cancelScheduledValues(0);
+				e.gain.setValueAtTime(this.nearZero, audioContext.currentTime);
+				e.when = -1;
+				try {
+					if (e.audioBufferSourceNode)
+						e.audioBufferSourceNode.disconnect();
+				}
+				catch (ex) {
+					console.error(ex);
+				}
+			}
+		} else {
+			stage.stop();			
+		}
     };
     ;
     return WebAudioFontPlayer;

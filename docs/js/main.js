@@ -102,17 +102,38 @@ var last16thNoteDrawn = -1; 		// the last "box" we drew on the screen
 var notesInQueue = [];      		// the notes that have been put into the web audio,
 									// and may or may not have played yet. {note, time}
 var timerWorker = null;     		// The Web Worker used to fire timer messages
-
+var guitarEffects = "guitar_preset_1";
 var strum1 = "3-2-1-2";
 var strum2 = "[3+2+1]";
 var strum3 = "3-2-4-1-4-2-4";
 var guitarName = "0250_Chaos_sf2_file";
 var player = new WebAudioFontPlayer();
 var midiGuitar = window["_tone_" + guitarName];
-var guitarContext = new AudioContext();
 var guitarDuration = 3.0;
 var guitarVolume = 0.25;
 var guitarReverb = true;
+
+var stage = new pb.Stage();
+var guitarContext = stage.getContext();
+var board = new pb.Board(guitarContext);
+var overdrive = new pb.stomp.Overdrive(guitarContext);
+var reverb = new pb.stomp.Reverb(guitarContext);
+var volume = new pb.stomp.Volume(guitarContext);
+var cabinet = new pb.stomp.Cabinet(guitarContext);
+var delay = new pb.stomp.Delay(guitarContext);
+
+stage.setBoard(board);
+board.addPedals([overdrive, delay, reverb, volume, cabinet]);
+
+overdrive.setDrive(.1);
+overdrive.setTone(.4);
+overdrive.setLevel(.6);
+volume.setLevel(1);
+reverb.setLevel(.3);
+delay.setDelayTimer(.2);
+delay.setFeedbackGain(.7);
+stage.route();
+
 var reverberator = player.createReverberator(guitarContext);	
 var channelGuitar = player.createChannel(guitarContext);
 var guitarSource = guitarContext.destination;
@@ -349,21 +370,6 @@ function onloadHandler() {
 	orinayo_strum = document.querySelector('#orinayo-strum');	
 	statusMsg = document.querySelector('#statusMsg');
 	guitarReverb = document.querySelector("#reverb");
-
-	if (guitarName != "none") 
-	{
-		reverberator.output.connect(guitarContext.destination);
-		channelGuitar.output.connect(reverberator.input);	
-			
-		if (guitarReverb.checked) {		
-			//channelGuitar.output.gain.setValueAtTime(0.5, guitarContext.currentTime);
-			guitarSource = channelGuitar.input;
-		}
-		
-		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);
-		padsMode = 2;
-		orinayo_strum.innerHTML = "Strum " + padsMode;			
-	}
 	
 	guitarReverb.addEventListener('click', function(event) 
 	{
@@ -1362,7 +1368,6 @@ async function setupUI(config,err) {
 	guitarType.options[4] = new Option("Electric Bass Guitar (pick)", "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file");	
 	guitarType.options[5] = new Option("Acoustic Guitar", "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file");	
 	guitarType.options[6] = new Option("Gibson Les Paul", "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file");	
-	guitarName = config.guitarName
 
 	guitarType.addEventListener("click", function()  
 	{
@@ -1371,7 +1376,7 @@ async function setupUI(config,err) {
 		if (guitarName != "none") {
 			reverberator.output.connect(guitarContext.destination);
 			channelGuitar.output.connect(reverberator.input);	
-			
+		
 			if (guitarReverb.checked) {		
 				guitarSource = channelGuitar.input;
 			} else {
@@ -1384,6 +1389,25 @@ async function setupUI(config,err) {
 		console.debug("selected guitar", guitarName, guitarType.value);				
 		saveConfig();
 	});
+
+	guitarName = config.guitarName || guitarName
+	
+	if (guitarName != "none") 
+	{
+		reverberator.output.connect(guitarContext.destination);
+		channelGuitar.output.connect(reverberator.input);
+			
+		if (guitarReverb.checked) {		
+			//channelGuitar.output.gain.setValueAtTime(0.5, guitarContext.currentTime);
+			guitarSource = channelGuitar.input;
+		} else {
+			guitarSource = guitarContext.destination;			
+		}
+		
+		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);
+		padsMode = 2;
+		orinayo_strum.innerHTML = "Strum " + padsMode;			
+	}	
 	
 	const guitarStrum = [];
 	
@@ -1441,6 +1465,27 @@ async function setupUI(config,err) {
 		saveConfig();
 	});	
 
+	const guitarPresets =  document.getElementById("guitarEffects");
+	guitarPresets.options[0] = new Option("**UNUSED**", "none", config.guitarEffects == "none", config.guitarEffects == "none");	
+	guitarPresets.options[1] = new Option("Effect 1", "guitar_preset_1", config.guitarEffects == "guitar_preset_1", config.guitarEffects == "guitar_preset_1");	
+	guitarPresets.options[2] = new Option("Effect 2", "guitar_preset_2", config.guitarEffects == "guitar_preset_2", config.guitarEffects == "guitar_preset_2");	
+	guitarPresets.options[3] = new Option("Effect 3", "guitar_preset_3", config.guitarEffects == "guitar_preset_3", config.guitarEffects == "guitar_preset_3");	
+	guitarPresets.options[4] = new Option("Effect 4", "guitar_preset_4", config.guitarEffects == "guitar_preset_4", config.guitarEffects == "guitar_preset_4");	
+	guitarPresets.options[5] = new Option("Effect 5", "guitar_preset_5", config.guitarEffects == "guitar_preset_5", config.guitarEffects == "guitar_preset_5");	
+
+	guitarEffects = config.guitarEffects || guitarEffects;
+	setupGuitarEffects();
+	
+	guitarPresets.addEventListener("click", function()
+	{
+		guitarEffects = guitarPresets.value;
+			
+		if (guitarEffects != "none") {
+			console.debug("selected guitar preset effects", guitarEffects, guitarPresets.value);				
+			setupGuitarEffects();
+		}
+		saveConfig();
+	});		
 	
 	const arrangerType =  document.getElementById("arrangerType");	
 	arrangerType.options[0] = new Option("Style Files Format", "sff", config.arranger == "sff");		
@@ -1966,6 +2011,7 @@ function setGigladUI() {
 
 function saveConfig() {
     let config = {};
+	config.guitarEffects = guitarEffects;
 	config.guitarName = guitarName;
 	config.strum1 = strum1;
 	config.strum2 = strum2;	
@@ -4661,4 +4707,72 @@ function normaliseAudioStyle() {
 			
 		}
 	}		
+}
+
+function setupGuitarEffects() {
+	console.debug("setupGuitarEffects", guitarEffects);
+	
+	if (guitarEffects == "guitar_preset_1") {
+        !overdrive.bypassSwitch.getState() && overdrive.bypassSwitch.toggle();
+        overdrive.setLevel(1);
+        overdrive.setDrive(.1);
+        overdrive.setTone(1);
+        reverb.setLevel(1);
+        !delay.bypassSwitch.getState() && delay.bypassSwitch.toggle();
+        delay.setDelayTimer(0.6);
+        delay.setFeedbackGain(.5);
+        delay.setLevel(0.7);		
+	}
+	else
+
+	if (guitarEffects == "guitar_preset_2") {
+        !overdrive.bypassSwitch.getState() && overdrive.bypassSwitch.toggle();
+        overdrive.setLevel(.6);
+        overdrive.setDrive(.25);
+        overdrive.setTone(.5);
+        reverb.setLevel(.3);
+        delay.bypassSwitch.getState() && delay.bypassSwitch.toggle();
+        delay.setDelayTimer(0);
+        delay.setFeedbackGain(0);
+        delay.setLevel(0);		
+	}
+	else
+
+	if (guitarEffects == "guitar_preset_3") {
+        !overdrive.bypassSwitch.getState() && overdrive.bypassSwitch.toggle();
+        overdrive.setLevel(.6);
+        overdrive.setDrive(.4);
+        overdrive.setTone(.5);
+        reverb.setLevel(0.6);
+        delay.bypassSwitch.getState() && delay.bypassSwitch.toggle();
+        delay.setDelayTimer(0);
+        delay.setFeedbackGain(0);
+        delay.setLevel(0);	
+	}
+	else
+
+	if (guitarEffects == "guitar_preset_4") {
+        overdrive.bypassSwitch.getState() && overdrive.bypassSwitch.toggle();
+        overdrive.setLevel(1);
+        overdrive.setDrive(0);
+        overdrive.setTone(.1);
+        reverb.setLevel(1);
+        !delay.bypassSwitch.getState() && delay.bypassSwitch.toggle();
+        delay.setDelayTimer(0.8);
+        delay.setFeedbackGain(0.6);
+        delay.setLevel(0.55);	
+	}	
+	else
+
+	if (guitarEffects == "guitar_preset_5") {
+        !overdrive.bypassSwitch.getState() && overdrive.bypassSwitch.toggle();
+        overdrive.setLevel(1);
+        overdrive.setDrive(0.4);
+        overdrive.setTone(.3);
+        reverb.setLevel(.7);
+        !delay.bypassSwitch.getState() && delay.bypassSwitch.toggle();
+        delay.setDelayTimer(0.77);
+        delay.setFeedbackGain(0.4);
+        delay.setLevel(1);	
+	}	
 }
