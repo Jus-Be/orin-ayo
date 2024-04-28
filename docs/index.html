@@ -6,7 +6,10 @@
     <link rel="stylesheet" href="./css/bootstrap.css">
     <link rel="stylesheet" href="./css/synth.css">	
     <link rel="stylesheet" href="./css/main.css">		
-    <link id="favicon"     href="./assets/icon_16.png" rel="shortcut icon" type="image/gif" />		
+    <link id="favicon"     href="./assets/icon_16.png" rel="shortcut icon" type="image/gif" />	
+    <link rel="stylesheet" href="./css/box.css"/>
+    <link rel="stylesheet" href="./css/switch.css"/>
+    <link rel="stylesheet" href="./css/pot.css"/>	
 </head>
 
 <body>
@@ -20,6 +23,7 @@
 			<a class="gamepad_mode">Color Tabs</a><a class="load_file">Load</a>
 			<a style="display: none;" class="chorda_bluetooth">BT OFF</a>	
 			<a style="display: none;" class="delete_style">Delete Style</a>				
+			<a class="pedal_board">Pedal Board</a>			
 			<a class="reset_app">Refresh</a>			
 			<span style="font-size: 20px;display:none;margin-left:10px" id="sequencer">Tempo:<span id="showTempo">100</span></span>		
 			<div id="sequencer2" style="margin:10px">BPM
@@ -32,14 +36,15 @@
 		</td>
 	</tr>		
 	</table>
-	<table width="90%">	
+    
+	<table id="settings" width="90%">	
 	<tr><td><b>Guitar Strum</b></td><td><select id="guitarType" type="text" class="form-control input"></select></td>	
 	    <td><select id="guitarStrum1" type="text" class="form-control input"></select></td>	
 	    <td><select id="guitarStrum2" type="text" class="form-control input"></select></td>
 	    <td><select id="guitarStrum3" type="text" class="form-control input"></select></td>
 	    <td><select id="guitarEffects" type="text" class="form-control input"></select></td>
 	</tr>	
-	<tr><td><b>Arranger Type</b></td><td><select id="arrangerType" type="text" class="form-control input"></select></td><td valign="top" rowspan="14" colspan="4"><div id="synth"></div></td></tr>	
+	<tr><td><b>Arranger Type</b></td><td><select id="arrangerType" type="text" class="form-control input"></select></td><td valign="top" rowspan="14" colspan="4"><div id="synth"></div><div style="display: none;" id="box"><div id="floor"></div></div></td></tr>	
 	<tr><td><b>Arranger Group</b></td><td><select id="arrangerGroup" type="text" class="form-control input"></select></td><td></td></tr>	
 	<tr><td><b>Arranger Style</b></td><td><select id="arrangerStyle" type="text" class="form-control input"></select></td><td></td></tr>	
 	<tr><td><b>Sound Font File</b></td><td><select id="arrangerSf2" type="text" class="form-control input"></select></td><td></td></tr>	

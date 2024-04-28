@@ -122,6 +122,7 @@ var volume = new pb.stomp.Volume(guitarContext);
 var cabinet = new pb.stomp.Cabinet(guitarContext);
 var delay = new pb.stomp.Delay(guitarContext);
 
+	
 stage.setBoard(board);
 board.addPedals([overdrive, delay, reverb, volume, cabinet]);
 
@@ -132,8 +133,8 @@ volume.setLevel(1);
 reverb.setLevel(.3);
 delay.setDelayTimer(.2);
 delay.setFeedbackGain(.7);
-stage.route();
-
+stage.route();	
+	
 var reverberator = player.createReverberator(guitarContext);	
 var channelGuitar = player.createChannel(guitarContext);
 var guitarSource = guitarContext.destination;
@@ -361,6 +362,8 @@ function loadMidiSynth() {
 function onloadHandler() {
 	console.debug("onloadHandler");
 
+	stage.render(document.querySelector("#floor"));
+
 	playButton = document.querySelector(".play");
 	gamePadModeButton = document.querySelector(".gamepad_mode");
 	styleType = document.querySelector(".style_type");
@@ -430,7 +433,22 @@ function onloadHandler() {
 			}, 1000)				
 		}
 	});		
-  
+
+	const pedalBoard = document.querySelector(".pedal_board");
+	
+	pedalBoard.addEventListener('click', function(event) {
+		const board = document.querySelector("#box");
+		const settings = document.querySelector("#synth");		
+		
+		if (settings.style.display == "none") {
+			settings.style.display = "";
+			board.style.display = "none";			
+		} else {
+			board.style.display = "";
+			settings.style.display = "none";			
+		}
+	});	
+	
 	const chordaBluetooth = document.querySelector(".chorda_bluetooth");
 	
 	chordaBluetooth.addEventListener('click', function(event) {

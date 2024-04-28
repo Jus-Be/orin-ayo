@@ -900,29 +900,36 @@ var WebAudioFontPlayer = /** @class */ (function () {
                 }
             }
 			
+			var envelope = audioContext.createGain();			
+			
 			if (guitarEffects != "none") {
+				var context = stage.getContext();
 				stage.input.disconnect();	
-				stage.input = new pb.io.Input(stage.getContext());
+				stage.input = new pb.io.Input(context);
 				stage.input.source.playbackRate.setValueAtTime(playbackRate, 0);				
 				stage.input.setSourceBuffer(zone.buffer);
 				stage.route();	
-				
-				if (loop) {
-					stage.input.source.loop = true;
-					stage.input.source.loopStart = zone.loopStart / zone.sampleRate + ((zone.delay) ? zone.delay : 0);
-					stage.input.source.loopEnd = zone.loopEnd / zone.sampleRate + ((zone.delay) ? zone.delay : 0);
-				}
-				else {
-					stage.input.source.loop = false;
-				}
-				stage.input.source.start(startWhen, zone.delay);
-				stage.input.source.stop(startWhen + waveDuration);			
-				return null;
+
+				envelope.target = context.destination;
+				envelope.connect(context.destination);
+				envelope.cancel = function () {
+					if (envelope && (envelope.when + envelope.duration > audioContext.currentTime)) {
+						envelope.gain.cancelScheduledValues(0);
+						envelope.gain.setTargetAtTime(0.00001, audioContext.currentTime, 0.1);
+						envelope.when = audioContext.currentTime + 0.00001;
+						envelope.duration = 0;
+					}
+				};
+				this.envelopes.push(envelope);					
+				this.setupEnvelope(audioContext, envelope, zone, volume, startWhen, waveDuration, duration);
+				envelope.audioBufferSourceNode = stage.input.source;				
+			
+			} else {
+				envelope = this.findEnvelope(audioContext, target);
+				this.setupEnvelope(audioContext, envelope, zone, volume, startWhen, waveDuration, duration);
+				envelope.audioBufferSourceNode = audioContext.createBufferSource();
 			}
 			
-            var envelope = this.findEnvelope(audioContext, target);
-            this.setupEnvelope(audioContext, envelope, zone, volume, startWhen, waveDuration, duration);
-            envelope.audioBufferSourceNode = audioContext.createBufferSource();
             envelope.audioBufferSourceNode.playbackRate.setValueAtTime(playbackRate, 0);
 			
             if (slides) {
@@ -937,7 +944,9 @@ var WebAudioFontPlayer = /** @class */ (function () {
                 }
             }
 			
-            envelope.audioBufferSourceNode.buffer = zone.buffer;
+			if (guitarEffects == "none") {			
+				envelope.audioBufferSourceNode.buffer = zone.buffer;
+			}
 			
             if (loop) {
                 envelope.audioBufferSourceNode.loop = true;
@@ -1088,29 +1097,24 @@ var WebAudioFontPlayer = /** @class */ (function () {
         }
         return zone;
     };
-    ;
+   
     WebAudioFontPlayer.prototype.cancelQueue = function (audioContext) {
-		
-		if (guitarEffects == "none")
-		{
-			for (var i = 0; i < this.envelopes.length; i++) {
-				var e = this.envelopes[i];
-				e.gain.cancelScheduledValues(0);
-				e.gain.setValueAtTime(this.nearZero, audioContext.currentTime);
-				e.when = -1;
-				try {
-					if (e.audioBufferSourceNode)
-						e.audioBufferSourceNode.disconnect();
-				}
-				catch (ex) {
-					console.error(ex);
-				}
+		console.debug("cancelQueue", this.envelopes);
+		for (var i = 0; i < this.envelopes.length; i++) {
+			var e = this.envelopes[i];
+			e.gain.cancelScheduledValues(0);
+			e.gain.setValueAtTime(this.nearZero, audioContext.currentTime);
+			e.when = -1;
+			try {
+				if (e.audioBufferSourceNode)
+					e.audioBufferSourceNode.disconnect();
 			}
-		} else {
-			stage.stop();			
+			catch (ex) {
+				console.error(ex);
+			}
 		}
     };
-    ;
+   
     return WebAudioFontPlayer;
 }());
 var WebAudioFontReverberator = /** @class */ (function () {
