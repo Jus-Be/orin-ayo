@@ -442,8 +442,9 @@ function onloadHandler() {
 		
 		if (settings.style.display == "none") {
 			settings.style.display = "";
-			board.style.display = "none";			
-		} else {
+			board.style.display = "none";	
+			
+		} else if (guitarEffects != "none") {
 			board.style.display = "";
 			settings.style.display = "none";			
 		}
