@@ -1305,15 +1305,17 @@ async function setupUI(config,err) {
 	let realGuitarIndex = 0;
 	
 	realguitar.options[0] = new Option("**UNUSED**", "none", config.realguitar == "none");
-	realguitar.options[1] = new Option("Funk One - 16th (90-120 BPM)", "Funk1_S_16th_90_120", config.realguitar == "Funk1_S_16th_90_120");			
-	realguitar.options[2] = new Option("Funk Three - 16th (90-120 BPM)", "Funk3_S_16th_90_120", config.realguitar == "Funk3_S_16th_90_120");
-	realguitar.options[3] = new Option("4'4 Basic Strum 8th (100-200 BPM)", "Basic_B44_8th_100_200", config.realguitar == "Basic_B44_8th_100_200");
-	realguitar.options[4] = new Option("4'4 Basic Picking 16th (50-90 BPM)", "Basic_P44_16T_50_90", config.realguitar == "Basic_P44_16T_50_90");
+	realguitar.options[1] = new Option("Internal Guitar", "Internal_Guitar", config.realguitar == "Internal_Guitar");			
+	realguitar.options[2] = new Option("Funk One - 16th (90-120 BPM)", "Funk1_S_16th_90_120", config.realguitar == "Funk1_S_16th_90_120");			
+	realguitar.options[3] = new Option("Funk Three - 16th (90-120 BPM)", "Funk3_S_16th_90_120", config.realguitar == "Funk3_S_16th_90_120");
+	realguitar.options[4] = new Option("4'4 Basic Strum 8th (100-200 BPM)", "Basic_B44_8th_100_200", config.realguitar == "Basic_B44_8th_100_200");
+	realguitar.options[5] = new Option("4'4 Basic Picking 16th (50-90 BPM)", "Basic_P44_16T_50_90", config.realguitar == "Basic_P44_16T_50_90");
 
-	realGuitarIndex = config.realGuitarStyle == "Funk1_S_16th_90_120" ? 1 : realGuitarIndex;
-	realGuitarIndex = config.realGuitarStyle == "Funk3_S_16th_90_120" ? 2 : realGuitarIndex;				
-	realGuitarIndex = config.realGuitarStyle == "Basic_B44_8th_100_200" ? 3 : realGuitarIndex;			
-	realGuitarIndex = config.realGuitarStyle == "Basic_P44_16T_50_90" ? 4 : realGuitarIndex;			
+	realGuitarIndex = config.realGuitarStyle == "Internal_Guitar" 		? 1 : realGuitarIndex;
+	realGuitarIndex = config.realGuitarStyle == "Funk1_S_16th_90_120" 	? 2 : realGuitarIndex;
+	realGuitarIndex = config.realGuitarStyle == "Funk3_S_16th_90_120" 	? 3 : realGuitarIndex;				
+	realGuitarIndex = config.realGuitarStyle == "Basic_B44_8th_100_200" ? 4 : realGuitarIndex;			
+	realGuitarIndex = config.realGuitarStyle == "Basic_P44_16T_50_90" 	? 5 : realGuitarIndex;			
 	realguitar.selectedIndex = realGuitarIndex;			
 	realGuitarStyle = config.realGuitarStyle;	
 
@@ -1422,7 +1424,8 @@ async function setupUI(config,err) {
 		} else {
 			guitarSource = guitarContext.destination;			
 		}
-		
+
+		midiGuitar = window["_tone_" + guitarName];				
 		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);
 		padsMode = 2;
 		orinayo_strum.innerHTML = "Strum " + padsMode;			
@@ -1650,12 +1653,12 @@ async function setupUI(config,err) {
 	if (!err) midiFwd.addEventListener("click", function()
 	{
 		forward = null;
-		enableSequencer(false);
+		enableSequencer(guitarName != "none");
 
 		if (midiFwd.value != "midiFwdSel") {
 			forward = WebMidi.getOutputByName(midiFwd.value);
 			saveConfig();			
-			enableSequencer(!!forward && realGuitarStyle != "none");
+			enableSequencer((!!forward && realGuitarStyle != "none") || guitarName != "none" );
 			console.debug("selected forward midi port", forward, midiFwd.value);
 		}
 	});
@@ -1856,7 +1859,7 @@ async function setupUI(config,err) {
 		});
 	}									
 	
-	enableSequencer(!!forward && realGuitarStyle != "none");
+	enableSequencer((!!forward && realGuitarStyle != "none") || guitarName != "none");
 
 	if (config.songName) {	
 		songSequence = {name: config.songName};
@@ -2392,7 +2395,7 @@ function doSffSInt() {
 }
 	
 function doSffFill(changed) {
-	if (!styleStarted) return;
+	if (!styleStarted || !arrSequence?.data) return;
 	
 	setSffVar(changed);	
 	
@@ -2551,11 +2554,13 @@ function getPitches(arrChord, arrChordType, seq) {
 	const chordType = (arrChordType == "sus" ? 2 : (arrChordType == "min" ? 1 : 0));
 	const frets = chordChart[arrChord][chordType].strings;
 	const stringFrets = [__6th,__5th,__4th,__3rd,__2nd,__1st];
-	if (!seq) seq = "6+5+4+3+2+1";
+	
+	if (!seq) seq = "6+5+4+3+2+1"; // full strum
+	
 	if (seq.startsWith("[")) seq = seq.substring(1, seq.length - 1);
 	
 	const seqList = seq.split("+");
-	console.debug("getPitches", arrChord, chordType, seqList, frets);
+	//console.debug("getPitches", arrChord, chordType, seqList, frets);
 	
 	for(var i=0;i<seqList.length;i++){
 		const z = 6 - parseInt(seqList[i]);
@@ -2583,7 +2588,7 @@ function playChord(chord, root, type, bass) {
 		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 		const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 
-		if (guitarName != "none") 
+		if (guitarName != "none" && realGuitarStyle != "Internal_Guitar") 
 		{	
 			if (padsMode == 1) {
 				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
@@ -2601,6 +2606,7 @@ function playChord(chord, root, type, bass) {
 				const guitarSeq = window["strum" + (padsMode - 2)].split("-"); 
 				const arpChord = guitarSeq[seqIndex++];							
 				if (seqIndex >= guitarSeq.length) seqIndex = 0;
+				console.debug("playChord arpes", arpChord, seqIndex);				
 				
 				if (arpChord) 
 				{				
@@ -3030,8 +3036,8 @@ function pressFootSwitch(code) {
 
 function resetArrToA() {
 	sectionChange = 0;
-	rgIndex = 0;
-	nextRgIndex = 0;
+	//rgIndex = 0;
+	//nextRgIndex = 0;
 	
 	if (arranger == "sff") {
 	
@@ -3112,7 +3118,7 @@ function stopChord() {
 			if (output) outputStopNote(activeChord, [4], {velocity: getVelocity()}); 
 			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: getVelocity()});		
 			if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
-			if (guitarName != "none") player.cancelQueue(guitarContext);
+			if (guitarName != "none" && realGuitarStyle != "Internal_Guitar") player.cancelQueue(guitarContext);
 			
 			if (!guitarAvailable && forward) 
 			{
@@ -3287,7 +3293,7 @@ function doChord() {
 		dokeyUp();
 	  }
 	  
-	  if (guitarName != "none" && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && padsMode != 3 && padsMode != 4 && padsMode != 5) {
+	  if (guitarName != "none" && realGuitarStyle != "Internal_Guitar" && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && padsMode != 3 && padsMode != 4 && padsMode != 5) {
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 		player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume/4);					  
 	  }
@@ -3509,7 +3515,7 @@ function toggleStartStop() {
 		
 	if (!styleStarted) resetArrToA();
 		
-	if ((forward && realGuitarStyle != "none" && window[realGuitarStyle]) || songSequence || (arrSequence && arranger == "sff")) 
+	if (((forward || guitarName != "none") && realGuitarStyle != "none" && window[realGuitarStyle]) || songSequence || (arrSequence && arranger == "sff")) 
 	{
 		if (playButton.innerText != "On") {
 			startStopSequencer();
@@ -3825,13 +3831,13 @@ function setup() {
 }
 
 function enableSequencer(flag) {
-	console.debug("enableSequencer", flag);
 	
 	document.querySelector("#sequencer").style.display = flag ? "" : "none";
 	document.querySelector("#sequencer2").style.display = flag ? "" : "none";	
 	document.querySelector("#tempoCanvas").style.display = flag ? "" : "none";
 
 	if (!canvasContext && flag) {
+		console.debug("enableSequencer", flag);		
 		canvasContext = tempoCanvas.getContext( '2d' );    
 		canvasContext.strokeStyle = "#ffffff";
 		canvasContext.lineWidth = 2;
@@ -3856,7 +3862,7 @@ function enableSequencer(flag) {
 }
 
 function startStopSequencer() {
-	//console.debug("startStopSequencer", styleStarted);
+	console.debug("startStopSequencer", styleStarted);
 	
 	if (!audioContext) audioContext = new AudioContext();	
 		
@@ -3895,6 +3901,7 @@ function startStopSequencer() {
 			doStartStopSequencer();			
 		}
 	}
+	else doStartStopSequencer();	
 }
 
 function sendProgramChange(event) {
@@ -3945,7 +3952,7 @@ function sendControlChange(event) {
 }
 
 function doStartStopSequencer() {
-	//console.debug("doStartStopSequencer", styleStarted);
+	console.debug("doStartStopSequencer", styleStarted);
 	
 	if (!styleStarted) 	
 	{
@@ -3961,20 +3968,20 @@ function doStartStopSequencer() {
 			}
 			
 			doSffSInt();	
-		}
 
-		const introEnd = document.querySelector("#introEnd").checked;
+			const introEnd = document.querySelector("#introEnd").checked;
 
-		if (introEnd) {
-			currentSffVar = "Intro A";	
-			if (pad.buttons[BLUE]) currentSffVar = "Intro B";	
-			if (pad.buttons[ORANGE]) currentSffVar = "Intro C";
-		} else {
-			currentSffVar = "Main A";	
-		}
-		
-		if (!arrSequence.data[currentSffVar] || arrSequence.data[currentSffVar].length == 0) currentSffVar = "Main A";
-		orinayo_section.innerHTML = currentSffVar;			
+			if (introEnd) {
+				currentSffVar = "Intro A";	
+				if (pad.buttons[BLUE]) currentSffVar = "Intro B";	
+				if (pad.buttons[ORANGE]) currentSffVar = "Intro C";
+			} else {
+				currentSffVar = "Main A";	
+			}
+			
+			if (!arrSequence.data[currentSffVar] || arrSequence.data[currentSffVar].length == 0) currentSffVar = "Main A";
+			orinayo_section.innerHTML = currentSffVar;	
+		}			
 		
 		arrangerBeat = 0;
         current16thNote = 0;
@@ -3995,15 +4002,12 @@ function doStartStopSequencer() {
 		
 		if (pad.buttons[BLUE]) requestedEnd = "Ending B";	
 		if (pad.buttons[ORANGE]) requestedEnd = "Ending C";		
-		
-		if (songSequence) {
-			if (timerWorker) timerWorker.postMessage("stop");	
-			notesInQueue = []; 	
-		} 
-		else 
-		
+			
 		if (arrSequence) {
 			orinayo_section.innerHTML = "Ending";	
+		} else {
+			if (timerWorker) timerWorker.postMessage("stop");	
+			notesInQueue = []; 
 		}			
 	}
 	
@@ -4047,33 +4051,73 @@ function draw() {
 }
 
 function nextGuitarNote() {	
-	currentPlayNote++;	
-	const tempRatio = tempo / window[realGuitarStyle][rgIndex].header.bpm ;
-	//console.debug("nextGuitarNote", currentPlayNote, tempRatio, tempo);	
-	
-    if (currentPlayNote == window[realGuitarStyle][rgIndex].tracks[1].notes.length) {			
-        currentPlayNote = 0;
-		playStartTime = playStartTime + (window[realGuitarStyle][rgIndex].tracks[1].duration / tempRatio);	
 
+	if (forward) {	
+		currentPlayNote++;	
+		const tempRatio = tempo / window[realGuitarStyle][rgIndex].header.bpm ;
+		//console.debug("nextGuitarNote", currentPlayNote, tempRatio, tempo);	
+	
+		if (currentPlayNote == window[realGuitarStyle][rgIndex].tracks[1].notes.length) {			
+			currentPlayNote = 0;
+			playStartTime = playStartTime + (window[realGuitarStyle][rgIndex].tracks[1].duration / tempRatio);	
+
+			if (rgIndex != nextRgIndex) {
+				rgIndex = nextRgIndex;
+				orinayo_strum.innerHTML = "Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;				
+			}		
+		}
+
+		const timestamp = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].time / tempRatio;
+		nextNoteTime = playStartTime + timestamp;		
+		
+	} else {
+
+		var secondsPerBeat = 60 / tempo / 8;
+		nextNoteTime += secondsPerBeat; 
+		
 		if (rgIndex != nextRgIndex) {
 			rgIndex = nextRgIndex;
 			orinayo_strum.innerHTML = "Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;				
-		}		
-    }
+		}
+		
+	}
 	
-	const timestamp = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].time / tempRatio;
-	nextNoteTime = playStartTime + timestamp;		
 }
 
 function scheduleGuitarNote() {
 		
-	if (forward && window[realGuitarStyle][rgIndex]?.tracks[1]?.notes[currentPlayNote]) {
-		const velocity = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].velocity;
-		const duration = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].duration * 1000;
+	if (forward) 
+	{	
+		if (window[realGuitarStyle][rgIndex]?.tracks[1]?.notes[currentPlayNote]) {
+			const note = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].midi;
+			const velocity = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].velocity;
+			const duration = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].duration * 1000;	
+			forward.playNote(note, 1, {velocity, duration});
+			//console.debug("scheduleGuitarNote", window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].midi);			
+		}
+	} else {
+		const pattern = window[realGuitarStyle][rgIndex];
+		const beat = pattern.next();
 		
-		forward.playNote(window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].midi, 1, {velocity, duration});
-		//console.debug("scheduleGuitarNote", window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].midi);			
-	}
+		if (beat) {
+			const strumDuration = beat.duration * 60 / tempo / 8;
+			const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
+
+			if (beat.element == _V){
+				player.queueStrumDown(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), strumDuration);				
+			}
+			else
+
+			if (beat.element == _A){
+				player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), strumDuration);				
+			} 
+			else
+				
+			if (beat.element == _X){
+				player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), strumDuration);								
+			}
+		}
+	}			
 }
 
 function guitarScheduler() {

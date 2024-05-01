@@ -1,3 +1,60 @@
+var _z = 0;
+var _V = 1;
+var _A = 2;
+var _X = 3;
+var Beats = function(arr) {
+	this.steps=[];
+	this.duration=0;
+	this.step=0;
+	for(var i=0;i<arr.length;i=i+2){
+		this.steps.push({element:arr[i],duration:arr[i+1]});
+		this.duration=this.duration+arr[i+1];
+	};
+	this.restart=function(){
+		this.step=0;
+	};
+	this.next = function(){
+		var delta=0;
+		var s=this.step;
+		this.step++;
+		if(this.step>=this.duration){
+			this.step=0;
+		}
+		for(var i=0;i<this.steps.length;i++){
+			if(s==delta){
+				return this.steps[i];
+			}
+			delta=delta+this.steps[i].duration;
+			if(delta>s){
+				break;
+			}
+		}
+		return null;
+	};
+	return this;
+}
+var Internal_Guitar = [
+     new Beats([_V,4,      _V,2,_A,2,_V,8               ])
+	,new Beats([_V,8,               _A,8               ])
+	,new Beats([_V,6,          _A,2])
+	,new Beats([_V,4,     _V,2,_z,4,     _A,4,     _A,2])
+	,new Beats([_V,4,     _V,2,_A,4,     _A,2,_V,2,_A,2])//4
+	,new Beats([_V,4,     _X,2,_A,6,          _X,2,_z,2])
+	,new Beats([_V,2,_A,2,_V,2,_A,2,_z,8               ])//6
+	,new Beats([_X,2,_X,2,_V,2,_A,2])//7
+	,new Beats([_V,2,_A,2,_V,2,_A,2,_z,2,_V,2,_A,2,_z,2])//8
+	,new Beats([_V,2,_A,2,_A,2,_V,4,     _A,2,_V,2,_A,2])//9
+	,new Beats([_V,2,_z,2,_V,2,_A,2,_z,2,_A,2,_z,2,_A,2])
+	,new Beats([_V,2,_A,2,_V,2,_A,4,     _V,4,     _A,2])
+	,new Beats([_V,2,_A,2,_V,2,_A,4,     _X,2,_A,2,_X,2])
+	,new Beats([_X,2,_A,2,_X,2,_A,2,_V,2,_X,2,_V,2,_X,2])
+	,new Beats([_V,2,_A,2])
+	,new Beats([_V,2,_A,4,     _A,4,     _A,4,     _A,2,_V,2,_A,2,_z,2,_A,2,_z,2,_V,2,_A,2,_z,2])//15
+	,new Beats([_V,6,          _A,2,_z,4,     _V,2,_z,4,     _A,2,_V,2,_z,2,_V,2,_A,2,_z,2,_A,2])//16
+	,new Beats([_V,2,_A,2,_X,2,_A,2,_V,2,_X,2,_V,2,_A,2,_X,2,_A,2,_V,2,_X,2,_V,2,_A,2,_X,2,_X,2])
+	,new Beats([_V,2,     _V,1,_A,1,_V,1,_A,1,_V,2,     _V,2,     _V,1,_A,1,_V,1,_A,3])
+	,new Beats([_V,2,     _V,1,_A,2,     _V,1,_A,2,     _V,2,     _V,1,_A,1,_V,2,     _V,1,_A,1])
+];
 var Basic_P44_16T_50_90 = [
 {
   "header": {
