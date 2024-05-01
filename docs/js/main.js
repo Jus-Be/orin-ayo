@@ -1383,12 +1383,13 @@ async function setupUI(config,err) {
 	
 	const guitarType = document.getElementById("guitarType");
 	guitarType.options[0] = new Option("**UNUSED**", "none", config.guitarName == "none");	
-	guitarType.options[1] = new Option("Aspirin", "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file");	
-	guitarType.options[2] = new Option("Chaos Steel", "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file");	
-	guitarType.options[3] = new Option("LK Acoustic Steel", "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file");	
-	guitarType.options[4] = new Option("Electric Bass Guitar (pick)", "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file");	
-	guitarType.options[5] = new Option("Acoustic Guitar", "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file");	
-	guitarType.options[6] = new Option("Gibson Les Paul", "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file");	
+	guitarType.options[1] = new Option("RG Acoustic", "0250_RG_Acoustic_SF2_file", config.guitarName == "0250_RG_Acoustic_SF2_file", config.guitarName == "0250_RG_Acoustic_SF2_file");	
+	guitarType.options[2] = new Option("Acoustic Guitar", "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file");	
+	guitarType.options[3] = new Option("Aspirin", "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file");	
+	guitarType.options[4] = new Option("Chaos Steel", "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file");	
+	guitarType.options[5] = new Option("LK Acoustic Steel", "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file");	
+	guitarType.options[6] = new Option("Electric Bass Guitar (pick)", "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file");	
+	guitarType.options[7] = new Option("Gibson Les Paul", "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file");	
 
 	guitarType.addEventListener("click", function()  
 	{
@@ -1653,12 +1654,12 @@ async function setupUI(config,err) {
 	if (!err) midiFwd.addEventListener("click", function()
 	{
 		forward = null;
-		enableSequencer(guitarName != "none");
+		enableSequencer(guitarName != "none" && realGuitarStyle != "none");
 
 		if (midiFwd.value != "midiFwdSel") {
 			forward = WebMidi.getOutputByName(midiFwd.value);
 			saveConfig();			
-			enableSequencer((!!forward && realGuitarStyle != "none") || guitarName != "none" );
+			enableSequencer((!!forward || guitarName != "none" ) && realGuitarStyle != "none");
 			console.debug("selected forward midi port", forward, midiFwd.value);
 		}
 	});
@@ -1859,7 +1860,7 @@ async function setupUI(config,err) {
 		});
 	}									
 	
-	enableSequencer((!!forward && realGuitarStyle != "none") || guitarName != "none");
+	enableSequencer((!!forward || guitarName != "none" ) && realGuitarStyle != "none");	
 
 	if (config.songName) {	
 		songSequence = {name: config.songName};
@@ -2598,7 +2599,7 @@ function playChord(chord, root, type, bass) {
 				
 			if (padsMode == 2) {
 				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume);
-				if (pad.axis[STRUM] == STRUM_DOWN) 	player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
+				if (pad.axis[STRUM] == STRUM_DOWN) 	player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, rootNote, guitarDuration, guitarVolume);
 			}	
 			else
 				
