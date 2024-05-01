@@ -2549,18 +2549,18 @@ function getVelocity() {
 	return 0.5 + (Math.random() * 0.5);
 }
 
-function getPitches(arrChord, arrChordType, seq) {
-	const p = [];	
-	const chordType = (arrChordType == "sus" ? 2 : (arrChordType == "min" ? 1 : 0));
+function getPitches(seq) {
+	const p = [];
+	const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
+	const chordType = (arrChordType == "sus" ? 2 : (arrChordType == "min" ? 1 : 0));	
 	const frets = chordChart[arrChord][chordType].strings;
 	const stringFrets = [__6th,__5th,__4th,__3rd,__2nd,__1st];
-	
-	if (!seq) seq = "6+5+4+3+2+1"; // full strum
-	
+
+	if (!seq) seq = "6+5+4+3+2+1"; // full strum	
 	if (seq.startsWith("[")) seq = seq.substring(1, seq.length - 1);
 	
 	const seqList = seq.split("+");
-	//console.debug("getPitches", arrChord, chordType, seqList, frets);
+	//console.debug("getPitches", arrChord, arrChordType, seqList, frets);
 	
 	for(var i=0;i<seqList.length;i++){
 		const z = 6 - parseInt(seqList[i]);
@@ -2591,13 +2591,13 @@ function playChord(chord, root, type, bass) {
 		if (guitarName != "none" && realGuitarStyle != "Internal_Guitar") 
 		{	
 			if (padsMode == 1) {
-				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
-				if (pad.axis[STRUM] == STRUM_DOWN) player.queueStrumDown(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
+				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume);
+				if (pad.axis[STRUM] == STRUM_DOWN) player.queueStrumDown(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume);
 			}		
 			else
 				
 			if (padsMode == 2) {
-				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume);
+				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume);
 				if (pad.axis[STRUM] == STRUM_DOWN) 	player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
 			}	
 			else
@@ -2615,7 +2615,7 @@ function playChord(chord, root, type, bass) {
 						if (arpChord.startsWith("B")) {
 							player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
 						} else {						
-							player.queueStrum(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType, arpChord), guitarDuration, guitarVolume);
+							player.queueStrum(guitarContext, guitarSource, midiGuitar, 0, getPitches(arpChord), guitarDuration, guitarVolume);
 						}
 					}
 					else
@@ -2627,7 +2627,7 @@ function playChord(chord, root, type, bass) {
 				}
 			}
 			else {
-				player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume/4);			
+				player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume/4);			
 			}
 		}
 	
@@ -3295,7 +3295,7 @@ function doChord() {
 	  
 	  if (guitarName != "none" && realGuitarStyle != "Internal_Guitar" && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && padsMode != 3 && padsMode != 4 && padsMode != 5) {
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
-		player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), guitarDuration, guitarVolume/4);					  
+		player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume/4);					  
 	  }
   }
   
@@ -4072,7 +4072,7 @@ function nextGuitarNote() {
 		
 	} else {
 
-		var secondsPerBeat = 60 / tempo / 8;
+		var secondsPerBeat = 60 / tempo / 4;
 		nextNoteTime += secondsPerBeat; 
 		
 		if (rgIndex != nextRgIndex) {
@@ -4081,7 +4081,6 @@ function nextGuitarNote() {
 		}
 		
 	}
-	
 }
 
 function scheduleGuitarNote() {
@@ -4100,21 +4099,21 @@ function scheduleGuitarNote() {
 		const beat = pattern.next();
 		
 		if (beat) {
-			const strumDuration = beat.duration * 60 / tempo / 8;
+			const strumDuration = beat.duration * 60 / tempo / 4;
 			const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 
 			if (beat.element == _V){
-				player.queueStrumDown(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), strumDuration);				
+				player.queueStrumDown(guitarContext, guitarSource, midiGuitar, 0, getPitches(), strumDuration);				
 			}
 			else
 
 			if (beat.element == _A){
-				player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), strumDuration);				
+				player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(), strumDuration);				
 			} 
 			else
 				
 			if (beat.element == _X){
-				player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(arrChord, arrChordType), strumDuration);								
+				player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(), strumDuration);								
 			}
 		}
 	}			
