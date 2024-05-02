@@ -106,7 +106,7 @@ var guitarEffects = "guitar_preset_1";
 var strum1 = "3-2-1-2";
 var strum2 = "[3+2+1]";
 var strum3 = "3-2-4-1-4-2-4";
-var guitarName = "0250_Chaos_sf2_file";
+var guitarName = "none";
 var player = new WebAudioFontPlayer();
 var midiGuitar = window["_tone_" + guitarName];
 var guitarDuration = 3.0;
@@ -1380,58 +1380,7 @@ async function setupUI(config,err) {
 			songSeq.options[i + 1] = new Option(songName, url, selectedSong, selectedSong);
 		}			
 	})		
-	
-	const guitarType = document.getElementById("guitarType");
-	guitarType.options[0] = new Option("**UNUSED**", "none", config.guitarName == "none");	
-	guitarType.options[1] = new Option("RG Acoustic", "0250_RG_Acoustic_SF2_file", config.guitarName == "0250_RG_Acoustic_SF2_file", config.guitarName == "0250_RG_Acoustic_SF2_file");	
-	guitarType.options[2] = new Option("Acoustic Guitar", "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file");	
-	guitarType.options[3] = new Option("Aspirin", "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file");	
-	guitarType.options[4] = new Option("Chaos Steel", "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file");	
-	guitarType.options[5] = new Option("LK Acoustic Steel", "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file");	
-	guitarType.options[6] = new Option("Electric Bass Guitar (pick)", "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file");	
-	guitarType.options[7] = new Option("Gibson Les Paul", "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file");	
-
-	guitarType.addEventListener("click", function()  
-	{
-		guitarName = guitarType.value;
 		
-		if (guitarName != "none") {
-			reverberator.output.connect(guitarContext.destination);
-			channelGuitar.output.connect(reverberator.input);	
-		
-			if (guitarReverb.checked) {		
-				guitarSource = channelGuitar.input;
-			} else {
-				guitarSource = guitarContext.destination;			
-			}	
-
-			midiGuitar = window["_tone_" + guitarName];		
-			player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);				
-		}			
-		console.debug("selected guitar", guitarName, guitarType.value);				
-		saveConfig();
-	});
-
-	guitarName = config.guitarName || guitarName
-	
-	if (guitarName != "none") 
-	{
-		reverberator.output.connect(guitarContext.destination);
-		channelGuitar.output.connect(reverberator.input);
-			
-		if (guitarReverb.checked) {		
-			//channelGuitar.output.gain.setValueAtTime(0.5, guitarContext.currentTime);
-			guitarSource = channelGuitar.input;
-		} else {
-			guitarSource = guitarContext.destination;			
-		}
-
-		midiGuitar = window["_tone_" + guitarName];				
-		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);
-		padsMode = 2;
-		orinayo_strum.innerHTML = "Strum " + padsMode;			
-	}	
-	
 	const guitarStrum = [];
 	
 	for (let i=1; i<4; i++) {
@@ -1459,7 +1408,7 @@ async function setupUI(config,err) {
 		guitarStrum[i].options[20] = new Option("lower 3-str.chord", "[4+3+2]", config["strum" + i] == "[4+3+2]", config["strum" + i] == "[4+3+2]");
 		guitarStrum[i].options[21] = new Option("3-str.chord,BassII", "[3+2+1]-B2-[3+2+1]-B1", config["strum" + i] == "[3+2+1]-B2-[3+2+1]-B1", config["strum" + i] == "[3+2+1]-B2-[3+2+1]-B1");
 		guitarStrum[i].options[22] = new Option("3-str.chord,4th", "[3+2+1]-4-[3+2]", config["strum" + i] == "[3+2+1]-4-[3+2]", config["strum" + i] == "[3+2+1]-4-[3+2]");	
-		guitarStrum[i].options[22] = new Option("Bass", "B1", config["strum" + i] == "B1", config["strum" + i] == "B1");	
+		guitarStrum[i].options[22] = new Option("Bass", "B1", config["strum" + i] == "B1", config["strum" + i] == "B1");
 	}
 	
 		
@@ -1505,10 +1454,76 @@ async function setupUI(config,err) {
 			
 		if (guitarEffects != "none") {
 			console.debug("selected guitar preset effects", guitarEffects, guitarPresets.value);				
-			setupGuitarEffects();
+			setupGuitarEffects();		
 		}
 		saveConfig();
 	});		
+	
+	const guitarType = document.getElementById("guitarType");
+	guitarType.options[0] = new Option("**UNUSED**", "none", config.guitarName == "none");	
+	guitarType.options[1] = new Option("RG Acoustic", "0250_RG_Acoustic_SF2_file", config.guitarName == "0250_RG_Acoustic_SF2_file", config.guitarName == "0250_RG_Acoustic_SF2_file");	
+	guitarType.options[2] = new Option("Acoustic Guitar", "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file");	
+	guitarType.options[3] = new Option("Aspirin", "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file");	
+	guitarType.options[4] = new Option("Chaos Steel", "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file");	
+	guitarType.options[5] = new Option("LK Acoustic Steel", "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file");	
+	guitarType.options[6] = new Option("Electric Bass Guitar (pick)", "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file");	
+	guitarType.options[7] = new Option("Gibson Les Paul", "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file");	
+
+	guitarType.addEventListener("click", function() {
+		guitarPresets.style.display = "none";
+		guitarStrum[1].style.display = "none";		
+		guitarStrum[2].style.display = "none";		
+		guitarStrum[3].style.display = "none";	
+		
+		guitarName = guitarType.value;
+		
+		if (guitarName != "none") {
+			guitarPresets.style.display = "";
+			guitarStrum[1].style.display = "";		
+			guitarStrum[2].style.display = "";		
+			guitarStrum[3].style.display = "";			
+		
+			reverberator.output.connect(guitarContext.destination);
+			channelGuitar.output.connect(reverberator.input);	
+		
+			if (guitarReverb.checked) {		
+				guitarSource = channelGuitar.input;
+			} else {
+				guitarSource = guitarContext.destination;			
+			}	
+
+			midiGuitar = window["_tone_" + guitarName];		
+			player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);				
+		}			
+		console.debug("selected guitar", guitarName, guitarType.value);				
+		saveConfig();
+	});
+
+	guitarName = config.guitarName || guitarName;
+	
+	if (guitarName == "none") {
+		guitarPresets.style.display = "none";	
+		for (let i=1; i<4; i++) guitarStrum[i].style.display = "none";
+	}		
+	
+	if (guitarName != "none") 
+	{
+		reverberator.output.connect(guitarContext.destination);
+		channelGuitar.output.connect(reverberator.input);
+			
+		if (guitarReverb.checked) {		
+			//channelGuitar.output.gain.setValueAtTime(0.5, guitarContext.currentTime);
+			guitarSource = channelGuitar.input;
+		} else {
+			guitarSource = guitarContext.destination;			
+		}
+
+		midiGuitar = window["_tone_" + guitarName];				
+		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);
+		padsMode = 2;
+		orinayo_strum.innerHTML = "Strum " + padsMode;			
+	}	
+	
 	
 	const arrangerType =  document.getElementById("arrangerType");	
 	arrangerType.options[0] = new Option("Style Files Format", "sff", config.arranger == "sff");		
