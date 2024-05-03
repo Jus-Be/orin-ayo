@@ -900,36 +900,8 @@ var WebAudioFontPlayer = /** @class */ (function () {
                 }
             }
 			
-			var envelope = audioContext.createGain();			
-			
-			if (guitarEffects != "none") {
-				var context = stage.getContext();
-				stage.input.disconnect();	
-				stage.input = new pb.io.Input(context);
-				stage.input.source.playbackRate.setValueAtTime(playbackRate, 0);				
-				stage.input.setSourceBuffer(zone.buffer);
-				stage.route();	
-
-				envelope.target = context.destination;
-				envelope.connect(context.destination);
-				envelope.cancel = function () {
-					if (envelope && (envelope.when + envelope.duration > audioContext.currentTime)) {
-						envelope.gain.cancelScheduledValues(0);
-						envelope.gain.setTargetAtTime(0.00001, audioContext.currentTime, 0.1);
-						envelope.when = audioContext.currentTime + 0.00001;
-						envelope.duration = 0;
-					}
-				};
-				this.envelopes.push(envelope);					
-				this.setupEnvelope(audioContext, envelope, zone, volume, startWhen, waveDuration, duration);
-				envelope.audioBufferSourceNode = stage.input.source;				
-			
-			} else {
-				envelope = this.findEnvelope(audioContext, target);
-				this.setupEnvelope(audioContext, envelope, zone, volume, startWhen, waveDuration, duration);
-				envelope.audioBufferSourceNode = audioContext.createBufferSource();
-			}
-			
+			var envelope = this.findEnvelope(audioContext, target, zone);
+			this.setupEnvelope(audioContext, envelope, zone, volume, startWhen, waveDuration, duration);
             envelope.audioBufferSourceNode.playbackRate.setValueAtTime(playbackRate, 0);
 			
             if (slides) {
@@ -944,10 +916,6 @@ var WebAudioFontPlayer = /** @class */ (function () {
                 }
             }
 			
-			if (guitarEffects == "none") {			
-				envelope.audioBufferSourceNode.buffer = zone.buffer;
-			}
-			
             if (loop) {
                 envelope.audioBufferSourceNode.loop = true;
                 envelope.audioBufferSourceNode.loopStart = zone.loopStart / zone.sampleRate + ((zone.delay) ? zone.delay : 0);
@@ -956,6 +924,14 @@ var WebAudioFontPlayer = /** @class */ (function () {
             else {
                 envelope.audioBufferSourceNode.loop = false;
             }
+		
+			if (guitarReverb.checked) {
+				window.pedalInput.source = envelope.audioBufferSourceNode;		
+				pedalInput.source.connect(pedalInput);				
+				window.pedalInput.gain.setValueAtTime(guitarVolume, audioContext.currentTime);		
+			
+			}
+						
             envelope.audioBufferSourceNode.connect(envelope);
             envelope.audioBufferSourceNode.start(startWhen, zone.delay);
             envelope.audioBufferSourceNode.stop(startWhen + waveDuration);
@@ -1044,8 +1020,10 @@ var WebAudioFontPlayer = /** @class */ (function () {
         }
     };
     ;
-    WebAudioFontPlayer.prototype.findEnvelope = function (audioContext, target) {
+    WebAudioFontPlayer.prototype.findEnvelope = function (audioContext, target, zone) {
         var envelope = null;
+		var newEnvelope = false;
+		
         for (var i = 0; i < this.envelopes.length; i++) {
             var e = this.envelopes[i];
             if (e.target == target && audioContext.currentTime > e.when + e.duration + 0.001) {
@@ -1064,9 +1042,11 @@ var WebAudioFontPlayer = /** @class */ (function () {
             }
         }
         if (!(envelope)) {
-            envelope = audioContext.createGain();
-            envelope.target = target;
-            envelope.connect(target);
+			newEnvelope = true;
+			envelope = audioContext.createGain();
+			envelope.target = target;
+			envelope.connect(target);
+			
             envelope.cancel = function () {
                 if (envelope && (envelope.when + envelope.duration > audioContext.currentTime)) {
                     envelope.gain.cancelScheduledValues(0);
@@ -1077,6 +1057,8 @@ var WebAudioFontPlayer = /** @class */ (function () {
             };
             this.envelopes.push(envelope);
         }
+		envelope.audioBufferSourceNode = audioContext.createBufferSource();	
+		envelope.audioBufferSourceNode.buffer = zone.buffer;
         return envelope;
     };
     ;
