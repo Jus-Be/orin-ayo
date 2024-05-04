@@ -1292,11 +1292,11 @@ async function setupUI(config,err) {
 	realGuitarIndex = config.realGuitarStyle == "Basic_B44_8th_100_200" ? 4 : realGuitarIndex;			
 	realGuitarIndex = config.realGuitarStyle == "Basic_P44_16T_50_90" 	? 5 : realGuitarIndex;			
 	realguitar.selectedIndex = realGuitarIndex;			
-	realGuitarStyle = config.realGuitarStyle;	
+	realGuitarStyle = config.realGuitarStyle || "none";	
 
 	const arrangerStyle =  document.getElementById("arrangerStyle");
 	const arrangerGrp = document.getElementById("arrangerGroup");
-	arrangerGroup = config.arrangerGroup;	
+	arrangerGroup = config.arrangerGroup || "yamaha";	
 	
 	arrangerGrp.options[0] = new Option("Imported Styles", "imported", arrangerGroup == "imported", arrangerGroup == "imported");
 	arrangerGrp.options[1] = new Option("Yamaha PSR", "yamaha", arrangerGroup == "yamaha", arrangerGroup == "yamaha");
@@ -1494,7 +1494,7 @@ async function setupUI(config,err) {
 	arrangerIndex = config.arranger == "rclooper" ? 9 : arrangerIndex;	
 	arrangerIndex = config.arranger == "aeroslooper" ? 10 : arrangerIndex;		
 	arrangerType.selectedIndex = arrangerIndex;			
-	arranger = config.arranger;	
+	arranger = config.arranger || "sff";	
 	
 	const midiInType = document.getElementById("midiInType");	
 	midiInType.options[0] = new Option("Logitech Guitar Hero", "logitech-gh", config.inputDeviceType == "logitech-gh");		
