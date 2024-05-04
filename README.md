@@ -123,11 +123,13 @@ It recognises other non-keyboard USB MIDI controllers (like Artiphon Instrument 
 
 It has an internal arranger engine implemented in JavaScript that can play Yamaha SFFx, Casio AC7 or Ketron KST files. 
 
-It has an internal synth engine (based on [https://github.com/gree/sf2synth.js/](sf2synth.js)) that can play the styles using sound font (sf2) files with WebAudio.
+It has an internal synth engine (based on [sf2synth.js by GREE](https://github.com/gree/sf2synth.js/)) that can play the styles using sound font (sf2) files with WebAudio.
 
-It has an internal strumable guitar using [https://github.com/surikov/webaudiofont](WebAudioFont). It behaves just like RealGuitar does with a guitar hero controller.
+It has internal strumable acoustic and electric guitars using [WebAudioFont by Srgy Surkv](https://github.com/surikov/webaudiofont). It behaves just like RealGuitar does with a guitar hero controller.
 
-The internal guitar, synth and style engines are experimental and require a bit more work to be usable.
+It has a pedalboard for guitar effects using [pedalboard by Trys Mudford](https://github.com/trys/pedalboard)
+
+The internal guitar, pedalboard, synth and style engines are experimental and require a bit more work to be used in live performances.
 
 
 
