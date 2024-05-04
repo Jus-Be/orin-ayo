@@ -129,6 +129,8 @@ It has internal strumable acoustic and electric guitars using [WebAudioFont by S
 
 It has a pedalboard for guitar effects using [pedalboard by Trys Mudford](https://github.com/trys/pedalboard)
 
+<img src=https://jus-be.github.io/orin-ayo/assets/orinayo_pedalboard.png>
+
 The internal guitar, pedalboard, synth and style engines are experimental and require a bit more work to be used in live performances.
 
 
