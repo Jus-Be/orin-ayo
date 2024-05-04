@@ -55,15 +55,15 @@ window.setupPedalBoard = async function(guitarContext) {
   $pedalboard.innerHTML = "";
   
   const pedals = [
-    wahPedal,
+    //wahPedal,
     compressorPedal,
-    overdrivePedal,
-    boostPedal,
-    harmonicTremoloPedal,
+    //overdrivePedal,
+    //boostPedal,
+    //harmonicTremoloPedal,
     chorusPedal,
     delayPedal,
-    multiHeadDelay,
-    tremoloPedal,
+    //multiHeadDelay,
+    //tremoloPedal,
     reverbPedal
   ]; 
   

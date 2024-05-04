@@ -107,7 +107,7 @@ var strum2 = "[3+2+1]";
 var strum3 = "3-2-4-1-4-2-4";
 var guitarName = "none";
 var player = new WebAudioFontPlayer();
-var midiGuitar = window["_tone_" + guitarName];
+var midiGuitar = null;
 var guitarDuration = 3.0;
 var guitarVolume = 0.25;
 var guitarReverb = null;
@@ -1420,7 +1420,8 @@ async function setupUI(config,err) {
 	guitarType.options[4] = new Option("Chaos Steel", "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file", config.guitarName == "0250_Chaos_sf2_file");	
 	guitarType.options[5] = new Option("LK Acoustic Steel", "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file");	
 	guitarType.options[6] = new Option("Electric Bass Guitar (pick)", "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file");	
-	guitarType.options[7] = new Option("Gibson Les Paul", "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file");	
+	guitarType.options[7] = new Option("Electric Guitar FSBS", "0270_EGuitar_FSBS_SF2_file", config.guitarName == "0270_EGuitar_FSBS_SF2_file", config.guitarName == "0270_EGuitar_FSBS_SF2_file");	
+	guitarType.options[8] = new Option("Gibson Les Paul", "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file");	
 
 	guitarType.addEventListener("click", function() {
 		guitarStrum[1].style.display = "none";		
@@ -2382,10 +2383,10 @@ function doSffFill(changed) {
 }
 
 function checkForTouchArea() {
-	//console.debug("GREEN Touch", pad.axis[TOUCH] == -0.7);	
+	console.debug("checkForTouchArea", pad.axis[TOUCH]);	
 	
 	if (pad.axis[TOUCH] == -0.7 || pad.axis[TOUCH] == -0.8) { 
-		//console.debug("GREEN Touch");		
+		console.debug("GREEN Touch");		
 
 		if (pad.axis[STRUM] == STRUM_UP) {
 			doBreak();			
@@ -2473,7 +2474,7 @@ function playPads(chords, channel, opts) {
 }
 
 function stopPads() {
-	//console.debug("stopPads");
+	console.debug("stopPads");
 	
 	if (!styleStarted) 
 	{
@@ -2485,7 +2486,8 @@ function stopPads() {
 					stopPadSynthNote(note, 0, getVelocity() * 127);
 				}
 				
-				if (firstChord.length == 4) stopPadSynthNote(firstChord[0] + 24, 0, getVelocity() * 127);		
+				stopPadSynthNote(firstChord[0] + 12, 0, getVelocity() * 127);		
+				stopPadSynthNote(firstChord[0] - 12, 0, getVelocity() * 127);						
 							
 			} else {
 				stopPadSynthNote(firstChord, 0, getVelocity() * 127);
@@ -2534,7 +2536,7 @@ function playChord(chord, root, type, bass) {
 	console.debug("playChord", chord, root, type, bass);
 
 	const bassNote = (chord.length == 4 ? chord[0] : chord[0] - 12);
-	const rootNote = (chord.length == 4 ? chord[0] + 24 : chord[0]);			
+	const rootNote = (chord.length == 4 ? chord[0] + 12 : chord[0]);			
 	const thirdNote = (chord.length == 4 ? chord[2] : chord[1]);	
 	const fifthNote = (chord.length == 4 ? chord[3] : chord[2]);				
 	
@@ -2556,7 +2558,7 @@ function playChord(chord, root, type, bass) {
 				
 			if (padsMode == 2) {
 				if (pad.axis[STRUM] == STRUM_UP) player.queueStrumUp(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume);
-				if (pad.axis[STRUM] == STRUM_DOWN) 	player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, rootNote, guitarDuration, guitarVolume);
+				if (pad.axis[STRUM] == STRUM_DOWN) 	player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
 			}	
 			else
 				
@@ -3067,12 +3069,12 @@ function resetArrToA() {
 }
 
 function stopChord() {
+	console.debug("stopChord", pad)
+			
 	if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) 
 	{
 		if (activeChord)
 		{
-			//console.debug("stopChord", pad)
-			
 			if (output) outputStopNote(activeChord, [4], {velocity: getVelocity()}); 
 			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: getVelocity()});		
 			if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
@@ -3806,6 +3808,10 @@ function enableSequencer(flag) {
 		requestAnimFrame(draw);    // start the drawing loop.
 
 		timerWorker = new Worker("./js/metronome-worker.js");
+		
+		if (!forward && window[realGuitarStyle][rgIndex]) {			
+			window[realGuitarStyle][rgIndex].restart();
+		}
 
 		timerWorker.onmessage = function(e) {
 			if (e.data == "tick") {
