@@ -34,8 +34,14 @@ var Beats = function(arr) {
 	return this;
 }
 var Internal_Guitar = [
-     new Beats([_V,4,      _V,2,_A,2,_V,8               ])
-	,new Beats([_V,8,               _A,8               ])
+     new Beats([_V,2,_V,2,_z,1,_A,1,_V,1,_A,1,_V,2,_V,2,_z,1,_A,1,_V,1,_A,1])
+    ,new Beats([_V,2,_V,1,_A,1,_z,1,_A,1,_V,1,_A,1,_V,2,_V,1,_A,1,_z,1,_A,1,_V,1,_A,1])
+    ,new Beats([_V,4,      _V,2,_A,2,_V,8               ])
+    ,new Beats([_V,1,_A,1,_V,1,_A,1,_z,1,_A,1,_V,1,_A,1,_V,1,_A,1,_V,1,_A,1,_z,1,_A,1,_V,1,_A,1])    	 
+    ,new Beats([_V,2,_V,1,_A,1,_V,1,_A,1,_V,1,_A,1,_V,2,_V,1,_A,1,_V,1,_A,1,_V,1,_A,1]) 
+    ,new Beats([_V,2,_V,2,_V,1,_A,1,_V,1,_A,1,_V,2,_V,2,_V,1,_A,1,_V,1,_A,1]) 
+    ,new Beats([_V,2,_V,2,_V,2,_V,2,_V,2,_V,2,_V,2,_V,2])  
+    ,new Beats([_V,8,               _A,8               ])
 	,new Beats([_V,6,          _A,2])
 	,new Beats([_V,4,     _V,2,_z,4,     _A,4,     _A,2])
 	,new Beats([_V,4,     _V,2,_A,4,     _A,2,_V,2,_A,2])//4

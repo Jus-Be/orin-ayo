@@ -875,6 +875,13 @@ var WebAudioFontPlayer = /** @class */ (function () {
         }
     };
     WebAudioFontPlayer.prototype.queueWaveTable = function (audioContext, target, preset, when, pitch, duration, volume, slides) {
+		//console.debug("queueWaveTable", pitch, duration, volume, midiOutput);
+		
+		if (midiOutput) {
+			outputPlayNote(pitch, 1, {velocity: volume * 3, duration});
+			return null;
+		}
+		
         this.resumeContext(audioContext);
         volume = this.limitVolume(volume);
         var zone = this.findZone(audioContext, preset, pitch);

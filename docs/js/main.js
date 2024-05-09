@@ -51,9 +51,9 @@ var arranger = "webaudio";
 var arrangerGroup = "imported";
 var inputDeviceType = "logitech-gh";
 var realGuitarStyle = "none";
-var output = null;
+var midiOutput = null;
 var input = null;
-var forward = null;
+var midiRealGuitar = null;
 var padsDevice = null;
 var padsInitialised = false;
 var chordTracker = null;
@@ -431,6 +431,16 @@ function onloadHandler() {
 		onChordaConnect(event);
 	});		
 
+	const saveReg = document.querySelector(".save_reg")
+		
+	saveReg.addEventListener('click', function(event) {
+		const slot = prompt("Enter save slot number");
+		
+		if (slot && slot != "") {
+			saveRegistration(slot);
+		}
+	});
+	
 	resetApp = document.querySelector(".reset_app")
 		
 	resetApp.addEventListener('click', function(event) {
@@ -735,7 +745,7 @@ function handleKeyboard(name, code) {
 
 function toggleStrumUpDown() {
 	pad.axis[STRUM] = artiphonStrumUp ? STRUM_UP : STRUM_DOWN;
-	if (forward) forward.playNote(artiphonStrumUp ? 122 : 121, 1, {velocity: getVelocity(), duration: 1000});				
+	if (midiRealGuitar) midiRealGuitar.playNote(artiphonStrumUp ? 122 : 121, 1, {velocity: getVelocity(), duration: 1000});				
 	artiphonStrumUp = !artiphonStrumUp;
 }
 
@@ -766,7 +776,7 @@ function handleNoteOff(note, device, velocity, channel) {
 			if (pad.axis[STRUM] == STRUM_UP) fwdChord.push(122);								
 			if (pad.axis[STRUM] == STRUM_DOWN) fwdChord.push(121);	
 			
-			if (forward) forward.stopNote(fwdChord, 1, {velocity});	
+			if (midiRealGuitar) midiRealGuitar.stopNote(fwdChord, 1, {velocity});	
 			stopPads();
 			
 			if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {
@@ -789,7 +799,7 @@ function handleNoteOff(note, device, velocity, channel) {
 			if (fretButton) {
 				fwdChord.push(fretButton);
 			}
-			if (forward) forward.stopNote(fwdChord, 1, {velocity});
+			if (midiRealGuitar) midiRealGuitar.stopNote(fwdChord, 1, {velocity});
 			stopPads();			
 		}			
 						
@@ -800,10 +810,10 @@ function handleNoteOff(note, device, velocity, channel) {
 			pad.buttons[STARPOWER] = false;	
 			pad.axis[TOUCH] = 0;	
 
-			if (padFretButton && forward) {
+			if (padFretButton && midiRealGuitar) {
 				const fwdChord = [119];
 				fwdChord.push(padFretButton);	
-				forward.stopNote(fwdChord, 1, {velocity});	
+				midiRealGuitar.stopNote(fwdChord, 1, {velocity});	
 			}			
 		}	
 		else				
@@ -900,7 +910,7 @@ function handleNoteOn(note, device, velocity, channel) {
 					pad.buttons[STARPOWER] = false;						
 				}
 				
-				if (!styleStarted && forward) {						
+				if (!styleStarted && midiRealGuitar) {						
 					if (note.number == artiphonI1Base) {
 						padFretButton = (127);
 						padsMode = 0;	
@@ -930,7 +940,7 @@ function handleNoteOn(note, device, velocity, channel) {
 						if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
 						const fwdChord = [119];
 						fwdChord.push(padFretButton);	
-						forward.playNote(fwdChord, 1, {velocity});	
+						midiRealGuitar.playNote(fwdChord, 1, {velocity});	
 						return;
 					}
 				}
@@ -961,7 +971,7 @@ function handleNoteOn(note, device, velocity, channel) {
 					fwdChord.push(122);						
 				}
 				
-				forward.playNote(fwdChord, 1, {velocity});	
+				midiRealGuitar.playNote(fwdChord, 1, {velocity});	
 				
 			} else if (gamePadModeButton.innerText == "Smart Strings") {
 					
@@ -981,7 +991,7 @@ function handleNoteOn(note, device, velocity, channel) {
 					pad.axis[STRUM] = STRUM_UP;
 					
 				}					
-				forward.playNote(fwdChord, 1, {velocity});					
+				midiRealGuitar.playNote(fwdChord, 1, {velocity});					
 			}
 				
 			if (pad.buttons[LOGO]) 
@@ -1029,7 +1039,7 @@ function handleNoteOn(note, device, velocity, channel) {
 			pad.buttons[LOGO] = true;						// requires strum up/down to execute
 		}		
 		
-		if (forward && gamePadModeButton.innerText == "Color Tabs") {
+		if (midiRealGuitar && gamePadModeButton.innerText == "Color Tabs") {
 			const fwdChord = [];
 			if (pad.buttons[GREEN]) fwdChord.push(127);						
 			if (pad.buttons[RED]) fwdChord.push(126);
@@ -1039,7 +1049,7 @@ function handleNoteOn(note, device, velocity, channel) {
 			if (pad.axis[STRUM] == STRUM_UP) fwdChord.push(122);								
 			if (pad.axis[STRUM] == STRUM_DOWN) fwdChord.push(121);						
 			
-			if (fwdChord.length > 0) forward.playNote(fwdChord, 1, {velocity});
+			if (fwdChord.length > 0) midiRealGuitar.playNote(fwdChord, 1, {velocity});
 		}
 
 		updateCanvas();	
@@ -1242,7 +1252,7 @@ function normaliseSffStyle() {
 		
 		const initHdr = arrSequence.data["SFF1"] || arrSequence.data["SFF2"];
 		
-		if (initHdr && output) 
+		if (initHdr && midiOutput) 
 		{
 			for (let event of initHdr) 
 			{			
@@ -1253,7 +1263,7 @@ function normaliseSffStyle() {
 					for (let i=1; i<params.length - 1; i++) ops.push(params[i]);
 					
 					console.debug("SFF sysEx", manufacturer, ops)	
-					output.sendSysex(manufacturer, ops);				
+					midiOutput.sendSysex(manufacturer, ops);				
 				}				
 			}
 		}	
@@ -1529,9 +1539,9 @@ async function setupUI(config,err) {
 	if (!err) for (var i=0; i<WebMidi.outputs.length; i++) 	{
 		let outSelected = false;		
 		
-		if (config.output && config.output == WebMidi.outputs[i].name) {
+		if (config.midiOutput && config.midiOutput == WebMidi.outputs[i].name) {
 			outSelected = true;
-			output = WebMidi.outputs[i];
+			midiOutput = WebMidi.outputs[i];
 		}
 		midiOut.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, outSelected, outSelected);
 
@@ -1545,9 +1555,9 @@ async function setupUI(config,err) {
 
 		let fwdSelected = false;
 		
-		if (config.forward && config.forward == WebMidi.outputs[i].name) {
+		if (config.midiRealGuitar && config.midiRealGuitar == WebMidi.outputs[i].name) {
 			fwdSelected = true;
-			forward = WebMidi.outputs[i];
+			midiRealGuitar = WebMidi.outputs[i];
 		}
 		midiFwd.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, fwdSelected, fwdSelected);
 
@@ -1583,12 +1593,12 @@ async function setupUI(config,err) {
 
 	if (!err) midiOut.addEventListener("click", function()
 	{
-		output = null;
+		midiOutput = null;
 
 		if (midiOut.value != "midiOutSel") {
-			output = WebMidi.getOutputByName(midiOut.value);
+			midiOutput = WebMidi.getOutputByName(midiOut.value);
 			saveConfig();			
-			console.debug("selected output midi port", output, midiOut.value);
+			console.debug("selected midiOutput midi port", midiOutput, midiOut.value);
 		}
 	});
 	
@@ -1612,14 +1622,14 @@ async function setupUI(config,err) {
 
 	if (!err) midiFwd.addEventListener("click", function()
 	{
-		forward = null;
+		midiRealGuitar = null;
 		enableSequencer(guitarName != "none" && realGuitarStyle != "none");
 
 		if (midiFwd.value != "midiFwdSel") {
-			forward = WebMidi.getOutputByName(midiFwd.value);
+			midiRealGuitar = WebMidi.getOutputByName(midiFwd.value);
 			saveConfig();			
-			enableSequencer((!!forward || guitarName != "none" ) && realGuitarStyle != "none");
-			console.debug("selected forward midi port", forward, midiFwd.value);
+			enableSequencer((!!midiRealGuitar || guitarName != "none" ) && realGuitarStyle != "none");
+			console.debug("selected midiRealGuitar midi port", midiRealGuitar, midiFwd.value);
 		}
 	});
 	
@@ -1717,7 +1727,7 @@ async function setupUI(config,err) {
 		}
 	});		
 
-	console.debug("WebMidi devices", input, output, forward, chordTracker);
+	console.debug("WebMidi devices", input, midiOutput, midiRealGuitar, chordTracker);
 	
 	const audioMedia = await navigator.mediaDevices.getUserMedia({audio:true});
 	audioMedia.getTracks().forEach( (track) => track.stop());				
@@ -1774,7 +1784,8 @@ async function setupUI(config,err) {
 		});		
 		
 		input.addListener("programchange", "all", function (e) {
-			//console.debug("Received program change message", e.value);
+			console.debug("Received program change message", e.value);
+			recallRegistration(e.value);
 		});		
 
 		
@@ -1783,7 +1794,7 @@ async function setupUI(config,err) {
 		});		
 
 		input.addListener('controlchange', "all", function (e) {
-			//console.debug("Received control-change (CC)", e?.controller?.number, e.value);	
+			console.debug("Received control-change (CC)", e?.controller?.number, e.value);	
 					
 			if (arranger == "aeroslooper" && e?.controller.number == 113) 
 			{					
@@ -1819,7 +1830,7 @@ async function setupUI(config,err) {
 		});
 	}									
 	
-	enableSequencer((!!forward || guitarName != "none" ) && realGuitarStyle != "none");	
+	enableSequencer((!!midiRealGuitar || guitarName != "none" ) && realGuitarStyle != "none");	
 
 	if (config.songName) {	
 		songSequence = {name: config.songName};
@@ -1998,8 +2009,8 @@ function saveConfig() {
 	config.strum2 = strum2;	
 	config.strum3 = strum3;	
 	config.keyChange = keyChange;
-    config.output = output ? output.name : null;
-    config.forward = forward ? forward.name : null;
+    config.midiOutput = midiOutput ? midiOutput.name : null;
+    config.midiRealGuitar = midiRealGuitar ? midiRealGuitar.name : null;
     config.padsDevice = padsDevice ? padsDevice.name : null;	
 	config.chordTracker = chordTracker ? chordTracker.name : null;
     config.input = input ? input.name : null;
@@ -2056,7 +2067,7 @@ function doBreak() {
 	else 
 		
 	if (arranger == "microarranger") {
-        if (output) outputSendProgramChange(90, 4);
+        if (midiOutput) outputSendProgramChange(90, 4);
 	} 
 	else 
 		
@@ -2162,7 +2173,7 @@ function doFill() {
 }
 
 function doRcLooperFill(newSection) {
-	if (!output) return;
+	if (!midiOutput) return;
 	
 	console.debug("doRcLooperFill", newSection, sectionChange);	
 
@@ -2202,7 +2213,7 @@ function doRcLooperFill(newSection) {
 }
 
 function doGigladFill() {
-	if (!output) return;	
+	if (!midiOutput) return;	
 	console.debug("doGigladFill " + sectionChange);	
 
 	if (sectionChange == 0) {
@@ -2224,7 +2235,7 @@ function doGigladFill() {
 }
 
 function doModxFill() {
-	if (!output) return;	
+	if (!midiOutput) return;	
 	console.debug("doModxFill " + sectionChange);	
 	
 	if (arranger == "modx") 
@@ -2270,16 +2281,16 @@ function doModxFill() {
 }
 
 function doKorgFill() {
-	if (!output) return;	
+	if (!midiOutput) return;	
 	console.debug("doKorgFill " + arranger);			
 	const tempArr = sectionChange % 2;
 	
 	if (tempArr == 0) {
-		if (output) outputSendProgramChange(86, 4);
+		if (midiOutput) outputSendProgramChange(86, 4);
 		setTimeout(() => outputSendProgramChange(80 + sectionChange, 4), 1000);			
 		console.debug("doKorgFill A");		
 	} else {
-		if (output) outputSendProgramChange(87, 4);
+		if (midiOutput) outputSendProgramChange(87, 4);
 		setTimeout(() => outputSendProgramChange(80 + sectionChange, 4), 1000);			
 		console.debug("doKorgFill B");					
 	}		
@@ -2444,13 +2455,13 @@ function stopPadSynthNote(note, channel, velocity) {
 }
 
 function playPads(chords, channel, opts) {
-	//console.debug("playPads", chords, channel, opts);
+	console.debug("playPads", chords, channel, opts);
 	
-	if (!styleStarted) 
+	if (!styleStarted || realGuitarStyle != "none") 
 	{	
 		if (!padsInitialised) {
 			padsInitialised = true;
-			sendProgramChange({programNumber: 89, channel: 0});
+			sendProgramChange({programNumber: 89, channel: channel - 1});
 		}
 		
 		if (arrSynth?.onmessage) 
@@ -2476,29 +2487,29 @@ function playPads(chords, channel, opts) {
 function stopPads() {
 	console.debug("stopPads");
 	
-	if (!styleStarted) 
+	if (!styleStarted || realGuitarStyle != "none") 
 	{
 		if (arrSynth?.onmessage) 
 		{
 			if (firstChord instanceof Array) 
 			{
 				for (note of firstChord) {
-					stopPadSynthNote(note, 0, getVelocity() * 127);
+					stopPadSynthNote(note, 1, getVelocity() * 127);
 				}
 				
-				stopPadSynthNote(firstChord[0] + 12, 0, getVelocity() * 127);		
-				stopPadSynthNote(firstChord[0] - 12, 0, getVelocity() * 127);						
+				stopPadSynthNote(firstChord[0] + 12, 1, getVelocity() * 127);		
+				stopPadSynthNote(firstChord[0] - 12, 1, getVelocity() * 127);						
 							
 			} else {
-				stopPadSynthNote(firstChord, 0, getVelocity() * 127);
+				stopPadSynthNote(firstChord, 1, getVelocity() * 127);
 			}			
 
 		} 
 		else 
 			
 		if (padsDevice?.stopNote) {
-			padsDevice.stopNote(firstChord, 1, {velocity: getVelocity()}); 
-			if (firstChord instanceof Array && firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 1, {velocity: getVelocity()}); 		
+			padsDevice.stopNote(firstChord, 2, {velocity: getVelocity()}); 
+			if (firstChord instanceof Array && firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 2, {velocity: getVelocity()}); 		
 		}
 	}
 }
@@ -2600,32 +2611,32 @@ function playChord(chord, root, type, bass) {
 				//console.debug("playChord pads", chord);
 			
 				if (padsMode == 1) {
-					if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 1, {velocity: getVelocity()});		// up root
-					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: getVelocity()});   // down	root				
+					if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 2, {velocity: getVelocity()});		// up root
+					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 2, {velocity: getVelocity()});   // down	root				
 				}		
 				else
 					
 				if (padsMode == 2) {
-					if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 1, {velocity: getVelocity()});		// down chord
-					if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 1, {velocity: getVelocity()});     // up	root				
+					if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 2, {velocity: getVelocity()});		// down chord
+					if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 2, {velocity: getVelocity()});     // up	root				
 				}	
 				else
 					
 				if (padsMode == 3) {
-					if (pad.axis[STRUM] == STRUM_UP) playPads(thirdNote, 1, {velocity: getVelocity()});	// up third
-					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: getVelocity()});   // down	root				
+					if (pad.axis[STRUM] == STRUM_UP) playPads(thirdNote, 2, {velocity: getVelocity()});	// up third
+					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 2, {velocity: getVelocity()});   // down	root				
 				}
 				else
 					
 				if (padsMode == 4) {
-					if (pad.axis[STRUM] == STRUM_UP) playPads(fifthNote, 1, {velocity: getVelocity()});	// up fifth
-					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 1, {velocity: getVelocity()});   // down	root				
+					if (pad.axis[STRUM] == STRUM_UP) playPads(fifthNote, 2, {velocity: getVelocity()});	// up fifth
+					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 2, {velocity: getVelocity()});   // down	root				
 				}
 				else
 					
 				if (padsMode == 5) {
-					if (pad.axis[STRUM] == STRUM_UP) playPads(chord, 1, {velocity: getVelocity()});		// up chord
-					if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 1, {velocity: getVelocity()});   	// down	chord				
+					if (pad.axis[STRUM] == STRUM_UP) playPads(chord, 2, {velocity: getVelocity()});		// up chord
+					if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 2, {velocity: getVelocity()});   	// down	chord				
 				}			
 			}
 			
@@ -2644,7 +2655,7 @@ function playChord(chord, root, type, bass) {
 				}
 				else
 					
-				if ((arranger == "aeroslooper" || arranger == "rclooper") && output) {
+				if ((arranger == "aeroslooper" || arranger == "rclooper") && midiOutput) {
 					//console.debug("playChord looper ", rcLooperChord, root);
 			
 
@@ -2679,15 +2690,15 @@ function playChord(chord, root, type, bass) {
 						}					
 						if (styleStarted) setTimeout(clearAllSffNotes);
 						
-					} else if (output) {
+					} else if (midiOutput) {
 						if (pad.axis[STRUM] == STRUM_UP) outputPlayNote(chord, [4], {velocity: getVelocity()});		// up
 						if (pad.axis[STRUM] == STRUM_DOWN) outputPlayNote(chord, [4], {velocity: getVelocity()});   	// down	
 					}
 					
-					if (!guitarAvailable && forward) 
+					if (!guitarAvailable && midiRealGuitar) 
 					{
 						if (gamePadModeButton.innerText != "Color Tabs") {					
-							forward.playNote(chord, 1, {velocity: getVelocity()});
+							midiRealGuitar.playNote(chord, 1, {velocity: getVelocity()});
 						}
 					}					
 				}
@@ -2711,7 +2722,7 @@ function clearAllSffNotes() {
 		const channel = getCasmChannel(currentSffVar, event.channel);
 		const note = tempVariation[events[i]].note;
 		
-		if (output) {						
+		if (midiOutput) {						
 			outputStopNote(note, channel + 1, {velocity: event.velocity});
 			
 			if (midiSynth) {
@@ -2889,23 +2900,23 @@ function transposeNote(root) {
 }
 
 function sendYamahaSysEx(code) {
-    if (output) { 
+    if (midiOutput) { 
         console.debug("sendYamahaSysEx", code)	
-		output.sendSysex(0x43, [0x7E, 0x00, code, 0x7F]);	
+		midiOutput.sendSysex(0x43, [0x7E, 0x00, code, 0x7F]);	
 		
 		setTimeout(() => {
-			output.sendSysex(0x43, [0x7E, 0x00, code, 0x00]);	
+			midiOutput.sendSysex(0x43, [0x7E, 0x00, code, 0x00]);	
 		}, 500);		
 	}	
 }
 
 function sendKetronSysex(code) {
-    if (output) { 
+    if (midiOutput) { 
         console.debug("sendKetronSysex", code)	
-		output.sendSysex(0x26, [0x79, 0x05, 0x00, code, 0x7F]);
+		midiOutput.sendSysex(0x26, [0x79, 0x05, 0x00, code, 0x7F]);
 		
 		setTimeout(() => {
-			output.sendSysex(0x26, [0x79, 0x05, 0x00, code, 0x00]);	
+			midiOutput.sendSysex(0x26, [0x79, 0x05, 0x00, code, 0x00]);	
 		}, 500);		
 	}	
 }
@@ -2955,7 +2966,7 @@ function pressFootSwitch(code) {
 	}
 	else	
 		
-	if (arranger == "aeroslooper" && output) {
+	if (arranger == "aeroslooper" && midiOutput) {
 		aerosAux = true;	
 		
 		if (code == 6) {					
@@ -2976,7 +2987,7 @@ function pressFootSwitch(code) {
 	}
 	else	
 		
-	if (arranger == "rclooper" && output) {
+	if (arranger == "rclooper" && midiOutput) {
 		if (code == 7) outputSendControlChange (69, 127, 4);	// mute/unmute drums
 		
 		if (code == 6) 
@@ -2991,11 +3002,11 @@ function pressFootSwitch(code) {
 	}
 	else
 	
-    if (output && arranger == "ketron") { 
-		output.sendSysex(0x26, [0x7C, 0x05, 0x01, 0x55 + code, 0x7F]);
+    if (midiOutput && arranger == "ketron") { 
+		midiOutput.sendSysex(0x26, [0x7C, 0x05, 0x01, 0x55 + code, 0x7F]);
 		
 		setTimeout(() => {
-			output.sendSysex(0x26, [0x7C, 0x05, 0x01, 0x55 + code, 0x00]);	
+			midiOutput.sendSysex(0x26, [0x7C, 0x05, 0x01, 0x55 + code, 0x00]);	
 		}, 500);		
 	}	
 }
@@ -3029,13 +3040,13 @@ function resetArrToA() {
 	else 
 		
 	if (arranger == "microarranger") {
-		if (output) outputSendProgramChange(80, 4);	
+		if (midiOutput) outputSendProgramChange(80, 4);	
 		console.debug("resetArrToA Micro Arranger " + sectionChange);			
 	} 	
 	else	
 	
 	if (arranger == "aeroslooper") {
-		if (output) {
+		if (midiOutput) {
 			aerosPart = 1;	
 			aerosChordTrack = 1;
 			//outputSendControlChange (113, 70 + aerosPart, 4);				// switch to main part	
@@ -3045,25 +3056,25 @@ function resetArrToA() {
 	else	
 	
 	if (arranger == "rclooper") {
-		if (output) outputSendControlChange (64, 127, 4);
+		if (midiOutput) outputSendControlChange (64, 127, 4);
 		console.debug("resetArrToA RC Looper " + sectionChange);			
 	}	
 	else	
 	
 	if (arranger == "giglad") {
-		if (output) outputSendControlChange (108, 127, 4);
+		if (midiOutput) outputSendControlChange (108, 127, 4);
 		console.debug("resetArrToA Giglad " + sectionChange);			
 	}	
 	else	
 	
 	if (arranger == "modx") {
-		if (output) outputSendControlChange (92, 16, 4);
+		if (midiOutput) outputSendControlChange (92, 16, 4);
 		console.debug("resetArrToA MODX " + sectionChange);			
 	}
 	else
 		
 	if (arranger == "montage") {
-		if (output) outputSendControlChange (92, 16, 4);
+		if (midiOutput) outputSendControlChange (92, 16, 4);
 		console.debug("resetArrToA Montage " + sectionChange);			
 	}
 	
@@ -3074,22 +3085,21 @@ function resetArrToA() {
 	}		
 }
 
-function stopChord() {
-	console.debug("stopChord", pad)
+function stopChord() {			
+	if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) {
+		
+		if (activeChord) {
+			console.debug("stopChord", pad);
 			
-	if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) 
-	{
-		if (activeChord)
-		{
-			if (output) outputStopNote(activeChord, [4], {velocity: getVelocity()}); 
-			if (!guitarAvailable && forward) forward.stopNote(activeChord, 1, {velocity: getVelocity()});		
+			if (midiOutput) outputStopNote(activeChord, [4], {velocity: getVelocity()}); 
+			if (!guitarAvailable && midiRealGuitar) midiRealGuitar.stopNote(activeChord, 1, {velocity: getVelocity()});		
 			if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
 			if (guitarName != "none") player.cancelQueue(guitarContext);
 			
-			if (!guitarAvailable && forward) 
+			if (!guitarAvailable && midiRealGuitar) 
 			{
 				if (gamePadModeButton.innerText != "Color Tabs") {					
-					forward.stopNote(activeChord, 1);
+					midiRealGuitar.stopNote(activeChord, 1);
 				}
 			}			
 			
@@ -3149,7 +3159,7 @@ function playSectionCheck() {
 		if (sectionChange == 3) drumLoop.update(arrChanged ? 'arrd': 'fild', false);		
 	}
 	
-	changeArrSection(arrChanged);		
+	if (realGuitarStyle == "none") changeArrSection(arrChanged);		
 
 	if (window[realGuitarStyle]) {
 		orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;	
@@ -3240,7 +3250,7 @@ function dokeyChange() {
     key = KEYS[keyChange];
     base = BASE + keyChange;
 
-    if (forward) forward.playNote(84 + keyChange, 1, {velocity: getVelocity(), duration: 1000});
+    if (midiRealGuitar) midiRealGuitar.playNote(84 + keyChange, 1, {velocity: getVelocity(), duration: 1000});
 }
 
 function doChord() {
@@ -3253,7 +3263,8 @@ function doChord() {
 	  {
 		dokeyDown();
 	  }
-
+	  else
+		  
 	  if (pad.axis[STRUM] == STRUM_RIGHT)
 	  {
 		dokeyUp();
@@ -3264,6 +3275,24 @@ function doChord() {
 		player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume/4);					  
 	  }
   }
+  else
+	  
+  if (pad.axis[STRUM] == STRUM_RIGHT && !styleStarted) {
+	if (pad.buttons[GREEN]) recallRegistration(1);	
+	if (pad.buttons[RED]) recallRegistration(2);	
+	if (pad.buttons[YELLOW]) recallRegistration(3);	
+	if (pad.buttons[BLUE]) recallRegistration(4);	
+	if (pad.buttons[ORANGE]) recallRegistration(5);	
+  }
+  else
+	  
+  if (pad.axis[STRUM] == STRUM_LEFT && !styleStarted)  {
+	if (pad.buttons[GREEN]) recallRegistration(6);	
+	if (pad.buttons[RED]) recallRegistration(7);	
+	if (pad.buttons[YELLOW]) recallRegistration(8);	
+	if (pad.buttons[BLUE]) recallRegistration(9);	
+	if (pad.buttons[ORANGE]) recallRegistration(10);	
+  }  
   
   if (pad.buttons[START] || pad.buttons[STARPOWER])
   {
@@ -3481,7 +3510,7 @@ function toggleStartStop() {
 		
 	if (!styleStarted) resetArrToA();
 		
-	if (((forward || guitarName != "none") && realGuitarStyle != "none" && window[realGuitarStyle]) || songSequence || (arrSequence && arranger == "sff")) 
+	if (((midiRealGuitar || guitarName != "none") && realGuitarStyle != "none" && window[realGuitarStyle]) || songSequence || (arrSequence && arranger == "sff")) 
 	{
 		if (playButton.innerText != "On") {
 			startStopSequencer();
@@ -3535,7 +3564,7 @@ function toggleStartStop() {
 	}
 	else
 
-	if (output) { 			
+	if (midiOutput) { 			
 		if (arranger == "ketron") {		
 			outputPlayNote(firstChord, [4], {velocity: getVelocity()});
 				
@@ -3576,7 +3605,7 @@ function toggleStartStop() {
 			if (!styleStarted) {				
 				console.debug("Aeros looper start key pressed");  
 				
-				if (output) {
+				if (midiOutput) {
 					aerosAux = true;
 						
 					if (pad.buttons[YELLOW] || pad.buttons[ORANGE] || pad.buttons[GREEN] || pad.buttons[RED] || pad.buttons[BLUE]) {
@@ -3598,7 +3627,7 @@ function toggleStartStop() {
 			else {				
 				console.debug("Aeros looper stop key pressed");
 				
-				if (output) {
+				if (midiOutput) {
 					if (pad.buttons[YELLOW] || pad.buttons[ORANGE] || pad.buttons[GREEN] || pad.buttons[RED] || pad.buttons[BLUE]) {
 						aerosChordTrack = 6;
 						aerosAux = true
@@ -3627,7 +3656,7 @@ function toggleStartStop() {
 			{
 				console.debug("start key pressed");  
 				
-				if (output) {
+				if (midiOutput) {
 					outputPlayNote(firstChord, [4], {velocity: getVelocity()});
 				
 					if (pad.buttons[YELLOW]) {
@@ -3651,7 +3680,7 @@ function toggleStartStop() {
 			else {
 				console.debug("stop key pressed");
 				
-				if (output) {
+				if (midiOutput) {
 					if (pad.buttons[YELLOW]) {
 						outputSendControlChange (105, 127, 4); 
 					} else if (pad.buttons[RED]) {
@@ -3685,7 +3714,7 @@ function toggleStartStop() {
 				
 				sendYamahaSysEx(0x10);							// ARRA		
 				sendYamahaSysEx(startEndType);	
-				output.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start
+				midiOutput.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start
 		
 				styleStarted = true;
 			}
@@ -3699,7 +3728,7 @@ function toggleStartStop() {
 				if (pad.buttons[ORANGE]) startEndType = 0x22;	// END-3
 				
 				if (startEndType == -1) {
-					output.sendSysex(0x43, [0x60, 0x7D]);	// Yamaha Sysex for Accomp stop
+					midiOutput.sendSysex(0x43, [0x60, 0x7D]);	// Yamaha Sysex for Accomp stop
 				} else {
 					sendYamahaSysEx(startEndType);						
 				}
@@ -3716,14 +3745,14 @@ function toggleStartStop() {
 				console.debug("start key pressed");  
 				outputPlayNote(firstChord, [4], {velocity: getVelocity()});				
 				sendYamahaSysEx(0x08);	
-				output.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start				
+				midiOutput.sendSysex(0x43, [0x60, 0x7A]);			// Yamaha Sysex for Accomp start				
 				styleStarted = true;
 			}
 			else {
 				console.debug("stop key pressed");					
 
 				if (!pad.buttons[YELLOW]) {
-					output.sendSysex(0x43, [0x60, 0x7D]);	// Yamaha Sysex for Accomp stop
+					midiOutput.sendSysex(0x43, [0x60, 0x7D]);	// Yamaha Sysex for Accomp stop
 				} else {
 					sendYamahaSysEx(0x0D);						
 				}
@@ -3739,7 +3768,7 @@ function toggleStartStop() {
 			{
 				console.debug("start key pressed");  				
 				
-				if (output) {
+				if (midiOutput) {
 					outputPlayNote(firstChord, [4], {velocity: getVelocity()});
 				
 					if (pad.buttons[YELLOW]) {
@@ -3749,7 +3778,7 @@ function toggleStartStop() {
 					} else if (pad.buttons[GREEN]){
 						outputSendProgramChange(84, 4);						
 					} else {
-						output.sendStart();
+						midiOutput.sendStart();
 					}
 					
 				}     
@@ -3758,7 +3787,7 @@ function toggleStartStop() {
 			else {
 				console.debug("stop key pressed");
 				
-				if (output) {
+				if (midiOutput) {
 					outputPlayNote(firstChord, [4], {velocity: getVelocity()});
 				
 					if (pad.buttons[YELLOW]) {
@@ -3768,7 +3797,7 @@ function toggleStartStop() {
 					} else  if (pad.buttons[GREEN]) {
 						outputSendProgramChange(88, 4);
 					} else {
-						output.sendStop();						
+						midiOutput.sendStop();						
 					}
 				}	      
 				styleStarted = false;
@@ -3815,7 +3844,7 @@ function enableSequencer(flag) {
 
 		timerWorker = new Worker("./js/metronome-worker.js");
 		
-		if (!forward && window[realGuitarStyle][rgIndex]) {			
+		if (!midiRealGuitar && window[realGuitarStyle][rgIndex]) {			
 			window[realGuitarStyle][rgIndex].restart();
 		}
 
@@ -3877,7 +3906,7 @@ function startStopSequencer() {
 function sendProgramChange(event) {
 	const channel = getCasmChannel(currentSffVar, event.channel);
 		
-	if (output) {
+	if (midiOutput) {
 		outputSendProgramChange(event.programNumber, channel + 1);
 		
 		if (midiSynth) {
@@ -3899,7 +3928,7 @@ function sendControlChange(event) {
 	const channel = getCasmChannel(currentSffVar, event.channel);
 	//console.debug("sendControlChange",  event.channel, channel, currentSffVar, event);
 	
-	if (output) {
+	if (midiOutput) {
 		if (event.controllerType < 120) {
 			outputSendControlChange(event.controllerType, event.value, channel + 1);
 		} else  {
@@ -4022,7 +4051,7 @@ function draw() {
 
 function nextGuitarNote() {	
 
-	if (forward) {	
+	if (midiRealGuitar) {	
 		currentPlayNote++;	
 		const tempRatio = tempo / window[realGuitarStyle][rgIndex].header.bpm ;
 		//console.debug("nextGuitarNote", currentPlayNote, tempRatio, tempo);	
@@ -4054,13 +4083,13 @@ function nextGuitarNote() {
 
 function scheduleGuitarNote() {
 		
-	if (forward) 
+	if (midiRealGuitar) 
 	{	
 		if (window[realGuitarStyle][rgIndex]?.tracks[1]?.notes[currentPlayNote]) {
 			const note = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].midi;
 			const velocity = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].velocity;
 			const duration = window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].duration * 1000;	
-			forward.playNote(note, 1, {velocity, duration});
+			midiRealGuitar.playNote(note, 1, {velocity, duration});
 			//console.debug("scheduleGuitarNote", window[realGuitarStyle][rgIndex].tracks[1].notes[currentPlayNote].midi);			
 		}
 	} else {
@@ -4089,7 +4118,7 @@ function scheduleGuitarNote() {
 }
 
 function guitarScheduler() {
-	console.debug("guitarScheduler", nextNoteTime, currentPlayNote);
+	//console.debug("guitarScheduler", nextNoteTime, currentPlayNote);
 
     var secondsPerBeat = 60.0 / tempo;
     nextBeatTime += (0.25 * secondsPerBeat); 	
@@ -4224,7 +4253,7 @@ function endSffStyle() {
 			}
 			else
 				
-			if (output) {
+			if (midiOutput) {
 				outputSendChannelMode (120, 0, i + 1);
 				outputSendChannelMode (121, 0, i + 1);							
 			}
@@ -4422,7 +4451,7 @@ function scheduleArrNote() {
 		if (event?.type == "noteOn") {
 			const note = harmoniseNote(event, channel);
 				
-			if (output) {
+			if (midiOutput) {
 				outputPlayNote(note, channel + 1, {velocity: event.velocity / 127});
 				
 				if (midiSynth && instrumentNode) {
@@ -4445,7 +4474,7 @@ function scheduleArrNote() {
 			if (note) {	
 				delete tempVariation[channel + "-" + event.noteNumber];
 				
-				if (output) {		
+				if (midiOutput) {		
 					outputStopNote(note, channel + 1, {velocity: event.velocity / 127});
 
 					if (midiSynth && instrumentNode) {
@@ -4670,23 +4699,23 @@ function eventStatus(event, id) {
 }
 
 function outputSendProgramChange(program, channel) {
-	output.sendProgramChange(program, channel);	
+	midiOutput.sendProgramChange(program, channel);	
 }
 
 function outputSendControlChange(cc, value, channel) {
-	output.sendControlChange(cc, value, channel);	
+	midiOutput.sendControlChange(cc, value, channel);	
 }
 
 function outputSendChannelMode(cc, value, channel) {
-	output.sendChannelMode(cc, value, channel);	
+	midiOutput.sendChannelMode(cc, value, channel);	
 }
 
 function outputPlayNote(chord, channel, options) {
-	output.playNote(chord, channel, options);	
+	midiOutput.playNote(chord, channel, options);	
 }
 
 function outputStopNote(chord, channel, options) {
-	output.stopNote(chord, channel, options)	
+	midiOutput.stopNote(chord, channel, options)	
 }
 
 function getCasmChannel(style, source) {
@@ -4738,4 +4767,14 @@ function normaliseAudioStyle() {
 			
 		}
 	}		
+}
+
+function recallRegistration(slot) {
+	console.debug("recallRegistration", slot);
+	
+}
+
+function saveRegistration(slot) {
+	console.debug("saveRegistration", slot);
+	
 }
