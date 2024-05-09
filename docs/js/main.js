@@ -23,6 +23,7 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var registration = 0;
 var bluetoothDevice = null;
 var midiSynth = null;
 var arrSynth = null;
@@ -60,6 +61,8 @@ var chordTracker = null;
 var orinayo = null;
 var orinayo_section = null;
 var orinayo_strum = null;
+var orinayo_pad = null;
+var orinayo_reg = null;
 var statusMsg = null;
 var base = BASE;
 var key = "C"
@@ -227,7 +230,7 @@ var idbKeyval = (function (exports) {
 
 window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
-window.addEventListener("beforeunload", () => saveConfig());
+window.addEventListener("beforeunload", () => {if (!registration) saveConfig();});
 window.addEventListener('message', messageHandler);
 			
 function myWorkerTimer(evt) {
@@ -345,7 +348,9 @@ function onloadHandler() {
 	tempoCanvas = orinayo = document.querySelector('#tempoCanvas');	
 	orinayo = document.querySelector('#orinayo');
 	orinayo_section = document.querySelector('#orinayo-section');
-	orinayo_strum = document.querySelector('#orinayo-strum');	
+	orinayo_strum = document.querySelector('#orinayo-strum');
+	orinayo_pad = document.querySelector('#orinayo-pad');
+	orinayo_reg = document.querySelector('#orinayo-reg');	
 	statusMsg = document.querySelector('#statusMsg');
 	guitarReverb = document.querySelector("#reverb");
 	
@@ -444,6 +449,7 @@ function onloadHandler() {
 	resetApp = document.querySelector(".reset_app")
 		
 	resetApp.addEventListener('click', function(event) {
+		registration = 0;
 		location.reload();
 	});	
 	
@@ -482,6 +488,7 @@ function onloadHandler() {
 	document.querySelector("#tempo").addEventListener("input", function(event) {
 		tempo = +event.target.value; 
 		document.getElementById('showTempo').innerText = tempo;
+		saveConfig();
 	});
 	
 	document.addEventListener('keyup', (event) => {
@@ -915,7 +922,7 @@ function handleNoteOn(note, device, velocity, channel) {
 						padFretButton = (127);
 						padsMode = 0;	
 						seqIndex = 0;	
-						orinayo_strum.innerHTML = "None";	
+						orinayo_pad.innerHTML = "None";	
 					}
 					if (note.number == artiphonI1Base + 4) {
 						padFretButton =(126);
@@ -934,7 +941,7 @@ function handleNoteOn(note, device, velocity, channel) {
 						padsMode = 4;
 					}
 					
-					if (padsMode != 0) orinayo_strum.innerHTML = "Strum " + padsMode;						
+					if (padsMode != 0) orinayo_pad.innerHTML = "Pad " + padsMode;						
 
 					if (padFretButton) {
 						if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
@@ -1202,10 +1209,11 @@ function updateStatus() {
 
 function letsGo() {
 	let data = localStorage.getItem("orin.ayo.config");
-	if (!data) data = '{"arranger": "webaudio"}';
-	console.debug("letsGo", data, WebMidi);		
-	
+	if (!data) data = '{"arranger": "webaudio"}';	
 	const config = JSON.parse(data);
+	
+	console.debug("letsGo", config, WebMidi);		
+	
 	
     WebMidi.enable(async function (err)
     {
@@ -1248,7 +1256,7 @@ function normaliseSffStyle() {
 		}	
 				
 		const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
-		setTempo(bpm);	
+		if (!registration) setTempo(bpm);	
 		
 		const initHdr = arrSequence.data["SFF1"] || arrSequence.data["SFF2"];
 		
@@ -1303,6 +1311,12 @@ async function setupUI(config,err) {
 	realGuitarIndex = config.realGuitarStyle == "Basic_P44_16T_50_90" 	? 5 : realGuitarIndex;			
 	realguitar.selectedIndex = realGuitarIndex;			
 	realGuitarStyle = config.realGuitarStyle || "none";	
+	
+	if (window[realGuitarStyle]) {
+		rgIndex = config.rgIndex || rgIndex;
+		nextRgIndex = rgIndex;
+		orinayo_strum.innerHTML = "Strum " + (rgIndex + 1) + "/" + window[realGuitarStyle].length;	
+	}	
 
 	const arrangerStyle =  document.getElementById("arrangerStyle");
 	const arrangerGrp = document.getElementById("arrangerGroup");
@@ -1474,8 +1488,8 @@ async function setupUI(config,err) {
 
 		midiGuitar = window["_tone_" + guitarName];				
 		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);
-		padsMode = 2;
-		orinayo_strum.innerHTML = "Strum " + padsMode;			
+		padsMode = config.padsMode || 2;
+		orinayo_pad.innerHTML = "Pad " + padsMode;			
 	}	
 	
 	
@@ -1785,7 +1799,7 @@ async function setupUI(config,err) {
 		
 		input.addListener("programchange", "all", function (e) {
 			console.debug("Received program change message", e.value);
-			recallRegistration(e.value);
+			recallRegistration(e.value + 1);
 		});		
 
 		
@@ -1829,6 +1843,15 @@ async function setupUI(config,err) {
 			}
 		});
 	}									
+
+	registration = config.registration || registration;
+	orinayo_reg.innerHTML = "Reg " + registration;
+	if (registration) setTempo(config.tempo || tempo); 	
+	
+	document.querySelector("#autoFill").checked = config.autoFill;	
+	document.querySelector("#introEnd").checked = config.introEnd;
+	document.querySelector("#reverb").checked = config.reverb;
+	document.querySelector("#volume").value = (config.guitarVolume || guitarVolume) * 100;
 	
 	enableSequencer((!!midiRealGuitar || guitarName != "none" ) && realGuitarStyle != "none");	
 
@@ -1838,10 +1861,11 @@ async function setupUI(config,err) {
 	}
 
 	if (config.arrName) {	
+		window.tempConfig = config; // store config for later access
 		arrSynth = {name: config.sf2Name};	
 		getArrSequence(config.arrName, arrSequenceLoaded);	
 		document.querySelector(".delete_style").style.display = "";		
-	}	
+	}
 };
 
 function createStyleList(config, arrangerStyle, arrangerGrp) {
@@ -1892,6 +1916,20 @@ function arrSequenceLoaded() {
 	}	
 	
 	setupSongSequence();
+	setupMidiChannels();	
+}
+
+function setupMidiChannels() {
+	if (!document.getElementById("arr-instrument-0")) {
+		setTimeout(setupMidiChannels, 1000);
+		return;
+	}
+	
+	for (let i=0; i<19; i++) {
+		document.getElementById("arr-instrument-" + i).checked = window.tempConfig["channel" + i];
+	}
+	
+	delete window.tempConfig;
 }
 
 function getSongSequence(songName, callback) {
@@ -2004,10 +2042,14 @@ function setGigladUI() {
 
 function saveConfig() {
     let config = {};
+	config.registration = registration;
+	config.tempo = tempo;
+	config.guitarVolume = guitarVolume;
 	config.guitarName = guitarName;
 	config.strum1 = strum1;
 	config.strum2 = strum2;	
 	config.strum3 = strum3;	
+	config.padsMode = padsMode;
 	config.keyChange = keyChange;
     config.midiOutput = midiOutput ? midiOutput.name : null;
     config.midiRealGuitar = midiRealGuitar ? midiRealGuitar.name : null;
@@ -2023,17 +2065,28 @@ function saveConfig() {
 	config.arrName = arrSequence ? arrSequence.name : null;
 	config.sf2Name = arrSynth ? arrSynth.name : null;
 	config.arrangerGroup = arrangerGroup;
+	config.rgIndex = rgIndex;
+	config.autoFill = document.querySelector("#autoFill").checked;
+	config.introEnd = document.querySelector("#introEnd").checked;
+	config.reverb = document.querySelector("#reverb").checked;
+	
+	for (let i=0; i<19; i++) {
+		config["channel" + i] = document.getElementById("arr-instrument-" + i)?.checked;
+	}	
+	
+	console.debug("saveConfig", config);
 
     localStorage.setItem("orin.ayo.config", JSON.stringify(config));
 	
 	if (!bluetoothDevice) {
-		return;
+		return config;
 	}
 	console.debug('Disconnecting from Artiphone Bluetooth Chorda Device...');
 	
 	if (bluetoothDevice.gatt.connected) {
 		bluetoothDevice.gatt.disconnect();
 	}	
+	return config;
 }
 
 function doBreak() {
@@ -3081,7 +3134,7 @@ function resetArrToA() {
 	orinayo_section.innerHTML = SECTIONS[sectionChange];
 	
 	if (window[realGuitarStyle]) {
-		orinayo_strum.innerHTML = "Strum " + (rgIndex + 1) + "/" + window[realGuitarStyle].length;	
+		//orinayo_strum.innerHTML = "Strum " + (rgIndex + 1) + "/" + window[realGuitarStyle].length;	
 	}		
 }
 
@@ -3301,7 +3354,7 @@ function doChord() {
 		if (!styleStarted) { // ignore while beat is playing. prev style is being selected
 			padsMode = 0;
 			seqIndex = 0;
-			orinayo_strum.innerHTML = "None"; 				
+			orinayo_pad.innerHTML = "None"; 				
 		}
 		
 		if (pad.buttons[GREEN]) padsMode = 1;	// full chord up/down
@@ -3310,7 +3363,7 @@ function doChord() {
 		if (pad.buttons[BLUE]) padsMode = 4;	// 3rd note up/root note down
 		if (pad.buttons[ORANGE]) padsMode = 5;	// 5th note up/root note down
 		
-		if (padsMode != 0) orinayo_strum.innerHTML = "Strum " + padsMode;			
+		if (padsMode != 0) orinayo_pad.innerHTML = "Pad " + padsMode;			
 	}
     playSectionCheck()
   }
@@ -3524,7 +3577,7 @@ function toggleStartStop() {
 	if (arranger == "webaudio") {				
 		if (drumLoop && realdrumLoop) {
 			if (!styleStarted) {
-				setTempo(realdrumLoop.bpm);	
+				if (!registration) setTempo(realdrumLoop.bpm);	
 
 				if (songSequence) {
 					orinayo_section.innerHTML = ">Arr A";					
@@ -4593,16 +4646,16 @@ function setupSongSequence() {
 		
 		playButton.innerText = "Wait..";
 		const bpm = Math.floor(60 /(songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
-		setTempo(bpm);	
+		if (!registration) setTempo(bpm);	
 	} 
 		
 	if (arrSequence.data?.Hdr) {
 		
 		if (realdrumLoop) {
-			setTempo(realdrumLoop.bpm);	
+			if (!registration) setTempo(realdrumLoop.bpm);	
 		} else {
 			const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
-			setTempo(bpm);			
+			if (!registration) setTempo(bpm);			
 		}
 
 		if (arrSequence.data[currentSffVar]?.length) {
@@ -4644,7 +4697,7 @@ function setupSongSequence() {
 
 function setupRealDrums() {
 	playButton.innerText = "Wait..";	
-	setTempo(realdrumLoop.bpm);
+	if (!registration) setTempo(realdrumLoop.bpm);
 
 	drumLoop = null;	
 	bassLoop = null;
@@ -4772,9 +4825,19 @@ function normaliseAudioStyle() {
 function recallRegistration(slot) {
 	console.debug("recallRegistration", slot);
 	
+	let data = localStorage.getItem("orin.ayo.slot." + slot);	
+	
+	if (data) {
+		registration = slot;		
+		localStorage.setItem("orin.ayo.config", data);
+		setTimeout(() => location.reload(), 1000 );		
+	}
+
 }
 
 function saveRegistration(slot) {
 	console.debug("saveRegistration", slot);
-	
+	registration = slot;
+	const config = saveConfig();
+	localStorage.setItem("orin.ayo.slot." + slot, JSON.stringify(config));
 }
