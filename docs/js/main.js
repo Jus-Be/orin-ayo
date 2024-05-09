@@ -1845,7 +1845,7 @@ async function setupUI(config,err) {
 	}									
 
 	registration = config.registration || registration;
-	orinayo_reg.innerHTML = "Reg " + registration;
+	orinayo_reg.innerHTML = "Slot " + registration;
 	if (registration) setTempo(config.tempo || tempo); 	
 	
 	document.querySelector("#autoFill").checked = config.autoFill;	
@@ -2517,7 +2517,7 @@ function playPads(chords, channel, opts) {
 			sendProgramChange({programNumber: 89, channel: channel - 1});
 		}
 		
-		if (arrSynth?.onmessage) 
+		if (arrSynth?.onmessage && padsDevice?.name == "soundfont") 
 		{
 			if (chords instanceof Array) 
 			{
@@ -2542,7 +2542,7 @@ function stopPads() {
 	
 	if (!styleStarted || realGuitarStyle != "none") 
 	{
-		if (arrSynth?.onmessage) 
+		if (arrSynth?.onmessage && padsDevice?.name == "soundfont") 
 		{
 			if (firstChord instanceof Array) 
 			{
@@ -3323,7 +3323,7 @@ function doChord() {
 		dokeyUp();
 	  }
 	  
-	  if (guitarName != "none" && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && padsMode != 3 && padsMode != 4 && padsMode != 5) {
+	  if (guitarName != "none" && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && padsMode != 0 && padsMode != 3 && padsMode != 4 && padsMode != 5) {
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 		player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume/4);					  
 	  }
@@ -4830,7 +4830,7 @@ function recallRegistration(slot) {
 	if (data) {
 		registration = slot;		
 		localStorage.setItem("orin.ayo.config", data);
-		setTimeout(() => location.reload(), 1000 );		
+		setTimeout(() => location.reload(), 500 );		
 	}
 
 }
