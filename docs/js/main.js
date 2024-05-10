@@ -111,7 +111,6 @@ var strum3 = "3-2-4-1-4-2-4";
 var guitarName = "none";
 var player = new WebAudioFontPlayer();
 var midiGuitar = null;
-var guitarDuration = 3.0;
 var guitarVolume = 0.25;
 var guitarReverb = null;
 var guitarContext = new window.AudioContext();
@@ -2598,7 +2597,8 @@ function getPitches(seq) {
 
 function playChord(chord, root, type, bass) {	
 	console.debug("playChord", chord, root, type, bass);
-
+	
+	const guitarDuration = 240 / tempo; 
 	const bassNote = (chord.length == 4 ? chord[0] : chord[0] - 12);
 	const rootNote = (chord.length == 4 ? chord[0] + 12 : chord[0]);			
 	const thirdNote = (chord.length == 4 ? chord[2] : chord[1]);	
@@ -3325,6 +3325,7 @@ function doChord() {
 	  
 	  if (guitarName != "none" && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && padsMode != 0 && padsMode != 3 && padsMode != 4 && padsMode != 5) {
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
+		const guitarDuration = 240 / tempo;
 		player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume/4);					  
 	  }
   }

@@ -878,7 +878,7 @@ var WebAudioFontPlayer = /** @class */ (function () {
 		//console.debug("queueWaveTable", pitch, duration, volume, midiOutput);
 		
 		if (midiOutput) {
-			outputPlayNote(pitch, 1, {velocity: volume * 3, duration});
+			outputPlayNote(pitch, 1, {velocity: volume * 3, duration: duration * 1000});
 			return null;
 		}
 		
@@ -1089,6 +1089,13 @@ var WebAudioFontPlayer = /** @class */ (function () {
    
     WebAudioFontPlayer.prototype.cancelQueue = function (audioContext) {
 		console.debug("cancelQueue", this.envelopes);
+
+		if (midiOutput) {		
+			midiOutput.sendChannelMode(120, 0, 1);	
+			midiOutput.sendChannelMode(121, 0, 1);				
+			return;
+		}
+		
 		for (var i = 0; i < this.envelopes.length; i++) {
 			var e = this.envelopes[i];
 			e.gain.cancelScheduledValues(0);
