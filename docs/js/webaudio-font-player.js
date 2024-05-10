@@ -1091,8 +1091,7 @@ var WebAudioFontPlayer = /** @class */ (function () {
 		console.debug("cancelQueue", this.envelopes);
 
 		if (midiOutput) {		
-			midiOutput.sendChannelMode(120, 0, 1);	
-			midiOutput.sendChannelMode(121, 0, 1);				
+			midiOutput.sendChannelMode(120, 0, 1);				
 			return;
 		}
 		

@@ -2632,7 +2632,7 @@ function playChord(chord, root, type, bass) {
 					const guitarSeq = window["strum" + (padsMode - 2)].split("-"); 
 					const arpChord = guitarSeq[seqIndex++];							
 					if (seqIndex >= guitarSeq.length) seqIndex = 0;
-					console.debug("playChord arpes", arpChord, seqIndex);				
+					console.debug("playChord arps", arpChord, seqIndex);				
 					
 					if (arpChord) 
 					{				
@@ -2652,9 +2652,6 @@ function playChord(chord, root, type, bass) {
 						}
 					}
 				}
-			}
-			else {
-				player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume/4);			
 			}
 		}
 
