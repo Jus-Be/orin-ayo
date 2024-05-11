@@ -4212,6 +4212,8 @@ function nextArrNote() {
 		let offset = 0;		
 		currentPlayNote++;		
 		//console.debug("nextArrNote old", currentSffVar);
+
+		const introEnd = document.querySelector("#introEnd").checked;
 			
 		if (currentPlayNote >= arrSequence.data[currentSffVar].length) {			
 			currentPlayNote = 0;
@@ -4243,18 +4245,16 @@ function nextArrNote() {
 				endSffStyle();
 			}	
 
-			if (requestArrEnd) {
-				const introEnd = document.querySelector("#introEnd").checked;
-
-				if (introEnd) {					
-					currentSffVar = requestedEnd;
-					orinayo_section.innerHTML = currentSffVar;	
-				} else {
-					endSffStyle();
-				}					
+			if (requestArrEnd && introEnd) 	{			
+				currentSffVar = requestedEnd;
+				orinayo_section.innerHTML = currentSffVar;						
 			}				
 			
 		}
+		
+		if (requestArrEnd && !introEnd) {
+			endSffStyle();				
+		}		
 		
 		if (arrSequence.data[currentSffVar]) {
 			const timestamp = (offset + arrSequence.data[currentSffVar][currentPlayNote].deltaTime) * (60 / (tempo * arrSequence.header.ticksPerBeat));
