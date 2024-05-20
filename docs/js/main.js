@@ -1850,6 +1850,7 @@ async function setupUI(config,err) {
 	document.querySelector("#autoFill").checked = config.autoFill;	
 	document.querySelector("#introEnd").checked = config.introEnd;
 	document.querySelector("#reverb").checked = config.reverb;
+	document.querySelector("#program-change").checked = config.programChange;	
 	document.querySelector("#volume").value = (config.guitarVolume || guitarVolume) * 100;
 	
 	enableSequencer((!!midiRealGuitar || guitarName != "none" ) && realGuitarStyle != "none");	
@@ -1926,6 +1927,7 @@ function setupMidiChannels() {
 	
 	for (let i=0; i<19; i++) {
 		document.getElementById("arr-instrument-" + i).checked = window.tempConfig["channel" + i];
+		if (i < 16) document.getElementById("midi-channel-" + i).selectedIndex = window.tempConfig["instrument" + i];		
 	}
 	
 	delete window.tempConfig;
@@ -2068,9 +2070,11 @@ function saveConfig() {
 	config.autoFill = document.querySelector("#autoFill").checked;
 	config.introEnd = document.querySelector("#introEnd").checked;
 	config.reverb = document.querySelector("#reverb").checked;
+	config.programChange = document.querySelector("#program-change").checked;	
 	
 	for (let i=0; i<19; i++) {
 		config["channel" + i] = document.getElementById("arr-instrument-" + i)?.checked;
+		if (i < 16) config["instrument" + i] = document.getElementById("midi-channel-" + i)?.selectedIndex;
 	}	
 	
 	console.debug("saveConfig", config);
@@ -3956,6 +3960,8 @@ function startStopSequencer() {
 
 function sendProgramChange(event) {
 	const channel = getCasmChannel(currentSffVar, event.channel);
+	
+	if (document.querySelector("#program-change").checked) event.programNumber = document.getElementById("midi-channel-" + channel).selectedIndex;	
 		
 	if (midiOutput) {
 		outputSendProgramChange(event.programNumber, channel + 1);
@@ -4838,4 +4844,8 @@ function saveRegistration(slot) {
 	registration = slot;
 	const config = saveConfig();
 	localStorage.setItem("orin.ayo.slot." + slot, JSON.stringify(config));
+}
+
+function midiProgramChangeEvent(target) {
+	console.debug("midiProgramChangeEvent", target.selectedIndex, target.id);
 }
