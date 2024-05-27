@@ -523,7 +523,7 @@ function handleFileContent(event) {
 
 		reader.onload = function(event)	
 		{
-			if (file.name.toLowerCase().endsWith(".mid") || file.name.toLowerCase().endsWith(".sf2") || file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs") || file.name.toLowerCase().endsWith(".ac7") || file.name.toLowerCase().endsWith(".sas")) {
+			if (file.name.toLowerCase().endsWith(".mid") || file.name.toLowerCase().endsWith(".sf2") || file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs") || file.name.toLowerCase().endsWith(".ac7") || file.name.toLowerCase().endsWith(".sas") || file.name.toLowerCase().endsWith(".drum") || file.name.toLowerCase().endsWith(".chord")) {
 				handleBinaryFile(file, event.target.result);
 			}						
 			else {
@@ -555,6 +555,16 @@ function handleBinaryFile(file, data) {
 			
 		if (file.name.toLowerCase().endsWith(".mid")) {		
 			songSequence = {name: file.name};
+		}
+		else
+			
+		if (file.name.toLowerCase().endsWith(".drum")) {		
+			realInstrument.drumUrl = file.name;				
+		}
+		else
+			
+		if (file.name.toLowerCase().endsWith(".chord")) {		
+			realInstrument.drumUrl = file.name;				
 		}
 		else {
 			arrSequence = {name: file.name};
@@ -1712,7 +1722,9 @@ async function setupUI(config,err) {
 	realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice");
 	realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop", false, false);		
 	realChordsLoop.options[0] = new Option("**UNUSED**", "realChordsLoop", false, false);
-	
+
+	if (!realInstrument) realInstrument = {};
+			
 	for (var i=0; i<drum_loops.length; i++) {
 		const drumLoop = drum_loops[i];
 		let selectedDrum = false;	
@@ -1722,12 +1734,67 @@ async function setupUI(config,err) {
 		
 		if (config.realDrum && config.realDrum == drumLoop) {
 			selectedDrum = true;
-			if (!realInstrument) realInstrument = {};
 			realInstrument.drum = metaData;				
 			realInstrument.drumUrl = drumLoop;		
 		}
 		realDrumsLoop.options[i + 1] = new Option(drumName, drumLoop, selectedDrum, selectedDrum);
 	}
+
+	
+	for (var i=0; i<chord_loops.length; i++) {
+		const chordLoop = chord_loops[i];
+		let selectedChord = false;	
+		const loopData = chordLoop.substring(chordLoop.lastIndexOf("/") + 1).replace(".chord", "");
+		const metaData = loopData.split("_");		
+		const chordName = metaData[0] + " (" + metaData[1] + ")";		
+		
+		if (config.realChord && config.realChord == chordLoop) {
+			selectedChord = true;
+			realInstrument.chord = metaData;	
+			realInstrument.chordUrl = chordLoop;				
+		}
+		realChordsLoop.options[i + 1] = new Option(chordName, chordLoop, selectedChord, selectedChord);
+	}
+
+	let drumIndex = drum_loops.length + 1;
+	let chordIndex = chord_loops.length + 1;
+	
+	indexedDB.databases().then(function (databases) 
+	{
+		databases.forEach(function (db) {				
+			const loop = db.name;
+			let selectedLoop = false;			
+		
+			if (db.name.toLowerCase().endsWith(".drum")) {
+				selectedLoop = db.name == config.realDrum;
+				const loopData = loop.replace(".chord", "");
+				const metaData = loopData.split("_");		
+				const chordName = metaData[0] + " (" + metaData[1] + ")";
+				
+				if (selectedLoop) {
+					realInstrument.drum = metaData;				
+					realInstrument.drumUrl = loop;	
+				}
+
+				realDrumsLoop.options[drumIndex++] = new Option(chordName, loop, selectedLoop, selectedLoop);
+			}
+			else
+				
+			if (db.name.toLowerCase().endsWith(".chord")) {
+				selectedLoop = db.name == config.realChord;
+				const loopData = loop.replace(".chord", "");
+				const metaData = loopData.split("_");		
+				const chordName = metaData[0] + " (" + metaData[1] + ")";
+				
+				if (selectedLoop) {				
+					realInstrument.chord = metaData;	
+					realInstrument.chordUrl = loop;	
+				}
+
+				realChordsLoop.options[chordIndex++] = new Option(chordName, loop, selectedLoop, selectedLoop);
+			}			
+		})	
+	});	
 	
 
 	realDrumsLoop.addEventListener("change", function() {
@@ -1745,22 +1812,6 @@ async function setupUI(config,err) {
 		}
 		console.debug("selected real drums loop", realInstrument, realDrumsLoop.value);		
 	});		
-	
-	for (var i=0; i<chord_loops.length; i++) {
-		const chordLoop = chord_loops[i];
-		let selectedChord = false;	
-		const loopData = chordLoop.substring(chordLoop.lastIndexOf("/") + 1).replace(".chord", "");
-		const metaData = loopData.split("_");		
-		const chordName = metaData[0] + " (" + metaData[1] + ")";		
-		
-		if (config.realChord && config.realChord == chordLoop) {
-			selectedChord = true;
-			if (!realInstrument) realInstrument = {};
-			realInstrument.chord = metaData;	
-			realInstrument.chordUrl = chordLoop;				
-		}
-		realChordsLoop.options[i + 1] = new Option(chordName, chordLoop, selectedChord, selectedChord);
-	}	
 
 	realChordsLoop.addEventListener("change", function() {
 		if (!realInstrument) realInstrument = {};		

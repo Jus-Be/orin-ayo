@@ -11,14 +11,14 @@ function AudioLooper(styleType) {
 		if (!this.loop[key]) key = keys[0] + "_" + keys[1];
 		if (!this.loop[key]) key = keys[0];
 		const loop = this.loop[key];
-		console.log("getLoop", id, key, loop);		
+		console.debug("getLoop", id, key, loop);		
 		return loop;		
 	};
 		
 	this.doLoop = function(id, beginTime, howLong) {		
 		//if (id != this.id) return;
 
-		//console.log("doLoop starts", id, this.id, howLong);
+		//console.debug("doLoop starts", id, this.id, howLong);
 		
 		if (id == "end1")  this.offset = 0; 
 				
@@ -41,7 +41,7 @@ function AudioLooper(styleType) {
 		if (this.cb_status) this.cb_status("_eventPlaying", id); 		
 		
 		this.source.addEventListener("ended", () => {
-			console.log("doLoop ends", id, id, this.reloop);	
+			console.debug("doLoop ends", id, id, this.reloop);	
 			
 			if (this.cb_status) this.cb_status("_eventEnded", id);	
 			
@@ -174,12 +174,34 @@ AudioLooper.prototype.addUri = function(loop, output, bpm) {
 
 	if (output) this.audioContext.setSinkId(output.deviceId);
 	
-	fetch(loop.url)
-		.then(response => response.arrayBuffer())
-		.then(buffer => this.audioContext.decodeAudioData(buffer))
-		.then(sample => {
-			this.sample = sample;
-			console.debug("addUri", loop, sample);
-			if (this.cb_loaded) this.cb_loaded();
-		});
+	if (loop.url.startsWith("assets")) 
+	{
+		fetch(loop.url)
+			.then(response => response.arrayBuffer())
+			.then(buffer => this.audioContext.decodeAudioData(buffer))
+			.then(sample => {
+				this.sample = sample;
+				console.debug("addUri", loop, sample);
+				if (this.cb_loaded) this.cb_loaded();
+			});
+	} else {
+		const dbName = loop.url;
+		const store = new idbKeyval.Store(dbName, dbName);		
+
+		idbKeyval.get(dbName, store).then((data) => 
+		{
+			if (data) {
+				console.debug("get ogg file", dbName, data);
+				
+				this.audioContext.decodeAudioData(data).then(sample => 
+				{
+					this.sample = sample;
+					console.debug("addUri", loop, sample);
+				});				
+				
+			}			
+		}).catch(function (err) {
+			console.error('getSongSequence failed!', err)
+		});		
+	}
 };
