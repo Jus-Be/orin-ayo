@@ -179,6 +179,7 @@ AudioLooper.prototype.addUri = function(loop, output, bpm) {
 		.then(buffer => this.audioContext.decodeAudioData(buffer))
 		.then(sample => {
 			this.sample = sample;
+			console.debug("addUri", loop, sample);
 			if (this.cb_loaded) this.cb_loaded();
 		});
 };
