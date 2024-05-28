@@ -4096,8 +4096,11 @@ function startStopSequencer() {
 
 function sendProgramChange(event) {
 	const channel = getCasmChannel(currentSffVar, event.channel);
+	const programChannel = document.getElementById("midi-channel-" + channel);
 	
-	if (document.querySelector("#program-change").checked) event.programNumber = document.getElementById("midi-channel-" + channel).selectedIndex;	
+	if (programChannel && document.querySelector("#program-change").checked) {
+		event.programNumber = programChannel.selectedIndex;	
+	}
 		
 	if (midiOutput) {
 		outputSendProgramChange(event.programNumber, channel + 1);
@@ -4980,7 +4983,7 @@ function getCasmChannel(style, source) {
 	let found = null;
 	let destination = source;
 	
-	if (arrSequence.casm) for (casm of arrSequence.casm) 
+	if (arrSequence?.casm) for (casm of arrSequence.casm) 
 	{
 		if (casm.styles.indexOf(style) > -1) {
 			found = casm;
