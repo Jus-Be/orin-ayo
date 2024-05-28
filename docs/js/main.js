@@ -3446,19 +3446,37 @@ function doChord() {
   {
 	if (pad.buttons[START]) {	// start + button activates pad mode
 	
-		if (!styleStarted) { // ignore while beat is playing. prev style is being selected
+		if (pad.buttons[YELLOW] && pad.buttons[BLUE]) { // mute internal guitar
 			padsMode = 0;
 			seqIndex = 0;
-			orinayo_pad.innerHTML = "None"; 				
+			orinayo_pad.innerHTML = "None"; 
+			
+		}
+		else 
+			
+		if (pad.buttons[GREEN] && pad.buttons[RED]) { // TODO
+			
 		}
 		
-		if (pad.buttons[GREEN]) padsMode = 1;	// full chord up/down
-		if (pad.buttons[RED]) padsMode = 2;		// chord up/root note down	
-		if (pad.buttons[YELLOW]) padsMode = 3;	// root note up/down
-		if (pad.buttons[BLUE]) padsMode = 4;	// 3rd note up/root note down
-		if (pad.buttons[ORANGE]) padsMode = 5;	// 5th note up/root note down
-		
-		if (padsMode != 0) orinayo_pad.innerHTML = "Pad " + padsMode;			
+		else 
+			
+		if (pad.buttons[RED] && pad.buttons[YELLOW]) { // TODO
+			
+		}
+		else 
+			
+		if (pad.buttons[BLUE] && pad.buttons[ORANGE]) { // TODO
+			
+		} 
+		else {		
+			if (pad.buttons[GREEN]) padsMode = 1;	// full chord up/down
+			if (pad.buttons[RED]) padsMode = 2;		// chord up/root note down	
+			if (pad.buttons[YELLOW]) padsMode = 3;	// root note up/down
+			if (pad.buttons[BLUE]) padsMode = 4;	// 3rd note up/root note down
+			if (pad.buttons[ORANGE]) padsMode = 5;	// 5th note up/root note down
+			
+			if (padsMode != 0) orinayo_pad.innerHTML = "Pad " + padsMode;		
+		}			
 	}
     playSectionCheck()
   }

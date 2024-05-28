@@ -138,7 +138,8 @@ var chord_loops = [
 	"assets/chords/pop2_125_15360_7680.chord",
 	"assets/chords/rock_130_14769.chord",
 	"assets/chords/shuffle_120_16000.chord",	
-	"assets/chords/surf_170_11294.chord",
+	"assets/chords/strum_96_20000.chord",
+	"assets/chords/surf_170_11294.chord",	
 	"assets/chords/u2-guitar_105_22857.chord"
 ]
 
@@ -171,6 +172,8 @@ var drum_loops = [
 	"assets/drums/rock3_130_29538_29538_1846_1846_16615.drum",
 	"assets/drums/rock4_130_14769_29538_1846_1846_11077.drum",
 	"assets/drums/shuffle_120_4000_16000_2000_2000_4000.drum",	
-	"assets/drums/surf_170_2824_11294_1412_1412_8471.drum",
+	"assets/drums/strum1_96_2500_10000_2500_2500_5000.drum",
+	"assets/drums/strum2_96_10000_10000_2500_2500_12500.drum",
+	"assets/drums/surf_170_2824_11294_1412_1412_8471.drum",	
 	"assets/drums/u2-guitar_105_27429_18286_2286_2286_11429.drum"
 ]
