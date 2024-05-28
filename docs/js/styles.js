@@ -122,6 +122,7 @@ var internal_styles = [
 ]
 
 var chord_loops = [
+	"assets/chords/8beat_94_20425.chord",
 	"assets/chords/ballad_90_10667_5334.chord",
 	"assets/chords/ballad1_102_9412.chord",
 	"assets/chords/ballad2_102_9412.chord",
@@ -135,12 +136,16 @@ var chord_loops = [
 	"assets/chords/midtempo_100_9600_4800.chord",
 	"assets/chords/pop_114_16842_4211.chord",
 	"assets/chords/pop2_125_15360_7680.chord",
-	"assets/chords/shuffle_120_16000.chord",
+	"assets/chords/rock_130_14769.chord",
+	"assets/chords/shuffle_120_16000.chord",	
 	"assets/chords/surf_170_11294.chord",
 	"assets/chords/u2-guitar_105_22857.chord"
 ]
 
 var drum_loops = [
+	"assets/drums/8beat1_94_2553_20426_2553_2553_5106.drum",
+	"assets/drums/8beat2_94_5106_20426_2553_2553_2553.drum",
+	"assets/drums/8beat3_94_2553_20426_2553_2553_10213.drum",
 	"assets/drums/ballad_90_5333_21333_2667_2667_8000.drum",
 	"assets/drums/ballad1_102_2353_9412_2353_2353_7059.drum",
 	"assets/drums/ballad2_102_2353_9412_2353_2353_7059.drum",
@@ -161,7 +166,11 @@ var drum_loops = [
 	"assets/drums/midtempo5_100_2399_19200_2400_2400_7200.drum",
 	"assets/drums/pop_114_2105_16842_2105_2105_6316.drum",
 	"assets/drums/pop2_125_7680_15360_1920_1920_3840.drum",
-	"assets/drums/shuffle_120_4000_16000_2000_2000_4000.drum",
+	"assets/drums/rock1_130_1846_7385_1846_1846_3692.drum",
+	"assets/drums/rock2_130_16615_14769_1846_1846_9231.drum",
+	"assets/drums/rock3_130_29538_29538_1846_1846_16615.drum",
+	"assets/drums/rock4_130_14769_29538_1846_1846_11077.drum",
+	"assets/drums/shuffle_120_4000_16000_2000_2000_4000.drum",	
 	"assets/drums/surf_170_2824_11294_1412_1412_8471.drum",
 	"assets/drums/u2-guitar_105_27429_18286_2286_2286_11429.drum"
 ]
