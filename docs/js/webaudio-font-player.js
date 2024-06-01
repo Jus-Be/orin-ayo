@@ -874,8 +874,25 @@ var WebAudioFontPlayer = /** @class */ (function () {
             //don't care
         }
     };
+	WebAudioFontPlayer.prototype.displayUI = function(flag) {
+		const instrumentNode = document.getElementById("arr-instrument-0");
+		
+		if (instrumentNode) {
+			const classList = instrumentNode.parentNode.parentNode.parentNode.parentNode.querySelector("tbody > tr:nth-child(1) > td:nth-child(6)").classList;				
+			
+			if (classList) 
+			{
+				if (flag) {
+					if (!classList.contains("note-on")) classList.add("note-on");
+				} else {
+					classList.remove("note-on");			
+				}
+			}
+		}
+	};	
     WebAudioFontPlayer.prototype.queueWaveTable = function (audioContext, target, preset, when, pitch, duration, volume, slides) {
 		//console.debug("queueWaveTable", pitch, duration, volume, midiOutput);
+		this.displayUI(true);
 		
 		if (midiOutput) {
 			outputPlayNote(pitch, 1, {velocity: volume * 3, duration: duration * 1000});
@@ -1089,7 +1106,8 @@ var WebAudioFontPlayer = /** @class */ (function () {
    
     WebAudioFontPlayer.prototype.cancelQueue = function (audioContext) {
 		console.debug("cancelQueue", this.envelopes);
-
+		this.displayUI(false);
+		
 		if (midiOutput) {		
 			midiOutput.sendChannelMode(120, 0, 1);				
 			return;

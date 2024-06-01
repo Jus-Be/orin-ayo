@@ -340,6 +340,7 @@ function loadMidiSynth() {
 function onloadHandler() {
 	console.debug("onloadHandler");
 
+	document.title = "Orin Ayo | " + chrome.runtime.getManifest().version;
 	setupPedalBoard(guitarContext);
   
 	playButton = document.querySelector(".play");
@@ -1956,6 +1957,12 @@ async function setupUI(config,err) {
 		getArrSequence(config.arrName, arrSequenceLoaded);	
 		document.querySelector(".delete_style").style.display = "";		
 	}
+	else
+
+	if (arranger != "sff") {	// use gmgsx.sf2 as dummy midiSynth
+		loadMidiSynth();
+	}			
+	
 };
 
 function createStyleList(config, arrangerStyle, arrangerGrp) {
@@ -2186,7 +2193,7 @@ function saveConfig() {
 function doBreak() {
 	console.debug("doBreak " + arranger);	
 
-	if (((drumLoop || chordLoop) && realInstrument) && (arranger != "sff" || document.getElementById("arr-instrument-18")?.checked)) 	
+	if (((drumLoop || chordLoop) && realInstrument) && document.getElementById("arr-instrument-16")?.checked) 	
 	{
 		if (sectionChange == 0) {
 			drumLoop.update('brka', false);		
@@ -2260,7 +2267,7 @@ function doFill() {
 	console.debug("doFill " + arranger);
 	
 	
-	if (realInstrument && (arranger != "sff" || document.getElementById("arr-instrument-18")?.checked)) {
+	if (realInstrument && document.getElementById("arr-instrument-16")?.checked) {
 		console.debug("doFill webaudio", sectionChange);
 		
 		if (drumLoop && sectionChange == 0) drumLoop.update('fila', false);
@@ -2752,8 +2759,11 @@ function playChord(chord, root, type, bass) {
 			}
 		}
 
-		if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN)
-		{
+		if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN)	{
+			const drumChecked = document.getElementById("arr-instrument-16")?.checked;
+			const bassChecked = document.getElementById("arr-instrument-17")?.checked;
+			const chordChecked = document.getElementById("arr-instrument-18")?.checked;
+			
 			if (padsDevice?.stopNote || padsDevice?.name == "soundfont") {
 				//console.debug("playChord pads", chord);
 			
@@ -2797,8 +2807,8 @@ function playChord(chord, root, type, bass) {
 				}
 				
 				if (arranger == "webaudio" && realInstrument && styleStarted) {				
-					if (bassLoop) bassLoop.update(bassKey, false);
-					if (chordLoop) chordLoop.update(key, false);		
+					if (bassLoop && bassChecked) bassLoop.update(bassKey, false);
+					if (chordLoop && chordChecked) chordLoop.update(key, false);		
 				}
 				else
 					
@@ -2832,8 +2842,8 @@ function playChord(chord, root, type, bass) {
 
 					if (arranger == "sff") {
 						if (realInstrument) {				
-							if (bassLoop && document.getElementById("arr-instrument-17")?.checked) bassLoop.update(bassKey, false);
-							if (chordLoop && document.getElementById("arr-instrument-18")?.checked) chordLoop.update(key, false);		
+							if (bassLoop && bassChecked) bassLoop.update(bassKey, false);
+							if (chordLoop && chordChecked) chordLoop.update(key, false);		
 						}					
 						if (styleStarted) setTimeout(clearAllSffNotes);
 						
@@ -3257,6 +3267,7 @@ function stopChord() {
 
 function playSectionCheck() {
 	let arrChanged = false;
+	const oldSection = sectionChange;
 				
 	if (pad.buttons[STARPOWER]) {	// next variation. jump to section of button pressed
 
@@ -3273,7 +3284,6 @@ function playSectionCheck() {
 			nextRgIndex++;
 			if (nextRgIndex ==  window[realGuitarStyle].length) nextRgIndex = 0;
 		}
-		arrChanged = true;	
 	} 
 	else 
 		
@@ -3286,24 +3296,25 @@ function playSectionCheck() {
 			if (window[realGuitarStyle]) {			
 				nextRgIndex--;				
 				if (nextRgIndex < 0) nextRgIndex = window[realGuitarStyle].length - 1;		
-			}
-			arrChanged = true;		
+			}	
 			
 		} else {	// guitar - do nothing with style
 			return;
 		}		
 	}	
 	
+	arrChanged = oldSection != sectionChange;	
+	
 	orinayo_section.innerHTML = SECTIONS[sectionChange];		
 			
-	if (realInstrument && drumLoop && (arranger != "sff" || document.getElementById("arr-instrument-18")?.checked)) {
+	if (realInstrument && drumLoop && document.getElementById("arr-instrument-16")?.checked) {
 		console.debug("playSectionCheck pressed " + arrChanged, sectionChange);		
 		orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
 		
-		if (sectionChange == 0) drumLoop.update(arrChanged ? 'arra': 'fila', false);
-		if (sectionChange == 1) drumLoop.update(arrChanged ? 'arrb': 'filb', false);
-		if (sectionChange == 2) drumLoop.update(arrChanged ? 'arrc': 'filc', false);
-		if (sectionChange == 3) drumLoop.update(arrChanged ? 'arrd': 'fild', false);		
+		if (sectionChange == 0) drumLoop.update(!arrChanged ? 'arra': 'fila', false);
+		if (sectionChange == 1) drumLoop.update(!arrChanged ? 'arrb': 'filb', false);
+		if (sectionChange == 2) drumLoop.update(!arrChanged ? 'arrc': 'filc', false);
+		if (sectionChange == 3) drumLoop.update(!arrChanged ? 'arrd': 'fild', false);		
 	}
 	
 	if (realGuitarStyle == "none") changeArrSection(arrChanged);		
@@ -3705,32 +3716,35 @@ function toggleStartStop() {
 	if (arranger == "webaudio") {				
 		if ((drumLoop || chordLoop) && realInstrument) {
 			console.debug("toggleStartStop", styleStarted, pad.buttons[YELLOW]);
+			const drumChecked = document.getElementById("arr-instrument-16")?.checked;
+			const bassChecked = document.getElementById("arr-instrument-17")?.checked;
+			const chordChecked = document.getElementById("arr-instrument-18")?.checked;
 			
 			if (!styleStarted) {
 				if (!registration) setTempo(realInstrument.bpm);	
 
 				if (songSequence) {
 					orinayo_section.innerHTML = ">Arr A";					
-					if (drumLoop) drumLoop.start('arra');
-					if (bassLoop) bassLoop.start("key" + (keyChange % 12));
-					if (chordLoop) chordLoop.start("key" + (keyChange % 12));
+					if (drumLoop && drumChecked) drumLoop.start('arra');
+					if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12));
+					if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12));
 						
 				} else {
 					if (pad.buttons[YELLOW] && introEnd) {					
 						orinayo_section.innerHTML = ">Arr A";
 						
-						if (drumLoop) {
+						if (drumLoop && drumChecked) {
 							drumLoop.start('int1');					
 						
 							setTimeout(() => {
-								if (bassLoop) bassLoop.start("key" + (keyChange % 12));
-								if (chordLoop) chordLoop.start("key" + (keyChange % 12));			
+								if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12));
+								if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12));			
 							}, realInstrument.drums.int1.stop);
 						}
 					} else {
-						if (drumLoop) drumLoop.start('arra');						
-						if (bassLoop) bassLoop.start("key" + (keyChange % 12));
-						if (chordLoop) chordLoop.start("key" + (keyChange % 12));							
+						if (drumLoop && drumChecked) drumLoop.start('arra');						
+						if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12));
+						if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12));							
 					}
 					
 				}
@@ -3738,10 +3752,10 @@ function toggleStartStop() {
 			} else {
 				if (pad.buttons[YELLOW] && introEnd) {	
 					orinayo_section.innerHTML = ">End 1";					
-					drumLoop.update('end1', false);	
+					if (drumLoop) drumLoop.update('end1', false);	
 				} else {
 					orinayo_section.innerHTML = "End 1";						
-					drumLoop.stop();
+					if (drumLoop) drumLoop.stop();
 				}
 				
 				if (bassLoop) bassLoop.stop();			

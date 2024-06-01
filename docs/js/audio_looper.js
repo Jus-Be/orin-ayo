@@ -1,4 +1,5 @@
 function AudioLooper(styleType) {
+	this.counter = 6;
 	this.styleType = styleType;
 	this.cb_loaded = null;
 	this.cb_status = null;
@@ -94,7 +95,8 @@ AudioLooper.prototype.unmute = function(id) {
 }
 
 AudioLooper.prototype.update = function(id, sync) {
-		
+	this.displayUI(true);	
+	
 	if (this.source) {	
 		this.id = id;		
 		const loop = this.getLoop(id);
@@ -125,6 +127,7 @@ AudioLooper.prototype.update = function(id, sync) {
 };
 
 AudioLooper.prototype.start = function(id) {
+	this.displayUI(true);	
 	this.looping = true;
 	this.reloop = true;
 	this.offset = 0;
@@ -154,7 +157,26 @@ AudioLooper.prototype.volume = function(vol) {
 	return vol;
 };
 
+AudioLooper.prototype.displayUI = function(flag) {
+	const channel = (this.styleType == "drum" ? "16" : (this.styleType == "bass" ? "17" : "18"));
+	const instrumentNode = document.getElementById("arr-instrument-" + channel);
+	
+	if (instrumentNode) {
+		const classList = instrumentNode.parentNode.parentNode.parentNode.parentNode.querySelector("tbody > tr:nth-child(" + (parseInt(channel) + 1) + ") > td:nth-child(" + this.counter + ")").classList;				
+		
+		if (classList) 
+		{
+			if (flag) {
+				if (!classList.contains("note-on")) classList.add("note-on");
+			} else {
+				classList.remove("note-on");			
+			}
+		}
+	}
+};
+
 AudioLooper.prototype.stop = function() {
+	this.displayUI(false);
 	this.looping = false;
 	console.debug("AudioLooper stop");
 	
