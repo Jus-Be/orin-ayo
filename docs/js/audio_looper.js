@@ -53,6 +53,7 @@ function AudioLooper(styleType) {
 				this.finished = false;
 				this.mute();
 				this.source.stop();
+				this.displayUI(false);
 			}
 			
 			if (this.id.startsWith("fil") || this.id.startsWith("brk")) this.id = "arr" + this.id.substring(3);					

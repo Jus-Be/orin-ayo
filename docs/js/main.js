@@ -3305,16 +3305,18 @@ function playSectionCheck() {
 	
 	arrChanged = oldSection != sectionChange;	
 	
-	orinayo_section.innerHTML = SECTIONS[sectionChange];		
+	orinayo_section.innerHTML = SECTIONS[sectionChange];
+	
+	const autoFill = document.querySelector("#autoFill").checked;	
 			
 	if (realInstrument && drumLoop && document.getElementById("arr-instrument-16")?.checked) {
 		console.debug("playSectionCheck pressed " + arrChanged, sectionChange);		
 		orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
 		
-		if (sectionChange == 0) drumLoop.update(!arrChanged ? 'arra': 'fila', false);
-		if (sectionChange == 1) drumLoop.update(!arrChanged ? 'arrb': 'filb', false);
-		if (sectionChange == 2) drumLoop.update(!arrChanged ? 'arrc': 'filc', false);
-		if (sectionChange == 3) drumLoop.update(!arrChanged ? 'arrd': 'fild', false);		
+		if (sectionChange == 0) drumLoop.update(!arrChanged || !autoFill ? 'arra': 'fila', false);
+		if (sectionChange == 1) drumLoop.update(!arrChanged || !autoFill ? 'arrb': 'filb', false);
+		if (sectionChange == 2) drumLoop.update(!arrChanged || !autoFill ? 'arrc': 'filc', false);
+		if (sectionChange == 3) drumLoop.update(!arrChanged || !autoFill ? 'arrd': 'fild', false);		
 	}
 	
 	if (realGuitarStyle == "none") changeArrSection(arrChanged);		
