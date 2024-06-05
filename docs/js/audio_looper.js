@@ -24,8 +24,7 @@ function AudioLooper(styleType) {
 		if (id == "end1")  this.offset = 0; 
 		
 		if (this.source) {
-			this.source.stop();
-			this.source.disconnect();
+			//this.finished = true;
 		}
 		
 		this.source = this.audioContext.createBufferSource();		
@@ -64,17 +63,20 @@ function AudioLooper(styleType) {
 			if (this.id.startsWith("fil") || this.id.startsWith("brk")) this.id = "arr" + this.id.substring(3);					
 			
 			const loop = this.getLoop(this.id);
-			const beginTime =  loop.start /1000;
-			const endTime = loop.stop / 1000;
-			const howLong = endTime - beginTime;
-						
-			if (this.looping && this.reloop) {
-				this.doLoop(this.id, beginTime, howLong);	
-			}
 			
-			if (!this.reloop) {
-				this.reloop = true;
-				this.offset = 0;
+			if (loop) {
+				const beginTime =  loop.start /1000;
+				const endTime = loop.stop / 1000;
+				const howLong = endTime - beginTime;
+							
+				if (this.looping && this.reloop) {
+					this.doLoop(this.id, beginTime, howLong);	
+				}
+				
+				if (!this.reloop) {
+					this.reloop = true;
+					this.offset = 0;
+				}
 			}
 		});		
 	};
@@ -144,13 +146,16 @@ AudioLooper.prototype.start = function(id) {
 	this.prevVol = this.vol;
 
 	const loop = this.getLoop(this.id);
-	const beginTime =  loop.start /1000;
-	const endTime = loop.stop / 1000;
-	const howLong = endTime - beginTime;	
 	
-	console.debug("AudioLooper " + this.styleType + " start");	
+	if (loop) {
+		const beginTime =  loop.start /1000;
+		const endTime = loop.stop / 1000;
+		const howLong = endTime - beginTime;	
+		
+		console.debug("AudioLooper " + this.styleType + " start");	
 
-	if (this.sample) this.doLoop(id, beginTime, howLong);
+		if (this.sample) this.doLoop(id, beginTime, howLong);
+	}
 };
 
 AudioLooper.prototype.volume = function(vol) {
