@@ -114,7 +114,7 @@ var player = new WebAudioFontPlayer();
 var midiGuitar = null;
 var guitarVolume = 0.25;
 var guitarReverb = null;
-var guitarContext = new window.AudioContext();
+var guitarContext = new AudioContext();
 var guitarSource = guitarContext.destination;
 var seqIndex = 0;
 
@@ -1844,6 +1844,7 @@ async function setupUI(config,err) {
 		if (config.realdrumDevice && config.realdrumDevice == outputs[i].deviceId) {
 			selectedDevice = true;
 			realdrumDevice = outputs[i];
+			guitarContext.setSinkId(realdrumDevice.deviceId);
 		}
 		realDrumsDevice.options[i + 1] = new Option(outputs[i].label, outputs[i].deviceId, selectedDevice, selectedDevice);
 	}	
@@ -1862,6 +1863,7 @@ async function setupUI(config,err) {
 			{
 				if (realDrumsDevice.value == output.deviceId) {
 					realdrumDevice = output;
+					guitarContext.setSinkId(realdrumDevice.deviceId);					
 					setupRealInstruments();
 					saveConfig();					
 					break;
@@ -4070,7 +4072,8 @@ function enableSequencer(flag) {
 function startStopSequencer() {
 	console.debug("startStopSequencer", styleStarted);
 	
-	if (!audioContext) audioContext = new AudioContext();	
+	if (!audioContext) audioContext =  new AudioContext();
+	if (realdrumDevice) audioContext.setSinkId(realdrumDevice.deviceId);	
 		
 	if (songSequence) 
 	{
