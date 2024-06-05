@@ -22,7 +22,12 @@ function AudioLooper(styleType) {
 		//console.debug("doLoop starts", id, this.id, howLong);
 		
 		if (id == "end1")  this.offset = 0; 
-				
+		
+		if (this.source) {
+			this.source.stop();
+			this.source.disconnect();
+		}
+		
 		this.source = this.audioContext.createBufferSource();		
 		this.source.buffer = this.sample;	
 		this.gainNode = this.audioContext.createGain();
@@ -99,6 +104,7 @@ AudioLooper.prototype.update = function(id, sync) {
 	this.displayUI(true);	
 	
 	if (this.source) {	
+		this.finished = false;	
 		this.id = id;		
 		const loop = this.getLoop(id);
 		
@@ -131,6 +137,7 @@ AudioLooper.prototype.start = function(id) {
 	this.displayUI(true);	
 	this.looping = true;
 	this.reloop = true;
+	this.finished = false;
 	this.offset = 0;
 	this.id = id;
 	this.vol = this.styleType == "bass" ? 0.95 : ( this.styleType == "chord" ? 0.4 : 0.85);
@@ -141,7 +148,7 @@ AudioLooper.prototype.start = function(id) {
 	const endTime = loop.stop / 1000;
 	const howLong = endTime - beginTime;	
 	
-	console.debug("AudioLooper start");
+	console.debug("AudioLooper " + this.styleType + " start");	
 
 	if (this.sample) this.doLoop(id, beginTime, howLong);
 };
@@ -179,10 +186,21 @@ AudioLooper.prototype.displayUI = function(flag) {
 AudioLooper.prototype.stop = function() {
 	this.displayUI(false);
 	this.looping = false;
-	console.debug("AudioLooper stop");
 	
-	if (this.source) {
-		this.source.stop();	
+	if (this.source && this.id) {
+		const loop = this.getLoop(this.id);
+		let when = this.audioContext.currentTime;
+		
+		if (loop) {
+			const beginTime =  loop.start /1000;
+			const endTime = loop.stop / 1000;
+			const duration = endTime - beginTime;
+			const fadeOutSeconds = 0.125 * duration;		
+			console.debug("AudioLooper " + this.styleType + " stop", fadeOutSeconds);		
+			when = this.audioContext.currentTime + fadeOutSeconds;	
+		}
+		this.finished = true;
+		this.source.stop(when);
 	}
 };
 
