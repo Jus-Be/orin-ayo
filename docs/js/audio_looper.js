@@ -200,11 +200,13 @@ AudioLooper.prototype.stop = function() {
 			const beginTime =  loop.start /1000;
 			const endTime = loop.stop / 1000;
 			const duration = endTime - beginTime;
-			const fadeOutSeconds = 0.125 * duration;		
+			const howLong = this.audioContext.currentTime - this.startTime;	
+			const fadeOutSeconds = (duration - howLong) / 4;				
 			console.debug("AudioLooper " + this.styleType + " stop", fadeOutSeconds);		
 			when = this.audioContext.currentTime + fadeOutSeconds;	
 		}
 		this.finished = true;
+		this.gainNode.gain.setValueAtTime(0.01, when);
 		this.source.stop(when);
 	}
 };
