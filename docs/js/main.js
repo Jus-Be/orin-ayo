@@ -370,7 +370,7 @@ function onloadHandler() {
 	microphone = document.querySelector("#microphone");
 	
 	microphone.addEventListener('click', function(event) {
-		setupMicrophone();
+		if (microphone.checked) setupMicrophone();
 	});	
 	
 	setupMicrophone();
@@ -1768,8 +1768,6 @@ async function setupUI(config,err) {
 	realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice");
 	realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop", false, false);		
 	realChordsLoop.options[0] = new Option("**UNUSED**", "realChordsLoop", false, false);
-
-	if (!realInstrument) realInstrument = {};
 			
 	for (var i=0; i<drum_loops.length; i++) {
 		const drumLoop = drum_loops[i];
@@ -1779,6 +1777,7 @@ async function setupUI(config,err) {
 		const drumName = metaData[0] + " (" + metaData[1] + ")";			
 		
 		if (config.realDrum && config.realDrum == drumLoop) {
+			if (!realInstrument) realInstrument = {};			
 			selectedDrum = true;
 			realInstrument.drum = metaData;				
 			realInstrument.drumUrl = drumLoop;		
@@ -1795,6 +1794,7 @@ async function setupUI(config,err) {
 		const chordName = metaData[0] + " (" + metaData[1] + ")";		
 		
 		if (config.realChord && config.realChord == chordLoop) {
+			if (!realInstrument) realInstrument = {};			
 			selectedChord = true;
 			realInstrument.chord = metaData;	
 			realInstrument.chordUrl = chordLoop;				
@@ -1818,6 +1818,7 @@ async function setupUI(config,err) {
 				const chordName = metaData[0] + " (" + metaData[1] + ")";
 				
 				if (selectedLoop) {
+					if (!realInstrument) realInstrument = {};					
 					realInstrument.drum = metaData;				
 					realInstrument.drumUrl = loop;	
 				}
@@ -1832,7 +1833,8 @@ async function setupUI(config,err) {
 				const metaData = loopData.split("_");		
 				const chordName = metaData[0] + " (" + metaData[1] + ")";
 				
-				if (selectedLoop) {				
+				if (selectedLoop) {
+					if (!realInstrument) realInstrument = {};
 					realInstrument.chord = metaData;	
 					realInstrument.chordUrl = loop;	
 				}
@@ -2007,14 +2009,15 @@ async function setupUI(config,err) {
 		getArrSequence(config.arrName, arrSequenceLoaded);	
 		document.querySelector(".delete_style").style.display = "";		
 	}
-	else
+	else {
 
-	if (arranger != "sff") {	// use gmgsx.sf2 as dummy midiSynth
-		loadMidiSynth();
+		if (arranger != "sff") {	// use gmgsx.sf2 as dummy midiSynth
+			loadMidiSynth();		
+		}	
+
 		window.tempConfig = config; // store config for later access		
 		setupMidiChannels();		
-	}			
-	
+	}
 };
 
 function createStyleList(config, arrangerStyle, arrangerGrp) {
