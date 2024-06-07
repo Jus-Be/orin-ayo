@@ -23,6 +23,7 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var microphone = true;
 var handledStartStop = true;
 var registration = 0;
 var bluetoothDevice = null;
@@ -89,7 +90,7 @@ var tempoCanvas = null;
 var nextBeatTime = 0;
 var playStartTime = 0;
 var songStartTime = 0;
-var audioContext = null;
+var audioContext = new AudioContext();
 var unlocked = false;
 var arrangerBeat;
 var current16thNote;        		// What note is currently last scheduled?
@@ -364,8 +365,15 @@ function onloadHandler() {
 		} else {
 			
 		}
-	});		
+	});	
+
+	microphone = document.querySelector("#microphone");
 	
+	microphone.addEventListener('click', function(event) {
+		setupMicrophone();
+	});	
+	
+	setupMicrophone();
 
 	window.addEventListener("gamepadconnected", connectHandler);
 	window.addEventListener("gamepaddisconnected", disconnectHandler);
@@ -515,6 +523,39 @@ function onloadHandler() {
 	});	
 	
 	letsGo();
+}
+
+async function setupMicrophone() {
+	console.debug("setupMicrophone");
+	
+	if (microphone.checked) {	
+		const audioCtx = new AudioContext();	
+		let audioMidiConfig = {tempo: 80,  maxTempo: 720,  resolution: 16,  channel: 2,  sampleRate: 32000};		
+		const midiCreator = new MidiCreator({audioMidiConfig});
+		
+		midiCreator.onPreviewNote = (data) => {
+			//console.debug("midiCreator.onPreviewNote", data);		
+		};	
+		
+		const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: false});
+		console.debug("setupMicrophone", stream);		
+			
+		const inputNode = audioCtx.createMediaStreamSource(stream);
+		await audioCtx.audioWorklet.addModule('/js/audio-midi.js')
+		const processorNode = new AudioWorkletNode(audioCtx, 'audio-midi');
+		
+		processorNode.port.onmessage = (event) => {
+			//console.log("processorNode.port.onmessage", event.data);
+			let pitchInfo = midiCreator.autoCorrelate(event.data.channel, audioCtx.sampleRate);
+			
+			if (pitchInfo?.pitch > -1) {	
+				//console.debug("processorNode.port.onmessage", pitchInfo);			
+				midiCreator.addNote(pitchInfo.pitch, pitchInfo.velocity);				
+			}
+		};
+  
+		inputNode.connect(processorNode).connect(audioCtx.destination);
+	}	
 }
 
 function handleFileContent(event) {
@@ -1849,6 +1890,7 @@ async function setupUI(config,err) {
 			selectedDevice = true;
 			realdrumDevice = outputs[i];
 			guitarContext.setSinkId(realdrumDevice.deviceId);
+			audioContext.setSinkId(realdrumDevice.deviceId);			
 		}
 		realDrumsDevice.options[i + 1] = new Option(outputs[i].label, outputs[i].deviceId, selectedDevice, selectedDevice);
 	}	
@@ -1867,7 +1909,8 @@ async function setupUI(config,err) {
 			{
 				if (realDrumsDevice.value == output.deviceId) {
 					realdrumDevice = output;
-					guitarContext.setSinkId(realdrumDevice.deviceId);					
+					guitarContext.setSinkId(realdrumDevice.deviceId);
+					audioContext.setSinkId(realdrumDevice.deviceId);					
 					setupRealInstruments();
 					saveConfig();					
 					break;
@@ -1946,7 +1989,8 @@ async function setupUI(config,err) {
 	
 	document.querySelector("#autoFill").checked = config.autoFill;	
 	document.querySelector("#introEnd").checked = config.introEnd;
-	document.querySelector("#reverb").checked = config.reverb;
+	guitarReverb.checked = config.reverb;
+	microphone.checked = config.microphone;	
 	document.querySelector("#program-change").checked = config.programChange;	
 	document.querySelector("#volume").value = (config.guitarVolume || guitarVolume) * 100;
 	
@@ -2173,7 +2217,8 @@ function saveConfig() {
 	config.rgIndex = rgIndex;
 	config.autoFill = document.querySelector("#autoFill").checked;
 	config.introEnd = document.querySelector("#introEnd").checked;
-	config.reverb = document.querySelector("#reverb").checked;
+	config.reverb = guitarReverb.checked;
+	config.microphone = microphone.checked;
 	config.programChange = document.querySelector("#program-change").checked;	
 	
 	for (let i=0; i<19; i++) {
@@ -4075,10 +4120,7 @@ function enableSequencer(flag) {
 
 function startStopSequencer() {
 	console.debug("startStopSequencer", styleStarted);
-	
-	if (!audioContext) audioContext =  new AudioContext();
-	if (realdrumDevice) audioContext.setSinkId(realdrumDevice.deviceId);	
-		
+
 	if (songSequence) 
 	{
 		if (!styleStarted) 	

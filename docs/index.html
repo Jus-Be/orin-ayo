@@ -27,11 +27,12 @@
 			<span style="font-size: 20px;display:none;margin-left:10px" id="sequencer">Tempo:<span id="showTempo">100</span></span>		
 			<div id="sequencer2" style="margin:10px">BPM
 				<input id="tempo" type="range" min="30.0" max="160.0" step="1" value="100" style="height: 20px; width: 150px">
+				<input style="margin-left: 10px;margin-right: 10px;" id="microphone" type="checkbox" checked>Mic
 				<input style="margin-left: 10px;margin-right: 10px;" id="autoFill" type="checkbox" checked>Auto Fill
-				<input style="margin-left: 10px;margin-right: 10px;" id="introEnd" type="checkbox" checked>Intro/Ending
-				<input checked style="margin-left: 10px;margin-right: 10px;" id="reverb" type="checkbox">Guitar Pedals
+				<input style="margin-left: 10px;margin-right: 10px;" id="introEnd" type="checkbox" checked>Intro/Outro
+				<input checked style="margin-left: 10px;margin-right: 10px;" id="reverb" type="checkbox">Pedals
 				<input checked style="margin-left: 10px;margin-right: 10px;" id="program-change" type="checkbox">Program Change
-				<input id="volume" type="range" min="0.0" max="100.0" step="1" value="25" style="height: 20px; width: 150px;margin-left: 20px;margin-right: 10px;">Volume
+				<input id="volume" type="range" min="0.0" max="100.0" step="1" value="25" style="height: 20px; width: 150px;margin-left: 20px;margin-right: 10px;">VOL
 			</div>
 		</td>
 	</tr>		
@@ -108,6 +109,7 @@
   <script src="./js/sf2.parser.min.js"></script>
   <script src="./js/sf2.synth.min.js"></script>	 
   <script src="./js/midi.ble.js"></script>	
+  <script src="./js/midi-creator.js"></script>	
   <script src="./js/main.js"></script>  
 
 </body>

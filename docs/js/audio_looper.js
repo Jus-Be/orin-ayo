@@ -207,7 +207,7 @@ AudioLooper.prototype.stop = function() {
 		}
 		this.finished = true;
 		this.gainNode.gain.setValueAtTime(0.01, when);
-		this.source.stop(when);
+		this.source.stop(when + 0.01);
 	}
 };
 
