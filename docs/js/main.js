@@ -2011,6 +2011,8 @@ async function setupUI(config,err) {
 
 	if (arranger != "sff") {	// use gmgsx.sf2 as dummy midiSynth
 		loadMidiSynth();
+		window.tempConfig = config; // store config for later access		
+		setupMidiChannels();		
 	}			
 	
 };
@@ -2067,7 +2069,7 @@ function arrSequenceLoaded() {
 }
 
 function setupMidiChannels() {
-	if (!document.getElementById("arr-instrument-0")) {
+	if (!document.getElementById("arr-instrument-18")) {
 		setTimeout(setupMidiChannels, 1000);
 		return;
 	}
