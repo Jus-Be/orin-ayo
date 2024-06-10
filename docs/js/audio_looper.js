@@ -1,9 +1,12 @@
 function AudioLooper(styleType) {
-	this.counter = 6;
 	this.styleType = styleType;
 	this.cb_loaded = null;
 	this.cb_status = null;
-    this.audioContext = new AudioContext();	
+    this.audioContext = audioContext; //new AudioContext();	
+
+	this.channel = (this.styleType == "drum" ? "16" : (this.styleType == "bass" ? "17" : "18"));	
+	this.instrumentNode = document.getElementById("arr-instrument-" + this.channel);
+	this.counter = 6;	
 
 	this.getLoop = function(id) {	// key0 OR key0_maj OR key0_min_arra
 		const keys = id.split("_");
@@ -16,12 +19,13 @@ function AudioLooper(styleType) {
 		return loop;		
 	};
 		
-	this.doLoop = function(id, beginTime, howLong) {		
+	this.doLoop = function(id, beginTime, howLong, when) {		
 		//if (id != this.id) return;
 
-		//console.debug("doLoop starts", id, this.id, howLong);
+		console.debug("doLoop starts", id, this.id, howLong, when);
 		
 		if (id == "end1")  this.offset = 0; 
+		if (when == undefined) when = this.audioContext.currentTime;
 		
 		if (this.source) {
 			//this.finished = true;
@@ -33,15 +37,15 @@ function AudioLooper(styleType) {
 		this.gainNode.gain.value = 0.01;		
 		this.gainNode.connect(this.audioContext.destination)		
 		this.source.connect(this.gainNode);		
-		this.startTime = this.audioContext.currentTime - this.offset;
+		this.startTime = when - this.offset;
 
-		this.gainNode.gain.setValueAtTime(0.01, this.audioContext.currentTime);
-		this.gainNode.gain.exponentialRampToValueAtTime(this.vol, this.audioContext.currentTime + 0.01);	
+		this.gainNode.gain.setValueAtTime(0.01, when);
+		this.gainNode.gain.exponentialRampToValueAtTime(this.vol, when + 0.01);	
 		
-		this.source.start(this.audioContext.currentTime, (beginTime + this.offset), (howLong - this.offset));	
+		this.source.start(when, (beginTime + this.offset), (howLong - this.offset));	
 
-		this.gainNode.gain.setValueAtTime(this.vol, this.audioContext.currentTime + howLong - this.offset - 0.01);
-		this.gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + howLong - this.offset);			
+		this.gainNode.gain.setValueAtTime(this.vol, when + howLong - this.offset - 0.01);
+		this.gainNode.gain.exponentialRampToValueAtTime(0.01, when + howLong - this.offset);			
 		
 		if (this.cb_status) this.cb_status("_eventPlaying", id); 		
 		
@@ -135,7 +139,7 @@ AudioLooper.prototype.update = function(id, sync) {
 	}
 };
 
-AudioLooper.prototype.start = function(id) {
+AudioLooper.prototype.start = function(id, when) {
 	this.displayUI(true);	
 	this.looping = true;
 	this.reloop = true;
@@ -152,9 +156,9 @@ AudioLooper.prototype.start = function(id) {
 		const endTime = loop.stop / 1000;
 		const howLong = endTime - beginTime;	
 		
-		console.debug("AudioLooper " + this.styleType + " start");	
+		console.debug("AudioLooper " + this.styleType + " start", when);	
 
-		if (this.sample) this.doLoop(id, beginTime, howLong);
+		if (this.sample) this.doLoop(id, beginTime, howLong, when);
 	}
 };
 
@@ -171,11 +175,9 @@ AudioLooper.prototype.volume = function(vol) {
 };
 
 AudioLooper.prototype.displayUI = function(flag) {
-	const channel = (this.styleType == "drum" ? "16" : (this.styleType == "bass" ? "17" : "18"));
-	const instrumentNode = document.getElementById("arr-instrument-" + channel);
 	
-	if (instrumentNode) {
-		const classList = instrumentNode.parentNode.parentNode.parentNode.parentNode.querySelector("tbody > tr:nth-child(" + (parseInt(channel) + 1) + ") > td:nth-child(" + this.counter + ")").classList;				
+	if (this.instrumentNode) {
+		const classList = this.instrumentNode.parentNode.parentNode.parentNode.parentNode.querySelector("tbody > tr:nth-child(" + (parseInt(this.channel) + 1) + ") > td:nth-child(" + this.counter + ")").classList;				
 		
 		if (classList) 
 		{

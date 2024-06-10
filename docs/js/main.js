@@ -1497,8 +1497,7 @@ async function setupUI(config,err) {
 	guitarType.options[5] = new Option("LK Acoustic Steel", "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file", config.guitarName == "0250_LK_AcousticSteel_SF2_file");	
 	guitarType.options[6] = new Option("Electric Bass Guitar (pick)", "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file", config.guitarName == "0341_Aspirin_sf2_file");	
 	guitarType.options[7] = new Option("Electric Guitar FSBS", "0270_EGuitar_FSBS_SF2_file", config.guitarName == "0270_EGuitar_FSBS_SF2_file", config.guitarName == "0270_EGuitar_FSBS_SF2_file");	
-	guitarType.options[8] = new Option("Gibson Les Paul", "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file", config.guitarName == "0270_Gibson_Les_Paul_sf2_file");	
-	guitarType.options[9] = new Option("JC Live", "0260_JCLive_sf2_file", config.guitarName == "0260_JCLive_sf2_file", config.guitarName == "0260_JCLive_sf2_file");	
+	guitarType.options[8] = new Option("JC Live", "0260_JCLive_sf2_file", config.guitarName == "0260_JCLive_sf2_file", config.guitarName == "0260_JCLive_sf2_file");	
 
 	guitarType.addEventListener("change", function() {
 		guitarStrum[1].style.display = "none";		
@@ -3779,29 +3778,30 @@ function toggleStartStop() {
 			
 			if (!styleStarted) {
 				if (!registration) setTempo(realInstrument.bpm);	
+				const goTime = audioContext.currentTime + 0.5;				
 
 				if (songSequence) {
 					orinayo_section.innerHTML = ">Arr A";					
-					if (drumLoop && drumChecked) drumLoop.start('arra');
-					if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12));
-					if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12));
+					if (drumLoop && drumChecked) drumLoop.start('arra', goTime);
+					if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12), goTime);
+					if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12), goTime);
 						
 				} else {
 					if (pad.buttons[YELLOW] && introEnd) {					
 						orinayo_section.innerHTML = ">Arr A";
-						
+												
 						if (drumLoop && drumChecked) {
-							drumLoop.start('int1');					
+							drumLoop.start('int1', goTime);					
 						
 							setTimeout(() => {
-								if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12));
-								if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12));			
+								if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12), goTime);
+								if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12), goTime);			
 							}, realInstrument.drums.int1.stop);
 						}
 					} else {
-						if (drumLoop && drumChecked) drumLoop.start('arra');						
-						if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12));
-						if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12));							
+						if (drumLoop && drumChecked) drumLoop.start('arra', goTime);						
+						if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12), goTime);
+						if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12), goTime);							
 					}
 					
 				}
@@ -4696,17 +4696,19 @@ function scheduleArrNote() {
 	if (arrSequence) {
 		let event = arrSequence.data[currentSffVar][currentPlayNote];
 		//console.debug("scheduleSongNote", event);
+		
+		const goTime = nextBeatTime;
 			
 		if (drumLoop && !drumLoop.looping && document.getElementById("arr-instrument-16")?.checked) {
-			drumLoop.start("arra");
+			drumLoop.start("arra", goTime);
 		}	
 
 		if (bassLoop && !bassLoop.looping && document.getElementById("arr-instrument-17")?.checked) {
-			bassLoop.start("key" + (keyChange % 12));
+			bassLoop.start("key" + (keyChange % 12), goTime);
 		}
 		
 		if (chordLoop && !chordLoop.looping && document.getElementById("arr-instrument-18")?.checked) {
-			chordLoop.start("key" + (keyChange % 12));
+			chordLoop.start("key" + (keyChange % 12), goTime);
 		}		
 				
 		// TODO implement CASM
