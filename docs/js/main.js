@@ -3794,8 +3794,8 @@ function toggleStartStop() {
 							drumLoop.start('int1', goTime);					
 						
 							setTimeout(() => {
-								if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12), goTime);
-								if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12), goTime);			
+								if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12), goTime + (realInstrument.drums.int1.stop / 1000));
+								if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12), goTime + (realInstrument.drums.int1.stop / 1000));			
 							}, realInstrument.drums.int1.stop);
 						}
 					} else {
@@ -4696,8 +4696,10 @@ function scheduleArrNote() {
 	if (arrSequence) {
 		let event = arrSequence.data[currentSffVar][currentPlayNote];
 		//console.debug("scheduleSongNote", event);
-		
-		const goTime = nextBeatTime;
+
+		const secondsPerBeat = 60.0 / tempo; 
+		const beatTime = (0.25 * secondsPerBeat); 		
+		const goTime = audioContext.currentTime + beatTime;
 			
 		if (drumLoop && !drumLoop.looping && document.getElementById("arr-instrument-16")?.checked) {
 			drumLoop.start("arra", goTime);

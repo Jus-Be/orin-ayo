@@ -26,6 +26,7 @@ function AudioLooper(styleType) {
 		
 		if (id == "end1")  this.offset = 0; 
 		if (when == undefined) when = this.audioContext.currentTime;
+		this.startTime = when - this.offset;
 		
 		if (this.source) {
 			//this.finished = true;
@@ -34,13 +35,18 @@ function AudioLooper(styleType) {
 		this.source = this.audioContext.createBufferSource();		
 		this.source.buffer = this.sample;	
 		this.gainNode = this.audioContext.createGain();
-		this.gainNode.gain.value = 0.01;		
+		this.gainNode.gain.value = 0.01;			
+			
+		if (this.firstTime) {
+			this.firstTime = false;
+			this.gainNode.gain.setTargetAtTime(this.vol, when, 0.5);			
+			
+		} else {
+			this.gainNode.gain.exponentialRampToValueAtTime(this.vol, when + 0.01);	
+		}
+		
 		this.gainNode.connect(this.audioContext.destination)		
-		this.source.connect(this.gainNode);		
-		this.startTime = when - this.offset;
-
-		this.gainNode.gain.setValueAtTime(0.01, when);
-		this.gainNode.gain.exponentialRampToValueAtTime(this.vol, when + 0.01);	
+		this.source.connect(this.gainNode);			
 		
 		this.source.start(when, (beginTime + this.offset), (howLong - this.offset));	
 
@@ -98,12 +104,12 @@ AudioLooper.prototype.muteToggle = function(id) {
 AudioLooper.prototype.mute = function(id) {
 	this.prevVol = this.vol;	
 	this.vol = 0.0001;
-	this.gainNode.gain.exponentialRampToValueAtTime(this.vol, this.audioContext.currentTime + 0.5);	
+	this.gainNode.gain.setTargetAtTime(this.vol, this.audioContext.currentTime, 0.5);	
 }
 
 AudioLooper.prototype.unmute = function(id) {
-	this.vol = this.prevVol;	
-	this.gainNode.gain.exponentialRampToValueAtTime(this.vol, this.audioContext.currentTime + 0.5);	
+	this.vol = this.prevVol;		
+	this.gainNode.gain.setTargetAtTime(this.vol, this.audioContext.currentTime, 0.5);	
 }
 
 AudioLooper.prototype.update = function(id, sync) {
@@ -111,6 +117,7 @@ AudioLooper.prototype.update = function(id, sync) {
 	
 	if (this.source) {	
 		this.finished = false;	
+		
 		this.id = id;		
 		const loop = this.getLoop(id);
 		
@@ -135,7 +142,7 @@ AudioLooper.prototype.update = function(id, sync) {
 				this.doLoop(id, beginTime, howLong);
 				old.stop();		
 			}
-		}
+		}	
 	}
 };
 
@@ -144,6 +151,7 @@ AudioLooper.prototype.start = function(id, when) {
 	this.looping = true;
 	this.reloop = true;
 	this.finished = false;
+	this.firstTime = true;
 	this.offset = 0;
 	this.id = id;
 	this.vol = this.styleType == "bass" ? 0.95 : ( this.styleType == "chord" ? 0.4 : 0.85);
@@ -192,7 +200,8 @@ AudioLooper.prototype.displayUI = function(flag) {
 
 AudioLooper.prototype.stop = function() {
 	this.displayUI(false);
-	this.looping = false;
+	this.looping = false;	
+	this.firstTime = false;	
 	
 	if (this.source && this.id) {
 		const loop = this.getLoop(this.id);
@@ -208,7 +217,7 @@ AudioLooper.prototype.stop = function() {
 			when = this.audioContext.currentTime + fadeOutSeconds;	
 		}
 		this.finished = true;
-		this.gainNode.gain.setValueAtTime(0.01, when);
+		this.gainNode.gain.setTargetAtTime(0.01, this.audioContext.currentTime, 0.5);		
 		this.source.stop(when + 0.01);
 	}
 };
