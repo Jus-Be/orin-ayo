@@ -29,7 +29,7 @@ function AudioLooper(styleType) {
 		this.startTime = when - this.offset;
 		
 		if (this.source) {
-			//this.finished = true;
+
 		}
 		
 		this.source = this.audioContext.createBufferSource();		
@@ -116,8 +116,6 @@ AudioLooper.prototype.update = function(id, sync) {
 	this.displayUI(true);	
 	
 	if (this.source) {	
-		this.finished = false;	
-		
 		this.id = id;		
 		const loop = this.getLoop(id);
 		
@@ -150,7 +148,6 @@ AudioLooper.prototype.start = function(id, when) {
 	this.displayUI(true);	
 	this.looping = true;
 	this.reloop = true;
-	this.finished = false;
 	this.firstTime = true;
 	this.offset = 0;
 	this.id = id;
@@ -213,10 +210,9 @@ AudioLooper.prototype.stop = function() {
 			const duration = endTime - beginTime;
 			const howLong = this.audioContext.currentTime - this.startTime;	
 			const fadeOutSeconds = (duration - howLong) / 4;				
-			console.debug("AudioLooper " + this.styleType + " stop", fadeOutSeconds);		
+			console.debug("AudioLooper " + this.styleType + " stop", fadeOutSeconds, this.finished);		
 			when = this.audioContext.currentTime + fadeOutSeconds;	
 		}
-		this.finished = true;
 		this.gainNode.gain.setTargetAtTime(0.01, this.audioContext.currentTime, 0.5);		
 		this.source.stop(when + 0.01);
 	}

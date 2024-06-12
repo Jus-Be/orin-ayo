@@ -4480,7 +4480,8 @@ function nextArrNote() {
 }
 
 function endAudioStyle() {
-
+	console.debug("endAudioStyle");
+	
 	if (chordLoop) {
 		chordLoop.finished = true;		
 		chordLoop.stop();

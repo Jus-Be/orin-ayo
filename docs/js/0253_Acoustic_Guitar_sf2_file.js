@@ -1,4 +1,4 @@
-console.log('load _tone_0253_Acoustic_Guitar_sf2_file');
+console.debug('load _tone_0253_Acoustic_Guitar_sf2_file');
 var _tone_0253_Acoustic_Guitar_sf2_file={
 	zones:[
 		{

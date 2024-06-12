@@ -1,4 +1,4 @@
-console.log('load _tone_0341_Aspirin_sf2_file');
+console.debug('load _tone_0341_Aspirin_sf2_file');
 var _tone_0341_Aspirin_sf2_file={
 	zones:[
 		{

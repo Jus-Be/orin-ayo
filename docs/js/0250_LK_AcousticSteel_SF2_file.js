@@ -1,4 +1,4 @@
-console.log('load _tone_0250_LK_AcousticSteel_SF2_file');
+console.debug('load _tone_0250_LK_AcousticSteel_SF2_file');
 var _tone_0250_LK_AcousticSteel_SF2_file={
 	zones:[
 		{
