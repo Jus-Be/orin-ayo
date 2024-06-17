@@ -126,12 +126,16 @@ var chord_loops = [
 	"assets/chords/8beat1_100_19200.chord",	
 	"assets/chords/8beat2_100_19200.chord",		
 	"assets/chords/16beat_082_23414.chord",	
+	"assets/chords/acoustic_90_5333.chord",	
+	"assets/chords/acoustic-guitar_75_6400_6400_2.chord",
+	"assets/chords/acoustic-guitar_100_4800_4800_2.chord",
 	"assets/chords/analog-ballad_85_11293.chord",	
-	"assets/chords/ballad_90_10667_5334.chord",
+	"assets/chords/ballad_90_10667_5333.chord",
 	"assets/chords/ballad1_102_9412.chord",
 	"assets/chords/ballad2_102_9412.chord",
 	"assets/chords/beat-arp_118_16271.chord",
 	"assets/chords/beat-arp_120_16000.chord",
+	"assets/chords/beat-arp2_120_4000.chord",	
 	"assets/chords/bluegrass_124_7742_3871.chord",
 	"assets/chords/blues_75_25600.chord",
 	"assets/chords/blues_126_15238.chord",
@@ -176,6 +180,7 @@ var chord_loops = [
 ]
 
 var drum_loops = [
+	"assets/drums/8beat_90_2667_21333_2667_2667_8000.drum",
 	"assets/drums/8beat1_94_2553_20426_2553_2553_5106.drum",
 	"assets/drums/8beat2_94_5106_20426_2553_2553_2553.drum",
 	"assets/drums/8beat3_94_2553_20426_2553_2553_10213.drum",

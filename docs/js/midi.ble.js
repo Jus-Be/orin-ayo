@@ -120,7 +120,7 @@ function convertTimestamp(timestampBLE, connTime) {
 
 
 function bleMIDIrx(blepacket) {
-  //console.log('BLE-in: ' + blepacket);
+  //console.debug('BLE-in: ' + blepacket);
 
   midiMessage         = [];
   let connTime = performance.now();
@@ -171,7 +171,7 @@ function bleMIDIrx(blepacket) {
 }
 
 function translateChordaToI1(callback, flag, trigger, velocity, channel) { 
-  console.log("translateChordaToI1", flag, velocity, channel, trigger)	
+  console.debug("translateChordaToI1", flag, velocity, channel, trigger)	
 
   
   if (channel == 9) {	
@@ -222,7 +222,7 @@ function translateChordaToI1(callback, flag, trigger, velocity, channel) {
 
 
 function handleChordaMidiMessage(midiMessage) {
-	//console.log('handleChordaMidiMessage', midiMessage);
+	//console.debug('handleChordaMidiMessage', midiMessage);
 	// handleNoteOff({number: note, device, velocity)
 	let note, velocity, channel;
 	

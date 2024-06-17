@@ -10,10 +10,14 @@ function AudioLooper(styleType) {
 
 	this.getLoop = function(id) {	// key0 OR key0_maj OR key0_min_arra
 		const keys = id.split("_");
-		
-		let key = keys[0] + "_" + keys[1] + "_" + keys[2];
+
+		let key = id;		
+		if (!this.loop[key]) key = keys[0] + "_" + keys[1] + "_" + keys[2];
 		if (!this.loop[key]) key = keys[0] + "_" + keys[1];
-		if (!this.loop[key]) key = keys[0];
+		if (!this.loop[key]) key = keys[0] + "_maj_arra";
+		if (!this.loop[key]) key = keys[0] + "_maj";		
+		if (!this.loop[key]) key = keys[0];		
+		
 		const loop = this.loop[key];
 		console.debug("getLoop", id, key, loop);		
 		return loop;		
@@ -113,6 +117,7 @@ AudioLooper.prototype.unmute = function(id) {
 }
 
 AudioLooper.prototype.update = function(id, sync) {
+	console.debug("update", id, sync);	
 	this.displayUI(true);	
 	
 	if (this.source) {	

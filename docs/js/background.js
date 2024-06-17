@@ -5,15 +5,15 @@
 // -------------------------------------------------------
 
 self.addEventListener('install', function(event) {
-    console.log('activate', event);
+    console.debug('activate', event);
 });
 self.addEventListener('activate', function (event) {
-    console.log('activate', event);
+    console.debug('activate', event);
 	openOrinAyoWindow();	
 });
 
 self.addEventListener('message', function (event) {
-	console.log('message', event.data);
+	console.debug('message', event.data);
 })
 
 self.addEventListener('notificationclose', function(event) {

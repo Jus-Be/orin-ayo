@@ -4,9 +4,9 @@ function HitBar(context, x, y, width, height) {
   var _width = width;
   var _height = height;
   
-  //console.log(_height);
-  //console.log(_x);
-  //console.log(_y);
+  //console.debug(_height);
+  //console.debug(_x);
+  //console.debug(_y);
   
   var noteWidth = (width * 2) / 15;
   var notePadding = width / 30;

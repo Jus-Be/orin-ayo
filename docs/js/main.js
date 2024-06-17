@@ -545,7 +545,7 @@ async function setupMicrophone() {
 		const processorNode = new AudioWorkletNode(audioCtx, 'audio-midi');
 		
 		processorNode.port.onmessage = (event) => {
-			//console.log("processorNode.port.onmessage", event.data);
+			//console.debug("processorNode.port.onmessage", event.data);
 			let pitchInfo = midiCreator.autoCorrelate(event.data.channel, audioCtx.sampleRate);
 			
 			if (pitchInfo?.pitch > -1) {	
@@ -1518,7 +1518,8 @@ async function setupUI(config,err) {
 			}	
 
 			midiGuitar = window["_tone_" + guitarName];		
-			player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);				
+			player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);	
+			enableSequencer(realGuitarStyle != "none");				
 		}			
 		console.debug("selected guitar", guitarName, guitarType.value);				
 		saveConfig();
@@ -4960,23 +4961,37 @@ function setupRealInstruments() {
 		realInstrument.chords = {};	
 		realInstrument.chords.url = realInstrument.chordUrl;			
 		realInstrument.bpm = parseInt(realInstrument.chord[1]);	
-			
-		let size = parseInt(realInstrument.chord[2]);
-		let start = 0;
-		let stop = size;
 		
-		for (let i=0; i<3; i++) {
-			if (realInstrument.chord.length == 4 && i == 2) size = parseInt(realInstrument.chord[3]); 
-				
-			for (let j=0; j<12; j++) {
-				let key = "key" + j;
-				if (i == 1) key = "key" + j + "_min";
-				if (i == 2) key = "key" + j + "_sus";	
+		let variations = 1;
+		if (realInstrument.chord.length == 5) variations = parseInt(realInstrument.chord[4]);
+		
+		for (let v=0; v<variations; v++) {				
+			let size = parseInt(realInstrument.chord[2]);
+			let start = v * (realInstrument.chord.length >= 4 ? ((size * 24) + (parseInt(realInstrument.chord[3] * 12))) : (size * 36));
+			let stop = start + size;
 			
-				realInstrument.chords[key] = {start, stop};
-				start += size;
-				stop += size;
-			}				
+			for (let i=0; i<3; i++) {
+				if (realInstrument.chord.length >= 4 && i == 2) size = parseInt(realInstrument.chord[3]); // SUS4 shorter length
+					
+				for (let j=0; j<12; j++) {
+					let key = "key" + j;
+					let variation = "";
+					
+					if (realInstrument.chord.length == 5 && v == 0) variation = "_arra";
+
+					if (v == 1) variation = "_arrb";
+					if (v == 2) variation = "_arrc";
+					if (v == 3) variation = "_arrd";
+					
+					if (i == 0) key = "key" + j + "_maj" + variation;
+					if (i == 1) key = "key" + j + "_min" + variation;
+					if (i == 2) key = "key" + j + "_sus" + variation;	
+				
+					realInstrument.chords[key] = {start, stop};
+					start += size;
+					stop += size;
+				}				
+			}
 		}
 	}		
 
