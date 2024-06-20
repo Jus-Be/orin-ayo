@@ -1822,7 +1822,7 @@ async function setupUI(config,err) {
 					realInstrument.drumUrl = loop;	
 				}
 
-				realDrumsLoop.options[drumIndex++] = new Option(chordName, loop, selectedLoop, selectedLoop);
+				realDrumsLoop.options[drumIndex++] = new Option("*" + chordName, loop, selectedLoop, selectedLoop);
 			}
 			else
 				
@@ -1838,7 +1838,7 @@ async function setupUI(config,err) {
 					realInstrument.chordUrl = loop;	
 				}
 
-				realChordsLoop.options[chordIndex++] = new Option(chordName, loop, selectedLoop, selectedLoop);
+				realChordsLoop.options[chordIndex++] = new Option("*" + chordName, loop, selectedLoop, selectedLoop);
 			}			
 		})	
 	});	
