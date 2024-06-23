@@ -891,12 +891,12 @@ var WebAudioFontPlayer = /** @class */ (function () {
 		}
 	};	
     WebAudioFontPlayer.prototype.queueWaveTable = function (audioContext, target, preset, when, pitch, duration, volume, slides) {
-		//console.debug("queueWaveTable", pitch, duration, volume, midiOutput);
+		console.debug("queueWaveTable", pitch, duration, volume, midiOutput);
 		this.displayUI(true);
 		
 		if (midiOutput) {
 			outputPlayNote(pitch, 1, {velocity: volume * 3, duration: duration * 1000});
-			return null;
+			if (arranger == "sff") return null;
 		}
 		
         this.resumeContext(audioContext);
