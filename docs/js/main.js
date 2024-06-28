@@ -811,7 +811,7 @@ function toggleStrumUpDown() {
 }
 
 function handleNoteOff(note, device, velocity, channel) {	
-	//console.debug("handleNoteOff", inputDeviceType, note);
+	console.debug("handleNoteOff", inputDeviceType, note);
 	
 	if (inputDeviceType == "chorda" && device != "INSTRUMENT1") {
 		//console.debug("chorda handleNoteOff", note.number, device, velocity, channel);
@@ -927,7 +927,7 @@ function handleNoteOff(note, device, velocity, channel) {
 }
 
 function handleNoteOn(note, device, velocity, channel) {
-	//console.debug("handleNoteOn", inputDeviceType, note, device, velocity, channel);
+	console.debug("handleNoteOn", inputDeviceType, note, device, velocity, channel);
 	
 	if (inputDeviceType == "chorda" && device != "INSTRUMENT1") {
 		//console.debug("chorda handleNoteOn", note.number, device, velocity);		
@@ -944,7 +944,7 @@ function handleNoteOn(note, device, velocity, channel) {
 		}	
 			
 		if (note.number < artiphonI1Base + 10 && note.number >= artiphonI1Base) {			// STRUM UP/DOWN (BRIDGE Buttons)
-			//console.debug("handleNoteOn - strum up/down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);	
+			console.debug("handleNoteOn - strum up/down", pad.buttons[GREEN], pad.buttons[RED], pad.buttons[YELLOW], pad.buttons[BLUE], pad.buttons[ORANGE]);	
 
 			if (!pad.buttons[GREEN] && !pad.buttons[RED] && !pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[CONTROL] && !pad.buttons[LOGO]) {
 				
@@ -971,7 +971,7 @@ function handleNoteOn(note, device, velocity, channel) {
 					pad.buttons[STARPOWER] = false;						
 				}
 				
-				if (!styleStarted && midiRealGuitar) {						
+				if (!styleStarted) {						
 					if (note.number == artiphonI1Base) {
 						padFretButton = (127);
 						padsMode = 0;	
@@ -980,19 +980,19 @@ function handleNoteOn(note, device, velocity, channel) {
 					}
 					if (note.number == artiphonI1Base + 4) {
 						padFretButton =(126);
-						padsMode = 1;	
+						padsMode = 2;	
 					}
 					if (note.number == artiphonI1Base + 5) {
 						padFretButton =(125);	
-						padsMode = 2;	
+						padsMode = 3;	
 					}
 					if (note.number == artiphonI1Base + 7) {
 						padFretButton =(124);	
-						padsMode = 3;
+						padsMode = 4;
 					}
 					if (note.number == artiphonI1Base + 9) {
 						padFretButton = (123);
-						padsMode = 4;
+						padsMode = 5;
 					}
 					
 					if (padsMode != 0) orinayo_pad.innerHTML = "Pad " + padsMode;						
@@ -1001,7 +1001,7 @@ function handleNoteOn(note, device, velocity, channel) {
 						if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
 						const fwdChord = [119];
 						fwdChord.push(padFretButton);	
-						midiRealGuitar.playNote(fwdChord, 1, {velocity});	
+						if (midiRealGuitar) midiRealGuitar.playNote(fwdChord, 1, {velocity});	
 						return;
 					}
 				}
@@ -1925,7 +1925,7 @@ async function setupUI(config,err) {
 	{
 		input.addListener('noteon', "all", function (e) {		
 			//console.debug("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note, e);
-			(e.note, midiIn.value, e.velocity, e.channel);
+			handleNoteOn(e.note, midiIn.value, e.velocity, e.channel);
 		});
 
 		input.addListener("noteoff", "all", function (e) {
