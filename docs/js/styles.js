@@ -123,8 +123,7 @@ var internal_styles = [
 
 var chord_loops = [
 	"assets/chords/8beat_94_20425.chord",
-	"assets/chords/8beat1_100_19200.chord",	
-	"assets/chords/8beat2_100_19200.chord",		
+	"assets/chords/8beat_100_19200_19200_2.chord",	
 	"assets/chords/16beat_082_23414.chord",	
 	"assets/chords/acoustic_90_5333.chord",	
 	"assets/chords/acoustic-guitar_75_6400_6400_2.chord",	
@@ -133,8 +132,7 @@ var chord_loops = [
 	"assets/chords/acoustic-guitar_120_4000_4000_2.chord",	
 	"assets/chords/analog-ballad_85_11293.chord",	
 	"assets/chords/ballad_90_10667_5333.chord",
-	"assets/chords/ballad1_102_9412.chord",
-	"assets/chords/ballad2_102_9412.chord",
+	"assets/chords/ballad_102_9412_9412_2.chord",
 	"assets/chords/beat-arp_118_16271.chord",
 	"assets/chords/beat-arp_120_16000.chord",
 	"assets/chords/beat-arp2_120_4000.chord",	

@@ -24,8 +24,6 @@ function AudioLooper(styleType) {
 	};
 		
 	this.doLoop = function(id, beginTime, howLong, when) {		
-		//if (id != this.id) return;
-
 		console.debug("doLoop starts", id, this.id, howLong, when);
 		
 		if (id == "end1")  this.offset = 0; 
@@ -117,6 +115,8 @@ AudioLooper.prototype.unmute = function(id) {
 }
 
 AudioLooper.prototype.update = function(id, sync) {
+	if (id == this.id) return;	
+
 	console.debug("update", id, sync);	
 	this.displayUI(true);	
 	
