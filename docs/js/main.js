@@ -119,6 +119,8 @@ var guitarContext = new AudioContext();
 var guitarSource = guitarContext.destination;
 var seqIndex = 0;
 
+var lock = {counter: 0, up: 0, down: 0, button: -1};
+
 var O = 12;
 var C = 0, Cs = 1, Db = 1, D = 2, Ds = 3, Eb = 3, E = 4, F = 5, Fs = 6, Gb = 6, G = 7, Gs = 8, Ab = 8, A = 9, As = 10, Bb = 10, B = 11;
 var __6th = E +O*3, __5th = A +O*3, __4th = D +O*4, __3rd = G +O*4, __2nd = B +O*4, __1st = E +O*5;
@@ -152,6 +154,7 @@ var timeouts = {};
 
 var timeoutWorker = new Worker("./js/timeout-worker.js");
 timeoutWorker.addEventListener("message", myWorkerTimer);
+var textDecoder = null;
 
 var idbKeyval = (function (exports) {
 	'use strict';
@@ -233,6 +236,8 @@ window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
 window.addEventListener("beforeunload", () => {if (!registration) saveConfig();});
 window.addEventListener('message', messageHandler);
+
+//document.addEventListener('contextmenu', event => event.preventDefault());
 			
 function myWorkerTimer(evt) {
   var data = evt.data,
@@ -261,6 +266,197 @@ function mysetTimeout(fn, delay) {
 
 function messageHandler(evt) {
 	console.debug("messageHandler", evt);	
+}
+
+async function onLiberLiveClick() {
+	console.debug('onLiberLiveClick');	
+	
+	//00002902-0000-1000-8000-00805f9b34fb - Client Characteristic Configuration descriptor
+	//000000ff-0000-1000-8000-00805f9b34fb	
+	//0000FF03-0000-1000-8000-00805F9B34FB
+	//0000FF02-0000-1000-8000-00805F9B34FB
+	//0000FF01-0000-1000-8000-00805F9B34FB
+	
+	//000000ff-0000-1000-8000-00805f9b34fb, 
+	//00001800-0000-1000-8000-00805f9b34fb, - Generic Access
+	//00001801-0000-1000-8000-00805f9b34fb	- Generic Attribute
+	
+	let ready, device;
+	const devices = await navigator.bluetooth.getDevices();
+
+	if (devices.length > 0) {
+		device = devices[0];
+		
+		device.addEventListener('advertisementreceived', (event) => {	
+			console.debug('Bluetooth device advert', event);
+			
+			if (!ready) {
+				ready = true;
+				doLiberLiveSetup(device);
+			}
+		});
+		
+		await device.watchAdvertisements();		
+		
+	} else {
+		device = await navigator.bluetooth.requestDevice({		
+			filters: [{
+			services: ["000000ff-0000-1000-8000-00805f9b34fb"],
+		}]});
+
+		if (device) doLiberLiveSetup(device);		
+	}
+	
+	console.debug('onLiberLiveClick', device);	
+}
+
+async function doLiberLiveSetup(device) {
+	console.debug('doLiberLiveSetup', device);
+
+	if (device) {			
+		const ui = document.getElementById("lyrics");
+
+		device.addEventListener('gattserverdisconnected', (event) => {
+			console.debug('Bluetooth device ' + device.name + ' is disconnected.', event);
+		});
+		
+		const server = await device.gatt.connect();
+		console.debug('GATT server', server);
+
+		const services = await server.getPrimaryServices();
+		
+		for (let service of services) {
+			const characteristics = await service.getCharacteristics();
+			
+			for (let characteristic of characteristics) 
+			{
+				try {				
+					const descriptors = await characteristic.getDescriptors();
+				
+					for (let descriptor of descriptors) {
+						const value = await descriptor.readValue();
+						console.debug('Found Characteristic', service.uuid, characteristic.uuid, characteristic.properties.notify, descriptor.uuid, value);				
+					}
+				} catch (e) {
+
+				}
+
+				console.debug('Found Characteristic', service.uuid, characteristic.uuid, characteristic.properties.notify);										
+				
+				if (characteristic.properties.notify) {
+					const handler = await characteristic.startNotifications();
+					let cannotFire = true;
+					let haveFired = false;
+					
+					if (!game) {
+						setup();
+						resetGuitarHero();
+					}					
+					
+					handler.addEventListener('characteristicvaluechanged', (evt) => {
+						const {buffer}  = evt.target.value;
+						const eventData = new Uint8Array(buffer);
+						
+						if (eventData.length != 14 || (eventData.length == 14 && eventData[9] != 49 && eventData[9] != 50 && eventData[10] != 49 && eventData[10] != 50)) {
+							for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);
+						}
+						
+						let html = "<table><tr>";
+						
+						for (let i in eventData) {
+							html += "<td>&nbsp;" + i + "&nbsp;</td>";
+						}
+						
+						html += "</tr><tr>";
+						
+						for (let byt of eventData) {
+							html += "<td>&nbsp;" + byt + "&nbsp;</td>";
+						}						
+						
+						html += "</tr></table>"
+						ui.innerHTML = html;					
+						
+						let chordSelected = false;
+						let paddleMoved = false;
+						resetGuitarHero();							
+						
+						cannotFire = (eventData[12] == 255 && eventData[13] == 255) || (eventData[9] == 50 && eventData[10] == 50);
+						
+						if (haveFired && cannotFire) {
+							haveFired = false;
+						}
+						
+						if (eventData[4] == 2) {
+							pad.buttons[YELLOW] = true;		// 1
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[4] == 4) {
+							pad.buttons[BLUE] = true;		// 2m
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[4] == 8) {
+							pad.buttons[GREEN] = true;		// 3m
+							pad.buttons[BLUE] = true;								
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[4] == 16) {
+							pad.buttons[ORANGE] = true;		// 4								
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[4] == 32) {
+							pad.buttons[GREEN] = true;		// 5								
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[4] == 64) {
+							pad.buttons[RED] = true;		// 6m
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[4] == 128) {
+							pad.buttons[YELLOW] = true;		// 7b			
+							pad.buttons[RED] = true;								
+							chordSelected = true;
+						}
+						
+						if (eventData[9] < 45 || eventData[10] < 45) {
+							pad.axis[STRUM] = STRUM_UP;
+							paddleMoved = true;
+						}
+						else
+							
+						if (eventData[9] > 55 || eventData[10] > 55) {
+							pad.axis[STRUM] = STRUM_DOWN;
+							paddleMoved = true;
+						}													
+						
+						if (paddleMoved && !cannotFire && !haveFired) {						
+							haveFired = true;
+							
+							updateCanvas();	
+
+							if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN || pad.buttons[START] || pad.buttons[STARPOWER]) {			
+								doChord();				
+							}														
+						}
+						
+						//pad.axis[STRUM] = STRUM_DOWN;
+						
+					});					65
+				}
+			}
+		}
+	}
 }
 
 function onChordaConnect() {
@@ -357,6 +553,15 @@ function onloadHandler() {
 	orinayo_reg = document.querySelector('#orinayo-reg');	
 	statusMsg = document.querySelector('#statusMsg');
 	guitarReverb = document.querySelector("#reverb");
+	
+	document.body.addEventListener('click', function(event) 
+	{
+		if (inputDeviceType == "liberlivec1" && !textDecoder) {		
+			textDecoder = new TextDecoder("utf-8"); 
+			onLiberLiveClick();			
+			console.debug("first gesture click", event.target);
+		}
+	})
 	
 	guitarReverb.addEventListener('click', function(event) 
 	{
@@ -630,14 +835,78 @@ function setTempo(tmpo) {
 }
 
 function handleKeyboard(name, code) {
-	//console.debug("handleKeyboard", name, code);
-	var handled = false;
-
+	console.debug("handleKeyboard", name, code);
+	
 	if (!game) {
 		setup();
 		resetGuitarHero();
-	}	
+	}
+
+	var handled = false;	
+	
+	if (inputDeviceType == "orinayo") {
+		handled = handleSevenButtons(name, code);
+		updateCanvas();			
+	} else {
+		handled = handleNumPad(name, code);	
+		doChord();
+		updateCanvas();
+		resetGuitarHero();			
+	}
+}
+
+function handleSevenButtons(name, code) {
+	var handled = false;
+
+	if (keyboard.get("1")) {
+		pad.buttons[RED] = true; 
+		pad.buttons[YELLOW] = true; 		
+		handled = true;		
+	}
+	else
+
+	if (keyboard.get("2")) {
+		pad.buttons[RED] = true; 
+		handled = true;		
+	}
+	else
+
+	if (keyboard.get("3")) {
+		pad.buttons[GREEN] = true; 
+		handled = true;		
+	}
+	else
+
+	if (keyboard.get("4")) {
+		pad.buttons[YELLOW] = true; 
+		handled = true;		
+	}
+	else
+
+	if (keyboard.get("5")) {
+		pad.buttons[ORANGE] = true; 
+		handled = true;		
+	}
+	else
+
+	if (keyboard.get("6")) {
+		pad.buttons[BLUE] = true; 
+		handled = true;		
+	}
+	else
 		
+	if (keyboard.get("7")) {
+		pad.buttons[BLUE] = true; 
+		pad.buttons[GREEN] = true; 		
+		handled = true;		
+	}	
+
+	return handled;	
+}
+
+function handleNumPad(name, code) {
+	var handled = false;	
+	
 	if (keyboard.get("Enter")) {
 		pad.buttons[LOGO] = true;
 		if (keyboard.get("Backspace")) pad.buttons[YELLOW] = true; 	// End1
@@ -795,13 +1064,7 @@ function handleKeyboard(name, code) {
 			
 		}		
 	}	
-
-	if (handled) {
-		doChord();
-		updateCanvas();			
-		resetGuitarHero();	
-	}
-	
+	return handled;
 }
 
 function toggleStrumUpDown() {
@@ -1336,6 +1599,8 @@ async function setupUI(config,err) {
 	console.debug("setupUI", config);
 	
 	statusMsg.innerHTML = "Orin Ayo";	
+	
+	guitarVolume = config.guitarVolume ? config.guitarVolume : guitarVolume;		
 	keyChange = config.keyChange ? config.keyChange : keyChange;
 	dokeyChange();
 	
@@ -1575,13 +1840,17 @@ async function setupUI(config,err) {
 	
 	const midiInType = document.getElementById("midiInType");	
 	midiInType.options[0] = new Option("Logitech Guitar Hero", "logitech-gh", config.inputDeviceType == "logitech-gh");		
-	midiInType.options[1] = new Option("Artiphon Instrument 1", "instrument1", config.inputDeviceType == "instrument1");		
-	midiInType.options[2] = new Option("Artiphon Chorda", "chorda", config.inputDeviceType == "chorda");		
-
+	midiInType.options[1] = new Option("Orin Ayo Controller", "orinayo", config.inputDeviceType == "orinayo");		
+	midiInType.options[2] = new Option("Artiphon Instrument 1", "instrument1", config.inputDeviceType == "instrument1");		
+	midiInType.options[3] = new Option("Artiphon Chorda", "chorda", config.inputDeviceType == "chorda");
+	midiInType.options[4] = new Option("LiberLive C1", "liberlivec1", config.inputDeviceType == "liberlivec1");
+	
 	let deviceIndex = 0;
 	deviceIndex = config.inputDeviceType == "logitech-gh" ? 0 : deviceIndex;
-	deviceIndex = config.inputDeviceType == "instrument1" ? 1 : deviceIndex;
-	deviceIndex = config.inputDeviceType == "chorda" ? 2 : deviceIndex;	
+	deviceIndex = config.inputDeviceType == "orinayo" ? 1 : deviceIndex;
+	deviceIndex = config.inputDeviceType == "instrument1" ? 2 : deviceIndex;
+	deviceIndex = config.inputDeviceType == "chorda" ? 3 : deviceIndex;	
+	deviceIndex = config.inputDeviceType == "liberlivec1" ? 4 : deviceIndex;		
 	midiInType.selectedIndex = deviceIndex;			
 	inputDeviceType = config.inputDeviceType;
 
@@ -4079,19 +4348,93 @@ function updateCanvas() {
 	game.update();
 }
 
-function setup() {
+async function setup() {
   var gameCanvas = document.getElementById('gameCanvas');
   canvas.context = gameCanvas.getContext('2d');
   canvas.gameWidth = gameCanvas.width;
   canvas.gameHeight = gameCanvas.height;
 
   game = new GameBoard(canvas.context, canvas.gameWidth / 4, 0,  canvas.gameWidth / 2, canvas.gameHeight);
+  
+  document.addEventListener("pointerlockchange", lockChangeAlert, false);
+  
+  if (inputDeviceType == "orinayo") 
+  {
+	  if (!document.pointerLockElement) {
+		await document.body.requestPointerLock({
+		  unadjustedMovement: true,
+		});
+	  } 
+  }
+}
+
+function lockChangeAlert() {
+  if (document.pointerLockElement === document.body) {
+    console.debug("The pointer lock status is now locked");
+	lock = {counter: 0, up: 0, down: 0, button: -1};
+    document.body.addEventListener("mousemove", updatePosition, false);
+    document.body.addEventListener("mousedown", updateButton, false); 	
+
+  } else {
+	lock = {counter: 0, up: 0, down: 0, button: -1};
+    console.debug("The pointer lock status is now unlocked");
+    document.body.removeEventListener("mousemove", updatePosition, false); 
+    document.body.removeEventListener("mousedown", updateButton, false); 
+  }
+}
+
+function updateButton(e) {
+	let handled = false;
+	lock.button = e.buttons;
+	console.debug("updateButton", e.buttons);	
+	
+	if (e.buttons == 3) {
+		pad.buttons[LOGO] = true;
+		if (keyboard.get("4")) pad.buttons[YELLOW] = true; 
+		handled = true;				
+	}
+	else
+
+	if (e.buttons == 2) {
+		pad.buttons[START] = true;
+		handled = true;				
+	}
+	else
+
+	if (e.buttons == 1) {
+		pad.buttons[STARPOWER] = true;
+		handled = true;				
+	}		
+	
+	if (handled) {
+		doChord();
+		updateCanvas();			
+		resetGuitarHero();	
+	}	
+}
+
+function updatePosition(e) {
+	lock.counter++;
+	
+	if (e.movementY > 0) lock.down++;
+	if (e.movementY < 0) lock.up++;
+	
+	if (lock.counter > 50) {
+		console.debug("updatePosition", lock.down > lock.up ? "DOWN" : "UP");
+		
+		lock = {counter: 0, up: 0, down: 0, button: -1};		
+		pad.axis[STRUM] = lock.down > lock.up ? STRUM_DOWN : STRUM_UP;	
+
+		doChord();
+		updateCanvas();			
+		resetGuitarHero();	
+	}
 }
 
 function enableSequencer(flag) {
 	
-	document.querySelector("#sequencer").style.display = flag ? "" : "none";
-	document.querySelector("#sequencer2").style.display = flag ? "" : "none";	
+	//document.querySelector("#sequencer").style.display = flag ? "" : "none";
+	//document.querySelector("#sequencer2").style.display = flag ? "" : "none";	
 	document.querySelector("#tempoCanvas").style.display = flag ? "" : "none";
 
 	if (!canvasContext && flag) {
@@ -4885,8 +5228,8 @@ function setupSongSequence() {
 	
     dokeyChange();
 
-	document.querySelector("#sequencer").style.display = flag ? "" : "none";
-	document.querySelector("#sequencer2").style.display = flag ? "" : "none";
+	//document.querySelector("#sequencer").style.display = flag ? "" : "none";
+	//document.querySelector("#sequencer2").style.display = flag ? "" : "none";
 	document.querySelector("#tempoCanvas").style.display = flag ? "" : "none";
 
 	if (!canvasContext && flag) {
@@ -4916,8 +5259,8 @@ function setupSongSequence() {
 }
 
 function setupRealInstruments() {
-	document.querySelector("#sequencer").style.display = "";	
-	document.querySelector("#sequencer2").style.display = "";	
+	//document.querySelector("#sequencer").style.display = "";	
+	//document.querySelector("#sequencer2").style.display = "";	
 	
 	console.debug("setupRealInstruments", realInstrument);
 	playButton.innerText = "Wait..";
