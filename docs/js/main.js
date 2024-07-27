@@ -277,9 +277,9 @@ async function onLiberLiveClick() {
 	//0000FF02-0000-1000-8000-00805F9B34FB
 	//0000FF01-0000-1000-8000-00805F9B34FB
 	
-	//000000ff-0000-1000-8000-00805f9b34fb, 
-	//00001800-0000-1000-8000-00805f9b34fb, - Generic Access
-	//00001801-0000-1000-8000-00805f9b34fb	- Generic Attribute
+	//000000ff-0000-1000-8000-00805f9b34fb, - Primary Service UUID
+	//00001800-0000-1000-8000-00805f9b34fb, - Generic Access UUID
+	//00001801-0000-1000-8000-00805f9b34fb	- Generic Attribute UUID
 	
 	let ready, device;
 	const devices = await navigator.bluetooth.getDevices();
@@ -363,7 +363,7 @@ async function doLiberLiveSetup(device) {
 							//for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);
 						}
 						
-						/*let html = "<table><tr>";
+						let html = "<table><tr>";
 						
 						for (let i in eventData) {
 							html += "<td>&nbsp;" + i + "&nbsp;</td>";
@@ -376,7 +376,7 @@ async function doLiberLiveSetup(device) {
 						}						
 						
 						html += "</tr></table>"
-						ui.innerHTML = html;*/					
+						ui.innerHTML = html;				
 						
 						volDiv.innerHTML = "Vol: " + (guitarVolume * 100) + " (" + eventData[6] + ")";
 						tempoDiv.innerHTML = tempo + "&nbsp;(" + eventData[7] + ")";
@@ -396,7 +396,7 @@ async function doLiberLiveSetup(device) {
 						let paddleMoved = false;
 						resetGuitarHero();							
 						
-						cannotFire = (eventData[12] == 255 && eventData[13] == 255 && eventData[5] == 0) || (eventData[9] == 50 && eventData[10] == 50);
+						cannotFire = eventData[5] == 0; // paddle in neutral
 						
 						if (haveFired && cannotFire) {
 							haveFired = false;
@@ -513,7 +513,7 @@ async function doLiberLiveSetup(device) {
 						if (eventData[5] == 12) {			// Paddle A
 							paddleMoved = true;	
 							
-							if (eventData[9] < 45) { // UP
+							if (eventData[9] < 48) { // UP
 								
 								if (chordSelected) {
 									pad.axis[STRUM] = STRUM_UP;
@@ -525,7 +525,7 @@ async function doLiberLiveSetup(device) {
 							}
 							else
 								
-							if (eventData[9] > 55) { // DOWN
+							if (eventData[9] > 58) { // DOWN
 							
 								if (chordSelected) {
 									pad.axis[STRUM] = STRUM_DOWN; 
@@ -545,7 +545,7 @@ async function doLiberLiveSetup(device) {
 						if (eventData[5] == 3) {			// Paddle B
 							paddleMoved = true;	
 
-							if (eventData[10] < 45) { // UP
+							if (eventData[10] < 48) { // UP
 							
 								if (chordSelected) {
 									pad.axis[STRUM] = STRUM_UP;
@@ -556,7 +556,7 @@ async function doLiberLiveSetup(device) {
 							}
 							else
 								
-							if (eventData[10] > 55) { // DOWN
+							if (eventData[10] > 58) { // DOWN
 
 								if (chordSelected) {
 									pad.axis[STRUM] = STRUM_DOWN; 
@@ -576,16 +576,36 @@ async function doLiberLiveSetup(device) {
 						if (eventData[5] == 15) {			// Paddle A+B
 							paddleMoved = true;	
 
-							if (eventData[10] < 45) { // UP
+							if (eventData[10] < 48) { // UP
 								pad.buttons[LOGO] = true;
 							}
 							else
 								
-							if (eventData[10] > 55) { // DOWN
+							if (eventData[10] > 58) { // DOWN
 								pad.buttons[LOGO] = true;
 							}							
 
-						}						
+						}	
+						else
+	
+						if (eventData[5] == 64) {			// Mute Pad
+							paddleMoved = true;	
+							
+							pad.buttons[START] = true;		// set PadsMode/strum style	
+							pad.buttons[RED] = false;
+							pad.buttons[YELLOW] = false;
+							pad.buttons[GREEN] = false;
+							pad.buttons[ORANGE] = false;
+							pad.buttons[BLUE] = false;	
+							
+							if (eventData[4] == 2) padsMode = 1;	// full chord up/down
+							if (eventData[4] == 4) padsMode = 2;	// chord up/root note down	
+							if (eventData[4] == 8) padsMode = 3;	// root note up/down
+							if (eventData[4] == 16) padsMode = 4;	// 3rd note up/root note down
+							if (eventData[4] == 32) padsMode = 5;	// 5th note up/root note down							
+							if (eventData[4] == 64) padsMode = 0;	// reset
+							if (eventData[4] == 128) padsMode = 0;	// reset							
+						}
 							
 						if (paddleMoved && !haveFired) {						
 							haveFired = true;
@@ -3968,7 +3988,7 @@ function doChord() {
 			if (padsMode != 0) orinayo_pad.innerHTML = "Pad " + padsMode;		
 		}			
 	}
-    playSectionCheck()
+    if (styleStarted) playSectionCheck();
   }
 
   if (pad.buttons[LOGO])
