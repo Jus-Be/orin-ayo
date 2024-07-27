@@ -347,6 +347,8 @@ async function doLiberLiveSetup(device) {
 					const handler = await characteristic.startNotifications();
 					let cannotFire = true;
 					let haveFired = false;
+					let tempoDiv = document.getElementById('showTempo');
+					let volDiv = document.getElementById('showVol');					
 					
 					if (!game) {
 						setup();
@@ -358,10 +360,10 @@ async function doLiberLiveSetup(device) {
 						const eventData = new Uint8Array(buffer);
 						
 						if (eventData.length != 14 || (eventData.length == 14 && eventData[9] != 49 && eventData[9] != 50 && eventData[10] != 49 && eventData[10] != 50)) {
-							for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);
+							//for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);
 						}
 						
-						let html = "<table><tr>";
+						/*let html = "<table><tr>";
 						
 						for (let i in eventData) {
 							html += "<td>&nbsp;" + i + "&nbsp;</td>";
@@ -374,13 +376,27 @@ async function doLiberLiveSetup(device) {
 						}						
 						
 						html += "</tr></table>"
-						ui.innerHTML = html;					
+						ui.innerHTML = html;*/					
+						
+						volDiv.innerHTML = "Vol: " + (guitarVolume * 100) + " (" + eventData[6] + ")";
+						tempoDiv.innerHTML = tempo + "&nbsp;(" + eventData[7] + ")";
+						const oldKey = keyChange;
+						
+						if (eventData[1] == 0) keyChange = 0;	// C
+						if (eventData[1] == 1) keyChange = 2;	// D
+						if (eventData[1] == 2) keyChange = 4;	// E
+						if (eventData[1] == 3) keyChange = 5;	// F
+						if (eventData[1] == 4) keyChange = 7;	// G
+						if (eventData[1] == 5) keyChange = 9;	// A
+						if (eventData[1] == 6) keyChange = 11;	// B
+						
+						if (oldKey != keyChange) dokeyChange();
 						
 						let chordSelected = false;
 						let paddleMoved = false;
 						resetGuitarHero();							
 						
-						cannotFire = (eventData[12] == 255 && eventData[13] == 255) || (eventData[9] == 50 && eventData[10] == 50);
+						cannotFire = (eventData[12] == 255 && eventData[13] == 255 && eventData[5] == 0) || (eventData[9] == 50 && eventData[10] == 50);
 						
 						if (haveFired && cannotFire) {
 							haveFired = false;
@@ -392,8 +408,29 @@ async function doLiberLiveSetup(device) {
 						}
 						else
 							
+						if (eventData[2] == 8) {
+							pad.buttons[YELLOW] = true;		// 1sus
+							pad.buttons[ORANGE] = true;							
+							chordSelected = true;
+						}
+						else
+
+						if (eventData[3] == 4) {
+							pad.buttons[YELLOW] = true;		// 1/3
+							pad.buttons[BLUE] = true;							
+							chordSelected = true;
+						}
+						else						
+							
 						if (eventData[4] == 4) {
 							pad.buttons[BLUE] = true;		// 2m
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[2] == 16 || eventData[3] == 8) {
+							pad.buttons[BLUE] = true;		// 2
+							pad.buttons[RED] = true;							
 							chordSelected = true;
 						}
 						else
@@ -405,11 +442,33 @@ async function doLiberLiveSetup(device) {
 						}
 						else
 							
+						if (eventData[2] == 32 || eventData[3] == 16) {
+							pad.buttons[GREEN] = true;		// 3
+							pad.buttons[YELLOW] = true;								
+							pad.buttons[BLUE] = true;								
+							chordSelected = true;
+						}
+						else
+							
 						if (eventData[4] == 16) {
 							pad.buttons[ORANGE] = true;		// 4								
 							chordSelected = true;
 						}
 						else
+							
+						if (eventData[2] == 64) {
+							pad.buttons[ORANGE] = true;		// 4m	
+							pad.buttons[RED] = true;							
+							chordSelected = true;
+						}
+						else
+
+						if (eventData[3] == 32) {
+							pad.buttons[ORANGE] = true;		// 4/6
+							pad.buttons[BLUE] = true;							
+							chordSelected = true;
+						}
+						else						
 							
 						if (eventData[4] == 32) {
 							pad.buttons[GREEN] = true;		// 5								
@@ -417,8 +476,30 @@ async function doLiberLiveSetup(device) {
 						}
 						else
 							
+						if (eventData[2] == 128) {
+							pad.buttons[GREEN] = true;		// 5sus							
+							pad.buttons[YELLOW] = true;						
+							chordSelected = true;
+						}
+						else
+
+						if (eventData[3] == 64) {
+							pad.buttons[GREEN] = true;		// 5/7
+							pad.buttons[RED] = true;							
+							chordSelected = true;
+						}
+						else						
+							
 						if (eventData[4] == 64) {
 							pad.buttons[RED] = true;		// 6m
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[3] == 1 || eventData[3] == 128) {
+							pad.buttons[RED] = true;		// 6
+							pad.buttons[YELLOW] = true;
+							pad.buttons[BLUE] = true;							
 							chordSelected = true;
 						}
 						else
@@ -429,30 +510,98 @@ async function doLiberLiveSetup(device) {
 							chordSelected = true;
 						}
 						
-						if (eventData[9] < 45 || eventData[10] < 45) {
-							pad.axis[STRUM] = STRUM_UP;
-							paddleMoved = true;
+						if (eventData[5] == 12) {			// Paddle A
+							paddleMoved = true;	
+							
+							if (eventData[9] < 45) { // UP
+								
+								if (chordSelected) {
+									pad.axis[STRUM] = STRUM_UP;
+
+								} else {
+									pad.axis[STRUM] = STRUM_DOWN;	// fill
+									pad.axis[TOUCH] = -0.7;								
+								}
+							}
+							else
+								
+							if (eventData[9] > 55) { // DOWN
+							
+								if (chordSelected) {
+									pad.axis[STRUM] = STRUM_DOWN; 
+								} else {
+									pad.buttons[STARPOWER] = true;	// next style
+									pad.buttons[RED] = false;
+									pad.buttons[YELLOW] = false;
+									pad.buttons[GREEN] = false;
+									pad.buttons[ORANGE] = false;
+									pad.buttons[BLUE] = false;									
+								}								
+							}
+								
 						}
 						else
 							
-						if (eventData[9] > 55 || eventData[10] > 55) {
-							pad.axis[STRUM] = STRUM_DOWN;
-							paddleMoved = true;
-						}													
-						
-						if (paddleMoved && !cannotFire && !haveFired) {						
-							haveFired = true;
-							
-							updateCanvas();	
+						if (eventData[5] == 3) {			// Paddle B
+							paddleMoved = true;	
 
-							if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN || pad.buttons[START] || pad.buttons[STARPOWER]) {			
-								doChord();				
-							}														
+							if (eventData[10] < 45) { // UP
+							
+								if (chordSelected) {
+									pad.axis[STRUM] = STRUM_UP;
+								} else {
+									pad.axis[STRUM] = STRUM_UP;	// break
+									pad.axis[TOUCH] = -0.7;								
+								}								
+							}
+							else
+								
+							if (eventData[10] > 55) { // DOWN
+
+								if (chordSelected) {
+									pad.axis[STRUM] = STRUM_DOWN; 
+								} else {
+									pad.buttons[START] = true;	// prev style
+									pad.buttons[RED] = false;
+									pad.buttons[YELLOW] = false;
+									pad.buttons[GREEN] = false;
+									pad.buttons[ORANGE] = false;
+									pad.buttons[BLUE] = false;									
+								}								
+							}							
+
 						}
-						
-						//pad.axis[STRUM] = STRUM_DOWN;
-						
-					});					65
+						else
+							
+						if (eventData[5] == 15) {			// Paddle A+B
+							paddleMoved = true;	
+
+							if (eventData[10] < 45) { // UP
+								pad.buttons[LOGO] = true;
+							}
+							else
+								
+							if (eventData[10] > 55) { // DOWN
+								pad.buttons[LOGO] = true;
+							}							
+
+						}						
+							
+						if (paddleMoved && !haveFired) {						
+							haveFired = true;
+							cannotFire = true;
+							
+							if (pad.buttons[LOGO]) {
+								toggleStartStop();
+							} else {
+								updateCanvas();	
+
+								if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN || pad.buttons[START] || pad.buttons[STARPOWER]) {			
+									doChord();				
+								}	
+							}								
+						}
+					});	
 				}
 			}
 		}
@@ -697,8 +846,12 @@ function onloadHandler() {
 		}
 	});	
 
+	const showVol = document.querySelector("#showVol");
+	showVol.innerHTML = "Vol: " + (guitarVolume * 100);
+	
 	document.querySelector("#volume").addEventListener("input", function(event) {
 		guitarVolume = +event.target.value / 100; 
+		showVol.innerHTML = "Vol: " + (guitarVolume * 100);
 	});
 	
 	document.querySelector("#tempo").addEventListener("input", function(event) {
@@ -3738,7 +3891,7 @@ function dokeyChange() {
 }
 
 function doChord() {
-  //console.debug("doChord", pad)
+  console.debug("doChord", pad)
   stopChord();
 
   if (!pad.buttons[YELLOW] && !pad.buttons[BLUE] && !pad.buttons[ORANGE] && !pad.buttons[RED]  && !pad.buttons[GREEN]) 
@@ -4022,6 +4175,8 @@ function doChord() {
 }
 
 function toggleStartStop() {
+	console.debug("toggleStartStop", styleStarted);
+	
 	handledStartStop = false;
 	if (!styleStarted) resetArrToA();
 		
