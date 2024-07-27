@@ -363,7 +363,7 @@ async function doLiberLiveSetup(device) {
 							//for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);
 						}
 						
-						let html = "<table><tr>";
+						/*let html = "<table><tr>";
 						
 						for (let i in eventData) {
 							html += "<td>&nbsp;" + i + "&nbsp;</td>";
@@ -376,7 +376,7 @@ async function doLiberLiveSetup(device) {
 						}						
 						
 						html += "</tr></table>"
-						ui.innerHTML = html;				
+						ui.innerHTML = html;*/				
 						
 						volDiv.innerHTML = "Vol: " + (guitarVolume * 100) + " (" + eventData[6] + ")";
 						tempoDiv.innerHTML = tempo + "&nbsp;(" + eventData[7] + ")";
