@@ -23,6 +23,7 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var appliedVelocity = 0;
 var microphone = true;
 var handledStartStop = true;
 var registration = 0;
@@ -400,6 +401,7 @@ async function doLiberLiveSetup(device) {
 						
 						if (haveFired && cannotFire) {
 							haveFired = false;
+							resetGuitarHero();	
 						}
 						
 						if (eventData[4] == 2) {
@@ -514,19 +516,25 @@ async function doLiberLiveSetup(device) {
 							paddleMoved = true;	
 							
 							if (eventData[9] < 48) { // UP
-								
-								if (chordSelected) {
-									pad.axis[STRUM] = STRUM_UP;
+								appliedVelocity = (50 - eventData[9]) / 50;
 
+								if (chordSelected) {
+									pad.axis[STRUM] = STRUM_UP; 
 								} else {
-									pad.axis[STRUM] = STRUM_DOWN;	// fill
-									pad.axis[TOUCH] = -0.7;								
-								}
+									pad.buttons[START] = true;	// prev style
+									pad.buttons[RED] = false;
+									pad.buttons[YELLOW] = false;
+									pad.buttons[GREEN] = false;
+									pad.buttons[ORANGE] = false;
+									pad.buttons[BLUE] = false;									
+								}								
+
 							}
 							else
 								
 							if (eventData[9] > 58) { // DOWN
-							
+								appliedVelocity = eventData[9] / 50;
+								
 								if (chordSelected) {
 									pad.axis[STRUM] = STRUM_DOWN; 
 								} else {
@@ -546,6 +554,7 @@ async function doLiberLiveSetup(device) {
 							paddleMoved = true;	
 
 							if (eventData[10] < 48) { // UP
+								appliedVelocity = (50 - eventData[10]) / 50;							
 							
 								if (chordSelected) {
 									pad.axis[STRUM] = STRUM_UP;
@@ -557,16 +566,14 @@ async function doLiberLiveSetup(device) {
 							else
 								
 							if (eventData[10] > 58) { // DOWN
+								appliedVelocity = eventData[9] / 50;
 
 								if (chordSelected) {
-									pad.axis[STRUM] = STRUM_DOWN; 
+									pad.axis[STRUM] = STRUM_DOWN;
+
 								} else {
-									pad.buttons[START] = true;	// prev style
-									pad.buttons[RED] = false;
-									pad.buttons[YELLOW] = false;
-									pad.buttons[GREEN] = false;
-									pad.buttons[ORANGE] = false;
-									pad.buttons[BLUE] = false;									
+									pad.axis[STRUM] = STRUM_DOWN;	// fill
+									pad.axis[TOUCH] = -0.7;								
 								}								
 							}							
 
@@ -3170,7 +3177,9 @@ function stopPads() {
 function getVelocity() {
 	//return 0.5;	
 	//return 1.00 - pad.axis[WHAMMY];
-	return 0.5 + (Math.random() * 0.5);
+	let velocity = appliedVelocity;
+	if (velocity == 0) velocity = 0.5 + (Math.random() * 0.5);
+	return velocity;
 }
 
 function getPitches(seq) {
