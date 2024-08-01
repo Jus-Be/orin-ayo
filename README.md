@@ -119,7 +119,13 @@ Orange | Ketron FS-7  | Ketron FS-6
 # Current Version
 <img src=https://jus-be.github.io/orin-ayo/assets/orinayo_experimental.png>
 
-It recognises other non-keyboard USB MIDI controllers (like Artiphon Instrument 1 or Chorda) and enables them to be used as an arranger controller as well. Note that only the first five pads are used like a guitar controller. The strum bridge pads are used to provide control (strum, start/stop, fill, next/prev section).
+It recognises other non-keyboard USB MIDI controllers (like LiberLive C1, Artiphon Instrument 1 or Chorda) and enables them to be used as an arranger controller as well. 
+
+When using LiberLive C1 guitar, it uses the 7 chord keys mapping adopted by LiberLive. However, it expects the last 7th key to be 7b and not 7m.
+It will connect to the LiberLive C1 guitar by the Bluetooth connection used by the LiberLive mobile app. You can't use both OrinAyo and the mobile app at the same time.
+You can select different drum beats and guitar styles for both paddles and OrinAyo will use the tempo set by LiberLive except for web-audio styles that have fixed tempos.
+
+With Artiphon Instrument 1 and Chorda, only the first five pads are used like a Guitar Hero controller. The strum bridge pads are used to provide control (strum, start/stop, fill, next/prev section).
 
 It has an internal arranger engine implemented in JavaScript that can play Yamaha SFFx, Casio AC7 or Ketron KST files. 
 
