@@ -50,7 +50,11 @@ function AudioLooper(styleType) {
 		this.gainNode.connect(this.audioContext.destination)		
 		this.source.connect(this.gainNode);			
 		
-		this.source.start(when, (beginTime + this.offset), (howLong - this.offset));	
+		try {
+			this.source.start(when, (beginTime + this.offset), (howLong - this.offset));	
+		} catch (e) {
+			this.source.start();
+		}
 
 		this.gainNode.gain.setValueAtTime(this.vol, when + howLong - this.offset - 0.01);
 		this.gainNode.gain.exponentialRampToValueAtTime(0.01, when + howLong - this.offset);			

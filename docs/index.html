@@ -24,7 +24,7 @@
 			<a class="pedal_board">Pedal Board</a>			
 			<a class="save_reg">Save</a>
 			<a class="reset_app">Refresh</a>			
-			<span style="font-size: 20px;margin-left:10px" id="sequencer">Tempo:<span id="showTempo">100</span></span>		
+			<span style="font-size: 14px;margin-left:10px" id="sequencer">Tempo:<span id="showTempo">100</span></span>		
 			<div id="sequencer2" style="margin:10px">BPM
 				<input id="tempo" type="range" min="30.0" max="160.0" step="1" value="100" style="height: 20px; width: 150px">
 				<input style="margin-left: 10px;margin-right: 10px;" id="microphone" type="checkbox">Mic
@@ -46,7 +46,7 @@
 	    <td><select id="guitarStrum2" type="text" class="form-control input"></select></td>
 	    <td><select id="guitarStrum3" type="text" class="form-control input"></select></td>
 	</tr>	
-	<tr><td><b>Arranger Type</b></td><td><select id="arrangerType" type="text" class="form-control input"></select></td><td valign="top" rowspan="14" colspan="4"><div id="synth"></div></td></tr>	
+	<tr><td><b>Arranger Type</b></td><td><select id="arrangerType" type="text" class="form-control input"></select></td><td valign="top" rowspan="13" colspan="4"><div id="synth"></div></td></tr>	
 	<tr><td><b>Arranger Group</b></td><td><select id="arrangerGroup" type="text" class="form-control input"></select></td><td></td></tr>	
 	<tr><td><b>Arranger Style</b></td><td><select id="arrangerStyle" type="text" class="form-control input"></select></td><td></td></tr>	
 	<tr><td><b>Sound Font File</b></td><td><select id="arrangerSf2" type="text" class="form-control input"></select></td><td></td></tr>	
@@ -59,18 +59,40 @@
     <tr><td><b>Audio Device</b></td><td><select id="realInstrumentDevice" type="text" class="form-control input"></select></td><td></td></tr>	
     <tr><td><b>Audio Chord Loop</b></td><td><select id="realchordLoop" type="text" class="form-control input"></select></td><td></td></tr>	
     <tr><td><b>Audio Drum Loop</b></td><td><select id="realdrumLoop" type="text" class="form-control input"></select></td><td></td></tr>	
-	<tr><td><b>ChordTracker MIDI Device</b></td><td><select id="midiChordTrackerSel" type="text" class="form-control input"></select></td><td></td></tr>
+	<tr>
+		<td><b>ChordTracker MIDI Device</b></td>
+		<td><select id="midiChordTrackerSel" type="text" class="form-control input"></select></td>
+		<td valign="top" rowspan="2" colspan="4">
+			<div id="liberlive" style="display:none;">
+				<div><center><b>Liber Live Style</b></center></div>
+				<table width="100%">
+					<tr>
+						<td>Paddle A Chord</td>
+						<td>Paddle A Drums</td>
+						<td>Paddle B Chord</td>
+						<td>Paddle B Drums</td>					
+					</tr>
+					<tr>				
+						<td><select id="ll-chord1" type="text" class="form-control input"></select></td>	
+						<td><select id="ll-drums1" type="text" class="form-control input"></select></td>
+						<td><select id="ll-chord2" type="text" class="form-control input"></select></td>
+						<td><select id="ll-drums2" type="text" class="form-control input"></select></td>					
+					</tr>
+				</table>
+			</div>
+		</td>
+	</tr>
 	<tr><td><b>Song Sequence</b></td><td><select id="songSequence" type="text" class="form-control input"></select></td><td></td></tr>	
 	</table>
   </div>  
   <div style="margin-top: 20px;">	
 	<table width="90%">
 	  <tr>	  
-      <td align="left" width="20%"><span style="font-size: 32px" id="orinayo">C</span></td>
-      <td align="left" width="20%"><span style="font-size: 32px" id="orinayo-section">Arr A</span></td>
-      <td align="left" width="20%"><span style="font-size: 32px" id="orinayo-pad">Pad 2</span></td>
-      <td align="left" width="20%"><span style="font-size: 32px" id="orinayo-strum">Strum 1</span></td>
-      <td align="left" width="20%"><span style="font-size: 32px" id="orinayo-reg">Slot 0</span></td>	  
+      <td align="left" width="20%"><span style="font-size: 28px" id="orinayo">C</span></td>
+      <td align="left" width="20%"><span style="font-size: 28px" id="orinayo-section">Arr A</span></td>
+      <td align="left" width="20%"><span style="font-size: 28px" id="orinayo-pad">Pad 2</span></td>
+      <td align="left" width="20%"><span style="font-size: 28px" id="orinayo-strum">Strum 1</span></td>
+      <td align="left" width="20%"><span style="font-size: 28px" id="orinayo-reg">Slot 0</span></td>	  
 	  </tr>
 	  <tr> <td colspan="5"><canvas id="tempoCanvas" width="1150" height="50" style="margin: 0px; display:none"></canvas></td></tr>
 	  </table>	

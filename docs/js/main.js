@@ -23,6 +23,7 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var writeCharacteristic = null;
 var appliedVelocity = 0;
 var microphone = true;
 var handledStartStop = true;
@@ -120,6 +121,7 @@ var guitarContext = new AudioContext();
 var guitarSource = guitarContext.destination;
 var seqIndex = 0;
 
+var liberLive = {drums1: "6/24", drums2: "16/24", chord1: "1/0", chord2: "1/0"};
 var lock = {counter: 0, up: 0, down: 0, button: -1};
 
 var O = 12;
@@ -311,6 +313,63 @@ async function onLiberLiveClick() {
 	console.debug('onLiberLiveClick', device);	
 }
 
+async function setupLiberLive() {
+	const hdr = packString("b11e");
+	
+	console.debug("setupLiberLive", hdr, writeCharacteristic);	
+	const dataView = new Uint8Array(new ArrayBuffer(17));
+
+	let key = 0;
+	if (keyChange == 2) key = 1;
+	if (keyChange == 4) key = 2;
+	if (keyChange == 5) key = 3;
+	if (keyChange == 7) key = 4;
+	if (keyChange == 9) key = 5;
+	if (keyChange == 11) key = 6;
+	
+	dataView[0]  = hdr[0];
+	dataView[1]  = hdr[1];	
+	dataView[2]  = 35;
+	dataView[3]  = 12;
+	dataView[4]  = 0;
+	dataView[5]  = key;
+	dataView[6]  = tempo;
+	dataView[7]  = 0;
+	dataView[8]  = liberLive.drums1.split("/")[0];
+	dataView[9]  = liberLive.drums1.split("/")[1];
+	dataView[10] = liberLive.drums2.split("/")[0];
+	dataView[11] = liberLive.drums2.split("/")[1];
+	dataView[12] = liberLive.chord1.split("/")[1];
+	dataView[13] = liberLive.chord1.split("/")[0];
+	dataView[14] = liberLive.chord2.split("/")[1];
+	dataView[15] = liberLive.chord2.split("/")[0];	
+	dataView[17] = 0;	
+	
+	const resp = await writeCharacteristic.writeValue(dataView);
+	console.debug("setupLiberLive", resp);
+}
+
+function packString(str) {
+	if (str == null || str == "") {
+		return null;
+	}
+	
+	if (str.length == 1) {
+		str = "0" + str;
+	}
+	
+	const upperCase = str.toUpperCase();
+	const length = upperCase.length / 2;
+	const charArray = Array.from(upperCase);
+	const bArr = new Uint8Array(new ArrayBuffer(length))
+	
+	for (let i9 = 0; i9 < length; i9++) {
+		const i10 = i9 * 2;
+		bArr[i9] = (("0123456789ABCDEF".indexOf(charArray[i10 + 1])) | (("0123456789ABCDEF".indexOf(charArray[i10])) << 4));
+	}
+	return bArr;
+}
+
 async function doLiberLiveSetup(device) {
 	console.debug('doLiberLiveSetup', device);
 
@@ -344,6 +403,12 @@ async function doLiberLiveSetup(device) {
 
 				console.debug('Found Characteristic', service.uuid, characteristic.uuid, characteristic.properties.notify);										
 				
+				if (characteristic.properties.write) {
+					writeCharacteristic = characteristic;	
+					setupLiberLive();
+				}
+				else
+					
 				if (characteristic.properties.notify) {
 					const handler = await characteristic.startNotifications();
 					let cannotFire = true;
@@ -354,14 +419,16 @@ async function doLiberLiveSetup(device) {
 					if (!game) {
 						setup();
 						resetGuitarHero();
-					}					
+					}	
+
+					document.getElementById("liberlive").style.display = "";					
 					
 					handler.addEventListener('characteristicvaluechanged', (evt) => {
 						const {buffer}  = evt.target.value;
 						const eventData = new Uint8Array(buffer);
 						
 						if (eventData.length != 14 || (eventData.length == 14 && eventData[9] != 49 && eventData[9] != 50 && eventData[10] != 49 && eventData[10] != 50)) {
-							//for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);
+							for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);
 						}
 						
 						/*let html = "<table><tr>";
@@ -882,8 +949,8 @@ function onloadHandler() {
 	});
 	
 	document.querySelector("#tempo").addEventListener("input", function(event) {
-		tempo = +event.target.value; 
-		document.getElementById('showTempo').innerText = tempo;
+		const tmpo = +event.target.value; 
+		setTempo(tmpo);
 		saveConfig();
 	});
 	
@@ -1012,6 +1079,10 @@ function setTempo(tmpo) {
 	tempo = tmpo;
 	document.querySelector("#tempo").value = tempo; 
 	document.getElementById('showTempo').innerText = tempo;
+	
+	if (writeCharacteristic) {	// liberlive sync
+		setupLiberLive() 
+	}
 }
 
 function handleKeyboard(name, code) {
@@ -1876,6 +1947,164 @@ async function setupUI(config,err) {
 			songSeq.options[i + 1] = new Option(songName, url, selectedSong, selectedSong);
 		}			
 	})		
+	
+	const liberLiveChords = [];
+	
+	for (let i=1; i<3; i++) {
+		liberLiveChords[i] = document.getElementById("ll-chord" + i);
+		liberLiveChords[i].options[0] = new Option("Guitar Basic 1", "1/0", config["liberLiveChrd" + i] == "1/0", config["liberLiveChrd" + i] == "1/0");			
+		liberLiveChords[i].options[1] = new Option("Guitar Basic 2", "2/0", config["liberLiveChrd" + i] == "2/0", config["liberLiveChrd" + i] == "2/0");					
+		liberLiveChords[i].options[2] = new Option("Guitar Basic 1", "3/0", config["liberLiveChrd" + i] == "3/0", config["liberLiveChrd" + i] == "3/0");			
+		liberLiveChords[i].options[3] = new Option("Guitar basic 2", "4/0", config["liberLiveChrd" + i] == "4/0", config["liberLiveChrd" + i] == "4/0");					
+		liberLiveChords[i].options[4] = new Option("Guitar Basic 1", "5/0", config["liberLiveChrd" + i] == "5/0", config["liberLiveChrd" + i] == "5/0");			
+		liberLiveChords[i].options[5] = new Option("Guitar Arp 1", "1/1", config["liberLiveChrd" + i] == "1/1", config["liberLiveChrd" + i] == "1/1");					
+		liberLiveChords[i].options[6] = new Option("Guitar Arp 2", "2/1", config["liberLiveChrd" + i] == "2/1", config["liberLiveChrd" + i] == "2/1");					
+		liberLiveChords[i].options[7] = new Option("Guitar Arp 3", "3/1", config["liberLiveChrd" + i] == "3/1", config["liberLiveChrd" + i] == "3/1");					
+		liberLiveChords[i].options[8] = new Option("Guitar Arp 4", "4/1", config["liberLiveChrd" + i] == "4/1", config["liberLiveChrd" + i] == "4/1");					
+		liberLiveChords[i].options[9] = new Option("Guitar Arp 5", "5/1", config["liberLiveChrd" + i] == "5/1", config["liberLiveChrd" + i] == "5/1");					
+		liberLiveChords[i].options[10] = new Option("Guitar Arp 6", "6/1", config["liberLiveChrd" + i] == "6/1", config["liberLiveChrd" + i] == "6/1");					
+		liberLiveChords[i].options[11] = new Option("Guitar Arp 7", "7/1", config["liberLiveChrd" + i] == "7/1", config["liberLiveChrd" + i] == "7/1");					
+		liberLiveChords[i].options[12] = new Option("Guitar Arp 8", "8/1", config["liberLiveChrd" + i] == "8/1", config["liberLiveChrd" + i] == "8/1");					
+		liberLiveChords[i].options[13] = new Option("Guitar Arp 9", "9/1", config["liberLiveChrd" + i] == "9/1", config["liberLiveChrd" + i] == "9/1");					
+		liberLiveChords[i].options[14] = new Option("Guitar Arp 11", "11/1", config["liberLiveChrd" + i] == "11/1", config["liberLiveChrd" + i] == "11/1");					
+		liberLiveChords[i].options[15] = new Option("Guitar Arp 13", "13/1", config["liberLiveChrd" + i] == "13/1", config["liberLiveChrd" + i] == "13/1");					
+		liberLiveChords[i].options[16] = new Option("Guitar Arp 14", "14/1", config["liberLiveChrd" + i] == "14/1", config["liberLiveChrd" + i] == "14/1");					
+		liberLiveChords[i].options[17] = new Option("Guitar Arp 20", "20/1", config["liberLiveChrd" + i] == "20/1", config["liberLiveChrd" + i] == "20/1");					
+		liberLiveChords[i].options[18] = new Option("Guitar Arp 22", "22/1", config["liberLiveChrd" + i] == "22/1", config["liberLiveChrd" + i] == "22/1");					
+		liberLiveChords[i].options[19] = new Option("Guitar Arp 23", "23/1", config["liberLiveChrd" + i] == "23/1", config["liberLiveChrd" + i] == "23/1");					
+		liberLiveChords[i].options[20] = new Option("Guitar Arp 33", "22/1", config["liberLiveChrd" + i] == "33/1", config["liberLiveChrd" + i] == "33/1");					
+		liberLiveChords[i].options[21] = new Option("Guitar Arp 36", "23/1", config["liberLiveChrd" + i] == "36/1", config["liberLiveChrd" + i] == "36/1");					
+		liberLiveChords[i].options[22] = new Option("Guitar Strum 1", "1/2", config["liberLiveChrd" + i] == "1/2", config["liberLiveChrd" + i] == "1/2");					
+		liberLiveChords[i].options[23] = new Option("Guitar Strum 2", "2/2", config["liberLiveChrd" + i] == "2/2", config["liberLiveChrd" + i] == "2/2");					
+		liberLiveChords[i].options[24] = new Option("Guitar Strum 3", "3/2", config["liberLiveChrd" + i] == "3/2", config["liberLiveChrd" + i] == "3/2");					
+		liberLiveChords[i].options[25] = new Option("Guitar Strum 4", "4/2", config["liberLiveChrd" + i] == "4/2", config["liberLiveChrd" + i] == "4/2");					
+		liberLiveChords[i].options[26] = new Option("Guitar Strum 6", "6/2", config["liberLiveChrd" + i] == "6/2", config["liberLiveChrd" + i] == "6/2");					
+		liberLiveChords[i].options[27] = new Option("Guitar Strum 7", "7/2", config["liberLiveChrd" + i] == "7/2", config["liberLiveChrd" + i] == "7/2");					
+		liberLiveChords[i].options[28] = new Option("Guitar Strum 8", "8/2", config["liberLiveChrd" + i] == "8/2", config["liberLiveChrd" + i] == "8/2");					
+		liberLiveChords[i].options[29] = new Option("Guitar Strum 9", "9/2", config["liberLiveChrd" + i] == "9/2", config["liberLiveChrd" + i] == "9/2");					
+		liberLiveChords[i].options[30] = new Option("Guitar Strum 32", "32/2", config["liberLiveChrd" + i] == "32/2", config["liberLiveChrd" + i] == "32/2");					
+		liberLiveChords[i].options[31] = new Option("Guitar Strum 33", "33/2", config["liberLiveChrd" + i] == "33/2", config["liberLiveChrd" + i] == "33/2");					
+		liberLiveChords[i].options[32] = new Option("Guitar Strum 36", "36/2", config["liberLiveChrd" + i] == "36/2", config["liberLiveChrd" + i] == "36/2");					
+		liberLiveChords[i].options[33] = new Option("Guitar Strum 38", "38/2", config["liberLiveChrd" + i] == "38/2", config["liberLiveChrd" + i] == "38/2");					
+		liberLiveChords[i].options[34] = new Option("Guitar Muted 1", "1/3", config["liberLiveChrd" + i] == "1/3", config["liberLiveChrd" + i] == "1/3");					
+		liberLiveChords[i].options[35] = new Option("Guitar Muted 2", "2/3", config["liberLiveChrd" + i] == "2/3", config["liberLiveChrd" + i] == "2/3");					
+		liberLiveChords[i].options[36] = new Option("Guitar Muted 3", "3/3", config["liberLiveChrd" + i] == "3/3", config["liberLiveChrd" + i] == "3/3");					
+		liberLiveChords[i].options[37] = new Option("Guitar Muted 4", "4/3", config["liberLiveChrd" + i] == "4/3", config["liberLiveChrd" + i] == "4/3");					
+		liberLiveChords[i].options[38] = new Option("Guitar Muted 6", "6/3", config["liberLiveChrd" + i] == "6/3", config["liberLiveChrd" + i] == "6/3");					
+		liberLiveChords[i].options[39] = new Option("Guitar Muted 7", "7/3", config["liberLiveChrd" + i] == "7/3", config["liberLiveChrd" + i] == "7/3");					
+		liberLiveChords[i].options[40] = new Option("Guitar Muted 8", "8/3", config["liberLiveChrd" + i] == "8/3", config["liberLiveChrd" + i] == "8/3");					
+		liberLiveChords[i].options[41] = new Option("Guitar Muted 9", "9/3", config["liberLiveChrd" + i] == "9/3", config["liberLiveChrd" + i] == "9/3");					
+		liberLiveChords[i].options[42] = new Option("Guitar Muted 10", "10/3", config["liberLiveChrd" + i] == "10/3", config["liberLiveChrd" + i] == "10/3");					
+		liberLiveChords[i].options[43] = new Option("Guitar Muted 11", "11/3", config["liberLiveChrd" + i] == "11/3", config["liberLiveChrd" + i] == "11/3");					
+		liberLiveChords[i].options[44] = new Option("Guitar Muted 13", "13/3", config["liberLiveChrd" + i] == "13/3", config["liberLiveChrd" + i] == "13/3");					
+		liberLiveChords[i].options[45] = new Option("Guitar Muted 15", "15/3", config["liberLiveChrd" + i] == "15/3", config["liberLiveChrd" + i] == "15/3");					
+		liberLiveChords[i].options[46] = new Option("Guitar Muted 17", "17/3", config["liberLiveChrd" + i] == "17/3", config["liberLiveChrd" + i] == "17/3");					
+		liberLiveChords[i].options[47] = new Option("Guitar Muted 18", "18/3", config["liberLiveChrd" + i] == "18/3", config["liberLiveChrd" + i] == "18/3");					
+		liberLiveChords[i].options[48] = new Option("Guitar Muted 19", "19/3", config["liberLiveChrd" + i] == "19/3", config["liberLiveChrd" + i] == "19/3");					
+		liberLiveChords[i].options[49] = new Option("Guitar Muted 20", "20/3", config["liberLiveChrd" + i] == "20/3", config["liberLiveChrd" + i] == "20/3");					
+		liberLiveChords[i].options[50] = new Option("Guitar Muted 21", "21/3", config["liberLiveChrd" + i] == "21/3", config["liberLiveChrd" + i] == "21/3");					
+		liberLiveChords[i].options[51] = new Option("Guitar Muted 31", "31/3", config["liberLiveChrd" + i] == "31/3", config["liberLiveChrd" + i] == "31/3");					
+		liberLiveChords[i].options[52] = new Option("Piano Chords", "0/4", config["liberLiveChrd" + i] == "0/4", config["liberLiveChrd" + i] == "0/4");					
+		liberLiveChords[i].options[53] = new Option("Piano Arp 3", "3/4", config["liberLiveChrd" + i] == "3/4", config["liberLiveChrd" + i] == "3/4");					
+		liberLiveChords[i].options[54] = new Option("Piano Arp 4", "4/4", config["liberLiveChrd" + i] == "4/4", config["liberLiveChrd" + i] == "4/4");					
+		liberLiveChords[i].options[55] = new Option("Piano Arp 5", "5/4", config["liberLiveChrd" + i] == "5/4", config["liberLiveChrd" + i] == "5/4");					
+		liberLiveChords[i].options[56] = new Option("Piano Arp 7", "7/4", config["liberLiveChrd" + i] == "7/4", config["liberLiveChrd" + i] == "7/4");					
+		liberLiveChords[i].options[57] = new Option("Piano Arp 10", "10/4", config["liberLiveChrd" + i] == "10/4", config["liberLiveChrd" + i] == "10/4");					
+		liberLiveChords[i].options[58] = new Option("Piano Arp 11", "11/4", config["liberLiveChrd" + i] == "11/4", config["liberLiveChrd" + i] == "11/4");					
+		liberLiveChords[i].options[59] = new Option("Piano Arp 12", "12/4", config["liberLiveChrd" + i] == "12/4", config["liberLiveChrd" + i] == "12/4");					
+		liberLiveChords[i].options[60] = new Option("Piano Arp 21", "21/4", config["liberLiveChrd" + i] == "21/4", config["liberLiveChrd" + i] == "21/4");					
+		liberLiveChords[i].options[61] = new Option("Piano Arp 23", "23/4", config["liberLiveChrd" + i] == "23/4", config["liberLiveChrd" + i] == "23/4");					
+		liberLiveChords[i].options[62] = new Option("Piano Arp 24", "24/4", config["liberLiveChrd" + i] == "24/4", config["liberLiveChrd" + i] == "24/4");					
+		liberLiveChords[i].options[63] = new Option("Piano Arp 25", "25/4", config["liberLiveChrd" + i] == "25/4", config["liberLiveChrd" + i] == "25/4");					
+		liberLiveChords[i].options[64] = new Option("Piano Arp 26", "26/4", config["liberLiveChrd" + i] == "26/4", config["liberLiveChrd" + i] == "26/4");					
+		liberLiveChords[i].options[65] = new Option("Piano Arp 27", "27/4", config["liberLiveChrd" + i] == "27/4", config["liberLiveChrd" + i] == "27/4");					
+		liberLiveChords[i].options[66] = new Option("Piano Arp 28", "28/4", config["liberLiveChrd" + i] == "28/4", config["liberLiveChrd" + i] == "28/4");					
+		liberLiveChords[i].options[67] = new Option("Piano Arp 29", "29/4", config["liberLiveChrd" + i] == "29/4", config["liberLiveChrd" + i] == "29/4");					
+		liberLiveChords[i].options[68] = new Option("Piano Arp 30", "30/4", config["liberLiveChrd" + i] == "30/4", config["liberLiveChrd" + i] == "30/4");					
+		liberLiveChords[i].options[69] = new Option("Piano Arp 31", "31/4", config["liberLiveChrd" + i] == "31/4", config["liberLiveChrd" + i] == "31/4");					
+		liberLiveChords[i].options[70] = new Option("Piano Arp 32", "32/4", config["liberLiveChrd" + i] == "32/4", config["liberLiveChrd" + i] == "32/4");					
+		liberLiveChords[i].options[71] = new Option("Piano Arp 33", "33/4", config["liberLiveChrd" + i] == "33/4", config["liberLiveChrd" + i] == "33/4");					
+		liberLiveChords[i].options[72] = new Option("Bass 1", "1/5", config["liberLiveChrd" + i] == "1/5", config["liberLiveChrd" + i] == "1/5");					
+		liberLiveChords[i].options[73] = new Option("Bass 2", "2/5", config["liberLiveChrd" + i] == "2/5", config["liberLiveChrd" + i] == "2/5");					
+		liberLiveChords[i].options[74] = new Option("Bass 3", "3/5", config["liberLiveChrd" + i] == "3/5", config["liberLiveChrd" + i] == "3/5");					
+		liberLiveChords[i].options[75] = new Option("Bass 4", "4/5", config["liberLiveChrd" + i] == "4/5", config["liberLiveChrd" + i] == "4/5");					
+		liberLiveChords[i].options[76] = new Option("Bass 11", "11/5", config["liberLiveChrd" + i] == "11/5", config["liberLiveChrd" + i] == "11/5");					
+		liberLiveChords[i].options[77] = new Option("Bass 12", "12/5", config["liberLiveChrd" + i] == "12/5", config["liberLiveChrd" + i] == "12/5");					
+		liberLiveChords[i].options[78] = new Option("Bass 13", "13/5", config["liberLiveChrd" + i] == "13/5", config["liberLiveChrd" + i] == "13/5");					
+		liberLiveChords[i].options[79] = new Option("Bass 14", "14/5", config["liberLiveChrd" + i] == "14/5", config["liberLiveChrd" + i] == "14/5");					
+		liberLiveChords[i].options[80] = new Option("Bass 17", "17/5", config["liberLiveChrd" + i] == "17/5", config["liberLiveChrd" + i] == "17/5");					
+		liberLiveChords[i].options[81] = new Option("Bass 19", "19/5", config["liberLiveChrd" + i] == "19/5", config["liberLiveChrd" + i] == "19/5");					
+		liberLiveChords[i].options[82] = new Option("Bass 21", "21/5", config["liberLiveChrd" + i] == "21/5", config["liberLiveChrd" + i] == "21/5");					
+	}
+	
+	liberLive.chord1 = config.liberLiveChrd1 || liberLive.chord1;
+
+	liberLiveChords[1].addEventListener("change", function()
+	{
+		liberLive.chord1 = liberLiveChords[1].value;
+		console.debug("selected liberlive chord1", liberLive.chord1, liberLiveChords[1].value);				
+		saveConfig();
+		setupLiberLive();
+	});	
+		
+	liberLive.chord2 = config.liberLiveChrd2 || liberLive.chord2;
+	
+	liberLiveChords[2].addEventListener("change", function()
+	{
+		liberLive.chord2 = liberLiveChords[2].value;
+		console.debug("selected liberlive chord2", liberLive.chord2, liberLiveChords[2].value);				
+		saveConfig();
+		setupLiberLive();
+	});		
+	
+	
+	const liberLiveDrums = [];
+	
+	for (let i=1; i<3; i++) {
+		liberLiveDrums[i] = document.getElementById("ll-drums" + i);
+		liberLiveDrums[i].options[0] = new Option("8beat 6 (4/4)", "6/24", config["liberLiveDrms" + i] == "6/24", config["liberLiveDrms" + i] == "6/24");			
+		liberLiveDrums[i].options[1] = new Option("8beat 16 (4/4)", "16/24", config["liberLiveDrms" + i] == "16/24", config["liberLiveDrms" + i] == "16/24");					
+		liberLiveDrums[i].options[2] = new Option("8beat 26 (4/4)", "26/24", config["liberLiveDrms" + i] == "26/24", config["liberLiveDrms" + i] == "26/24");			
+		liberLiveDrums[i].options[3] = new Option("8beat 36 (4/4)", "36/24", config["liberLiveDrms" + i] == "36/24", config["liberLiveDrms" + i] == "36/24");					
+		liberLiveDrums[i].options[4] = new Option("8beat 46 (4/4)", "46/24", config["liberLiveDrms" + i] == "46/24", config["liberLiveDrms" + i] == "46/24");					
+		liberLiveDrums[i].options[5] = new Option("8beat 56 (4/4)", "56/24", config["liberLiveDrms" + i] == "56/24", config["liberLiveDrms" + i] == "56/24");			
+		liberLiveDrums[i].options[6] = new Option("8beat 66 (4/4)", "66/24", config["liberLiveDrms" + i] == "66/24", config["liberLiveDrms" + i] == "66/24");					
+		liberLiveDrums[i].options[7] = new Option("8beat 76 (4/4)", "76/24", config["liberLiveDrms" + i] == "76/24", config["liberLiveDrms" + i] == "76/24");					
+		liberLiveDrums[i].options[8] = new Option("8beat 86 (4/4)", "86/24", config["liberLiveDrms" + i] == "86/24", config["liberLiveDrms" + i] == "86/24");			
+		liberLiveDrums[i].options[9] = new Option("8beat 96 (4/4)", "96/24", config["liberLiveDrms" + i] == "96/24", config["liberLiveDrms" + i] == "96/24");					
+		liberLiveDrums[i].options[10] = new Option("8beat 106 (4/4)", "106/24", config["liberLiveDrms" + i] == "106/24", config["liberLiveDrms" + i] == "106/24");					
+		liberLiveDrums[i].options[11] = new Option("8beat 116 (4/4)", "116/24", config["liberLiveDrms" + i] == "116/24", config["liberLiveDrms" + i] == "116/24");					
+		liberLiveDrums[i].options[12] = new Option("8beat 126 (4/4)", "126/24", config["liberLiveDrms" + i] == "126/24", config["liberLiveDrms" + i] == "126/24");			
+		liberLiveDrums[i].options[13] = new Option("8beat 136 (4/4)", "136/24", config["liberLiveDrms" + i] == "136/24", config["liberLiveDrms" + i] == "136/24");					
+		liberLiveDrums[i].options[14] = new Option("8beat 42 (6/8)", "42/28", config["liberLiveDrms" + i] == "42/28", config["liberLiveDrms" + i] == "42/28");					
+		liberLiveDrums[i].options[15] = new Option("8beat 52 (6/8)", "52/28", config["liberLiveDrms" + i] == "52/28", config["liberLiveDrms" + i] == "52/28");			
+		liberLiveDrums[i].options[16] = new Option("8beat 82 (6/8)", "82/28", config["liberLiveDrms" + i] == "82/28", config["liberLiveDrms" + i] == "82/28");					
+		liberLiveDrums[i].options[17] = new Option("16beat 222 (4/4)", "222/23", config["liberLiveDrms" + i] == "222/23", config["liberLiveDrms" + i] == "222/23");					
+		liberLiveDrums[i].options[18] = new Option("16beat 232 (4/4)", "232/23", config["liberLiveDrms" + i] == "232/23", config["liberLiveDrms" + i] == "232/23");					
+		liberLiveDrums[i].options[19] = new Option("16beat 242 (4/4)", "242/23", config["liberLiveDrms" + i] == "242/23", config["liberLiveDrms" + i] == "242/23");			
+		liberLiveDrums[i].options[20] = new Option("16beat 252 (4/4)", "252/23", config["liberLiveDrms" + i] == "252/23", config["liberLiveDrms" + i] == "252/23");					
+	}
+	
+	liberLive.drums1 = config.liberLiveDrms1 || liberLive.drums1;
+
+	liberLiveDrums[1].addEventListener("change", function()
+	{
+		liberLive.drums1 = liberLiveDrums[1].value;
+		console.debug("selected liberlive drums1", liberLive.drums1, liberLiveDrums[1].value);				
+		saveConfig();
+		setupLiberLive();
+	});	
+		
+	liberLive.drums2 = config.liberLiveDrms2 || liberLive.drums2;
+	
+	liberLiveDrums[2].addEventListener("change", function()
+	{
+		liberLive.drums2 = liberLiveDrums[2].value;
+		console.debug("selected liberlive drums2", liberLive.drums2, liberLiveDrums[2].value);				
+		saveConfig();
+		setupLiberLive();
+	});		
+	
 		
 	const guitarStrum = [];
 	
@@ -2672,7 +2901,11 @@ function saveConfig() {
 	config.introEnd = document.querySelector("#introEnd").checked;
 	config.reverb = guitarReverb.checked;
 	config.microphone = microphone.checked;
-	config.programChange = document.querySelector("#program-change").checked;	
+	config.programChange = document.querySelector("#program-change").checked;
+	config.liberLiveChrd1 = liberLive.chord1;
+	config.liberLiveChrd2 = liberLive.chord2;
+	config.liberLiveDrms1 = liberLive.drums1;
+	config.liberLiveDrms2 = liberLive.drums2;
 	
 	for (let i=0; i<19; i++) {
 		config["channel" + i] = document.getElementById("arr-instrument-" + i)?.checked;
