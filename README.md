@@ -138,6 +138,7 @@ It has a pedalboard for guitar effects using [pedalboard by Trys Mudford](https:
 <img src=https://jus-be.github.io/orin-ayo/assets/orinayo_pedalboard.png>
 
 The internal guitar, pedalboard, synth and style engines are experimental and require a bit more work to be used in live performances.
+The support for LiberLive C1 bluetooth connection requires the experimental **Web Bluetooth confirm pairing support** to be enabled in Chrome/Edge.
 
 
 
