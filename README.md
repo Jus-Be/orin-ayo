@@ -127,7 +127,7 @@ You can select different drum beats and guitar styles for both paddles and OrinA
 
 With Artiphon Instrument 1 and Chorda, only the first five pads are used like a Guitar Hero controller. The strum bridge pads are used to provide control (strum, start/stop, fill, next/prev section).
 
-It has an internal arranger engine implemented in JavaScript that can play Yamaha SFFx, Casio AC7 or Ketron KST files. 
+It has an internal arranger engine implemented in JavaScript that can play midi style files in Yamaha SFFx, Casio AC7 or Ketron KST format. It can also play audio loops in OrinAyo format as styles.
 
 It has an internal synth engine (based on [sf2synth.js by GREE](https://github.com/gree/sf2synth.js/)) that can play the styles using sound font (sf2) files with WebAudio.
 

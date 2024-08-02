@@ -143,7 +143,8 @@ var chord_loops = [
 	"assets/chords/blues_126_15238.chord",
 	"assets/chords/bluey_88_21818.chord",
 	"assets/chords/country_073_26301.chord",	
-	"assets/chords/country-rock_180_21333_10667.chord",  
+	"assets/chords/country-rock_180_21333_10667.chord", 
+	"assets/chords/da-funk_110_8727.chord", 
 	"assets/chords/dance_118_32520.chord",	
 	"assets/chords/dirty-guitar_90_10667.chord",	
 	"assets/chords/dream_85_22588.chord",	
@@ -182,7 +183,8 @@ var chord_loops = [
 	"assets/chords/strum_94_20425.chord",	
 	"assets/chords/strum_96_20000.chord",
 	"assets/chords/surf_170_11294.chord",	
-	"assets/chords/u2-guitar_105_22857.chord"
+	"assets/chords/u2-guitar_105_22857.chord",
+	"assets/chords/village-pop_110_8727_8727_2.chord"	
 ]
 
 var drum_loops = [
