@@ -313,10 +313,58 @@ async function onLiberLiveClick() {
 	console.debug('onLiberLiveClick', device);	
 }
 
-async function setupLiberLive() {
+async function setLiberLiveChordMappings() {
 	const hdr = packString("b11e");
+	console.debug("setLiberLiveChordMappings", hdr, writeCharacteristic);	
 	
-	console.debug("setupLiberLive", hdr, writeCharacteristic);	
+	const keys = [
+		{level: 10, type: 5},	// Bbadd9	
+		{level: 9, type: 3},	// Am7	
+		{level: 7, type: 5},	// Gadd9	
+		{level: 0, type: 5},	// Cadd9
+		{level: 5, type: 5},	// Fadd9
+		{level: 2, type: 3},	// Dm7	
+		{level: 4, type: 3},	// Em7		
+		
+		{level: 10, type: 0},	// Bb				
+		{level: 9, type: 1},	// Am
+		{level: 7, type: 0},	// G
+		{level: 0, type: 0},	// C		
+		{level: 5, type: 0},	// F			
+		{level: 2, type: 1},	// Dm
+		{level: 4, type: 1},	// Em	
+		
+		{level: 10, type: 0},	// Bb
+		{level: 9, type: 1},	// Am	
+		{level: 7, type: 0},	// G		
+		{level: 0, type: 0},	// C		
+		{level: 5, type: 0},	// F
+		{level: 2, type: 1},	// Dm			
+		{level: 4, type: 1},	// Em		
+	];
+	
+	const dataView = new Uint8Array(new ArrayBuffer(26));
+	
+	dataView[0]  = hdr[0];
+	dataView[1]  = hdr[1];	
+	dataView[2]  = 31;
+	dataView[3]  = 21;
+	dataView[4]  = 0;	
+
+	let i = 0;
+	
+	for (let key of keys) {
+		dataView[5+i] = packString(parseChar(key.level) + parseChar(key.type));
+		i++;
+	}
+	
+	const resp = await writeCharacteristic.writeValue(dataView);
+	console.debug("setLiberLiveChordMappings", resp);	
+}
+
+async function setLiberLiveDeviceSettings() {
+	const hdr = packString("b11e");	
+	console.debug("setLiberLiveDeviceSettings", hdr, writeCharacteristic);	
 	const dataView = new Uint8Array(new ArrayBuffer(17));
 
 	let key = 0;
@@ -346,7 +394,11 @@ async function setupLiberLive() {
 	dataView[17] = 0;	
 	
 	const resp = await writeCharacteristic.writeValue(dataView);
-	console.debug("setupLiberLive", resp);
+	console.debug("setLiberLiveDeviceSettings", resp);
+}
+
+function parseChar(integer) {
+	return integer <= 9 ? "" + integer : integer == 10 ? "A" : integer == 11 ? "B" : integer == 12 ? "C" : integer == 13 ? "D" : integer == 14 ? "E" : integer == 15 ? "F" : "0";
 }
 
 function packString(str) {
@@ -405,7 +457,8 @@ async function doLiberLiveSetup(device) {
 				
 				if (characteristic.properties.write) {
 					writeCharacteristic = characteristic;	
-					setupLiberLive();
+					await setLiberLiveDeviceSettings();
+					setTimeout(setLiberLiveChordMappings, 1000);
 				}
 				else
 					
@@ -472,100 +525,33 @@ async function doLiberLiveSetup(device) {
 						}
 						
 						if (eventData[4] == 2) {
-							pad.buttons[YELLOW] = true;		// 1
+							pad.buttons[YELLOW] = true;		// 7b			
+							pad.buttons[RED] = true;								
 							chordSelected = true;
 						}
 						else
 							
 						if (eventData[2] == 8) {
-							pad.buttons[YELLOW] = true;		// 1sus
-							pad.buttons[ORANGE] = true;							
+							pad.buttons[YELLOW] = true;		// 7b			
+							pad.buttons[RED] = true;								
 							chordSelected = true;
 						}
 						else
 
 						if (eventData[3] == 4) {
-							pad.buttons[YELLOW] = true;		// 1/3
-							pad.buttons[BLUE] = true;							
+							pad.buttons[YELLOW] = true;		// 7b			
+							pad.buttons[RED] = true;								
 							chordSelected = true;
 						}
-						else						
+						else
 							
 						if (eventData[4] == 4) {
-							pad.buttons[BLUE] = true;		// 2m
-							chordSelected = true;
-						}
-						else
-							
-						if (eventData[2] == 16 || eventData[3] == 8) {
-							pad.buttons[BLUE] = true;		// 2
-							pad.buttons[RED] = true;							
-							chordSelected = true;
-						}
-						else
-							
-						if (eventData[4] == 8) {
-							pad.buttons[GREEN] = true;		// 3m
-							pad.buttons[BLUE] = true;								
-							chordSelected = true;
-						}
-						else
-							
-						if (eventData[2] == 32 || eventData[3] == 16) {
-							pad.buttons[GREEN] = true;		// 3
-							pad.buttons[YELLOW] = true;								
-							pad.buttons[BLUE] = true;								
-							chordSelected = true;
-						}
-						else
-							
-						if (eventData[4] == 16) {
-							pad.buttons[ORANGE] = true;		// 4								
-							chordSelected = true;
-						}
-						else
-							
-						if (eventData[2] == 64) {
-							pad.buttons[ORANGE] = true;		// 4m	
-							pad.buttons[RED] = true;							
-							chordSelected = true;
-						}
-						else
-
-						if (eventData[3] == 32) {
-							pad.buttons[ORANGE] = true;		// 4/6
-							pad.buttons[BLUE] = true;							
-							chordSelected = true;
-						}
-						else						
-							
-						if (eventData[4] == 32) {
-							pad.buttons[GREEN] = true;		// 5								
-							chordSelected = true;
-						}
-						else
-							
-						if (eventData[2] == 128) {
-							pad.buttons[GREEN] = true;		// 5sus							
-							pad.buttons[YELLOW] = true;						
-							chordSelected = true;
-						}
-						else
-
-						if (eventData[3] == 64) {
-							pad.buttons[GREEN] = true;		// 5/7
-							pad.buttons[RED] = true;							
-							chordSelected = true;
-						}
-						else						
-							
-						if (eventData[4] == 64) {
 							pad.buttons[RED] = true;		// 6m
 							chordSelected = true;
 						}
 						else
 							
-						if (eventData[3] == 1 || eventData[3] == 128) {
+						if (eventData[2] == 16 || eventData[3] == 8) {
 							pad.buttons[RED] = true;		// 6
 							pad.buttons[YELLOW] = true;
 							pad.buttons[BLUE] = true;							
@@ -573,11 +559,93 @@ async function doLiberLiveSetup(device) {
 						}
 						else
 							
-						if (eventData[4] == 128) {
-							pad.buttons[YELLOW] = true;		// 7b			
-							pad.buttons[RED] = true;								
+						if (eventData[4] == 8) {
+							pad.buttons[GREEN] = true;		// 5								
 							chordSelected = true;
 						}
+						else
+							
+						if (eventData[2] == 32) {
+							pad.buttons[GREEN] = true;		// 5sus							
+							pad.buttons[YELLOW] = true;						
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[3] == 16) {
+							pad.buttons[GREEN] = true;		// 5/7
+							pad.buttons[RED] = true;							
+							chordSelected = true;
+						}													
+						else
+							
+						if (eventData[4] == 16) {
+							pad.buttons[YELLOW] = true;		// 1
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[2] == 64) {
+							pad.buttons[YELLOW] = true;		// 1sus
+							pad.buttons[ORANGE] = true;							
+							chordSelected = true;
+						}
+						else
+
+						if (eventData[3] == 32) {
+							pad.buttons[YELLOW] = true;		// 1/3
+							pad.buttons[BLUE] = true;							
+							chordSelected = true;
+						}
+						else						
+							
+						if (eventData[4] == 32) {
+							pad.buttons[ORANGE] = true;		// 4								
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[2] == 128) {
+							pad.buttons[ORANGE] = true;		// 4m	
+							pad.buttons[RED] = true;							
+							chordSelected = true;
+						}
+						else
+
+						if (eventData[3] == 64) {
+							pad.buttons[ORANGE] = true;		// 4/6
+							pad.buttons[BLUE] = true;							
+							chordSelected = true;
+						}
+						else						
+							
+						if (eventData[4] == 64) {
+							pad.buttons[BLUE] = true;		// 2m
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[3] == 1 || eventData[3] == 128) {
+							pad.buttons[BLUE] = true;		// 2
+							pad.buttons[RED] = true;							
+							chordSelected = true;
+						}	
+						else
+							
+						if (eventData[4] == 128) {
+							pad.buttons[GREEN] = true;		// 3m
+							pad.buttons[BLUE] = true;								
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[3] == 2 || eventData[4] == 1) {
+							pad.buttons[GREEN] = true;		// 3
+							pad.buttons[YELLOW] = true;								
+							pad.buttons[BLUE] = true;								
+							chordSelected = true;
+						}						
+							
 						
 						if (eventData[5] == 12) {			// Paddle A
 							paddleMoved = true;	
@@ -1081,7 +1149,7 @@ function setTempo(tmpo) {
 	document.getElementById('showTempo').innerText = tempo;
 	
 	if (writeCharacteristic) {	// liberlive sync
-		setupLiberLive() 
+		setLiberLiveDeviceSettings() 
 	}
 }
 
@@ -2044,7 +2112,7 @@ async function setupUI(config,err) {
 		liberLive.chord1 = liberLiveChords[1].value;
 		console.debug("selected liberlive chord1", liberLive.chord1, liberLiveChords[1].value);				
 		saveConfig();
-		setupLiberLive();
+		setLiberLiveDeviceSettings();
 	});	
 		
 	liberLive.chord2 = config.liberLiveChrd2 || liberLive.chord2;
@@ -2054,7 +2122,7 @@ async function setupUI(config,err) {
 		liberLive.chord2 = liberLiveChords[2].value;
 		console.debug("selected liberlive chord2", liberLive.chord2, liberLiveChords[2].value);				
 		saveConfig();
-		setupLiberLive();
+		setLiberLiveDeviceSettings();
 	});		
 	
 	
@@ -2092,7 +2160,7 @@ async function setupUI(config,err) {
 		liberLive.drums1 = liberLiveDrums[1].value;
 		console.debug("selected liberlive drums1", liberLive.drums1, liberLiveDrums[1].value);				
 		saveConfig();
-		setupLiberLive();
+		setLiberLiveDeviceSettings();
 	});	
 		
 	liberLive.drums2 = config.liberLiveDrms2 || liberLive.drums2;
@@ -2102,7 +2170,7 @@ async function setupUI(config,err) {
 		liberLive.drums2 = liberLiveDrums[2].value;
 		console.debug("selected liberlive drums2", liberLive.drums2, liberLiveDrums[2].value);				
 		saveConfig();
-		setupLiberLive();
+		setLiberLiveDeviceSettings();
 	});		
 	
 		

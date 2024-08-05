@@ -121,7 +121,7 @@ Orange | Ketron FS-7  | Ketron FS-6
 
 It recognises other non-keyboard USB MIDI controllers (like LiberLive C1, Artiphon Instrument 1 or Chorda) and enables them to be used as an arranger controller as well. 
 
-When using LiberLive C1 guitar, it uses the 7 chord keys mapping adopted by LiberLive. However, it expects the last 7th key to be 7b and not 7m.
+When using LiberLive C1 guitar, it uses a modified 7 chord keys mapping (7b, 6m, 5, 1, 4, 2m, 3m) different from the standard (1, 2m, 3m, 4, 5, 6m, 7m) by LiberLive.
 It will connect to the LiberLive C1 guitar by the Bluetooth connection used by the LiberLive mobile app. You can't use both OrinAyo and the mobile app at the same time.
 You can select different drum beats and guitar styles for both paddles and OrinAyo will use the tempo set by LiberLive except for web-audio styles that have fixed tempos.
 
