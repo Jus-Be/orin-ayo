@@ -54,7 +54,7 @@ var arrSequence = null;
 var realdrumDevice = null;
 var arranger = "webaudio";
 var arrangerGroup = "imported";
-var inputDeviceType = "logitech-gh";
+var inputDeviceType = "games-controller";
 var realGuitarStyle = "none";
 var midiOutput = null;
 var input = null;
@@ -457,8 +457,8 @@ async function doLiberLiveSetup(device) {
 				
 				if (characteristic.properties.write) {
 					writeCharacteristic = characteristic;	
-					await setLiberLiveDeviceSettings();
-					setTimeout(setLiberLiveChordMappings, 1000);
+					setTimeout(setLiberLiveChordMappings);
+					setTimeout(setLiberLiveDeviceSettings, 1000);
 				}
 				else
 					
@@ -1726,7 +1726,7 @@ function resetGuitarHero() {
 function connectHandler(e) {
   console.debug("connectHandler " + e.gamepad.id, e.gamepad);	
   
-  if (e.gamepad.id.indexOf("Guitar") > -1 || (e.gamepad.id.indexOf("248a") > -1 && e.gamepad.id.indexOf("8266") > -1)) {
+  if (e.gamepad.id.indexOf("Guitar") > -1 || (e.gamepad.id.indexOf("248a") > -1 && e.gamepad.id.indexOf("8266") > -1) || e.gamepad.id == "Xbox 360 Controller for Windows (STANDARD GAMEPAD)") {
 	console.debug("connectHandler found gamepad " + e.gamepad.id, e.gamepad);
   
 	if (!game) setup();
@@ -1734,7 +1734,10 @@ function connectHandler(e) {
 	for (var i=0; i<e.gamepad.buttons.length; i++) {	  
 	  pad.buttons[i] = false;
 	}
-	  window.setTimeout(updateStatus);  
+	
+	pad.axis[STRUM] = 0;
+	
+	window.setTimeout(updateStatus);  
   }
 }
 
@@ -1748,6 +1751,7 @@ function disconnectHandler(e) {
 function updateStatus() {
 	var guitar = null
 	var ring = null
+	var riffMaster = null;
 	
 	var gamepads = navigator.getGamepads();	
 	  
@@ -1759,13 +1763,21 @@ function updateStatus() {
 		  guitarAvailable = true;
 		  break;
 		}
-		else
+		else 
 			
 		if (gamepads[i] && gamepads[i].id.indexOf("248a") > -1 && gamepads[i].id.indexOf("8266") > -1) {
 		  ring = gamepads[i];
 		  guitarAvailable = true;
 		  break;
+		}
+		else
+			
+		if (gamepads[i] && gamepads[i].id.indexOf("Xbox 360 Controller for Windows (STANDARD GAMEPAD)") > -1) {
+		  riffMaster = gamepads[i];
+		  guitarAvailable = true;
+		  break;
 		}		
+	
 	}
 	
 	var updated = false;
@@ -1791,6 +1803,83 @@ function updateStatus() {
 
 	}
 	else	
+		
+	if (riffMaster) {
+		//console.debug("using riff master" + riffMaster.id, riffMaster);
+		
+		pad.axis[STRUM] = 0;
+		
+		for (var i=0; i<riffMaster.buttons.length; i++) {
+			var touched = false;	
+			var val = riffMaster.buttons[i];		
+		  
+			if (typeof(val) == "object") 
+			{	  			
+				if ('touched' in val) {
+				  touched = val.touched;
+				}			
+			}
+			
+			let j = i;
+			if (i == 0) j = GREEN;
+			if (i == 1) j = RED;				
+			if (i == 3) j = YELLOW;
+			if (i == 2) j = BLUE;			
+			if (i == 4) j = ORANGE;	
+			if (i == 8) j = START;			
+			if (i == 9) j = STARPOWER;			
+			
+			if (i == 12) j = 112;				
+			if (i == 13) j = 113;			
+
+			if (pad.buttons[j] != touched) {
+				console.debug("button " + j, touched);	
+				
+				if (i == 12 || i == 13) {			
+					if (touched) {
+						pad.axis[STRUM] = (i == 12) ? STRUM_UP : STRUM_DOWN;
+						updated = true;						
+					}
+					
+				} 
+				else
+					
+				if (i == 10) 
+				{
+					if (pad.buttons[GREEN]) {
+						pad.buttons[LOGO] = touched;
+					}
+					else
+
+					if (pad.buttons[RED]) {						
+						pad.axis[TOUCH] = -0.7;
+						pad.axis[STRUM] = STRUM_DOWN;			// fill
+					}
+					else
+
+					if (pad.buttons[YELLOW]) {						
+						pad.axis[TOUCH] = -0.7;
+						pad.axis[STRUM] = STRUM_UP;			// break
+					}					
+					
+					updated = true;					
+					
+					pad.buttons[GREEN] = false;
+					pad.buttons[RED] = false;
+					pad.buttons[YELLOW] = false;
+					pad.buttons[BLUE] = false;
+					pad.buttons[ORANGE] = false;					
+				} 				
+				
+				else {
+					updated = true;
+				}
+				
+				pad.buttons[j] = touched;				
+			}					
+		}
+	}
+	else
   
 	if (guitar) {				
 		//console.debug("using guitar" + guitar.id, guitar);
@@ -1837,7 +1926,12 @@ function updateStatus() {
 		
 	if (updated) {
 		doChord();
-		updateCanvas();	
+		updateCanvas();
+		
+		if (riffMaster) {
+			pad.buttons[LOGO] = false;
+			pad.axis[TOUCH] = 0;
+		}
 	}	
 	
 	window.setTimeout(updateStatus);
@@ -2316,14 +2410,14 @@ async function setupUI(config,err) {
 	arranger = config.arranger || "sff";	
 	
 	const midiInType = document.getElementById("midiInType");	
-	midiInType.options[0] = new Option("Logitech Guitar Hero", "logitech-gh", config.inputDeviceType == "logitech-gh");		
+	midiInType.options[0] = new Option("Guitar Games Controller", "games-controller", config.inputDeviceType == "games-controller");		
 	midiInType.options[1] = new Option("Orin Ayo Controller", "orinayo", config.inputDeviceType == "orinayo");		
 	midiInType.options[2] = new Option("Artiphon Instrument 1", "instrument1", config.inputDeviceType == "instrument1");		
 	midiInType.options[3] = new Option("Artiphon Chorda", "chorda", config.inputDeviceType == "chorda");
 	midiInType.options[4] = new Option("LiberLive C1", "liberlivec1", config.inputDeviceType == "liberlivec1");
 	
 	let deviceIndex = 0;
-	deviceIndex = config.inputDeviceType == "logitech-gh" ? 0 : deviceIndex;
+	deviceIndex = config.inputDeviceType == "games-controller" ? 0 : deviceIndex;
 	deviceIndex = config.inputDeviceType == "orinayo" ? 1 : deviceIndex;
 	deviceIndex = config.inputDeviceType == "instrument1" ? 2 : deviceIndex;
 	deviceIndex = config.inputDeviceType == "chorda" ? 3 : deviceIndex;	
