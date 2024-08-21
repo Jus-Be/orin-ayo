@@ -19,6 +19,8 @@ const START = 9;
 
 const STRUM = 9;
 const TOUCH = 5;
+const JSTICKX = 0;
+const JSTICKY = 1;
 const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
@@ -1751,13 +1753,22 @@ function disconnectHandler(e) {
 function updateStatus() {
 	var guitar = null
 	var ring = null
-	var riffMaster = null;
+	var riffMasterXbox = null;
+	var riffMasterPS = null;
 	
 	var gamepads = navigator.getGamepads();	
 	  
 	for (var i = 0; i < gamepads.length; i++) {
 		//console.debug("found gamepad " + gamepads[i].id, gamepads[i]);
-		
+
+			
+		if (gamepads[i] && gamepads[i].id.indexOf("PDP RiffMaster Guitar") > -1) {
+		  riffMasterPS = gamepads[i];
+		  guitarAvailable = true;
+		  break;
+		}
+		else
+			
 		if (gamepads[i] && gamepads[i].id.indexOf("Guitar") > -1) {
 		  guitar = gamepads[i];
 		  guitarAvailable = true;
@@ -1773,7 +1784,7 @@ function updateStatus() {
 		else
 			
 		if (gamepads[i] && gamepads[i].id.indexOf("Xbox 360 Controller for Windows (STANDARD GAMEPAD)") > -1) {
-		  riffMaster = gamepads[i];
+		  riffMasterXbox = gamepads[i];
 		  guitarAvailable = true;
 		  break;
 		}		
@@ -1804,14 +1815,14 @@ function updateStatus() {
 	}
 	else	
 		
-	if (riffMaster) {
-		//console.debug("using riff master" + riffMaster.id, riffMaster);
+	if (riffMasterXbox) {
+		//console.debug("using riff master" + riffMasterXbox.id, riffMasterXbox);
 		
 		pad.axis[STRUM] = 0;
 		
-		for (var i=0; i<riffMaster.buttons.length; i++) {
+		for (var i=0; i<riffMasterXbox.buttons.length; i++) {
 			var touched = false;	
-			var val = riffMaster.buttons[i];		
+			var val = riffMasterXbox.buttons[i];		
 		  
 			if (typeof(val) == "object") 
 			{	  			
@@ -1900,7 +1911,7 @@ function updateStatus() {
 				//console.debug("button " + i, touched);									
 				pad.buttons[i] = touched;
 				updated = updated || true;
-			}
+			}			
 		}	
 		if (guitar.axes.length > STRUM) 
 		{			
@@ -1923,15 +1934,89 @@ function updateStatus() {
 			}			
 		}				
 	}
+	else
+  
+	if (riffMasterPS) {				
+		//console.debug("using guitar" + riffMasterPS.id, riffMasterPS);
+		
+		for (var i=0; i<riffMasterPS.buttons.length; i++) 
+		{
+			var val = riffMasterPS.buttons[i];
+			var touched = false;							
+		  
+			if (typeof(val) == "object") 
+			{	  			
+				if ('touched' in val) {
+				  touched = val.touched;
+				}			
+			}
+
+			let j = i;
+			if (i == BLUE) j = YELLOW;
+			if (i == YELLOW) j = BLUE;	
+			if (i == 11) j = LOGO;
+			if (i == LOGO) j = 11;
+			
+			if (pad.buttons[j] != touched) {
+				console.debug("button " + i, j, touched);									
+				pad.buttons[j] = touched;
+				updated = updated || true;
+			}
+			
+			
+			if (i == 10) {
+				pad.axis[TOUCH] = 0;
+				
+				if (pad.buttons[10]) {
+					if (pad.buttons[GREEN]) pad.axis[TOUCH] = -0.7;	
+					if (pad.buttons[RED]) pad.axis[TOUCH] = -0.4; 	
+					if (pad.buttons[YELLOW]) pad.axis[TOUCH] = 0.2;	
+					if (pad.buttons[BLUE]) pad.axis[TOUCH] = 0.4; 				
+					if (pad.buttons[ORANGE]) pad.axis[TOUCH] = 1.0; 
+					
+					pad.buttons[GREEN] = false;
+					pad.buttons[RED] = false;
+					pad.buttons[YELLOW] = false;
+					pad.buttons[BLUE] = false;
+					pad.buttons[ORANGE] = false;					
+				}					
+			}			
+		}	
+		if (riffMasterPS.axes.length > STRUM) 
+		{			
+			if (pad.axis[STRUM] != riffMasterPS.axes[STRUM].toFixed(4)) {
+				//console.debug("strum", riffMasterPS.axes[STRUM].toFixed(4));							
+				pad.axis[STRUM] = riffMasterPS.axes[STRUM].toFixed(4);
+				updated = updated || true;
+			}
+
+			if (pad.axis[JSTICKX] != riffMasterPS.axes[JSTICKX].toFixed(1)) {
+				console.debug("joy stick X", riffMasterPS.axes[JSTICKX].toFixed(1));							
+				pad.axis[JSTICKX] = riffMasterPS.axes[JSTICKX].toFixed(1);
+				updated = updated || true;				
+			}	
+
+			if (pad.axis[JSTICKY] != riffMasterPS.axes[JSTICKY].toFixed(1)) {
+				console.debug("joy stick Y", riffMasterPS.axes[JSTICKY].toFixed(1));							
+				pad.axis[JSTICKY] = riffMasterPS.axes[JSTICKY].toFixed(1);
+				updated = updated || true;				
+			}			
+		}				
+	}	
 		
 	if (updated) {
 		doChord();
 		updateCanvas();
 		
-		if (riffMaster) {
+		if (riffMasterXbox) {
 			pad.buttons[LOGO] = false;
 			pad.axis[TOUCH] = 0;
 		}
+		else
+			
+		if (riffMasterPS) {	
+			pad.axis[TOUCH] = 0;
+		}	
 	}	
 	
 	window.setTimeout(updateStatus);
