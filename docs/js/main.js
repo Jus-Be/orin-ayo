@@ -1808,7 +1808,7 @@ function updateStatus() {
 			if (pad.buttons[i] != touched) {
 				console.debug("button " + i, touched, ring.axes[0], ring.axes[1]);									
 				pad.buttons[i] = touched;
-				//updated = updated || true;
+				//updated = true;
 			}
 		}
 
@@ -1910,7 +1910,7 @@ function updateStatus() {
 			if (pad.buttons[i] != touched) {
 				//console.debug("button " + i, touched);									
 				pad.buttons[i] = touched;
-				updated = updated || true;
+				updated = true;
 			}			
 		}	
 		if (guitar.axes.length > STRUM) 
@@ -1918,19 +1918,19 @@ function updateStatus() {
 			if (pad.axis[STRUM] != guitar.axes[STRUM].toFixed(4)) {
 				//console.debug("strum", guitar.axes[STRUM].toFixed(4));							
 				pad.axis[STRUM] = guitar.axes[STRUM].toFixed(4);
-				updated = updated || true;
+				updated = true;
 			}
 
 			if (pad.axis[TOUCH] != guitar.axes[TOUCH].toFixed(1)) {
 				//console.debug("touch", guitar.axes[TOUCH].toFixed(1));							
 				pad.axis[TOUCH] = guitar.axes[TOUCH].toFixed(1);
-				updated = updated || true;				
+				updated = true;				
 			}	
 
 			if (pad.axis[WHAMMY] != guitar.axes[WHAMMY].toFixed(1)) {
 				//console.debug("whammy", guitar.axes[WHAMMY].toFixed(1));							
 				pad.axis[WHAMMY] = guitar.axes[WHAMMY].toFixed(1);
-				updated = updated || true;				
+				updated = true;				
 			}			
 		}				
 	}
@@ -1954,13 +1954,13 @@ function updateStatus() {
 			let j = i;
 			if (i == BLUE) j = YELLOW;
 			if (i == YELLOW) j = BLUE;	
-			if (i == 11) j = LOGO;
-			if (i == LOGO) j = 11;
+			//if (i == 11) j = LOGO;
+			//if (i == LOGO) j = 11;
 			
 			if (pad.buttons[j] != touched) {
 				console.debug("button " + i, j, touched);									
 				pad.buttons[j] = touched;
-				updated = updated || true;
+				updated = true;
 			}
 			
 			
@@ -1987,19 +1987,23 @@ function updateStatus() {
 			if (pad.axis[STRUM] != riffMasterPS.axes[STRUM].toFixed(4)) {
 				//console.debug("strum", riffMasterPS.axes[STRUM].toFixed(4));							
 				pad.axis[STRUM] = riffMasterPS.axes[STRUM].toFixed(4);
-				updated = updated || true;
+				updated = true;
 			}
 
 			if (pad.axis[JSTICKX] != riffMasterPS.axes[JSTICKX].toFixed(1)) {
 				console.debug("joy stick X", riffMasterPS.axes[JSTICKX].toFixed(1));							
 				pad.axis[JSTICKX] = riffMasterPS.axes[JSTICKX].toFixed(1);
-				updated = updated || true;				
+				
+				if (pad.axis[JSTICKX] == -1.0) {
+					pad.buttons[LOGO] = true;
+					updated = true;				
+				}
 			}	
 
 			if (pad.axis[JSTICKY] != riffMasterPS.axes[JSTICKY].toFixed(1)) {
 				console.debug("joy stick Y", riffMasterPS.axes[JSTICKY].toFixed(1));							
 				pad.axis[JSTICKY] = riffMasterPS.axes[JSTICKY].toFixed(1);
-				updated = updated || true;				
+				updated = true;				
 			}			
 		}				
 	}	
@@ -2015,6 +2019,7 @@ function updateStatus() {
 		else
 			
 		if (riffMasterPS) {	
+			pad.buttons[LOGO] = false;		
 			pad.axis[TOUCH] = 0;
 		}	
 	}	

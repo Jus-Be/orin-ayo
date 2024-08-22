@@ -171,6 +171,7 @@ var chord_loops = [
 	"assets/chords/pop_125_15360_7680.chord", 
 	"assets/chords/pop-dancer_125_7680.chord",
 	"assets/chords/praise_127_15118.chord",
+	"assets/chords/regaaton_100_9600.chord",
 	"assets/chords/rock_90_21333.chord",	
 	"assets/chords/rnb_100_19200.chord",
 	"assets/chords/rock_120_20000.chord",	
@@ -179,10 +180,12 @@ var chord_loops = [
 	"assets/chords/shuffle_120_16000.chord",	
 	"assets/chords/soul_114_16842.chord",
 	"assets/chords/smokie-beat_120_16000_16000_2.chord",	
+	"assets/chords/soft-rock_120_8000.chord",
 	"assets/chords/soul-band_90_21333.chord",	
 	"assets/chords/strum_94_20425.chord",	
 	"assets/chords/strum_96_20000.chord",
 	"assets/chords/surf_170_11294.chord",	
+	"assets/chords/tight-eight_110_8727.chord",	
 	"assets/chords/u2-guitar_105_22857.chord",
 	"assets/chords/village-pop_110_8727_8727_2.chord"	
 ]
