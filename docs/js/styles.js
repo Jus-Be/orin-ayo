@@ -148,6 +148,7 @@ var chord_loops = [
 	"assets/chords/dance_118_32520.chord",	
 	"assets/chords/dirty-guitar_90_10667.chord",	
 	"assets/chords/dream_85_22588.chord",	
+	"assets/chords/fender-strum_120_4000.chord",	
 	"assets/chords/folk_85_45176.chord",	
 	"assets/chords/folk_114_16842.chord",
 	"assets/chords/funk_90_10667.chord",	
