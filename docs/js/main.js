@@ -382,7 +382,7 @@ async function setLiberLiveDeviceSettings() {
 	dataView[2]  = 35;
 	dataView[3]  = 12;
 	dataView[4]  = 0;
-	dataView[5]  = key;
+	dataView[5]  = 255;			// Song key. Don't change. Let liberlive control and decide
 	dataView[6]  = tempo;
 	dataView[7]  = 0;
 	dataView[8]  = liberLive.drums1.split("/")[0];
@@ -2206,9 +2206,9 @@ async function setupUI(config,err) {
 		liberLiveChords[i] = document.getElementById("ll-chord" + i);
 		liberLiveChords[i].options[0] = new Option("Guitar Basic 1", "1/0", config["liberLiveChrd" + i] == "1/0", config["liberLiveChrd" + i] == "1/0");			
 		liberLiveChords[i].options[1] = new Option("Guitar Basic 2", "2/0", config["liberLiveChrd" + i] == "2/0", config["liberLiveChrd" + i] == "2/0");					
-		liberLiveChords[i].options[2] = new Option("Guitar Basic 1", "3/0", config["liberLiveChrd" + i] == "3/0", config["liberLiveChrd" + i] == "3/0");			
-		liberLiveChords[i].options[3] = new Option("Guitar basic 2", "4/0", config["liberLiveChrd" + i] == "4/0", config["liberLiveChrd" + i] == "4/0");					
-		liberLiveChords[i].options[4] = new Option("Guitar Basic 1", "5/0", config["liberLiveChrd" + i] == "5/0", config["liberLiveChrd" + i] == "5/0");			
+		liberLiveChords[i].options[2] = new Option("Guitar Basic 3", "3/0", config["liberLiveChrd" + i] == "3/0", config["liberLiveChrd" + i] == "3/0");			
+		liberLiveChords[i].options[3] = new Option("Guitar basic 4", "4/0", config["liberLiveChrd" + i] == "4/0", config["liberLiveChrd" + i] == "4/0");					
+		liberLiveChords[i].options[4] = new Option("Guitar Basic 5", "5/0", config["liberLiveChrd" + i] == "5/0", config["liberLiveChrd" + i] == "5/0");			
 		liberLiveChords[i].options[5] = new Option("Guitar Arp 1", "1/1", config["liberLiveChrd" + i] == "1/1", config["liberLiveChrd" + i] == "1/1");					
 		liberLiveChords[i].options[6] = new Option("Guitar Arp 2", "2/1", config["liberLiveChrd" + i] == "2/1", config["liberLiveChrd" + i] == "2/1");					
 		liberLiveChords[i].options[7] = new Option("Guitar Arp 3", "3/1", config["liberLiveChrd" + i] == "3/1", config["liberLiveChrd" + i] == "3/1");					
