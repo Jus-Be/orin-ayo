@@ -2941,7 +2941,8 @@ async function setupUI(config,err) {
 	else {
 
 		if (arranger != "sff") {	// use gmgsx.sf2 as dummy midiSynth
-			loadMidiSynth();		
+			loadMidiSynth();
+			if (arranger != "webaudio") playButton.innerText = "Play";				
 		}	
 
 		window.tempConfig = config; // store config for later access		
