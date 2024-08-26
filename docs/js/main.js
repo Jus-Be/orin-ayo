@@ -4871,8 +4871,7 @@ function toggleStartStop() {
 						sectionChange = 2;							
 					} else if (pad.buttons[ORANGE]){
 						outputSendControlChange (85, 127, 4); 		// FADE IN				
-					}
-					orinayo_section.innerHTML = SECTIONS[sectionChange];						
+					}						
 					outputSendControlChange (87, 127, 4);			// START
 					
 				}     
@@ -5003,7 +5002,9 @@ function toggleStartStop() {
 				}	      
 				styleStarted = false;
 			}
-		}		
+		}	
+
+		orinayo_section.innerHTML = SECTIONS[sectionChange];			
 	}	
 
 	playButton.innerText = !styleStarted ? "Play" : "Stop";	
