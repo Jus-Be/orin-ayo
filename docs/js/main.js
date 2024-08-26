@@ -1994,7 +1994,7 @@ function updateStatus() {
 				console.debug("joy stick X", riffMasterPS.axes[JSTICKX].toFixed(1));							
 				pad.axis[JSTICKX] = riffMasterPS.axes[JSTICKX].toFixed(1);
 				
-				if (pad.axis[JSTICKX] == -1.0) {
+				if (pad.axis[JSTICKX] == 1.0) {
 					pad.buttons[LOGO] = true;
 					updated = true;				
 				}

@@ -3,7 +3,7 @@
 
 Orin Ayo is an Arranger/Looper Controller. 
 
-It was originally developed to turn a Guitar Hero game controller HID device into a chord based MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a Guitar Hero games controller.
+It was originally developed to turn a guitar games controller HID device into a chord based MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a gutar games controller.
 
 https://github.com/Jus-Be/orin-ayo/assets/110731/cd309c44-3d11-4fe2-b19d-0ca406c18fa5
 
@@ -21,8 +21,13 @@ Orinayo can be setup and accessed as follows:
 ## How to use
 Currently, the following devices and applications are supported and confirmed working:
 
+### Guitar Controllers
+- Logitech Guitar Hero Controller
+- PDP Riff Master Guitar Controller (PS4/PS5)
+- LiberLive C1 Guitar Controller
+
 ### Arrangers
-- Ketron Event 76/61 keyboards, Event-X module, SD9 Series keyboard and SD90 module
+- Ketron Event 76/61 keyboards, Event EVM, Event-X module, SD9 Series keyboard and SD90 module
 - Yamaha PSR SX-600
 - Yamaha MODX and Montage
 - Yamaha QY100
