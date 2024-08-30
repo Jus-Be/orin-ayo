@@ -337,12 +337,12 @@ async function setLiberLiveChordMappings() {
 		{level: 4, type: 1},	// Em	
 		
 		{level: 10, type: 0},	// Bb
-		{level: 9, type: 1},	// Am	
+		{level: 9, type: 0},	// A	
 		{level: 7, type: 0},	// G		
 		{level: 0, type: 0},	// C		
-		{level: 5, type: 0},	// F
-		{level: 2, type: 1},	// Dm			
-		{level: 4, type: 1},	// Em		
+		{level: 5, type: 1},	// Fm
+		{level: 2, type: 0},	// D			
+		{level: 4, type: 0},	// E		
 	];
 	
 	const dataView = new Uint8Array(new ArrayBuffer(26));
