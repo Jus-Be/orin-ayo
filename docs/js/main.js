@@ -322,11 +322,11 @@ async function setLiberLiveChordMappings() {
 	const keys = [
 		{level: 10, type: 5},	// Bbadd9	
 		{level: 9, type: 3},	// Am7	
-		{level: 7, type: 5},	// Gadd9	
-		{level: 0, type: 5},	// Cadd9
-		{level: 5, type: 5},	// Fadd9
-		{level: 2, type: 3},	// Dm7	
-		{level: 4, type: 3},	// Em7		
+		{level: 7, type: 5},	// Gadd9	(G/B)	
+		{level: 0, type: 5},	// Cadd9	(C/E)
+		{level: 5, type: 5},	// Fadd9	(F/A)
+		{level: 5, type: 1},	// Fm	
+		{level: 7, type: 1},	// Gm		
 		
 		{level: 10, type: 0},	// Bb				
 		{level: 9, type: 1},	// Am
@@ -336,11 +336,11 @@ async function setLiberLiveChordMappings() {
 		{level: 2, type: 1},	// Dm
 		{level: 4, type: 1},	// Em	
 		
-		{level: 10, type: 0},	// Bb
+		{level: 8, type: 0},	// Ab
 		{level: 9, type: 0},	// A	
-		{level: 7, type: 0},	// G		
-		{level: 0, type: 0},	// C		
-		{level: 5, type: 1},	// Fm
+		{level: 7, type: 0},	// G (sus)
+		{level: 0, type: 0},	// C (sus)		
+		{level: 3, type: 0},	// Eb
 		{level: 2, type: 0},	// D			
 		{level: 4, type: 0},	// E		
 	];
@@ -534,8 +534,9 @@ async function doLiberLiveSetup(device) {
 						else
 							
 						if (eventData[2] == 8) {
-							pad.buttons[YELLOW] = true;		// 7b			
-							pad.buttons[RED] = true;								
+							pad.buttons[YELLOW] = true;		// 5b			
+							pad.buttons[GREEN] = true;								
+							pad.buttons[RED] = true;							
 							chordSelected = true;
 						}
 						else
@@ -608,7 +609,8 @@ async function doLiberLiveSetup(device) {
 						else
 							
 						if (eventData[2] == 128) {
-							pad.buttons[ORANGE] = true;		// 4m	
+							pad.buttons[ORANGE] = true;		// 3b
+							pad.buttons[BLUE] = true;		
 							pad.buttons[RED] = true;							
 							chordSelected = true;
 						}
@@ -627,8 +629,15 @@ async function doLiberLiveSetup(device) {
 						}
 						else
 							
-						if (eventData[3] == 1 || eventData[3] == 128) {
+						if (eventData[3] == 1) {
 							pad.buttons[BLUE] = true;		// 2
+							pad.buttons[RED] = true;							
+							chordSelected = true;
+						}
+						else
+							
+						if (eventData[3] == 128) {
+							pad.buttons[ORANGE] = true;		// 4m
 							pad.buttons[RED] = true;							
 							chordSelected = true;
 						}	
@@ -641,10 +650,17 @@ async function doLiberLiveSetup(device) {
 						}
 						else
 							
-						if (eventData[3] == 2 || eventData[4] == 1) {
+						if (eventData[3] == 2) {
 							pad.buttons[GREEN] = true;		// 3
 							pad.buttons[YELLOW] = true;								
 							pad.buttons[BLUE] = true;								
+							chordSelected = true;
+						}						
+						else
+							
+						if (eventData[4] == 1) {
+							pad.buttons[GREEN] = true;		// 5m
+							pad.buttons[ORANGE] = true;															
 							chordSelected = true;
 						}						
 							
