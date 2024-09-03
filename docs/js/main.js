@@ -480,10 +480,16 @@ async function doLiberLiveSetup(device) {
 					
 					handler.addEventListener('characteristicvaluechanged', (evt) => {
 						const {buffer}  = evt.target.value;
-						const eventData = new Uint8Array(buffer);
+						const eventData = new Uint8Array(buffer);					
 						
 						if (eventData.length != 14 || (eventData.length == 14 && eventData[9] != 49 && eventData[9] != 50 && eventData[10] != 49 && eventData[10] != 50)) {
-							for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);
+							for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);						
+						}
+						
+						if (eventData[7]) {
+							tempo = eventData[7];
+							volDiv.innerHTML = "Vol: " + (guitarVolume * 100); 
+							tempoDiv.innerHTML = tempo;								
 						}
 						
 						/*let html = "<table><tr>";
@@ -501,8 +507,6 @@ async function doLiberLiveSetup(device) {
 						html += "</tr></table>"
 						ui.innerHTML = html;*/				
 						
-						volDiv.innerHTML = "Vol: " + (guitarVolume * 100) + " (" + eventData[6] + ")";
-						tempoDiv.innerHTML = tempo + "&nbsp;(" + eventData[7] + ")";
 						const oldKey = keyChange;
 						
 						if (eventData[1] == 0) keyChange = 0;	// C
@@ -2956,9 +2960,16 @@ async function setupUI(config,err) {
 	}
 	else {
 
-		if (arranger != "sff") {	// use gmgsx.sf2 as dummy midiSynth
-			loadMidiSynth();
-			if (arranger != "webaudio") playButton.innerText = "Play";				
+		if (arranger != "sff") {
+
+			if (config.sf2Name) {
+				arrSynth = {name: config.sf2Name};	
+				getArrSynth(arrSynth.name);	// load sf2 file				
+			} else {
+				// use gmgsx.sf2 as dummy midiSynth
+				loadMidiSynth();
+				if (arranger != "webaudio") playButton.innerText = "Play";				
+			}
 		}	
 
 		window.tempConfig = config; // store config for later access		

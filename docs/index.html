@@ -17,22 +17,25 @@
 	<tr>
 		<td><h2 id="statusMsg"></h2></td>
 		<td>
-			<a class="play">On</a><a class="style_type">Normal</a>
-			<a class="gamepad_mode">Color Tabs</a><a class="load_file">Load</a>
-			<a style="display: none;" class="chorda_bluetooth">BT OFF</a>	
-			<a style="display: none;" class="delete_style">Delete Style</a>				
-			<a class="pedal_board">Pedal Board</a>			
-			<a class="save_reg">Save</a>
-			<a class="reset_app">Refresh</a>			
-			<span style="font-size: 14px;margin-left:10px" id="sequencer">Tempo:<span id="showTempo">100</span></span>		
-			<div id="sequencer2" style="margin:10px">BPM
+			<div><center>
+				<a class="play">On</a><a class="style_type">Normal</a>
+				<a class="gamepad_mode">Color Tabs</a><a class="load_file">Load</a>
+				<a style="display: none;" class="chorda_bluetooth">BT OFF</a>	
+				<a style="display: none;" class="delete_style">Delete Style</a>				
+				<a class="pedal_board">Pedal Board</a>			
+				<a class="save_reg">Save</a>
+				<a class="reset_app">Refresh</a>			
+			</center><div>	
+			<div id="sequencer2" style="margin:10px">
+			    <span style="font-size: 14px;margin-left:2px" id="sequencer">Tempo:<span id="showTempo">100</span></span>	
 				<input id="tempo" type="range" min="30.0" max="160.0" step="1" value="100" style="height: 20px; width: 150px">
 				<input style="margin-left: 10px;margin-right: 10px;" id="microphone" type="checkbox">Mic
 				<input style="margin-left: 10px;margin-right: 10px;" id="autoFill" type="checkbox" checked>Auto Fill
 				<input style="margin-left: 10px;margin-right: 10px;" id="introEnd" type="checkbox" checked>Intro/Outro
 				<input checked style="margin-left: 10px;margin-right: 10px;" id="reverb" type="checkbox">Pedals
-				<input checked style="margin-left: 10px;margin-right: 10px;" id="program-change" type="checkbox">Program Change
-				<input id="volume" type="range" min="0.0" max="100.0" step="1" value="25" style="height: 20px; width: 150px;margin-left: 20px;margin-right: 10px;"><span id="showVol">VOL</span>
+				<input checked style="margin-left: 10px;margin-right: 10px;" id="program-change" type="checkbox">P.Change
+				<input id="volume" type="range" min="0.0" max="100.0" step="1" value="25" style="height: 20px; width: 150px;margin-left: 20px;margin-right: 10px;">
+				<span id="showVol">VOL</span>
 			</div>
 		</td>
 	</tr>		
