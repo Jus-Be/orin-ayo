@@ -178,6 +178,7 @@ var chord_loops = [
 	"assets/chords/pop_114_16842_4211.chord",
 	"assets/chords/pop_125_15360_7680.chord", 
 	"assets/chords/pop-dancer_125_7680.chord",
+	"assets/chords/pop-fingered_100_9600_9600_2.chord",
 	"assets/chords/praise_127_15118.chord",
 	"assets/chords/regaaton_100_9600.chord",
 	"assets/chords/rock_90_21333.chord",	
@@ -192,12 +193,14 @@ var chord_loops = [
 	"assets/chords/soul-band_90_21333.chord",	
 	"assets/chords/strum_94_20425.chord",	
 	"assets/chords/strum_96_20000.chord",
+	"assets/chords/strum2_96_10000.chord",	
 	"assets/chords/surf_170_11294.chord",	
 	"assets/chords/sweet-pop_114_8421.chord",
 	"assets/chords/tight-eight_110_8727.chord",	
 	"assets/chords/triple-hop_85_11294_11294_4.chord",		
 	"assets/chords/u2-guitar_105_22857.chord",
-	"assets/chords/village-pop_107_8972_8972_4.chord"	
+	"assets/chords/village-pop_107_8972_8972_4.chord",
+	"assets/chords/way-pop_75_12800.chord",
 ]
 
 var drum_loops = [

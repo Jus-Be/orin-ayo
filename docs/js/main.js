@@ -770,6 +770,17 @@ async function doLiberLiveSetup(device) {
 							if (eventData[4] == 64) padsMode = 0;	// reset
 							if (eventData[4] == 128) padsMode = 0;	// reset							
 						}
+						else
+	
+						if (eventData[1] == 16 && !styleStarted) {			// Tempo Pad
+							if (eventData[4] == 2) recallRegistration(1);	
+							if (eventData[4] == 4) recallRegistration(2);		
+							if (eventData[4] == 8) recallRegistration(3);	
+							if (eventData[4] == 16) recallRegistration(4);	
+							if (eventData[4] == 32) recallRegistration(5);								
+							if (eventData[4] == 64) recallRegistration(6);	
+							if (eventData[4] == 128) recallRegistration(7);	
+						}						
 							
 						if (paddleMoved && !haveFired) {						
 							haveFired = true;
