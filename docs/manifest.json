@@ -3,7 +3,7 @@
 	"name": "OrinAyo",  
 	"short_name": "OrinAyo",
 	"description": "Convert a Logitech Guitar Hero controller into an Arranger",
-	"version": "0.9.1",
+	"version": "0.9.2",
 
 	"background": {
 		"service_worker": "./js/background.js"

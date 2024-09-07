@@ -2981,11 +2981,15 @@ async function setupUI(config,err) {
 				loadMidiSynth();
 				if (arranger != "webaudio") playButton.innerText = "Play";				
 			}
+			
+			if (arranger == "webaudio" && realInstrument) {
+				setupRealInstruments();				
+			}			
 		}	
 
 		window.tempConfig = config; // store config for later access		
 		setupMidiChannels();		
-	}
+	}	
 };
 
 function createStyleList(config, arrangerStyle, arrangerGrp) {
