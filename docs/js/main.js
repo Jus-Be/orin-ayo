@@ -6032,8 +6032,7 @@ function setupRealInstruments() {
 					let key = "key" + j;
 					let variation = "";
 					
-					if (realInstrument.chord.length == 5 && v == 0) variation = "_arra";
-
+					if (v == 0) variation = "_arra";
 					if (v == 1) variation = "_arrb";
 					if (v == 2) variation = "_arrc";
 					if (v == 3) variation = "_arrd";
@@ -6048,6 +6047,37 @@ function setupRealInstruments() {
 				}				
 			}
 		}
+		
+		// fill missing variations from defined 
+		
+		let toVariation = "";
+		let fromVariation = "_arra";
+		
+		for (let v=variations; v<4; v++) 
+		{	
+			if (v == 1) {
+				fromVariation = "_arra";				
+				toVariation = "_arrb";
+			}
+			if (v == 2) {
+				fromVariation = "_arra";				
+				toVariation = "_arrc";
+			}
+			
+			if (v == 3) {
+				fromVariation = "_arrb";				
+				toVariation = "_arrd";
+			}
+					
+			for (let i=0; i<3; i++) 
+			{
+				for (let j=0; j<12; j++) {
+					realInstrument.chords["key" + j + "_maj" + toVariation] = realInstrument.chords["key" + j + "_maj" + fromVariation];
+					realInstrument.chords["key" + j + "_min" + toVariation] = realInstrument.chords["key" + j + "_min" + fromVariation];
+					realInstrument.chords["key" + j + "_sus" + toVariation] = realInstrument.chords["key" + j + "_sus" + fromVariation];
+				}					
+			}
+		}		
 	}		
 
 	drumLoop = null;	
