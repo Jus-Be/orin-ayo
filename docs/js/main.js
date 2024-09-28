@@ -488,7 +488,7 @@ async function doLiberLiveSetup(device) {
 						
 						if (eventData[7]) {
 							tempo = eventData[7];
-							volDiv.innerHTML = "Vol: " + (guitarVolume * 100); 
+							volDiv.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100); 
 							tempoDiv.innerHTML = tempo;								
 						}
 						
@@ -1042,11 +1042,11 @@ function onloadHandler() {
 	});	
 
 	const showVol = document.querySelector("#showVol");
-	showVol.innerHTML = "Vol: " + (guitarVolume * 100);
+	showVol.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100);
 	
 	document.querySelector("#volume").addEventListener("input", function(event) {
 		guitarVolume = +event.target.value / 100; 
-		showVol.innerHTML = "Vol: " + (guitarVolume * 100);
+		showVol.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100);
 	});
 	
 	document.querySelector("#tempo").addEventListener("input", function(event) {
