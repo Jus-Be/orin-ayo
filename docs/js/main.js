@@ -273,6 +273,22 @@ function messageHandler(evt) {
 	console.debug("messageHandler", evt);	
 }
 
+function handleLiberLive() {
+	const liberlive = document.querySelector(".liber_live");
+	liberlive.style.display = "";	
+	let device;
+	
+	liberlive.addEventListener("click", async (evt) => {
+
+		device = await navigator.bluetooth.requestDevice({		
+			filters: [{
+			services: ["000000ff-0000-1000-8000-00805f9b34fb"],
+		}]});
+
+		if (device) await device.forget();			
+	});
+}
+
 async function onLiberLiveClick() {
 	console.debug('onLiberLiveClick');	
 	
@@ -2542,8 +2558,18 @@ async function setupUI(config,err) {
 	deviceIndex = config.inputDeviceType == "instrument1" ? 2 : deviceIndex;
 	deviceIndex = config.inputDeviceType == "chorda" ? 3 : deviceIndex;	
 	deviceIndex = config.inputDeviceType == "liberlivec1" ? 4 : deviceIndex;		
-	midiInType.selectedIndex = deviceIndex;			
+	midiInType.selectedIndex = deviceIndex;	
+	
 	inputDeviceType = config.inputDeviceType;
+	if (inputDeviceType == "liberlivec1") handleLiberLive();
+	
+	midiInType.addEventListener("change", function()
+	{
+		inputDeviceType = midiInType.value;
+		console.debug("selected midi device type", inputDeviceType, midiInType.value);				
+		saveConfig();
+		if (inputDeviceType == "liberlivec1") handleLiberLive();
+	});	
 
 	setGigladUI();
    
@@ -2667,13 +2693,7 @@ async function setupUI(config,err) {
 			console.debug("selected chordTracker midi port", chordTracker, midiChordTracker.value);
 		}
 	});
-	
-	midiInType.addEventListener("change", function()
-	{
-		inputDeviceType = midiInType.value;
-		console.debug("selected midi device type", inputDeviceType, midiInType.value);				
-		saveConfig();
-	});
+
 	
 	arrangerType.addEventListener("change", function()
 	{
