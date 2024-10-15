@@ -88,7 +88,7 @@ const createOrinAyoWindow = () => {
 	
 	chrome.windows.create(data, (win) => {
 		chrome.storage.local.set({orinAyoWin: win.id});			
-		chrome.windows.update(win.id, {width: 1150, height: 1040});
+		chrome.windows.update(win.id, {width: 1050, height: 1040});
 	});
 }
 
