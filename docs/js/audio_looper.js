@@ -47,7 +47,8 @@ function AudioLooper(styleType) {
 			this.gainNode.gain.exponentialRampToValueAtTime(this.vol, when + 0.01);	
 		}
 		
-		this.gainNode.connect(this.audioContext.destination)		
+		this.gainNode.connect(this.audioContext.destination);		
+		if (recorderDestination) this.gainNode.connect(recorderDestination);		
 		this.source.connect(this.gainNode);			
 		
 		try {
@@ -73,7 +74,7 @@ function AudioLooper(styleType) {
 				this.finished = false;
 				this.mute();
 				this.source.stop();
-				this.displayUI(false);
+				this.displayUI(false);				
 			}
 			
 			if (this.id.startsWith("fil") || this.id.startsWith("brk")) this.id = "arr" + this.id.substring(3);					

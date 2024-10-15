@@ -74,5 +74,6 @@ window.setupPedalBoard = async function(guitarContext) {
   }, pedalInput);
 
   output.connect(ctx.destination);	
+  if (recorderDestination) output.connect(recorderDestination);
 }
 

@@ -25,6 +25,10 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var recorderFilename = null;
+var recorderDestination = null;
+var mediaRecorder = null;
+var recordMode = false;
 var writeCharacteristic = null;
 var appliedVelocity = 0;
 var microphone = true;
@@ -119,7 +123,7 @@ var player = new WebAudioFontPlayer();
 var midiGuitar = null;
 var guitarVolume = 0.25;
 var guitarReverb = null;
-var guitarContext = new AudioContext();
+var guitarContext = audioContext; //new AudioContext();
 var guitarSource = guitarContext.destination;
 var seqIndex = 0;
 
@@ -273,9 +277,9 @@ function messageHandler(evt) {
 	console.debug("messageHandler", evt);	
 }
 
-function handleLiberLive() {
+function handleLiberLive(selected) {
 	const liberlive = document.querySelector(".liber_live");
-	liberlive.style.display = "";	
+	liberlive.style.display = selected ? "" : "none";	
 	let device;
 	
 	liberlive.addEventListener("click", async (evt) => {
@@ -287,6 +291,38 @@ function handleLiberLive() {
 
 		if (device) await device.forget();			
 	});
+}
+
+function handleRecordSong(selected) {
+	const recordSong = document.querySelector(".record_song");
+	recordSong.style.display = selected ? "" : "none";
+	
+	recordSong.addEventListener("click", async (evt) => {
+		console.debug("Record clicked", recordMode);
+		
+		if (playButton.innerHTML == "Play") {
+			recorderFilename = prompt("Enter File name");
+			
+			if (recorderFilename) {
+				console.debug("Record setup");
+				recordMode = true;
+			}
+		}
+
+	});		
+}
+
+function stopRecording() {
+	console.debug('stopRecording');	
+	
+	recordMode = false;	
+	mediaRecorder.stop();
+}
+
+function startRecording() {
+	console.debug('startRecording');
+
+	mediaRecorder.start();
 }
 
 async function onLiberLiveClick() {
@@ -1090,6 +1126,29 @@ function onloadHandler() {
 			handleKeyboard(name, code);	
 		}			
 	});	
+	
+	recorderDestination = audioContext.createMediaStreamDestination();	
+	mediaRecorder = new MediaRecorder(recorderDestination.stream);	
+	
+	mediaRecorder.addEventListener('dataavailable', e => { 
+		console.debug("dataavailable", e.data);
+		
+		const blob = new Blob([e.data], { type: 'audio/ogg;codecs=opus' });		
+        const anchor = document.createElement('a');
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.style = "display: none;";
+        anchor.download = recorderFilename + ".ogg";
+        document.body.appendChild(anchor);
+        anchor.click();
+        window.URL.revokeObjectURL(anchor.href);
+		
+		recorderFilename = null;	
+		recorderDestination	= null;
+	})	
+	
+	mediaRecorder.addEventListener('onstop', e => { 
+		 console.debug("onstop", e.data);
+	})	
 	
 	letsGo();
 }
@@ -2542,8 +2601,10 @@ async function setupUI(config,err) {
 	arrangerIndex = config.arranger == "giglad" ? 8 : arrangerIndex;				
 	arrangerIndex = config.arranger == "rclooper" ? 9 : arrangerIndex;	
 	arrangerIndex = config.arranger == "aeroslooper" ? 10 : arrangerIndex;		
-	arrangerType.selectedIndex = arrangerIndex;			
+	arrangerType.selectedIndex = arrangerIndex;	
+	
 	arranger = config.arranger || "sff";	
+	handleRecordSong(arranger == "webaudio");	
 	
 	const midiInType = document.getElementById("midiInType");	
 	midiInType.options[0] = new Option("Guitar Games Controller", "games-controller", config.inputDeviceType == "games-controller");		
@@ -2561,14 +2622,14 @@ async function setupUI(config,err) {
 	midiInType.selectedIndex = deviceIndex;	
 	
 	inputDeviceType = config.inputDeviceType;
-	if (inputDeviceType == "liberlivec1") handleLiberLive();
+	handleLiberLive(inputDeviceType == "liberlivec1");
 	
 	midiInType.addEventListener("change", function()
 	{
 		inputDeviceType = midiInType.value;
 		console.debug("selected midi device type", inputDeviceType, midiInType.value);				
 		saveConfig();
-		if (inputDeviceType == "liberlivec1") handleLiberLive();
+		handleLiberLive(inputDeviceType == "liberlivec1");
 	});	
 
 	setGigladUI();
@@ -2701,6 +2762,7 @@ async function setupUI(config,err) {
 		setGigladUI(); // reset. remove if no more giglad
 		console.debug("selected arranger type", arranger, arrangerType.value);				
 		saveConfig();
+		handleRecordSong(arranger == "webaudio");
 	});
 	
 	arrangerStyle.addEventListener("change", function()
@@ -3077,7 +3139,7 @@ function setupMidiChannels() {
 }
 
 function getSongSequence(songName, callback) {
-	console.debug("getSongSequence", songName);
+	console.debug("getSongSequence", songName, styleStarted );
 
 	if (songName.startsWith("assets/songs/")) {
 		var xhr = new XMLHttpRequest();
@@ -3091,7 +3153,8 @@ function getSongSequence(songName, callback) {
 
 			songSequence = parseMidi(data, songName);	
 			songSequence.name = songName;	
-			
+
+			setupSongSequence();			
 			if (callback) callback();							
 		});
 
@@ -3108,6 +3171,7 @@ function getSongSequence(songName, callback) {
 				songSequence = parseMidi(data, dbName);	
 				songSequence.name = songName;	
 				
+				setupSongSequence();
 				if (callback) callback();				
 			}			
 		}).catch(function (err) {
@@ -4357,21 +4421,6 @@ function playSectionCheck() {
 	}	
 	
 	arrChanged = oldSection != sectionChange;	
-	
-	orinayo_section.innerHTML = SECTIONS[sectionChange];
-	
-	const autoFill = document.querySelector("#autoFill").checked;	
-			
-	if (realInstrument && drumLoop && document.getElementById("arr-instrument-16")?.checked) {
-		console.debug("playSectionCheck pressed " + arrChanged, sectionChange);		
-		orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
-		
-		if (sectionChange == 0) drumLoop.update(!arrChanged || !autoFill ? 'arra': 'fila', false);
-		if (sectionChange == 1) drumLoop.update(!arrChanged || !autoFill ? 'arrb': 'filb', false);
-		if (sectionChange == 2) drumLoop.update(!arrChanged || !autoFill ? 'arrc': 'filc', false);
-		if (sectionChange == 3) drumLoop.update(!arrChanged || !autoFill ? 'arrd': 'fild', false);		
-	}
-	
 	if (realGuitarStyle == "none") changeArrSection(arrChanged);		
 
 	if (window[realGuitarStyle]) {
@@ -4381,7 +4430,23 @@ function playSectionCheck() {
 }
 
 function changeArrSection(changed) {
+	orinayo_section.innerHTML = SECTIONS[sectionChange];	
 	
+	if (arranger == "webaudio") {
+		const autoFill = document.querySelector("#autoFill").checked;	
+				
+		if (realInstrument && drumLoop && document.getElementById("arr-instrument-16")?.checked) {
+			console.debug("playSectionCheck pressed " + changed, sectionChange);		
+			orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
+			
+			if (sectionChange == 0) drumLoop.update(!changed || !autoFill ? 'arra': 'fila', false);
+			if (sectionChange == 1) drumLoop.update(!changed || !autoFill ? 'arrb': 'filb', false);
+			if (sectionChange == 2) drumLoop.update(!changed || !autoFill ? 'arrc': 'filc', false);
+			if (sectionChange == 3) drumLoop.update(!changed || !autoFill ? 'arrd': 'fild', false);		
+		}
+	}
+	else
+		
 	if (arranger == "sff") {
 		doSffFill(changed);		
 		console.debug("changeArrSection SFF " + sectionChange);	
@@ -4750,6 +4815,59 @@ function doChord() {
   }
 }
 
+function startStopWebAudio() {
+	console.debug("startStopWebAudio", styleStarted, pad.buttons[YELLOW]);
+	const drumChecked = document.getElementById("arr-instrument-16")?.checked;
+	const bassChecked = document.getElementById("arr-instrument-17")?.checked;
+	const chordChecked = document.getElementById("arr-instrument-18")?.checked;
+	
+	if (!styleStarted) {
+		if (recordMode) startRecording();				
+		if (!registration) setTempo(realInstrument.bpm);	
+		const goTime = audioContext.currentTime + 0.5;				
+
+		if (songSequence) {
+			orinayo_section.innerHTML = ">Arr A";					
+			if (drumLoop && drumChecked) drumLoop.start('arra', goTime);
+			if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12), goTime);
+			if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12), goTime);
+				
+		} else {
+			if (pad.buttons[YELLOW] && introEnd) {					
+				orinayo_section.innerHTML = ">Arr A";
+										
+				if (drumLoop && drumChecked) {
+					drumLoop.start('int1', goTime);					
+				
+					setTimeout(() => {
+						if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12), goTime + (realInstrument.drums.int1.stop / 1000));
+						if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12), goTime + (realInstrument.drums.int1.stop / 1000));			
+					}, realInstrument.drums.int1.stop);
+				}
+			} else {
+				if (drumLoop && drumChecked) drumLoop.start('arra', goTime);						
+				if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12), goTime);
+				if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12), goTime);							
+			}
+			
+		}
+		
+	} else {
+		if (pad.buttons[YELLOW] && introEnd) {	
+			orinayo_section.innerHTML = ">End 1";					
+			if (drumLoop) drumLoop.update('end1', false);	
+		} else {
+			orinayo_section.innerHTML = "End 1";						
+			if (drumLoop) drumLoop.stop();
+		}
+		
+		if (bassLoop) bassLoop.stop();			
+		if (chordLoop) chordLoop.stop();
+
+		if (recordMode) setTimeout(stopRecording, 20000);				
+	}	
+}
+
 function toggleStartStop() {
 	console.debug("toggleStartStop", styleStarted);
 	
@@ -4761,7 +4879,7 @@ function toggleStartStop() {
 		if (playButton.innerText != "On") {
 			startStopSequencer();
 
-			if (!songSequence || arranger == "sff") {
+			if (songSequence || arranger == "sff") {
 				handledStartStop = true;				
 				return;	
 			}				
@@ -4772,54 +4890,7 @@ function toggleStartStop() {
 		
 	if (arranger == "webaudio") {				
 		if ((drumLoop || chordLoop) && realInstrument) {
-			console.debug("toggleStartStop", styleStarted, pad.buttons[YELLOW]);
-			const drumChecked = document.getElementById("arr-instrument-16")?.checked;
-			const bassChecked = document.getElementById("arr-instrument-17")?.checked;
-			const chordChecked = document.getElementById("arr-instrument-18")?.checked;
-			
-			if (!styleStarted) {
-				if (!registration) setTempo(realInstrument.bpm);	
-				const goTime = audioContext.currentTime + 0.5;				
-
-				if (songSequence) {
-					orinayo_section.innerHTML = ">Arr A";					
-					if (drumLoop && drumChecked) drumLoop.start('arra', goTime);
-					if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12), goTime);
-					if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12), goTime);
-						
-				} else {
-					if (pad.buttons[YELLOW] && introEnd) {					
-						orinayo_section.innerHTML = ">Arr A";
-												
-						if (drumLoop && drumChecked) {
-							drumLoop.start('int1', goTime);					
-						
-							setTimeout(() => {
-								if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12), goTime + (realInstrument.drums.int1.stop / 1000));
-								if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12), goTime + (realInstrument.drums.int1.stop / 1000));			
-							}, realInstrument.drums.int1.stop);
-						}
-					} else {
-						if (drumLoop && drumChecked) drumLoop.start('arra', goTime);						
-						if (bassLoop && bassChecked) bassLoop.start("key" + (keyChange % 12), goTime);
-						if (chordLoop && chordChecked) chordLoop.start("key" + (keyChange % 12), goTime);							
-					}
-					
-				}
-				
-			} else {
-				if (pad.buttons[YELLOW] && introEnd) {	
-					orinayo_section.innerHTML = ">End 1";					
-					if (drumLoop) drumLoop.update('end1', false);	
-				} else {
-					orinayo_section.innerHTML = "End 1";						
-					if (drumLoop) drumLoop.stop();
-				}
-				
-				if (bassLoop) bassLoop.stop();			
-				if (chordLoop) chordLoop.stop();				
-			}
-
+			startStopWebAudio();
 			styleStarted = !styleStarted;	
 		}
 			
@@ -5199,13 +5270,13 @@ function enableSequencer(flag) {
 }
 
 function startStopSequencer() {
-	console.debug("startStopSequencer", styleStarted);
+	console.debug("startStopSequencer", styleStarted, songSequence);
 
 	if (songSequence) 
 	{
 		if (!styleStarted) 	
 		{		
-			if (!unlocked) {
+			if (!unlocked && arranger == "sff") {
 			  // play silent buffer to unlock the audio
 			  var buffer = audioContext.createBuffer(1, 1, 22050);
 			  var node = audioContext.createBufferSource();
@@ -5213,11 +5284,17 @@ function startStopSequencer() {
 			  node.start(0);
 			  unlocked = true;
 			}
-			getSongSequence(songSequence.name, doStartStopSequencer);
+			
+			if (songSequence.data?.music) {
+				doStartStopSequencer();				
+			} else {
+				getSongSequence(songSequence.name, doStartStopSequencer);				
+			}
 
 		} else {
 			if (timerWorker) timerWorker.postMessage("stop");	
-			notesInQueue = []; 		
+			notesInQueue = []; 
+			doStartStopSequencer();	
 		}		
 	}
 	else
@@ -5294,6 +5371,8 @@ function sendControlChange(event) {
 function doStartStopSequencer() {
 	console.debug("doStartStopSequencer", styleStarted);
 	
+	if (arranger == "webaudio") startStopWebAudio();	
+	
 	if (!styleStarted) 	
 	{
 		if (arrSequence && realGuitarStyle == "none") 
@@ -5335,16 +5414,18 @@ function doStartStopSequencer() {
 		nextSongNoteTime = audioContext.currentTime;
 		songStartTime = nextSongNoteTime;
 		
-        if (timerWorker) timerWorker.postMessage("start");	
+        if (timerWorker) setTimeout(() => timerWorker.postMessage("start"), songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000);
 	} else {		
 		requestArrEnd = true;
 		requestedEnd = "Ending A";
 		
 		if (pad.buttons[BLUE]) requestedEnd = "Ending B";	
 		if (pad.buttons[ORANGE]) requestedEnd = "Ending C";		
+
+		orinayo_section.innerHTML = "Ending";	
 			
 		if (arrSequence && realGuitarStyle == "none") {
-			orinayo_section.innerHTML = "Ending";	
+
 		} else {
 			endAudioStyle();			
 			
@@ -5352,7 +5433,7 @@ function doStartStopSequencer() {
 			notesInQueue = []; 
 		}		
 	}
-	
+
 	styleStarted = !styleStarted;	
 	playButton.innerText = !styleStarted ? "Play" : "Stop";			
 }
@@ -5675,12 +5756,14 @@ function getNoteName(chordRoot) {
 }
 
 function scheduleSongNote() {
-
+	
 	if (songSequence?.data.music[currentSongNote]) {
 		const event = songSequence.data.music[currentSongNote];	
+		console.debug("scheduleSongNote", event);		
 		
-		if (event?.sysexType == "section-control") 
-		{		
+		if (event?.sysexType == "section-control") {
+			console.debug("scheduleSongNote section control", event.section);
+					
 			if (event.section == 0x08) {
 				 sectionChange = 0; 
 				 changeArrSection(true);
@@ -5689,19 +5772,19 @@ function scheduleSongNote() {
 				
 			if (event.section == 0x09) {
 				sectionChange = 1;
-				 changeArrSection(true);				
+				changeArrSection(true);				
 			}			
 			else 
 				
 			if (event.section == 0x0A) {
 				sectionChange = 2;
-				 changeArrSection(true);				
+				changeArrSection(true);				
 			}	
 			else 
 				
 			if (event.section == 0x0B) {
 				sectionChange = 3;
-				 changeArrSection(true);				
+				changeArrSection(true);				
 			}
 			else 
 				
@@ -5715,7 +5798,7 @@ function scheduleSongNote() {
 			}
 			
 			if (event.section == 0x20 || event.section == 0x21 || event.section == 0x22 || event.section == 0x23) {			
-				toggleStartStop()
+	
 			}	
 		}
 		else
@@ -5755,7 +5838,19 @@ function scheduleSongNote() {
 		}
 		else
 			
+		if (event?.sysexType == "start-sequence") {
+			console.debug("scheduleSongNote - start-sequence", event);				
+		}
+		else
+			
+		if (event?.sysexType == "stop-sequence") {
+			console.debug("scheduleSongNote - stop-sequence", event);								
+		}			
+		else
+			
 		if (event.type == "lyrics") {
+			console.debug("scheduleSongNote lyrics", event.text);
+			
 			const cntrl = document.getElementById("lyrics");
 			let lyrics = cntrl.innerHTML + event.text;
 			
@@ -5943,6 +6038,7 @@ function setupSongSequence() {
 		const bpm = Math.floor(60 /(songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
 		if (!registration) setTempo(bpm);	
 	} 
+	else
 		
 	if (arrSequence.data?.Hdr) {
 		
