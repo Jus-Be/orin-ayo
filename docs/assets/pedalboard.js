@@ -10,11 +10,41 @@ import { overdrivePedal } from './src/pedals/overdrive.js';
 import { chorusPedal } from './src/pedals/chorus.js';
 
 
-window.setupPedalBoard = async function(guitarContext) {
+window.setupPedalBoard = async function(guitarContext, deviceMode, deviceId) {
   window.$pedalboard = document.querySelector('.pedalboard');
   window.buffer = null;
   window.ctx = guitarContext; 
-  window.pedalInput = ctx.createGain();  
+  window.pedalInput = ctx.createGain();
+	
+  if (deviceMode) {
+    const stream = await navigator.mediaDevices.getUserMedia({deviceId, audio: {
+        autoGainControl: false,
+		noiseSuppression: false,		
+        echoCancellation: {exact: false},
+        advanced: [{
+            echoCancellation: {exact: false}
+          }, 
+          {googEchoCancellation: {exact: false}}, 
+          {googExperimentalEchoCancellation: {exact: false}}, 
+          {googDAEchoCancellation: {exact: false}}, 
+          {googAutoGainControl: {exact: false}}, 
+          {googExperimentalAutoGainControl: {exact: false}}, 
+          {googNoiseSuppression: {exact: false}}, 
+          {googExperimentalNoiseSuppression: {exact: false}}, 
+          {googHighpassFilter: {exact: false}}, 
+          {googTypingNoiseDetection: {exact: false}}, 
+          {googAudioMirroring: {exact: false}}, 
+          {googNoiseReduction: {exact: false}}
+        ],
+		channelCount: 2,
+		latency: 0,			
+		volume: 1.0
+	}, video: false});	
+	
+    const source = ctx.createMediaStreamSource(stream);
+	source.connect(pedalInput);
+	pedalInput.gain.setValueAtTime(1, ctx.currentTime);	
+  }
   
   const onError = (message = '') => {
     const error = document.createElement('div');
@@ -67,7 +97,7 @@ window.setupPedalBoard = async function(guitarContext) {
     reverbPedal
   ]; 
   
-  pedalInput.connect(ctx.destination); 
+ pedalInput.connect(ctx.destination); 
   
   const output = pedals.reduce((input, pedal, index) => {
     return pedal(input, index + 1);

@@ -65,6 +65,7 @@ var realGuitarStyle = "none";
 var midiOutput = null;
 var input = null;
 var midiRealGuitar = null;
+var guitarDeviceId = null;
 var padsDevice = null;
 var padsInitialised = false;
 var chordTracker = null;
@@ -936,7 +937,6 @@ function onloadHandler() {
 	let version = "latest";
 	if (!!chrome.runtime?.getManifest) version = chrome.runtime.getManifest().version;
 	document.title = "Orin Ayo | " + version;
-	setupPedalBoard(guitarContext);
   
 	playButton = document.querySelector(".play");
 	gamePadModeButton = document.querySelector(".gamepad_mode");
@@ -2209,6 +2209,7 @@ async function setupUI(config,err) {
 	
 	statusMsg.innerHTML = "Orin Ayo";	
 	
+	//guitarDeviceId = config.guitarDeviceId;
 	guitarVolume = config.guitarVolume ? config.guitarVolume : guitarVolume;		
 	keyChange = config.keyChange ? config.keyChange : keyChange;
 	dokeyChange();
@@ -2801,12 +2802,14 @@ async function setupUI(config,err) {
 		}
 		saveConfig();		
 	});	
-					
-	const realDrumsDevice = document.getElementById("realInstrumentDevice");	
+
+	const guitarDevice = document.getElementById("inputAudioDevice");						
+	const realDrumsDevice = document.getElementById("outputAudioDevice");	
 	const realDrumsLoop = document.getElementById("realdrumLoop");	
 	const realChordsLoop = document.getElementById("realchordLoop");
-	
-	realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice");
+
+	guitarDevice.options[0] = new Option("**UNUSED**", "guitarDevice", false, false);	
+	realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice", false, false);
 	realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop", false, false);		
 	realChordsLoop.options[0] = new Option("**UNUSED**", "realChordsLoop", false, false);
 			
@@ -2925,6 +2928,39 @@ async function setupUI(config,err) {
 	audioMedia.getTracks().forEach( (track) => track.stop());				
 	const devices = await navigator.mediaDevices.enumerateDevices();
 	const outputs = devices.filter(({ kind }) => kind === 'audiooutput');			
+	const inputs = devices.filter(({ kind }) => kind === 'audioinput');
+
+	for (var i=0; i<inputs.length; i++) 	{
+		let selectedDevice = false;			
+		
+		if (config.guitarDeviceId && config.guitarDeviceId == inputs[i].deviceId) {
+			selectedDevice = true;
+			guitarDeviceId = inputs[i].deviceId;			
+		}
+		guitarDevice.options[i + 1] = new Option(inputs[i].label, inputs[i].deviceId, selectedDevice, selectedDevice);
+	}
+	
+	guitarDevice.addEventListener("change", async function()
+	{
+		guitarDeviceId = null;
+
+		if (guitarDevice.value != "guitarDevice") {
+			const audioMedia = await navigator.mediaDevices.getUserMedia({audio:true});
+			audioMedia.getTracks().forEach( (track) => track.stop());				
+			const devices = await navigator.mediaDevices.enumerateDevices();
+			const inputs = devices.filter(({ kind }) => kind === 'audioinput');
+			
+			for (let input of inputs) 
+			{
+				if (guitarDevice.value == input.deviceId) {
+					guitarDeviceId = input.deviceId;
+					saveConfig();					
+					break;
+				}						
+			}
+			console.debug("selected guitar device ", guitarDevice, guitarDevice.value);
+		}
+	});		
 	
 	for (var i=0; i<outputs.length; i++) 	{
 		let selectedDevice = false;			
@@ -3032,7 +3068,13 @@ async function setupUI(config,err) {
 	
 	document.querySelector("#autoFill").checked = config.autoFill;	
 	document.querySelector("#introEnd").checked = config.introEnd;
+	
 	guitarReverb.checked = config.reverb;
+	
+	if (guitarReverb.checked) {		
+		setupPedalBoard(guitarContext, (guitarName == "none" || guitarDeviceId), guitarDeviceId);
+	}
+	
 	microphone.checked = config.microphone;	
 	document.querySelector("#program-change").checked = config.programChange;	
 	document.querySelector("#volume").value = (config.guitarVolume || guitarVolume) * 100;
@@ -3270,6 +3312,7 @@ function saveConfig() {
 	config.realDrum = realInstrument?.drumUrl;	
 	config.realChord = realInstrument?.chordUrl;	
 	config.realdrumDevice = realdrumDevice ? realdrumDevice.deviceId : null;
+	config.guitarDeviceId = guitarDeviceId;
 	config.songName = songSequence ? songSequence.name : null;
 	config.arrName = arrSequence ? arrSequence.name : null;
 	config.sf2Name = arrSynth ? arrSynth.name : null;
@@ -3833,7 +3876,7 @@ function playChord(chord, root, type, bass) {
 		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 		const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 
-		if (guitarName != "none") 
+		if (guitarName != "none" && !guitarDeviceId) 
 		{	
 			if (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN)	
 			{
@@ -4368,7 +4411,7 @@ function stopChord() {
 			if (midiOutput) outputStopNote(activeChord, [4], {velocity: getVelocity()}); 
 			if (!guitarAvailable && midiRealGuitar) midiRealGuitar.stopNote(activeChord, 1, {velocity: getVelocity()});		
 			if (padsDevice?.stopNote || padsDevice?.name == "soundfont") stopPads();
-			if (guitarName != "none") player.cancelQueue(guitarContext);
+			if (guitarName != "none" && !guitarDeviceId) player.cancelQueue(guitarContext);
 			
 			if (!guitarAvailable && midiRealGuitar) 
 			{
@@ -4548,7 +4591,7 @@ function doChord() {
 		dokeyUp();
 	  }
 	  
-	  if (guitarName != "none" && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && padsMode != 0 && padsMode != 3 && padsMode != 4 && padsMode != 5) {
+	  if (guitarName != "none" && !guitarDeviceId && (pad.axis[STRUM] == STRUM_UP || pad.axis[STRUM] == STRUM_DOWN) && padsMode != 0 && padsMode != 3 && padsMode != 4 && padsMode != 5) {
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 		const guitarDuration = 240 / tempo;
 		player.queueSnap(guitarContext, guitarSource, midiGuitar, 0, getPitches(), guitarDuration, guitarVolume/4);					  
