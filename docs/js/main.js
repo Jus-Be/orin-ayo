@@ -1042,6 +1042,22 @@ function onloadHandler() {
 		}
 	});	
 	
+	const chordPro = document.querySelector(".chord_pro");
+	
+	chordPro.addEventListener('click', function(event) {
+		const chordpro = document.querySelector(".chordpro");
+		const settings = document.querySelector("#settings");		
+		
+		if (settings.style.display == "none") {
+			settings.style.display = "";
+			chordpro.style.display = "none";	
+			
+		} else {
+			chordpro.style.display = "";
+			settings.style.display = "none";			
+		}
+	});	
+	
 	const chordaBluetooth = document.querySelector(".chorda_bluetooth");
 	
 	chordaBluetooth.addEventListener('click', function(event) {
