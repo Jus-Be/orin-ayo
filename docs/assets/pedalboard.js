@@ -10,13 +10,13 @@ import { overdrivePedal } from './src/pedals/overdrive.js';
 import { chorusPedal } from './src/pedals/chorus.js';
 
 
-window.setupPedalBoard = async function(guitarContext, deviceMode, deviceId) {
+window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, useEffects) {
   window.$pedalboard = document.querySelector('.pedalboard');
   window.buffer = null;
   window.ctx = guitarContext; 
   window.pedalInput = ctx.createGain();
 	
-  if (deviceMode) {
+  if (deviceId) {
     const stream = await navigator.mediaDevices.getUserMedia({deviceId, audio: {
         autoGainControl: false,
 		noiseSuppression: false,		
@@ -96,14 +96,20 @@ window.setupPedalBoard = async function(guitarContext, deviceMode, deviceId) {
     //tremoloPedal,
     reverbPedal
   ]; 
+    
+  if (useEffects) {
+	//pedalInput.connect(ctx.destination); 
   
- pedalInput.connect(ctx.destination); 
-  
-  const output = pedals.reduce((input, pedal, index) => {
-    return pedal(input, index + 1);
-  }, pedalInput);
+	const output = pedals.reduce((input, pedal, index) => {
+		return pedal(input, index + 1);
+	}, pedalInput);
 
-  output.connect(ctx.destination);	
-  if (recorderDestination) output.connect(recorderDestination);
+	output.connect(ctx.destination);	
+	if (recorderDestination) output.connect(recorderDestination);	
+
+  } else {
+	pedalInput.connect(ctx.destination); 	  
+	if (recorderDestination) pedalInput.connect(recorderDestination);	
+  }
 }
 

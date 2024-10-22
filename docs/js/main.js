@@ -3070,10 +3070,7 @@ async function setupUI(config,err) {
 	document.querySelector("#introEnd").checked = config.introEnd;
 	
 	guitarReverb.checked = config.reverb;
-	
-	if (guitarReverb.checked) {		
-		setupPedalBoard(guitarContext, (guitarName == "none" || guitarDeviceId), guitarDeviceId);
-	}
+	setupPedalBoard(guitarContext, guitarName, guitarDeviceId, guitarReverb.checked);
 	
 	microphone.checked = config.microphone;	
 	document.querySelector("#program-change").checked = config.programChange;	
