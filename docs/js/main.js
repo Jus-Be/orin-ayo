@@ -84,6 +84,7 @@ var rgIndex = 0;
 var nextRgIndex = 0;
 var styleStarted = false;
 var activeChord = null;
+var forwardChord = null;
 var arrChordType = "maj";
 var guitarAvailable = false;
 var firstChord = [base, base + 4, base + 7];
@@ -4029,6 +4030,17 @@ function playChord(chord, root, type, bass) {
 					{
 						if (gamePadModeButton.innerText != "Color Tabs") {					
 							midiRealGuitar.playNote(chord, 1, {velocity: getVelocity()});
+						} else {
+							forwardChord = [];
+							if (pad.buttons[GREEN]) forwardChord.push(127);						
+							if (pad.buttons[RED]) forwardChord.push(126);
+							if (pad.buttons[YELLOW]) forwardChord.push(125);						
+							if (pad.buttons[BLUE]) forwardChord.push(124);
+							if (pad.buttons[ORANGE]) forwardChord.push(123);
+							if (pad.axis[STRUM] == STRUM_UP) forwardChord.push(122);								
+							if (pad.axis[STRUM] == STRUM_DOWN) forwardChord.push(121);						
+							
+							if (forwardChord.length > 0) midiRealGuitar.playNote(forwardChord, 1, {velocity: getVelocity()});							
 						}
 					}					
 				}
@@ -4430,6 +4442,9 @@ function stopChord() {
 			{
 				if (gamePadModeButton.innerText != "Color Tabs") {					
 					midiRealGuitar.stopNote(activeChord, 1);
+				} else if (forwardChord) {
+					midiRealGuitar.stopNote(forwardChord, 1);
+					forwardChord = null;					
 				}
 			}			
 			

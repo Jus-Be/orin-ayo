@@ -2,8 +2,8 @@
 	"manifest_version": 3,
 	"name": "OrinAyo",  
 	"short_name": "OrinAyo",
-	"description": "Convert a Logitech Guitar Hero controller into an Arranger",
-	"version": "0.9.3",
+	"description": "The Guitar Arranger",
+	"version": "0.9.4",
 
 	"background": {
 		"service_worker": "./js/background.js"

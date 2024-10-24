@@ -1,7 +1,7 @@
 # Summary
 <img src=https://jus-be.github.io/orin-ayo/assets/orinayo.png>
 
-Orin Ayo is an Arranger/Looper Controller. 
+Orin Ayo is a Guitar Arranger. 
 
 It was originally developed to turn a guitar games controller HID device into a chord based MIDI controller for an arranger keyboard, module, looper, device or application. It lets you play chords and control the arranger or looper with the buttons on a gutar games controller.
 
