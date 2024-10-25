@@ -40,13 +40,13 @@ h1 {
 	
 }
 
-.chordpro {
+.chordpro, .lyrics {
 	border:none; 
 	margin:0; 
 	padding:0; 
 	overflow:hidden;
 	width: 90%;
-	height: 900px;
+	height: 700px;
 }
 
 .synthtable {
@@ -54,7 +54,7 @@ h1 {
 	width: 99%;
 }
 
-.play, .chord_pro, .style_type, .liber_live, .gamepad_mode, .load_file, .reset_app, .chorda_bluetooth, .delete_style, .pedal_board, .save_reg, .record_song {
+.play, .show_lyrics, .chord_pro, .style_type, .liber_live, .gamepad_mode, .load_file, .reset_app, .chorda_bluetooth, .delete_style, .pedal_board, .save_reg, .record_song {
 	-moz-box-shadow:inset 0px 20px 26px 0px #b6cde3;
 	-webkit-box-shadow:inset 0px 20px 26px 0px #b6cde3;
 	box-shadow:inset 0px 20px 26px 0px #b6cde3;

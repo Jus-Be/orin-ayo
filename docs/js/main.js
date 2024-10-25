@@ -25,6 +25,9 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var lyricsX = 2;
+var lyricsY = 20;
+var lyricsCanvas = null;
 var recorderFilename = null;
 var recorderDestination = null;
 var mediaRecorder = null;
@@ -324,6 +327,37 @@ function stopRecording() {
 function startRecording() {
 	console.debug('startRecording');
 
+	let blobType = "audio/ogg;codecs=opus";
+	let fileExtn = ".ogg";
+		
+	if (lyricsCanvas.style.display != "none") {	
+		recorderDestination.stream.addTrack(lyricsCanvas.captureStream().getVideoTracks()[0]);	
+		blobType = "video/mp4";
+		fileExtn = ".mp4";		
+	}	
+	
+	mediaRecorder = new MediaRecorder(recorderDestination.stream);	
+	
+	mediaRecorder.addEventListener('dataavailable', e => { 
+		console.debug("dataavailable", e.data);
+		
+		const blob = new Blob([e.data], { type: blobType });		
+        const anchor = document.createElement('a');
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.style = "display: none;";
+        anchor.download = recorderFilename + fileExtn;
+        document.body.appendChild(anchor);
+        anchor.click();
+        window.URL.revokeObjectURL(anchor.href);
+		
+		recorderFilename = null;	
+		recorderDestination	= null;
+	})	
+	
+	mediaRecorder.addEventListener('onstop', e => { 
+		 console.debug("onstop", e.data);
+	})
+	
 	mediaRecorder.start();
 }
 
@@ -1035,7 +1069,8 @@ function onloadHandler() {
 		
 		if (settings.style.display == "none") {
 			settings.style.display = "";
-			board.style.display = "none";	
+			board.style.display = "none";
+	
 			
 		} else if (guitarReverb.checked) {
 			board.style.display = "";
@@ -1051,13 +1086,34 @@ function onloadHandler() {
 		
 		if (settings.style.display == "none") {
 			settings.style.display = "";
-			chordpro.style.display = "none";	
+			chordpro.style.display = "none";		
 			
 		} else {
 			chordpro.style.display = "";
 			settings.style.display = "none";			
 		}
 	});	
+	
+	lyricsCanvas = document.querySelector(".lyrics");
+	
+	const showLyrics = document.querySelector(".show_lyrics");
+	const lyricsContext = lyricsCanvas.getContext('2d');
+	lyricsContext.fillStyle = "#000000";	
+    lyricsContext.fillRect(0, 0, lyricsCanvas.width, lyricsCanvas.height);	
+	
+	showLyrics.addEventListener('click', function(event) {
+		const settings = document.querySelector("#settings");		
+		
+		if (settings.style.display == "none") {
+			settings.style.display = "";
+			lyricsCanvas.style.display = "none";	
+			
+		} else {
+			lyricsCanvas.style.display = "";
+			settings.style.display = "none";			
+		}
+	});		
+	
 	
 	const chordaBluetooth = document.querySelector(".chorda_bluetooth");
 	
@@ -1142,30 +1198,7 @@ function onloadHandler() {
 			keyboard.set(name, true);			
 			handleKeyboard(name, code);	
 		}			
-	});	
-	
-	recorderDestination = audioContext.createMediaStreamDestination();	
-	mediaRecorder = new MediaRecorder(recorderDestination.stream);	
-	
-	mediaRecorder.addEventListener('dataavailable', e => { 
-		console.debug("dataavailable", e.data);
-		
-		const blob = new Blob([e.data], { type: 'audio/ogg;codecs=opus' });		
-        const anchor = document.createElement('a');
-        anchor.href = window.URL.createObjectURL(blob);
-        anchor.style = "display: none;";
-        anchor.download = recorderFilename + ".ogg";
-        document.body.appendChild(anchor);
-        anchor.click();
-        window.URL.revokeObjectURL(anchor.href);
-		
-		recorderFilename = null;	
-		recorderDestination	= null;
-	})	
-	
-	mediaRecorder.addEventListener('onstop', e => { 
-		 console.debug("onstop", e.data);
-	})	
+	});		
 	
 	letsGo();
 }
@@ -3087,6 +3120,8 @@ async function setupUI(config,err) {
 	document.querySelector("#introEnd").checked = config.introEnd;
 	
 	guitarReverb.checked = config.reverb;
+	
+	recorderDestination = audioContext.createMediaStreamDestination();	
 	setupPedalBoard(guitarContext, guitarName, guitarDeviceId, guitarReverb.checked);
 	
 	microphone.checked = config.microphone;	
@@ -5829,6 +5864,7 @@ function getNoteName(chordRoot) {
 function scheduleSongNote() {
 	
 	if (songSequence?.data.music[currentSongNote]) {
+		const lyricsContext = lyricsCanvas.getContext('2d');			
 		const event = songSequence.data.music[currentSongNote];	
 		console.debug("scheduleSongNote", event);		
 		
@@ -5910,7 +5946,8 @@ function scheduleSongNote() {
 		else
 			
 		if (event?.sysexType == "start-sequence") {
-			console.debug("scheduleSongNote - start-sequence", event);				
+			console.debug("scheduleSongNote - start-sequence", event);	
+			clearLyrics(lyricsContext);				
 		}
 		else
 			
@@ -5922,16 +5959,42 @@ function scheduleSongNote() {
 		if (event.type == "lyrics") {
 			console.debug("scheduleSongNote lyrics", event.text);
 			
-			const cntrl = document.getElementById("lyrics");
-			let lyrics = cntrl.innerHTML + event.text;
-			
-			if (cntrl.innerHTML.length > 80) {
-				lyrics = event.text;
-			}
+			if (lyricsCanvas.style.display == "none") {			
+				const cntrl = document.getElementById("lyrics");
+				let lyrics = cntrl.innerHTML + event.text;
+				
+				if (cntrl.innerHTML.length > 80) {
+					lyrics = event.text;
+				}
 
-			cntrl.innerHTML = lyrics;
-		}		
+				cntrl.innerHTML = lyrics;
+			}
+			else {
+				lyricsContext.font = "18px Arial";				
+				const width = lyricsContext.measureText(event.text).width;
+				
+				if ((lyricsX + width) >= lyricsCanvas.width) {
+					lyricsX = 2;
+					lyricsY = lyricsY + 20;					
+				}
+				
+				if (lyricsY > lyricsCanvas.height) {
+					clearLyrics(lyricsContext);				
+				}
+
+				lyricsContext.fillStyle = "#ffffff";
+				lyricsContext.fillText(event.text, lyricsX, lyricsY);				
+				lyricsX = lyricsX + width;	
+			}						
+		}			
 	}
+}
+
+function clearLyrics(lyricsContext) {
+	lyricsX = 2;					
+	lyricsY = 20;
+	lyricsContext.fillStyle = "#000000";
+	lyricsContext.fillRect(0, 0, lyricsCanvas.width, lyricsCanvas.height);		
 }
 
 function scheduleArrNote() {
