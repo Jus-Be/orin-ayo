@@ -26,7 +26,7 @@ const LOGO = 12;
 const CONTROL = 100;
 
 var lyricsX = 2;
-var lyricsY = 20;
+var lyricsY = 18;
 var lyricsCanvas = null;
 var recorderFilename = null;
 var recorderDestination = null;
@@ -5873,25 +5873,29 @@ function scheduleSongNote() {
 					
 			if (event.section == 0x08) {
 				 sectionChange = 0; 
-				 changeArrSection(true);
+				 changeArrSection(true);	
+				 clearLyrics(lyricsContext);					 
 			}
 			else 
 				
 			if (event.section == 0x09) {
 				sectionChange = 1;
-				changeArrSection(true);				
+				changeArrSection(true);	
+				clearLyrics(lyricsContext);					
 			}			
 			else 
 				
 			if (event.section == 0x0A) {
 				sectionChange = 2;
-				changeArrSection(true);				
+				changeArrSection(true);	
+				clearLyrics(lyricsContext);					
 			}	
 			else 
 				
 			if (event.section == 0x0B) {
 				sectionChange = 3;
-				changeArrSection(true);				
+				changeArrSection(true);
+				clearLyrics(lyricsContext);	
 			}
 			else 
 				
@@ -5970,12 +5974,12 @@ function scheduleSongNote() {
 				cntrl.innerHTML = lyrics;
 			}
 			else {
-				lyricsContext.font = "18px Arial";				
+				lyricsContext.font = "14px Arial";				
 				const width = lyricsContext.measureText(event.text).width;
 				
 				if ((lyricsX + width) >= lyricsCanvas.width) {
 					lyricsX = 2;
-					lyricsY = lyricsY + 20;					
+					lyricsY = lyricsY + 18;					
 				}
 				
 				if (lyricsY > lyricsCanvas.height) {
@@ -5992,7 +5996,7 @@ function scheduleSongNote() {
 
 function clearLyrics(lyricsContext) {
 	lyricsX = 2;					
-	lyricsY = 20;
+	lyricsY = 18;
 	lyricsContext.fillStyle = "#000000";
 	lyricsContext.fillRect(0, 0, lyricsCanvas.width, lyricsCanvas.height);		
 }
