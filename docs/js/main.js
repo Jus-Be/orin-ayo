@@ -332,11 +332,11 @@ function startRecording() {
 		
 	if (lyricsCanvas.style.display != "none") {	
 		recorderDestination.stream.addTrack(lyricsCanvas.captureStream().getVideoTracks()[0]);	
-		blobType = "video/mp4";
+		blobType = 'video/mp4; codecs=mp4a.40.2"';
 		fileExtn = ".mp4";		
 	}	
 	
-	mediaRecorder = new MediaRecorder(recorderDestination.stream);	
+	mediaRecorder = new MediaRecorder(recorderDestination.stream, { mimeType: blobType });	
 	
 	mediaRecorder.addEventListener('dataavailable', e => { 
 		console.debug("dataavailable", e.data);
