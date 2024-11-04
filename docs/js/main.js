@@ -811,8 +811,7 @@ async function doLiberLiveSetup(device) {
 									pad.buttons[YELLOW] = false;
 									pad.buttons[GREEN] = false;
 									pad.buttons[ORANGE] = false;
-									pad.buttons[BLUE] = false;									
-								}																	
+									pad.buttons[BLUE] = false;																										
 								}								
 							}
 							else
@@ -830,8 +829,7 @@ async function doLiberLiveSetup(device) {
 									pad.buttons[YELLOW] = false;
 									pad.buttons[GREEN] = false;
 									pad.buttons[ORANGE] = false;
-									pad.buttons[BLUE] = false;									
-								}																	
+									pad.buttons[BLUE] = false;																										
 								}								
 							}							
 
