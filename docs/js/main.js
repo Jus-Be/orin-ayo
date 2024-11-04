@@ -806,7 +806,13 @@ async function doLiberLiveSetup(device) {
 									pad.axis[STRUM] = STRUM_UP;
 								} else {
 									pad.axis[STRUM] = STRUM_UP;	// break
-									pad.axis[TOUCH] = -0.7;								
+									pad.axis[TOUCH] = -0.7;		
+									pad.buttons[RED] = false;
+									pad.buttons[YELLOW] = false;
+									pad.buttons[GREEN] = false;
+									pad.buttons[ORANGE] = false;
+									pad.buttons[BLUE] = false;									
+								}																	
 								}								
 							}
 							else
@@ -819,7 +825,13 @@ async function doLiberLiveSetup(device) {
 
 								} else {
 									pad.axis[STRUM] = STRUM_DOWN;	// fill
-									pad.axis[TOUCH] = -0.7;								
+									pad.axis[TOUCH] = -0.7;		
+									pad.buttons[RED] = false;
+									pad.buttons[YELLOW] = false;
+									pad.buttons[GREEN] = false;
+									pad.buttons[ORANGE] = false;
+									pad.buttons[BLUE] = false;									
+								}																	
 								}								
 							}							
 
