@@ -1281,17 +1281,7 @@ async function handleChordPro(file, data) {
 	const blob = await response.blob();	
 	const buffer = await blob.arrayBuffer();
 	
-	handleBinaryFile(file.name.replace(".cho", ".mid"), buffer);
-	
-	/*
-	const anchor = document.createElement('a');
-	anchor.href = window.URL.createObjectURL(blob);
-	anchor.style = "display: none;";
-	anchor.download = file.name.replace(".cho", ".mid");
-	document.body.appendChild(anchor);
-	anchor.click();
-	window.URL.revokeObjectURL(anchor.href); 
-	*/ 	
+	handleBinaryFile(file.name.replace(".cho", ".mid"), buffer);	
 }
 
 function handleBinaryFile(filename, data) {
