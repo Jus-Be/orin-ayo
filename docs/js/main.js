@@ -25,6 +25,7 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var chordproParser = new ChordSheetJS.ChordProParser();
 var lyricsX = 2;
 var lyricsY = 18;
 var lyricsCanvas = null;
@@ -1081,7 +1082,7 @@ function onloadHandler() {
 	const chordPro = document.querySelector(".chord_pro");
 	
 	chordPro.addEventListener('click', function(event) {
-		const chordpro = document.querySelector(".chordpro");
+		const chordpro = document.querySelector("#chordpro");
 		const settings = document.querySelector("#settings");		
 		
 		if (settings.style.display == "none") {
@@ -1094,7 +1095,7 @@ function onloadHandler() {
 		}
 	});	
 	
-	lyricsCanvas = document.querySelector(".lyrics");
+	lyricsCanvas = document.querySelector("#lyrics");
 	
 	const showLyrics = document.querySelector(".show_lyrics");
 	const lyricsContext = lyricsCanvas.getContext('2d');
@@ -1102,6 +1103,8 @@ function onloadHandler() {
     lyricsContext.fillRect(0, 0, lyricsCanvas.width, lyricsCanvas.height);	
 	
 	showLyrics.addEventListener('click', function(event) {
+		if (songSequence == null) return;
+		
 		const settings = document.querySelector("#settings");		
 		
 		if (settings.style.display == "none") {
@@ -1246,8 +1249,13 @@ function handleFileContent(event) {
 		reader.onload = function(event)	
 		{
 			if (file.name.toLowerCase().endsWith(".mid") || file.name.toLowerCase().endsWith(".sf2") || file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs") || file.name.toLowerCase().endsWith(".ac7") || file.name.toLowerCase().endsWith(".sas") || file.name.toLowerCase().endsWith(".drum") || file.name.toLowerCase().endsWith(".chord")) {
-				handleBinaryFile(file, event.target.result);
-			}						
+				handleBinaryFile(file.name, event.target.result);
+			}	
+			else
+				
+			if (file.name.toLowerCase().endsWith(".cho")) {
+				handleChordPro(file, event.target.result);
+			}
 			else {
 				alert("Only soundfonts, midi file or style files supported");
 			}
@@ -1262,34 +1270,58 @@ function handleFileContent(event) {
 	}
 }
 
-function handleBinaryFile(file, data) {
-	console.debug("handleBinaryFile", file, data);
+async function handleChordPro(file, data) {
+	const decoder = new TextDecoder("utf-8"); 
+	const body = decoder.decode(data); 
+	const song = chordproParser.parse(body);	// TODO - Implement server-side chord to midi
+	console.debug("handleChordPro", file.name, song);	
 	
-	const store = new idbKeyval.Store(file.name, file.name);
+	const url = "https://pade.chat:5443/broadcastbox-jsp/cp2midi";
+	const response = await fetch(url, {method: "POST", body});
+	const blob = await response.blob();	
+	const buffer = await blob.arrayBuffer();
+	
+	handleBinaryFile(file.name.replace(".cho", ".mid"), buffer);
+	
+	/*
+	const anchor = document.createElement('a');
+	anchor.href = window.URL.createObjectURL(blob);
+	anchor.style = "display: none;";
+	anchor.download = file.name.replace(".cho", ".mid");
+	document.body.appendChild(anchor);
+	anchor.click();
+	window.URL.revokeObjectURL(anchor.href); 
+	*/ 	
+}
 
-	idbKeyval.set(file.name, data, store).then(function () {
-		console.debug("handleBinaryFile set", file.name, data);
+function handleBinaryFile(filename, data) {
+	console.debug("handleBinaryFile", filename, data);
+	
+	const store = new idbKeyval.Store(filename, filename);
+
+	idbKeyval.set(filename, data, store).then(function () {
+		console.debug("handleBinaryFile set", filename, data);
 		
-		if (file.name.toLowerCase().endsWith(".sf2")) {		
-			arrSynth = {name: file.name};
+		if (filename.toLowerCase().endsWith(".sf2")) {		
+			arrSynth = {name: filename};
 		}
 		else
 			
-		if (file.name.toLowerCase().endsWith(".mid")) {		
-			songSequence = {name: file.name};
+		if (filename.toLowerCase().endsWith(".mid")) {		
+			songSequence = {name: filename};
 		}
 		else
 			
-		if (file.name.toLowerCase().endsWith(".drum")) {		
-			realInstrument.drumUrl = file.name;				
+		if (filename.toLowerCase().endsWith(".drum")) {		
+			realInstrument.drumUrl = filename;				
 		}
 		else
 			
-		if (file.name.toLowerCase().endsWith(".chord")) {		
-			realInstrument.drumUrl = file.name;				
+		if (filename.toLowerCase().endsWith(".chord")) {		
+			realInstrument.drumUrl = filename;				
 		}
 		else {
-			arrSequence = {name: file.name};
+			arrSequence = {name: filename};
 			arrangerGroup = "imported";				
 		}
 
@@ -2309,6 +2341,7 @@ async function setupUI(config,err) {
 	arrangerGrp.addEventListener("change", function()
 	{
 		createStyleList(config, arrangerStyle, arrangerGrp);
+		
 		if (arrangerGrp.selectedIndex == 0) arrangerGroup = "imported";
 		if (arrangerGrp.selectedIndex == 1) arrangerGroup = "yamaha";
 		if (arrangerGrp.selectedIndex == 2) arrangerGroup = "ketron";
@@ -2338,7 +2371,7 @@ async function setupUI(config,err) {
 			else 
 				
 			if (db.name.toLowerCase().endsWith(".mid")) {
-				song_sequences.unshift("*" + db.name);
+				song_sequences.unshift(db.name);
 			}				
 		});
 		
@@ -2960,13 +2993,15 @@ async function setupUI(config,err) {
 		realInstrument.chord = null;
 		realInstrument.chords = null;
 		realInstrument.chordUrl = null;		
-		
+				
 		if (realChordsLoop.value != "realChordsLoop") {
 			realInstrument.chordUrl = realChordsLoop.value;				
 			const loopData = realChordsLoop.value.replace(".chord", "");
 			realInstrument.chord = loopData.split("_");			
 			setupRealInstruments();
-			saveConfig();					
+			saveConfig();	
+
+			createDrumList(config, realDrumsLoop, realChordsLoop);					
 		}
 		
 		console.debug("selected real chord loop", realInstrument, realChordsLoop.value);		
@@ -3164,6 +3199,31 @@ async function setupUI(config,err) {
 	}	
 };
 
+function createDrumList(config, realDrumsLoop, realChordsLoop) {
+	realDrumsLoop.innerHTML = "<select id='realdrumLoop' type='text' class='form-control input'></select>";
+	realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop");	
+	let s = 1;
+	
+	for (var i=0; i<drum_loops.length; i++) {
+		const drumLoop = drum_loops[i];
+		let selectedDrum = false;	
+		const loopData = drumLoop.substring(drumLoop.lastIndexOf("/") + 1).replace(".drum", "");
+		const metaData = loopData.split("_");		
+		const drumName = metaData[0] + " (" + metaData[1] + ")";			
+
+		if (realInstrument.chord[1] == metaData[1]) 
+		{
+			if (config.realDrum && config.realDrum == drumLoop) {
+				if (!realInstrument) realInstrument = {};			
+				selectedDrum = true;
+				realInstrument.drum = metaData;				
+				realInstrument.drumUrl = drumLoop;		
+			}
+			realDrumsLoop.options[s++] = new Option(drumName, drumLoop, selectedDrum, selectedDrum);
+		}
+	}	
+}
+
 function createStyleList(config, arrangerStyle, arrangerGrp) {
 	arrangerStyle.innerHTML = "<select id='arrangerStyle' type='text' class='form-control input'></select>";
 	arrangerStyle.options[0] = new Option("**UNUSED**", "arrangerStyle");	
@@ -3252,12 +3312,13 @@ function getSongSequence(songName, callback) {
 		xhr.send();			
 		
 	} else {
-		const dbName = songName.substring(1);	// remove *
+		const dbName = songName.substring(0);
 		const store = new idbKeyval.Store(dbName, dbName);		
 
-		idbKeyval.get(dbName, store).then(function (data) 
+		idbKeyval.get(dbName, store).then(function (raw) 
 		{
-			if (data) {
+			if (raw) {
+				const data = new Uint8Array(raw);				
 				console.debug("getSongSequence", dbName, data);
 				songSequence = parseMidi(data, dbName);	
 				songSequence.name = songName;	
@@ -4922,6 +4983,8 @@ function doChord() {
 }
 
 function startStopWebAudio() {
+	let gapTime = 0.5;
+	
 	console.debug("startStopWebAudio", styleStarted, pad.buttons[YELLOW]);
 	const drumChecked = document.getElementById("arr-instrument-16")?.checked;
 	const bassChecked = document.getElementById("arr-instrument-17")?.checked;
@@ -4930,7 +4993,7 @@ function startStopWebAudio() {
 	if (!styleStarted) {
 		if (recordMode) startRecording();				
 		if (!registration) setTempo(realInstrument.bpm);	
-		const goTime = audioContext.currentTime + 0.5;				
+		const goTime = audioContext.currentTime + gapTime;				
 
 		if (songSequence) {
 			orinayo_section.innerHTML = ">Arr A";					
@@ -4971,7 +5034,9 @@ function startStopWebAudio() {
 		if (chordLoop) chordLoop.stop();
 
 		if (recordMode) setTimeout(stopRecording, 20000);				
-	}	
+	}
+
+	return gapTime;
 }
 
 function toggleStartStop() {
@@ -5476,8 +5541,11 @@ function sendControlChange(event) {
 
 function doStartStopSequencer() {
 	console.debug("doStartStopSequencer", styleStarted);
+	let syncGap = 0;
 	
-	if (arranger == "webaudio") startStopWebAudio();	
+	if (arranger == "webaudio") {
+		syncGap = startStopWebAudio();	
+	}
 	
 	if (!styleStarted) 	
 	{
@@ -5520,7 +5588,7 @@ function doStartStopSequencer() {
 		nextSongNoteTime = audioContext.currentTime;
 		songStartTime = nextSongNoteTime;
 		
-        if (timerWorker) setTimeout(() => timerWorker.postMessage("start"), songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000);
+        if (timerWorker) setTimeout(() => timerWorker.postMessage("start"), syncGap + (songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000));
 	} else {		
 		requestArrEnd = true;
 		requestedEnd = "Ending A";
@@ -5942,9 +6010,15 @@ function scheduleSongNote() {
 			
 			if (chord.length > 0) {
 				activeChord = null;
-				pad.axis[STRUM] = STRUM_UP;
-				orinayo.innerHTML = displayShape;				
+				pad.axis[STRUM] = STRUM_DOWN;
+				orinayo.innerHTML = displayShape;	
+
+				if (!game) {
+					setup();
+					resetGuitarHero();
+				}				
 				playChord(chord, event.chordRoot,  event.chordType, event.chordBass);
+				updateCanvas();				
 			}
 		}
 		else

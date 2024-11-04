@@ -59,7 +59,9 @@ function parseSmf(parser, arrName) {
 	while (!parser.eof()) {
 		const event = readEvent(parser);
 
-		if (event) {	
+		if (event && event.data) {
+			//console.debug("chord type", event.type, event.data[0], event.data[1], event.data[2]);
+							
 			if (event.type == "sysEx" && event.data[0] == 0x43 && event.data[1] == 0x7E && event.data[2] == 0x02) {
 				console.debug("chord type", event.data[3], event.data[4], event.data[5]);
 				event.sysexType = "chord";
@@ -90,7 +92,10 @@ function parseSmf(parser, arrName) {
 				event.sysexType = "stop-sequence";	
 				events.music.push(event);				
 			}
-			else
+		} 
+		else
+		
+		if (event) {			
 				
 			if (event.type == "lyrics") {
 				console.debug("lyrics", event.text);	
@@ -690,7 +695,7 @@ function readEvent(p) {
         event.type = 'sysEx'
         var length = p.readVarInt()
         event.data = p.readBytes(length)	
-		//console.debug(event.type, event.deltaTime, event.data);			
+		//console.debug(event.type, length, event.deltaTime, event.data[0], event.data[4]);			
         return event;
       } else if (eventTypeByte == 0xf7) {
         event.type = 'endSysEx'

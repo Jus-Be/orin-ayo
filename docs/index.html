@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="./css/bootstrap.css">
     <link rel="stylesheet" href="./css/synth.css">	
     <link rel="stylesheet" href="./css/main.css">	
+	<!--link rel="stylesheet" href="./assets/chordpro.css" /-->
 	<link rel="stylesheet" href="./assets/style.css" />
     <link id="favicon"     href="./assets/icon_16.png" rel="shortcut icon" type="image/gif" />		
 </head>
@@ -47,9 +48,9 @@
 	</tr>		
 	</table>
 
-    <canvas style="margin: 0; display: none;" class="lyrics"></canvas>	
+    <canvas style="margin: 0; display: none;" id="lyrics"></canvas>	
 	<div style="display: none;" class="pedalboard"></div>	
-	<iframe src="https://jus-be.github.io/chordpro-pdf-online/" style="display: none;" class="chordpro"></iframe>	
+	<iframe src="https://jus-be.github.io/chordpro-pdf-online/" style="display: none;" id="chordpro"></iframe>	
 	
 	<table id="settings" width="90%">	
 	<tr><td><b>Guitar Strum</b></td><td><select id="guitarType" type="text" class="form-control input"></select></td>	
@@ -128,6 +129,7 @@
   <script src='./js/0260_JCLive_sf2_file.js'></script>
   <script src="./assets/pedalboard.js" type="module"></script>  
   
+  <script src="./js/chordsheet.js"></script>  
   <script src='./js/webaudio-font-player.js'></script>  
   <script src="./js/web-components.min.js" type="module"></script>
   <script src="./js/note.js"></script>
