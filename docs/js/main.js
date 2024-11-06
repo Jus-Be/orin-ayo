@@ -626,6 +626,7 @@ async function doLiberLiveSetup(device) {
 						if (haveFired && cannotFire) {
 							haveFired = false;
 							resetGuitarHero();	
+							stopPads();
 						}
 						
 						if (eventData[4] == 2) {
