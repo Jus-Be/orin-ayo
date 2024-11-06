@@ -1080,13 +1080,19 @@ function onloadHandler() {
 			}, 1000)				
 		}
 	});		
-
+	
+	lyricsCanvas = document.querySelector("#lyrics");
+	const board = document.querySelector(".pedalboard");
+	const chordpro = document.querySelector("#chordpro");
+	const settings = document.querySelector("#settings");	
+	
 	const pedalBoard = document.querySelector(".pedal_board");
 	
-	pedalBoard.addEventListener('click', function(event) {
-		const board = document.querySelector(".pedalboard");
-		const settings = document.querySelector("#settings");		
-		
+	pedalBoard.addEventListener('click', function(event) {		
+		board.style.display = "none";
+		chordpro.style.display = "none";	
+		lyricsCanvas.style.display = "none";		
+			
 		if (settings.style.display == "none") {
 			settings.style.display = "";
 			board.style.display = "none";
@@ -1101,8 +1107,9 @@ function onloadHandler() {
 	const chordPro = document.querySelector(".chord_pro");
 	
 	chordPro.addEventListener('click', function(event) {
-		const chordpro = document.querySelector("#chordpro");
-		const settings = document.querySelector("#settings");		
+		board.style.display = "none";
+		chordpro.style.display = "none";	
+		lyricsCanvas.style.display = "none";		
 		
 		if (settings.style.display == "none") {
 			settings.style.display = "";
@@ -1114,8 +1121,6 @@ function onloadHandler() {
 		}
 	});	
 	
-	lyricsCanvas = document.querySelector("#lyrics");
-	
 	const showLyrics = document.querySelector(".show_lyrics");
 	const lyricsContext = lyricsCanvas.getContext('2d');
 	lyricsContext.fillStyle = "#000000";	
@@ -1124,7 +1129,9 @@ function onloadHandler() {
 	showLyrics.addEventListener('click', function(event) {
 		if (songSequence == null) return;
 		
-		const settings = document.querySelector("#settings");		
+		board.style.display = "none";
+		chordpro.style.display = "none";	
+		lyricsCanvas.style.display = "none";	
 		
 		if (settings.style.display == "none") {
 			settings.style.display = "";
