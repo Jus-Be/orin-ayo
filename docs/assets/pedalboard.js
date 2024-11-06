@@ -97,17 +97,12 @@ window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, use
     reverbPedal
   ]; 
     
-  if (useEffects) {  
-	const output = pedals.reduce((input, pedal, index) => {
+  if (useEffects && guitarName != null && guitarName != "") {  
+	window.pedalOutput = pedals.reduce((input, pedal, index) => {
 		return pedal(input, index + 1);
 	}, pedalInput);
 
-	output.connect(ctx.destination);	
-	if (recorderDestination) output.connect(recorderDestination);	
-
-  } else {
-	pedalInput.connect(ctx.destination); 	  
-	if (recorderDestination) pedalInput.connect(recorderDestination);	
+	pedalOutput.connect(ctx.destination);	  	
   }
 }
 

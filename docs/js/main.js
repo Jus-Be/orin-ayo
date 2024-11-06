@@ -25,6 +25,9 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var bassVol = 95;
+var chordVol = 40;
+var drumVol = 85;
 var chordproParser = new ChordSheetJS.ChordProParser();
 var lyricsX = 2;
 var lyricsY = 18;
@@ -328,8 +331,14 @@ function stopRecording() {
 function startRecording() {
 	console.debug('startRecording');
 
-	let blobType = "audio/ogg;codecs=opus";
+	let blobType = "audio/webm; codecs=opus";
 	let fileExtn = ".ogg";
+
+	const gain = audioContext.createGain();	
+	recorderDestination = audioContext.createMediaStreamDestination();	
+	gain.connect(recorderDestination);	
+	
+	if (pedalOutput) pedalOutput.connect(recorderDestination);	
 		
 	if (lyricsCanvas.style.display != "none") {	
 		recorderDestination.stream.addTrack(lyricsCanvas.captureStream().getVideoTracks()[0]);	
@@ -2293,6 +2302,9 @@ async function setupUI(config,err) {
 	
 	//guitarDeviceId = config.guitarDeviceId;
 	guitarVolume = config.guitarVolume ? config.guitarVolume : guitarVolume;		
+	bassVol = config.bassVol ? config.bassVol : bassVol;	
+	drumVol = config.drumVol ? config.drumVol : drumVol;
+	chordVol = config.chordVol ? config.chordVol : chordVol;	
 	keyChange = config.keyChange ? config.keyChange : keyChange;
 	dokeyChange();
 	
@@ -3155,8 +3167,6 @@ async function setupUI(config,err) {
 	document.querySelector("#introEnd").checked = config.introEnd;
 	
 	guitarReverb.checked = config.reverb;
-	
-	recorderDestination = audioContext.createMediaStreamDestination();	
 	setupPedalBoard(guitarContext, guitarName, guitarDeviceId, guitarReverb.checked);
 	
 	microphone.checked = config.microphone;	
@@ -3225,7 +3235,7 @@ function createDrumList(config, realDrumsLoop, realChordsLoop) {
 }
 
 function createStyleList(config, arrangerStyle, arrangerGrp) {
-	arrangerStyle.innerHTML = "<select id='arrangerStyle' type='text' class='form-control input'></select>";
+	arrangerStyle.innerHTML = "";
 	arrangerStyle.options[0] = new Option("**UNUSED**", "arrangerStyle");	
 	let styleSelected = false;
 	let iStyle = 0;
@@ -3282,9 +3292,23 @@ function setupMidiChannels() {
 	}
 	
 	for (let i=0; i<19; i++) {
-		document.getElementById("arr-instrument-" + i).checked = window.tempConfig["channel" + i];
-		if (i < 16) document.getElementById("midi-channel-" + i).selectedIndex = window.tempConfig["instrument" + i];		
+		if (window.tempConfig["instrument" + i] || i == 0 ) {
+			document.getElementById("arr-instrument-" + i).checked = window.tempConfig["channel" + i];
+			if (i < 16) document.getElementById("midi-channel-" + i).selectedIndex = window.tempConfig["instrument" + i];		
+		}
 	}
+
+	document.querySelector("#audio-vol-16").addEventListener("input", function(event) {
+		drumVol = +event.target.value; 
+	});
+
+	document.querySelector("#audio-vol-17").addEventListener("input", function(event) {
+		bassVol = +event.target.value; 
+	});
+	
+	document.querySelector("#audio-vol-18").addEventListener("input", function(event) {
+		chordVol = +event.target.value; 
+	});	
 	
 	delete window.tempConfig;
 }
@@ -3437,6 +3461,9 @@ function saveConfig() {
 	config.liberLiveChrd2 = liberLive.chord2;
 	config.liberLiveDrms1 = liberLive.drums1;
 	config.liberLiveDrms2 = liberLive.drums2;
+	config.drumVol = drumVol;
+	config.chordVol = chordVol;
+	config.bassVol = bassVol;
 	
 	for (let i=0; i<19; i++) {
 		config["channel" + i] = document.getElementById("arr-instrument-" + i)?.checked;
@@ -5543,8 +5570,8 @@ function doStartStopSequencer() {
 	console.debug("doStartStopSequencer", styleStarted);
 	let syncGap = 0;
 	
-	if (arranger == "webaudio") {
-		syncGap = startStopWebAudio();	
+	if (arranger == "webaudio" && songSequence) {
+		syncGap = startStopWebAudio() + (songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000);	
 	}
 	
 	if (!styleStarted) 	
@@ -5588,7 +5615,7 @@ function doStartStopSequencer() {
 		nextSongNoteTime = audioContext.currentTime;
 		songStartTime = nextSongNoteTime;
 		
-        if (timerWorker) setTimeout(() => timerWorker.postMessage("start"), syncGap + (songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000));
+        if (timerWorker) setTimeout(() => timerWorker.postMessage("start"), syncGap);
 	} else {		
 		requestArrEnd = true;
 		requestedEnd = "Ending A";
@@ -6243,7 +6270,7 @@ function setupSongSequence() {
 	
 	//if (!songSequence && !arrSequence) return;
 	
-	if (songSequence) {
+	if (songSequence?.data) {
 		console.debug("setupSongSequence", flag, songSequence);	
 		
 		playButton.innerText = "Wait..";
@@ -6252,7 +6279,7 @@ function setupSongSequence() {
 	} 
 	else
 		
-	if (arrSequence.data?.Hdr) {
+	if (arrSequence?.data?.Hdr) {
 		
 		if (realInstrument) {
 			if (!registration) setTempo(realInstrument.bpm);	

@@ -5,7 +5,6 @@ function AudioLooper(styleType) {
     this.audioContext = audioContext; //new AudioContext();	
 
 	this.channel = (this.styleType == "drum" ? "16" : (this.styleType == "bass" ? "17" : "18"));	
-	this.instrumentNode = document.getElementById("arr-instrument-" + this.channel);
 	this.counter = 6;	
 
 	this.getLoop = function(id) {	// key0 OR key0_maj OR key0_min_arra
@@ -161,7 +160,7 @@ AudioLooper.prototype.start = function(id, when) {
 	this.firstTime = true;
 	this.offset = 0;
 	this.id = id;
-	this.vol = this.styleType == "bass" ? 0.95 : ( this.styleType == "chord" ? 0.4 : 0.85);
+	this.vol = this.styleType == "bass" ? bassVol/100 : ( this.styleType == "chord" ? chordVol/100 : drumVol/100);
 	this.prevVol = this.vol;
 
 	const loop = this.getLoop(this.id);
@@ -190,6 +189,8 @@ AudioLooper.prototype.volume = function(vol) {
 };
 
 AudioLooper.prototype.displayUI = function(flag) {
+	this.instrumentNode = document.getElementById("arr-instrument-" + this.channel);	
+	console.debug("displayUI", this.instrumentNode, this.channel);
 	
 	if (this.instrumentNode) {
 		const classList = this.instrumentNode.parentNode.parentNode.parentNode.parentNode.querySelector("tbody > tr:nth-child(" + (parseInt(this.channel) + 1) + ") > td:nth-child(" + this.counter + ")").classList;				
