@@ -43,7 +43,7 @@ window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, use
 	
     const source = ctx.createMediaStreamSource(stream);
 	source.connect(pedalInput);
-	pedalInput.gain.setValueAtTime(1, ctx.currentTime);	
+	pedalInput.gain.setValueAtTime(1, ctx.currentTime);
   }
   
   const onError = (message = '') => {
@@ -103,6 +103,8 @@ window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, use
 	}, pedalInput);
 
 	pedalOutput.connect(ctx.destination);	  	
+  } else {
+	pedalInput.connect(ctx.destination);	  
   }
 }
 
