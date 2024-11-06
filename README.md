@@ -144,13 +144,14 @@ It has a pedalboard for guitar effects using [pedalboard by Trys Mudford](https:
 
 It supports the [extended ChordPro format proposed by Paul J. Drongowski](https://sandsoftwaresound.net/chordpro-for-yamaha-accompaniment/). 
 A ChordPro [editor](https://github.com/Jus-Be/chordpro-pdf-online) based on the chordpro-pdf-online project by [Ruth Wong](https://github.com/woshibiantai) is provided to edit a song and add extra directives for precise timing, section changes, tempo, etc.
+
 It uses the [Java code provided by Paul J. Drongowski](https://sandsoftwaresound.net/chordpro-auto-accompaniment-midi-messages/) to generate a midi file that can be played on OrinAyo and any compatible Yamaha keyboard like the PSR-SX600
 
 <img src=https://jus-be.github.io/orin-ayo/assets/orinayo_chordpro.png>
 
 The generated midi file or extended chordpro can be loaded into OrinAyo and payed back with the current selected style. The performed song can be recorded with lyrics as a video file or without lyrics asn audio file.
 
-<img src=https://jus-be.github.io/orin-ayo/assets/orinayo_chordpro.png>
+<img src=https://jus-be.github.io/orin-ayo/assets/orinayo_chordpro1.png>
 
 The internal guitar, pedalboard, synth style engines and media recording are all experimental and require a bit more work to be used in live performances.
 The support for LiberLive C1 bluetooth connection requires the experimental **Web Bluetooth confirm pairing support** to be enabled in Chrome/Edge.
