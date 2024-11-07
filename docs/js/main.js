@@ -51,7 +51,7 @@ var currentSffVar = "Intro A";
 var loadFile = null;
 var fretButton = 127;
 var padFretButton = 127;
-var artiphonStrumUp = false;
+var isStrumUp = false;
 var artiphonI1Base = 36;
 var footSwCode7Enabled = false;
 var playButton = null;
@@ -338,7 +338,7 @@ function startRecording() {
 	recorderDestination = audioContext.createMediaStreamDestination();	
 	gain.connect(recorderDestination);	
 	
-	if (pedalOutput) pedalOutput.connect(recorderDestination);	
+	if (window.pedalOutput) pedalOutput.connect(recorderDestination);	
 		
 	if (lyricsCanvas.style.display != "none") {	
 		recorderDestination.stream.addTrack(lyricsCanvas.captureStream().getVideoTracks()[0]);	
@@ -1594,9 +1594,9 @@ function handleNumPad(name, code) {
 }
 
 function toggleStrumUpDown() {
-	pad.axis[STRUM] = artiphonStrumUp ? STRUM_UP : STRUM_DOWN;
-	if (midiRealGuitar) midiRealGuitar.playNote(artiphonStrumUp ? 122 : 121, 1, {velocity: getVelocity(), duration: 1000});				
-	artiphonStrumUp = !artiphonStrumUp;
+	pad.axis[STRUM] = isStrumUp ? STRUM_UP : STRUM_DOWN;
+	if (midiRealGuitar) midiRealGuitar.playNote(isStrumUp ? 122 : 121, 1, {velocity: getVelocity(), duration: 1000});				
+	isStrumUp = !isStrumUp;
 }
 
 function handleNoteOff(note, device, velocity, channel) {	
@@ -2993,19 +2993,7 @@ async function setupUI(config,err) {
 	
 
 	realDrumsLoop.addEventListener("change", function() {
-		if (!realInstrument) realInstrument = {};		
-		realInstrument.drum = null;
-		realInstrument.drums = null;
-		realInstrument.drumUrl = null;
-		
-		if (realDrumsLoop.value != "realDrumsLoop") {
-			realInstrument.drumUrl = realDrumsLoop.value;		
-			const loopData = realDrumsLoop.value.replace(".drum", "");
-			realInstrument.drum = loopData.split("_");			
-			setupRealInstruments();
-			saveConfig();					
-		}
-		console.debug("selected real drums loop", realInstrument, realDrumsLoop.value);		
+		drumLoopChanged(realDrumsLoop);		
 	});		
 
 	realChordsLoop.addEventListener("change", function() {
@@ -3217,15 +3205,33 @@ async function setupUI(config,err) {
 	}	
 };
 
+function drumLoopChanged(realDrumsLoop) {
+	if (!realInstrument) realInstrument = {};		
+	realInstrument.drum = null;
+	realInstrument.drums = null;
+	realInstrument.drumUrl = null;
+	
+	if (realDrumsLoop.value != "realDrumsLoop") {
+		realInstrument.drumUrl = realDrumsLoop.value;		
+		const loopData = realDrumsLoop.value.replace(".drum", "");
+		realInstrument.drum = loopData.split("_");			
+		setupRealInstruments();
+		saveConfig();					
+	}
+	console.debug("selected real drums loop", realInstrument, realDrumsLoop.value);		
+}
+
 function createDrumList(config, realDrumsLoop, realChordsLoop) {
-	realDrumsLoop.innerHTML = "<select id='realdrumLoop' type='text' class='form-control input'></select>";
+	realDrumsLoop.innerHTML = "";
 	realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop");	
 	let s = 1;
+	let selectedIndex = 1; // first style as default match
 	
 	for (var i=0; i<drum_loops.length; i++) {
 		const drumLoop = drum_loops[i];
 		let selectedDrum = false;	
-		const loopData = drumLoop.substring(drumLoop.lastIndexOf("/") + 1).replace(".drum", "");
+		const styleName = realInstrument.chord[0].substring(realInstrument.chord[0].lastIndexOf("/") + 1);
+		const loopData = drumLoop.substring(drumLoop.lastIndexOf("/") + 1).replace(".drum", "");		
 		const metaData = loopData.split("_");		
 		const drumName = metaData[0] + " (" + metaData[1] + ")";			
 
@@ -3233,13 +3239,19 @@ function createDrumList(config, realDrumsLoop, realChordsLoop) {
 		{
 			if (config.realDrum && config.realDrum == drumLoop) {
 				if (!realInstrument) realInstrument = {};			
-				selectedDrum = true;
+				selectedDrum = true;			
 				realInstrument.drum = metaData;				
 				realInstrument.drumUrl = drumLoop;		
 			}
-			realDrumsLoop.options[s++] = new Option(drumName, drumLoop, selectedDrum, selectedDrum);
+			if (styleName == metaData[0]) selectedIndex = s;	// same style name. best match						
+			realDrumsLoop.options[s++] = new Option(drumName, drumLoop, selectedDrum, selectedDrum);			
 		}
 	}	
+	
+	if (s > 1) {
+		realDrumsLoop.selectedIndex = selectedIndex;
+		drumLoopChanged(realDrumsLoop);			
+	}
 }
 
 function createStyleList(config, arrangerStyle, arrangerGrp) {
@@ -4039,9 +4051,10 @@ function playChord(chord, root, type, bass) {
 					
 				if (padsMode == 3 || padsMode == 4 || padsMode == 5) {			
 					const guitarSeq = window["strum" + (padsMode - 2)].split("-"); 
-					const arpChord = guitarSeq[seqIndex++];							
-					if (seqIndex >= guitarSeq.length) seqIndex = 0;
-					console.debug("playChord arps", arpChord, seqIndex);				
+					
+					if (seqIndex >= guitarSeq.length) seqIndex = 0;						
+					const arpChord = guitarSeq[seqIndex];												
+					//console.debug("playChord arps", arpChord, seqIndex, getPitches(arpChord), rootNote, guitarSeq);				
 					
 					if (arpChord) 
 					{				
@@ -4050,15 +4063,17 @@ function playChord(chord, root, type, bass) {
 							if (arpChord.startsWith("B")) {
 								player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, bassNote, guitarDuration, guitarVolume);
 							} else {						
-								player.queueStrum(guitarContext, guitarSource, midiGuitar, 0, getPitches(arpChord), guitarDuration, guitarVolume);
-							}
+								player.queueStrum(guitarContext, guitarSource, midiGuitar, 0, getPitches(arpChord), guitarDuration, guitarVolume);							
+							}							
 						}
 						else
 							
 						if (pad.axis[STRUM] == STRUM_DOWN) {
-							player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, arpChord.startsWith("B") ? bassNote : rootNote, guitarDuration, guitarVolume);
-							seqIndex = 0;					
+							player.queueWaveTable(guitarContext, guitarSource, midiGuitar, 0, arpChord.startsWith("B") ? bassNote : rootNote, guitarDuration, guitarVolume);				
 						}
+						
+						seqIndex++;
+						if (seqIndex >= guitarSeq.length) seqIndex = 0;							
 					}
 				}
 			}
@@ -6045,7 +6060,8 @@ function scheduleSongNote() {
 			
 			if (chord.length > 0) {
 				activeChord = null;
-				pad.axis[STRUM] = STRUM_DOWN;
+				pad.axis[STRUM] = isStrumUp ? STRUM_UP : STRUM_DOWN;			
+				isStrumUp = !isStrumUp;
 				orinayo.innerHTML = displayShape;	
 
 				if (!game) {

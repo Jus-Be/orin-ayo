@@ -149,7 +149,7 @@ It uses the [Java code provided by Paul J. Drongowski](https://sandsoftwaresound
 
 <img src=https://jus-be.github.io/orin-ayo/assets/orinayo_chordpro.png>
 
-The generated midi file or extended chordpro can be loaded into OrinAyo and payed back with the current selected style. The performed song can be recorded with lyrics as a video file or without lyrics asn audio file.
+The generated midi file or extended chordpro can be loaded into OrinAyo and payed back with the current selected style. The performed song can be recorded with lyrics as a video file or without lyrics as an audio file.
 
 <img src=https://jus-be.github.io/orin-ayo/assets/orinayo_chordpro1.png>
 
