@@ -2616,7 +2616,9 @@ async function setupUI(config,err) {
 	strum1 = config.strum1 || strum1;
 	strum2 = config.strum2 || strum2;
 	strum3 = config.strum3 || strum3;
-	document.getElementById("guitarPosition").selectedIndex = config.strumPos
+	
+	const guitarPosition = document.getElementById("guitarPosition");
+	guitarPosition.selectedIndex = config.strumPos
 	
 	guitarStrum[1].addEventListener("change", function()
 	{
@@ -2654,13 +2656,15 @@ async function setupUI(config,err) {
 		guitarStrum[1].style.display = "none";		
 		guitarStrum[2].style.display = "none";		
 		guitarStrum[3].style.display = "none";	
+		guitarPosition.style.display = "none";
 		
 		guitarName = guitarType.value;
 		
 		if (guitarName != "none") {
 			guitarStrum[1].style.display = "";		
 			guitarStrum[2].style.display = "";		
-			guitarStrum[3].style.display = "";			
+			guitarStrum[3].style.display = "";	
+			guitarPosition.style.display = "";			
 				
 			if (guitarReverb.checked) {		
 
@@ -2680,6 +2684,7 @@ async function setupUI(config,err) {
 	
 	if (guitarName == "none") {
 		for (let i=1; i<4; i++) guitarStrum[i].style.display = "none";
+		guitarPosition.style.display = "none";		
 	}		
 	
 	if (guitarName != "none") 
