@@ -19,29 +19,29 @@
 		<td><h2 id="statusMsg"></h2></td>
 		<td>
 			<div><center>
-				<a class="play">On</a>
-				<a class="style_type">Normal</a>
-				<a class="gamepad_mode">Color Tabs</a>
-				<a class="load_file">Load</a>
-				<a style="display: none;" class="liber_live">LiberLive C1</a>					
+				<a title='Toggle play/stop' class="play">On</a>
+				<a title='Style type' class="style_type">Normal</a>
+				<a title='Guitar playing style' class="gamepad_mode">Color Tabs</a>
+				<a title='Load external file (drum, chord, bass, midi, sty, etc)' class="load_file">Load</a>
+				<a title='Pair/Unpair LiberLive Guitar' style="display: none;" class="liber_live">LiberLive C1</a>					
 				<a style="display: none;" class="chorda_bluetooth">BT OFF</a>	
 				<a style="display: none;" class="delete_style">Delete Style</a>				
-				<a class="pedal_board">Pedal Board</a>			
-				<a class="chord_pro">ChordPro</a>
-				<a class="show_lyrics">Lyrics</a>				
-				<a class="save_reg">Save</a>
-				<a style="display: none;" class="record_song">Record</a>				
-				<a class="reset_app">Refresh</a>			
+				<a title='Toggle Pedalboard Display' class="pedal_board">Pedal Board</a>			
+				<a title='Edit Extended ChordPro song' class="chord_pro">ChordPro</a>
+				<a title='Display song lyrics' class="show_lyrics">Lyrics</a>				
+				<a title='Save all settings as a registration (1-7)' class="save_reg">Save</a>
+				<a title='Record performance as video or audio file' style="display: none;" class="record_song">Record</a>				
+				<a title='Refresh application for new settings to take effect' class="reset_app">Refresh</a>			
 			</center><div>	
 			<div id="sequencer2" style="margin:10px">
 			    <span style="font-size: 14px;margin-left:2px" id="sequencer">Tempo:<span id="showTempo">100</span></span>	
-				<input id="tempo" type="range" min="30.0" max="160.0" step="1" value="100" style="height: 20px; width: 150px">
-				<input style="margin-left: 10px;margin-right: 10px;" id="microphone" type="checkbox">Mic
-				<input style="margin-left: 10px;margin-right: 10px;" id="autoFill" type="checkbox" checked>Auto Fill
-				<input style="margin-left: 10px;margin-right: 10px;" id="introEnd" type="checkbox" checked>Intro/Outro
-				<input checked style="margin-left: 10px;margin-right: 10px;" id="reverb" type="checkbox">Pedals
-				<input style="margin-left: 10px;margin-right: 10px;" id="program-change" type="checkbox">No P.Change
-				<input id="volume" type="range" min="0.0" max="100.0" step="1" value="25" style="height: 20px; width: 150px;margin-left: 20px;margin-right: 10px;">
+				<input title='Overall Tempo control' id="tempo" type="range" min="30.0" max="160.0" step="1" value="100" style="height: 20px; width: 150px">
+				<input title='Enable microphone' style="margin-left: 10px;margin-right: 10px;" id="microphone" type="checkbox">Mic
+				<input title='Play Drum Fills automatically when variation chnages' style="margin-left: 10px;margin-right: 10px;" id="autoFill" type="checkbox" checked>Auto Fill
+				<input title='Play Intro end Ending' style="margin-left: 10px;margin-right: 10px;" id="introEnd" type="checkbox" checked>Intro/Outro
+				<input title='Enable Guitar pedal effects' checked style="margin-left: 10px;margin-right: 10px;" id="reverb" type="checkbox">Pedals
+				<input title='Dont override midi file program change settings' style="margin-left: 10px;margin-right: 10px;" id="program-change" type="checkbox">No P.Change
+				<input title='Guitar volume control' id="volume" type="range" min="0.0" max="100.0" step="1" value="25" style="height: 20px; width: 150px;margin-left: 20px;margin-right: 10px;">
 				<span id="showVol">VOL</span>
 			</div>
 		</td>
@@ -54,9 +54,10 @@
 	
 	<table id="settings" width="90%">	
 	<tr><td><b>Guitar Strum</b></td><td><select id="guitarType" type="text" class="form-control input"></select></td>	
-	    <td><select id="guitarStrum1" type="text" class="form-control input"></select></td>	
-	    <td><select id="guitarStrum2" type="text" class="form-control input"></select></td>
-	    <td><select id="guitarStrum3" type="text" class="form-control input"></select></td>
+	    <td><select  title='Strum type for Pad 3'id="guitarStrum1" type="text" class="form-control input"></select></td>	
+	    <td><select  title='Strum type for Pad 4'id="guitarStrum2" type="text" class="form-control input"></select></td>
+	    <td><select title='Strum type for Pad 5' id="guitarStrum3" type="text" class="form-control input"></select></td>
+	    <td><select title='Neck Position' id="guitarPosition" type="text" class="form-control input"><option value=1>I</option><option selected value=2>II</option><option value=3>III</option></select></td>		
 	</tr>	
 	<tr><td><b>Arranger Type</b></td><td><select id="arrangerType" type="text" class="form-control input"></select></td><td valign="top" rowspan="13" colspan="4"><div id="synth"></div></td></tr>	
 	<tr><td><b>Arranger Group</b></td><td><select id="arrangerGroup" type="text" class="form-control input"></select></td><td></td></tr>	

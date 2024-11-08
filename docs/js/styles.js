@@ -301,5 +301,6 @@ var drum_loops = [
 	"assets/drums/surf_170_2824_11294_1412_1412_8471.drum",	
 	"assets/drums/triple-hop_85_2824_11294_2824_2824_5647.drum",		
 	"assets/drums/u2-guitar_105_27429_18286_2286_2286_11429.drum",
-	"assets/drums/village-pop_107_2243_8972_2243_2243_4486.drum"
+	"assets/drums/village-pop_107_2243_8972_2243_2243_4486.drum",
+	"assets/drums/wonderfull_94_2553_10213_2553_2553_5106.drum"
 ]

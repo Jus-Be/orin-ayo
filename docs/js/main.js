@@ -141,8 +141,6 @@ var lock = {counter: 0, up: 0, down: 0, button: -1};
 
 var O = 12;
 var C = 0, Cs = 1, Db = 1, D = 2, Ds = 3, Eb = 3, E = 4, F = 5, Fs = 6, Gb = 6, G = 7, Gs = 8, Ab = 8, A = 9, As = 10, Bb = 10, B = 11;
-var __6th = E +O*3, __5th = A +O*3, __4th = D +O*4, __3rd = G +O*4, __2nd = B +O*4, __1st = E +O*5;
-
 var chordChart = [
 	[{base:  C +O*2, strings: [ 3,  3, 2, 0, 1, 0]}, {base:  C +O*2, strings: [-1,  3, 5, 5, 4, 3]}, {base:  C +O*2, strings: [-1, -1, 3, 0, 1, 3]}],
 	[{base: Cs +O*2, strings: [-1, -1, 3, 1, 2, 1]}, {base: Cs +O*2, strings: [-1, -1, 2, 1, 2, 0]}, {base: Cs +O*2, strings: [-1, -1, 3, 3, 4, 1]}],
@@ -2117,7 +2115,8 @@ function updateStatus() {
 				pad.buttons[i] = touched;
 				updated = true;
 			}			
-		}	
+		}
+		
 		if (guitar.axes.length > STRUM) 
 		{			
 			if (pad.axis[STRUM] != guitar.axes[STRUM].toFixed(4)) {
@@ -2214,7 +2213,11 @@ function updateStatus() {
 	}	
 		
 	if (updated) {
-		doChord();
+		if (styleStarted && songSequence) {
+			handleSongMode();
+		} else {
+			doChord();
+		}
 		updateCanvas();
 		
 		if (riffMasterXbox) {
@@ -2230,6 +2233,18 @@ function updateStatus() {
 	}	
 	
 	window.setTimeout(updateStatus);
+}
+
+function handleSongMode() {
+	let processed = false;
+	
+	if ((pad.buttons[YELLOW] || pad.buttons[BLUE] || pad.buttons[ORANGE] || pad.buttons[RED] || pad.buttons[GREEN]) && !pad.buttons[START] && !pad.buttons[STARPOWER]) {		
+		processed = true;
+	}	
+	
+	if (!processed) {
+		doChord();
+	}
 }
 
 function letsGo() {
@@ -2601,6 +2616,7 @@ async function setupUI(config,err) {
 	strum1 = config.strum1 || strum1;
 	strum2 = config.strum2 || strum2;
 	strum3 = config.strum3 || strum3;
+	document.getElementById("guitarPosition").selectedIndex = config.strumPos
 	
 	guitarStrum[1].addEventListener("change", function()
 	{
@@ -3477,6 +3493,7 @@ function saveConfig() {
 	config.reverb = guitarReverb.checked;
 	config.microphone = microphone.checked;
 	config.programChange = document.querySelector("#program-change").checked;
+	config.strumPos = document.getElementById("guitarPosition").selectedIndex;
 	config.liberLiveChrd1 = liberLive.chord1;
 	config.liberLiveChrd2 = liberLive.chord2;
 	config.liberLiveDrms1 = liberLive.drums1;
@@ -3994,6 +4011,8 @@ function getVelocity() {
 }
 
 function getPitches(seq) {
+	const pos = parseInt(document.getElementById("guitarPosition").value);
+	__6th = E +O*(pos+2), __5th = A +O*(pos+2), __4th = D +O*(pos+2), __3rd = G +O*(pos+2), __2nd = B +O*(pos+2), __1st = E +O*(pos+3);	
 	const p = [];
 	const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 	const chordType = (arrChordType == "sus" ? 2 : (arrChordType == "min" ? 1 : 0));	
@@ -4794,27 +4813,26 @@ function doChord() {
   {
 	if (pad.buttons[START]) {	// start + button activates pad mode
 	
-		if (pad.buttons[YELLOW] && pad.buttons[BLUE]) { // mute internal guitar
-			padsMode = 0;
-			seqIndex = 0;
-			orinayo_pad.innerHTML = "None"; 
-			
+		if (pad.buttons[YELLOW] && pad.buttons[BLUE]) { // Guitar position C3
+ 			document.getElementById("guitarPosition").selectedIndex = 2;			
 		}
 		else 
 			
-		if (pad.buttons[GREEN] && pad.buttons[RED]) { // TODO
-			
+		if (pad.buttons[GREEN] && pad.buttons[RED]) { // Guitar position C4
+			document.getElementById("guitarPosition").selectedIndex = 0;
 		}
 		
 		else 
 			
-		if (pad.buttons[RED] && pad.buttons[YELLOW]) { // TODO
-			
+		if (pad.buttons[RED] && pad.buttons[YELLOW]) { // Guitar postion C5
+			document.getElementById("guitarPosition").selectedIndex = 1;			
 		}
 		else 
 			
-		if (pad.buttons[BLUE] && pad.buttons[ORANGE]) { // TODO
-			
+		if (pad.buttons[BLUE] && pad.buttons[ORANGE]) { // mute internal guitar
+			padsMode = 0;
+			seqIndex = 0;
+			orinayo_pad.innerHTML = "None";			
 		} 
 		else {		
 			if (pad.buttons[GREEN]) padsMode = 1;	// full chord up/down
@@ -6069,7 +6087,7 @@ function scheduleSongNote() {
 					resetGuitarHero();
 				}				
 				playChord(chord, event.chordRoot,  event.chordType, event.chordBass);
-				updateCanvas();				
+				//updateCanvas();				
 			}
 		}
 		else
