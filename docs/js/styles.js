@@ -165,6 +165,7 @@ var chord_loops = [
 	"assets/chords/funk_120_12000.chord",
 	"assets/chords/funk_130_14769.chord",
 	"assets/chords/funky-dance_124_15484.chord",
+	"assets/chords/funky-beat_95_10105_10105_4.chord",
 	"assets/chords/funky-groove_108_8889_8889_2.chord",
 	"assets/chords/funky-house_110_8727_8727_4.chord",
 	"assets/chords/funky-pop_110_8727_8727_4.chord",	
@@ -257,6 +258,7 @@ var drum_loops = [
 	"assets/drums/funk1_113_12743_16991_2124_2124_6372.drum",
 	"assets/drums/funk2_113_2124_8496_2124_2124_2124.drum",
 	"assets/drums/funky-band_94_10212_20426_2553_2553_10212.drum",
+	"assets/drums/funky-beat_95_2526_10105_2526_2526_10105.drum",
 	"assets/drums/funky-groove_108_2222_8888_2222_2222_8888.drum",
 	"assets/drums/funky-dance_124_1935_15484_1935_1935_7200.drum",
 	"assets/drums/funky-house_110_2182_8727_2182_2182_4364.drum",
@@ -303,4 +305,8 @@ var drum_loops = [
 	"assets/drums/u2-guitar_105_27429_18286_2286_2286_11429.drum",
 	"assets/drums/village-pop_107_2243_8972_2243_2243_4486.drum",
 	"assets/drums/wonderfull_94_2553_10213_2553_2553_5106.drum"
+]
+
+var bass_loops = [
+	"assets/bass/funky-beat_95_10105.bass"
 ]
