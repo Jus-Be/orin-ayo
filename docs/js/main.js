@@ -4035,46 +4035,10 @@ function checkForTouchArea() {
 	}			
 }
 
-function playPadSynthNote(note, channel, velocity) {
-	const eventTypeByte = 0x90 | channel;
-	const evt = {data: "midi," + eventTypeByte + "," + note + "," + velocity}
-	arrSynth.onmessage(evt);	
-}
-
 function stopPadSynthNote(note, channel, velocity) {
 	const eventTypeByte = 0x80 | channel;
 	const evt = {data: "midi," + eventTypeByte + "," + note + "," + velocity}
 	arrSynth.onmessage(evt);	
-}
-
-function playPads(chords, channel, opts) {
-	console.debug("playPads", chords, channel, opts);
-	
-	if (!styleStarted || realGuitarStyle != "none") 
-	{	
-		if (!padsInitialised) {
-			padsInitialised = true;
-			sendProgramChange({programNumber: 89, channel: channel - 1});
-		}
-		
-		if (arrSynth?.onmessage && padsDevice?.name == "soundfont") 
-		{
-			if (chords instanceof Array) 
-			{
-				for (note of chords) {
-					playPadSynthNote(note, channel - 1, opts.velocity * 127);
-				}
-				
-			} else {
-				playPadSynthNote(chords, channel - 1, opts.velocity * 127);
-			}			
-		} 
-		else 
-		
-		if (padsDevice?.stopNote) {
-			padsDevice.playNote(chords, channel, opts);			
-		}
-	}
 }
 
 function stopPads() {
@@ -4140,12 +4104,49 @@ function getPitches(seq) {
 	return p;
 }
 
+function playPadSynthNote(note, channel, velocity) {
+	const eventTypeByte = 0x90 | channel;
+	const evt = {data: "midi," + eventTypeByte + "," + note + "," + velocity}
+	arrSynth.onmessage(evt);	
+}
+
+function playPads(chords, channel, opts) {
+	console.debug("playPads", chords, channel, opts);
+	
+	if (!styleStarted || realGuitarStyle != "none") 
+	{	
+		if (!padsInitialised) {
+			padsInitialised = true;
+			sendProgramChange({programNumber: 89, channel: channel - 1});
+		}
+		
+		if (arrSynth?.onmessage && padsDevice?.name == "soundfont") 
+		{
+			if (chords instanceof Array) 
+			{
+				for (note of chords) {
+					playPadSynthNote(note, channel - 1, opts.velocity * 127);
+				}
+				
+			} else {
+				playPadSynthNote(chords, channel - 1, opts.velocity * 127);
+			}			
+		} 
+		else 
+		
+		if (padsDevice?.stopNote) {
+			padsDevice.playNote(chords, channel, opts);			
+		}
+	}
+}
+
 function playChord(chord, root, type, bass) {	
 	console.debug("playChord", chord, root, type, bass);
-	
+
+	const guitarPosition = document.getElementById("guitarPosition").selectedIndex;	
 	const guitarDuration = 240 / tempo; 
 	const bassNote = (chord.length == 4 ? chord[0] : chord[0] - 12);
-	const rootNote = (chord.length == 4 ? chord[0] + 12 : chord[0]);			
+	const rootNote = (chord.length == 4 ? chord[0] + 12 : chord[0]) + (guitarPosition * 12);			
 	const thirdNote = (chord.length == 4 ? chord[2] : chord[1]);	
 	const fifthNote = (chord.length == 4 ? chord[3] : chord[2]);
 	
