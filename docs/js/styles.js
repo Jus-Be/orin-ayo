@@ -308,8 +308,10 @@ var drum_loops = [
 ]
 
 var bass_loops = [
+	"assets/bass/country-beat_124_15484.bass",
 	"assets/bass/funky-beat_95_10105.bass",
 	"assets/bass/funky-groove_108_8889_4.bass",
 	"assets/bass/mystic-acoustic_75_12800.bass",
+	"assets/bass/pop_100_19200.bass",
 	"assets/bass/rock_120_8000.bass"
 ]
