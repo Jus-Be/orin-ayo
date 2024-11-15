@@ -86,7 +86,7 @@ export const chorusPedal = function(input, index) {
     }
   });
 
-  $pedalboard.appendChild(pedal);
+  document.querySelector('#chorusPanel').appendChild(pedal);
 
   return output;
 };

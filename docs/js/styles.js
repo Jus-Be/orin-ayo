@@ -308,10 +308,22 @@ var drum_loops = [
 ]
 
 var bass_loops = [
+	"assets/bass/acoustic-guitar_75_25600.bass",
+	"assets/bass/bluey_88_21818.bass",	
+	"assets/bass/country_073_26300.bass",	
 	"assets/bass/country-beat_124_15484.bass",
+	"assets/bass/country-rock_180_10667.bass",
+	"assets/bass/dream_85_22588.bass",
+	"assets/bass/funk_130_14769.bass",
 	"assets/bass/funky-beat_95_10105.bass",
 	"assets/bass/funky-groove_108_8889_4.bass",
+	"assets/bass/gospel-funk_90_21333.bass",
+	"assets/bass/jazzy-funk_110_17455.bass",
 	"assets/bass/mystic-acoustic_75_12800.bass",
-	"assets/bass/pop_100_19200.bass",
-	"assets/bass/rock_120_8000.bass"
+	"assets/bass/pop_90_10667.bass",
+	"assets/bass/pop_100_19200_2.bass",
+	"assets/bass/rock_120_8000.bass",
+	"assets/bass/rock-ballad_80_24000.bass",
+	"assets/bass/soul-band_90_21333.bass",
+	"assets/bass/u2-guitar_105_18286.bass"	
 ]

@@ -67,7 +67,7 @@ export const reverbPedal = function(input, index) {
     value: defaults.tone
   });
 
-  $pedalboard.appendChild(pedal);
+  document.querySelector('#reverbPanel').appendChild(pedal);
 
   return output;
 };

@@ -78,7 +78,7 @@ export const wahPedal = function(input, index) {
     value: defaults.boost
   });
 
-  $pedalboard.appendChild(pedal);
+  document.querySelector('#wahPanel').appendChild(pedal);
 
   return output;
 };

@@ -285,7 +285,7 @@ function messageHandler(evt) {
 }
 
 function handleLiberLive(selected) {
-	const liberlive = document.querySelector(".liber_live");
+	const liberlive = document.querySelector("#liber_live");
 	liberlive.style.display = selected ? "" : "none";	
 	let device;
 	
@@ -301,7 +301,7 @@ function handleLiberLive(selected) {
 }
 
 function handleRecordSong(selected) {
-	const recordSong = document.querySelector(".record_song");
+	const recordSong = document.querySelector("#record_song");
 	recordSong.style.display = selected ? "" : "none";
 	
 	recordSong.addEventListener("click", async (evt) => {
@@ -945,16 +945,16 @@ function onChordaConnect() {
 		// Set up event listener for when characteristic value changes.
 		characteristic.addEventListener('characteristicvaluechanged',	handleChordaMidiMessage);
 		console.debug('Bluetooth MIDI Notifications have been started.')
-		document.querySelector(".chorda_bluetooth").innerHTML = "BT ON";
+		document.querySelector("#chorda_bluetooth").innerHTML = "BT ON";
 	})
 	.catch(error => { 
 		console.error('ERRORCODE: ' + error); 
-		document.querySelector(".chorda_bluetooth").innerHTML = "BT Error";		
+		document.querySelector("#chorda_bluetooth").innerHTML = "BT Error";		
 	});	
 }
 
 function onChordaDisconnected(event) {
-	document.querySelector(".chorda_bluetooth").innerHTML = "BT OFF";	
+	document.querySelector("#chorda_bluetooth").innerHTML = "BT OFF";	
 	if (!bluetoothDevice || !bluetoothDevice.gatt.connected) return;
 	bluetoothDevice.gatt.disconnect();
 	let device = event.target;
@@ -992,9 +992,9 @@ function onloadHandler() {
 	if (!!chrome.runtime?.getManifest) version = chrome.runtime.getManifest().version;
 	document.title = "Orin Ayo | " + version;
   
-	playButton = document.querySelector(".play");
-	gamePadModeButton = document.querySelector(".gamepad_mode");
-	styleType = document.querySelector(".style_type");
+	playButton = document.querySelector("#play");
+	gamePadModeButton = document.querySelector("#gamepad_mode");
+	styleType = document.querySelector("#style_type");
 	tempoCanvas = orinayo = document.querySelector('#tempoCanvas');	
 	orinayo = document.querySelector('#orinayo');
 	orinayo_section = document.querySelector('#orinayo-section');
@@ -1069,7 +1069,7 @@ function onloadHandler() {
 		handleFileContent(event);
 	});	
 
-	const deleteStyle = document.querySelector(".delete_style");
+	const deleteStyle = document.querySelector("#delete_style");
 	
 	deleteStyle.addEventListener('click', function(event) {
 		if (arrSequence?.name) {
@@ -1085,7 +1085,7 @@ function onloadHandler() {
 	const chordpro = document.querySelector("#chordpro");
 	const settings = document.querySelector("#settings");	
 	
-	const pedalBoard = document.querySelector(".pedal_board");
+	const pedalBoard = document.querySelector("#pedal_board");
 	
 	pedalBoard.addEventListener('click', function(event) {		
 		board.style.display = "none";
@@ -1103,7 +1103,7 @@ function onloadHandler() {
 		}
 	});	
 	
-	const chordPro = document.querySelector(".chord_pro");
+	const chordPro = document.querySelector("#chord_pro");
 	
 	chordPro.addEventListener('click', function(event) {
 		board.style.display = "none";
@@ -1120,7 +1120,7 @@ function onloadHandler() {
 		}
 	});	
 	
-	const showLyrics = document.querySelector(".show_lyrics");
+	const showLyrics = document.querySelector("#show_lyrics");
 	const lyricsContext = lyricsCanvas.getContext('2d');
 	lyricsContext.fillStyle = "#000000";	
     lyricsContext.fillRect(0, 0, lyricsCanvas.width, lyricsCanvas.height);	
@@ -1143,13 +1143,13 @@ function onloadHandler() {
 	});		
 	
 	
-	const chordaBluetooth = document.querySelector(".chorda_bluetooth");
+	const chordaBluetooth = document.querySelector("#chorda_bluetooth");
 	
 	chordaBluetooth.addEventListener('click', function(event) {
 		onChordaConnect(event);
 	});		
 
-	const saveReg = document.querySelector(".save_reg")
+	const saveReg = document.querySelector("#save_reg")
 		
 	saveReg.addEventListener('click', function(event) {
 		const slot = prompt("Enter save slot number");
@@ -1159,14 +1159,14 @@ function onloadHandler() {
 		}
 	});
 	
-	resetApp = document.querySelector(".reset_app")
+	resetApp = document.querySelector("#reset_app")
 		
 	resetApp.addEventListener('click', function(event) {
 		registration = 0;
 		location.reload();
 	});	
 	
-	loadFile = document.querySelector(".load_file")
+	loadFile = document.querySelector("#load_file")
 		
 	loadFile.addEventListener('click', function(event) {
 		upload.click();	
@@ -2702,7 +2702,7 @@ async function setupUI(config,err) {
 
 		midiGuitar = window["_tone_" + guitarName];				
 		player.loader.decodeAfterLoading(guitarContext, '_tone_' + guitarName);
-		padsMode = config.padsMode || 2;
+		padsMode = config.padsMode || 3;
 		orinayo_pad.innerHTML = "Pad " + padsMode;			
 	}	
 	
@@ -3245,7 +3245,7 @@ async function setupUI(config,err) {
 		window.tempConfig = config; // store config for later access
 		arrSynth = {name: config.sf2Name};	
 		getArrSequence(config.arrName, arrSequenceLoaded);	
-		document.querySelector(".delete_style").style.display = "";		
+		document.querySelector("#delete_style").style.display = "";		
 	}
 	else {
 
@@ -4146,7 +4146,8 @@ function playChord(chord, root, type, bass) {
 	const guitarPosition = document.getElementById("guitarPosition").selectedIndex;	
 	const guitarDuration = 240 / tempo; 
 	const bassNote = (chord.length == 4 ? chord[0] : chord[0] - 12);
-	const rootNote = (chord.length == 4 ? chord[0] + 12 : chord[0]) + (guitarPosition * 12);			
+	const rootNote = (chord.length == 4 ? chord[0] : chord[0] - 12) + (guitarPosition * 12);	
+	const firstNote = (chord.length == 4 ? chord[1] : chord[0]);	
 	const thirdNote = (chord.length == 4 ? chord[2] : chord[1]);	
 	const fifthNote = (chord.length == 4 ? chord[3] : chord[2]);
 	
@@ -4156,7 +4157,7 @@ function playChord(chord, root, type, bass) {
 	if (!activeChord) {
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
-		const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
+		const bassKey = "key" + (firstNote % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 
 		if (guitarName != "none" && !guitarDeviceId) 
 		{	

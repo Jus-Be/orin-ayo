@@ -75,7 +75,7 @@ export const tremoloPedal = function(input, index) {
     ]
   });
 
-  $pedalboard.appendChild(pedal);
+  document.querySelector('#tremoloPanel').appendChild(pedal);
 
   return output;
 };

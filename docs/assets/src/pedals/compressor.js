@@ -78,7 +78,7 @@ export const compressorPedal = function(input, index) {
     onInput: updatePot(compressor.release)
   });
 
-  $pedalboard.appendChild(pedal);
+  document.querySelector('#compressorPanel').appendChild(pedal);
 
   return output;
 };

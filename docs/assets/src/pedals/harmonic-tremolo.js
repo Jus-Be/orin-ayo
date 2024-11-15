@@ -96,7 +96,7 @@ export const harmonicTremoloPedal = function(input, index) {
     }
   })
 
-  $pedalboard.appendChild(pedal);
+  document.querySelector('#htPanel').appendChild(pedal);
 
   return output;
 };

@@ -82,18 +82,52 @@ window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, use
     })
     .catch(e => onError('Failed to load reverb impulse'));
 	
-  $pedalboard.innerHTML = "";
+  $pedalboard.innerHTML = `
+	<fluent-tabs activeid="wahwah">
+		<fluent-tab id="wahwah">Wah Wah</fluent-tab>
+		<fluent-tab id="compressor">Compressor</fluent-tab>
+		<fluent-tab id="overdrive">Overdrive</fluent-tab>
+		<fluent-tab id="boost">Boost</fluent-tab>
+		<fluent-tab id="harmonic_tremolo">Harmonic Tremolo</fluent-tab>
+		<fluent-tab id="chorus">Chorus</fluent-tab>
+		<fluent-tab id="delay">Delay</fluent-tab>
+		<fluent-tab id="multi_head_delay">Multi Head Delay</fluent-tab>
+		<fluent-tab id="tremolo">Tremolo</fluent-tab>
+		<fluent-tab id="reverb">Reverb</fluent-tab>		
+
+		<fluent-tab-panel id="wahPanel">
+		</fluent-tab-panel>
+		<fluent-tab-panel id="compressorPanel">
+		</fluent-tab-panel>
+		<fluent-tab-panel id="overdrivePanel">
+		</fluent-tab-panel>
+		<fluent-tab-panel id="boostPanel">
+		</fluent-tab-panel>
+		<fluent-tab-panel id="htPanel">
+		</fluent-tab-panel>
+		<fluent-tab-panel id="chorusPanel">
+		</fluent-tab-panel>  
+		<fluent-tab-panel id="delayPanel">
+		</fluent-tab-panel>
+		<fluent-tab-panel id="mhdPanel">
+		</fluent-tab-panel>
+		<fluent-tab-panel id="tremoloPanel">
+		</fluent-tab-panel>
+		<fluent-tab-panel id="reverbPanel">
+		</fluent-tab-panel>		
+   </fluent-tabs>		
+  `;
   
   const pedals = [
-    //wahPedal,
+    wahPedal,
     compressorPedal,
-    //overdrivePedal,
-    //boostPedal,
-    //harmonicTremoloPedal,
+    overdrivePedal,
+    boostPedal,
+    harmonicTremoloPedal,
     chorusPedal,
     delayPedal,
-    //multiHeadDelay,
-    //tremoloPedal,
+    multiHeadDelay,
+    tremoloPedal,
     reverbPedal
   ]; 
     

@@ -19,19 +19,19 @@
 		<td><h2 id="statusMsg"></h2></td>
 		<td>
 			<div><center>
-				<a title='Toggle play/stop' class="play">On</a>
-				<a title='Style type' class="style_type">Normal</a>
-				<a title='Guitar playing style' class="gamepad_mode">Color Tabs</a>
-				<a title='Load external file (drum, chord, bass, midi, sty, etc)' class="load_file">Load</a>
-				<a title='Pair/Unpair LiberLive Guitar' style="display: none;" class="liber_live">LiberLive C1</a>					
-				<a style="display: none;" class="chorda_bluetooth">BT OFF</a>	
-				<a style="display: none;" class="delete_style">Delete Style</a>				
-				<a title='Toggle Pedalboard Display' class="pedal_board">Pedal Board</a>			
-				<a title='Edit Extended ChordPro song' class="chord_pro">ChordPro</a>
-				<a title='Display song lyrics' class="show_lyrics">Lyrics</a>				
-				<a title='Save all settings as a registration (1-7)' class="save_reg">Save</a>
-				<a title='Record performance as video or audio file' style="display: none;" class="record_song">Record</a>				
-				<a title='Refresh application for new settings to take effect' class="reset_app">Refresh</a>			
+				<fluent-button appearance="accent" title='Toggle play/stop' id="play">On</fluent-button>
+				<fluent-button appearance="accent" title='Style type' id="style_type">Normal</fluent-button>
+				<fluent-button appearance="accent" title='Guitar playing style' id="gamepad_mode">Color Tabs</fluent-button>
+				<fluent-button appearance="accent" title='Load external file (drum, chord, bass, midi, sty, etc)' id="load_file">Load</fluent-button>
+				<fluent-button appearance="accent" title='Pair/Unpair LiberLive Guitar' style="display: none;" id="liber_live">LiberLive C1</fluent-button>					
+				<fluent-button appearance="accent" style="display: none;" id="chorda_bluetooth">BT OFF</fluent-button>	
+				<fluent-button appearance="accent" style="display: none;" id="delete_style">Delete Style</fluent-button>				
+				<fluent-button appearance="accent" title='Toggle Pedalboard Display' id="pedal_board">Pedal Board</fluent-button>			
+				<fluent-button appearance="accent" title='Edit Extended ChordPro song' id="chord_pro">ChordPro</fluent-button>
+				<fluent-button appearance="accent" title='Display song lyrics' id="show_lyrics">Lyrics</fluent-button>				
+				<fluent-button appearance="accent" title='Save all settings as a registration (1-7)' id="save_reg">Save</fluent-button>
+				<fluent-button appearance="accent" title='Record performance as video or audio file' style="display: none;" id="record_song">Record</fluent-button>				
+				<fluent-button appearance="accent" title='Refresh application for new settings to take effect' id="reset_app">Refresh</fluent-button>			
 			</center><div>	
 			<div id="sequencer2" style="margin:10px">
 			    <span style="font-size: 14px;margin-left:2px" id="sequencer">Tempo:<span id="showTempo">100</span></span>	
@@ -49,7 +49,9 @@
 	</table>
 
     <canvas style="margin: 0; display: none;" id="lyrics"></canvas>	
-	<div style="display: none;" class="pedalboard"></div>	
+	<div style="display: none;" class="pedalboard">
+	</fluent-tabs>		
+	</div>	
 	<iframe src="https://jus-be.github.io/chordpro-pdf-online/" style="display: none;" id="chordpro"></iframe>	
 	
 	<table id="settings" width="90%">	
@@ -58,8 +60,9 @@
 	    <td><select  title='Strum type for Pad 4'id="guitarStrum2" type="text" class="form-control input"></select></td>
 	    <td><select title='Strum type for Pad 5' id="guitarStrum3" type="text" class="form-control input"></select></td>
 	    <td><select title='Neck Position' id="guitarPosition" type="text" class="form-control input"><option value=1>I</option><option selected value=2>II</option><option value=3>III</option></select></td>		
+	    <td><select title='Guitar Effects Preset' id="effectsPreset" type="text" class="form-control input"><option selected value='default'>Default</option></select></td>				
 	</tr>	
-	<tr><td><b>Arranger Type</b></td><td><select id="arrangerType" type="text" class="form-control input"></select></td><td valign="top" rowspan="13" colspan="4"><div id="synth"></div></td></tr>	
+	<tr><td><b>Arranger Type</b></td><td><select id="arrangerType" type="text" class="form-control input"></select></td><td valign="top" rowspan="13" colspan="5"><div id="synth"></div></td></tr>	
 	<tr><td><b>Arranger Group</b></td><td><select id="arrangerGroup" type="text" class="form-control input"></select></td><td></td></tr>	
 	<tr><td><b>Arranger Style</b></td><td><select id="arrangerStyle" type="text" class="form-control input"></select></td><td></td></tr>	
 	<tr><td><b>Sound Font File</b></td><td><select id="arrangerSf2" type="text" class="form-control input"></select></td><td></td></tr>	

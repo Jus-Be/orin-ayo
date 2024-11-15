@@ -70,7 +70,7 @@ export const overdrivePedal = function(input, index) {
     onInput: updatePot(volume.gain)
   });
 
-  $pedalboard.appendChild(pedal);
+  document.querySelector('#overdrivePanel').appendChild(pedal);
 
   return output;
 };

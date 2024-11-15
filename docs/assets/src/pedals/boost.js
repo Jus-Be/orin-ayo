@@ -38,7 +38,7 @@ export const boostPedal = function(input, index) {
     value: defaults.gain
   });
 
-  $pedalboard.appendChild(pedal);
+  document.querySelector('#boostPanel').appendChild(pedal);
 
   return output;
 };

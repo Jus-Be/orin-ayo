@@ -83,7 +83,7 @@ export const delayPedal = function(input, index) {
     value: defaults.tone
   });
 
-  $pedalboard.appendChild(pedal);
+  document.querySelector('#delayPanel').appendChild(pedal);
 
   return output;
 };

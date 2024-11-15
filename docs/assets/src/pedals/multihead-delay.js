@@ -219,7 +219,7 @@ export const multiHeadDelay = function(input, index) {
   createDelayHead(fxSend, fxReturn, 0.5, 0.97561, 0.1);
   createDelayHead(fxSend, fxReturn, -0.5, 0.4878, 0.1);
 
-  $pedalboard.appendChild(pedal);
+  document.querySelector('#mhdPanel').appendChild(pedal);
 
   return output;
 };
