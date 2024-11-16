@@ -1357,7 +1357,7 @@ function setTempo(tmpo) {
 	tempo = tmpo;
 	document.querySelector("#tempo").value = tempo; 
 	document.getElementById('showTempo').innerText = tempo;
-	if (delay) delay.delayTime.value = 60 / tmpo;
+	if (window.delay) delay.delayTime.value = 60 / tmpo;
 	
 	if (writeCharacteristic) {	// liberlive sync
 		setLiberLiveDeviceSettings() 
@@ -6481,8 +6481,6 @@ function setupRealInstruments() {
 	
 	console.debug("setupRealInstruments", realInstrument);
 	playButton.innerText = "Wait..";
-		
-	if (!registration && realInstrument.bpm) setTempo(realInstrument.bpm);
 
 	if (realInstrument.drum && realInstrument.drum.length == 7) {	
 		realInstrument.drums = {};
@@ -6677,6 +6675,8 @@ function setupRealInstruments() {
 		chordLoop.addUri(realInstrument.chords, realdrumDevice, realInstrument.bpm);
 		wait+=1000;		
 	}
+	
+	if (!registration && realInstrument.bpm) setTempo(realInstrument.bpm);	
 	
 	setTimeout(() => playButton.innerText = "Play", wait);	
 }

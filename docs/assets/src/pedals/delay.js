@@ -4,7 +4,7 @@ export const delayPedal = function(input, index) {
   // Default settings
   const defaults = {
     tone: 3200,
-    speed: 0.45,
+    speed: 	60 / tempo,
     mix: 0.3,
     feedback: 0.4,
     active: true,
