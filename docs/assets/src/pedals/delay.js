@@ -14,7 +14,7 @@ export const delayPedal = function(input, index) {
   // Create audio nodes
   const delayGain = ctx.createGain();
   const feedback = ctx.createGain();
-  const delay = ctx.createDelay(defaults.maxDelay);
+  window.delay = ctx.createDelay(defaults.maxDelay);
   const filter = ctx.createBiquadFilter();
 
   const [fxSend, fxReturn, output, toggle] = createInputSwitchWithTails(
@@ -23,7 +23,7 @@ export const delayPedal = function(input, index) {
   );
 
   // Set default values
-  delay.delayTime.value = defaults.speed;
+  delay.delayTime.value = defaults.speed;  
   feedback.gain.value = defaults.feedback;
   delayGain.gain.value = defaults.mix;
   filter.frequency.value = defaults.tone;
@@ -83,7 +83,7 @@ export const delayPedal = function(input, index) {
     value: defaults.tone
   });
 
-  document.querySelector('#delayPanel').appendChild(pedal);
+  document.querySelector('#chorusDelayReverbPanel').appendChild(pedal);
 
   return output;
 };

@@ -1,5 +1,5 @@
 /* Pedals */
-.pedalboard {
+.pedalboard, fluent-tab-panel {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;

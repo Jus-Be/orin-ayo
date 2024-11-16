@@ -86,7 +86,7 @@ export const chorusPedal = function(input, index) {
     }
   });
 
-  document.querySelector('#chorusPanel').appendChild(pedal);
+  document.querySelector('#chorusDelayReverbPanel').appendChild(pedal);
 
   return output;
 };

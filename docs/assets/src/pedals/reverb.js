@@ -67,7 +67,7 @@ export const reverbPedal = function(input, index) {
     value: defaults.tone
   });
 
-  document.querySelector('#reverbPanel').appendChild(pedal);
+  document.querySelector('#chorusDelayReverbPanel').appendChild(pedal);
 
   return output;
 };

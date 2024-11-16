@@ -1357,6 +1357,7 @@ function setTempo(tmpo) {
 	tempo = tmpo;
 	document.querySelector("#tempo").value = tempo; 
 	document.getElementById('showTempo').innerText = tempo;
+	if (delay) delay.delayTime.value = 60 / tmpo;
 	
 	if (writeCharacteristic) {	// liberlive sync
 		setLiberLiveDeviceSettings() 
