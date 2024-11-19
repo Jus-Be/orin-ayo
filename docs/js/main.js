@@ -1438,7 +1438,7 @@ function drawLogo() {
 	
 	const canvas = new OffscreenCanvas(streamDeck.LCD_ENCODER_SIZE.width * 4, streamDeck.LCD_ENCODER_SIZE.height);	
 	const background = "#ffffff";
-	const url = "/assets/login_logo.png";
+	const url = "./assets/login_logo.png";
 	const context = canvas.getContext('2d', { willReadFrequently: true });
 	const img = new Image;
 
