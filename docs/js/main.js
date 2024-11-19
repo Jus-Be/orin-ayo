@@ -1328,7 +1328,7 @@ async function openDevice() {
 		} else {		
 			if (encoder == 0) {		
 				const guitar_vol = document.querySelector("#volume");
-				const oldVol = guitar_vol.value;
+				const oldVol = parseInt(guitar_vol.value);
 				guitar_vol.value = oldVol -  amount;
 				console.debug("main vol down", oldVol, guitar_vol.value);				
 			}
@@ -1336,7 +1336,7 @@ async function openDevice() {
 				
 			if (encoder == 1) {		
 				const drum_vol = document.querySelector("#audio-vol-16");
-				const oldVol = drum_vol.value;
+				const oldVol = parseInt(drum_vol.value);
 				drum_vol.value = oldVol -  amount;
 				console.debug("drum vol down", oldVol, drum_vol.value);	
 				drumVol = drum_vol.value;				
@@ -1345,7 +1345,7 @@ async function openDevice() {
 
 			if (encoder == 2) {		
 				const bass_vol = document.querySelector("#audio-vol-17");
-				const oldVol = bass_vol.value;
+				const oldVol = parseInt(bass_vol.value);
 				bass_vol.value = oldVol -  amount;
 				console.debug("bass vol down", oldVol, bass_vol.value);		
 				bassVol = bass_vol.value;				
@@ -1354,7 +1354,7 @@ async function openDevice() {
 
 			if (encoder == 3) {		
 				const chord_vol = document.querySelector("#audio-vol-18");
-				const oldVol = chord_vol.value;
+				const oldVol = parseInt(chord_vol.value);
 				chord_vol.value = oldVol -  amount;
 				console.debug("chord vol down", oldVol, chord_vol.value);	
 				chordVol = chord_vol.value;					
@@ -1369,7 +1369,7 @@ async function openDevice() {
 		} else {		
 			if (encoder == 0) {		
 				const guitar_vol = document.querySelector("#volume");
-				const oldVol = guitar_vol.value;
+				const oldVol = parseInt(guitar_vol.value);
 				guitar_vol.value = oldVol + amount;
 				console.debug("main vol up", oldVol, guitar_vol.value);				
 			}
@@ -1377,7 +1377,7 @@ async function openDevice() {
 				
 			if (encoder == 1) {		
 				const drum_vol = document.querySelector("#audio-vol-16");
-				const oldVol = drum_vol.value;
+				const oldVol = parseInt(drum_vol.value);
 				drum_vol.value = oldVol + amount;
 				console.debug("drum vol up", oldVol, drum_vol.value);
 				drumVol = drum_vol.value;
@@ -1386,7 +1386,7 @@ async function openDevice() {
 
 			if (encoder == 2) {		
 				const bass_vol = document.querySelector("#audio-vol-17");
-				const oldVol = bass_vol.value;
+				const oldVol = parseInt(bass_vol.value);
 				bass_vol.value = oldVol + amount;
 				console.debug("bass vol up", oldVol, bass_vol.value);
 				bassVol = bass_vol.value;				
@@ -1395,7 +1395,7 @@ async function openDevice() {
 
 			if (encoder == 3) {		
 				const chord_vol = document.querySelector("#audio-vol-18");
-				const oldVol = chord_vol.value;
+				const oldVol = parseInt(chord_vol.value);
 				chord_vol.value = oldVol + amount;
 				console.debug("chord vol up", oldVol, chord_vol.value);	
 				chordVol = chord_vol.value;				
