@@ -25,6 +25,8 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var streamDeckPointer = 0;
+var streamDeck = null;
 var bassVol = 95;
 var chordVol = 40;
 var drumVol = 85;
@@ -985,7 +987,7 @@ function loadMidiSynth() {
 	xhr.send();	
 }
 
-function onloadHandler() {
+async function onloadHandler() {
 	console.debug("onloadHandler");
 
 	let version = "latest";
@@ -1004,12 +1006,12 @@ function onloadHandler() {
 	statusMsg = document.querySelector('#statusMsg');
 	guitarReverb = document.querySelector("#reverb");
 	
-	document.body.addEventListener('click', function(event) 
-	{
-		if (inputDeviceType == "liberlivec1" && !textDecoder) {		
+	document.body.addEventListener('click', function(event) 	{
+			
+		if (inputDeviceType == "liberlivec1" && !textDecoder) {	
+			console.debug("first gesture click", event.target);
 			textDecoder = new TextDecoder("utf-8"); 
 			onLiberLiveClick();			
-			console.debug("first gesture click", event.target);
 		}
 	})
 	
@@ -1227,10 +1229,259 @@ function onloadHandler() {
 			handleKeyboard(name, code);	
 		}			
 	});		
+
+	document.querySelector("#stream_deck").addEventListener('click', async (event) => {	
+		const devices = await navigator.hid.requestDevice({ filters: [{vendorId: 4057}] });	
+		
+		if (devices.length > 0) {
+			navigator.hid.getDevices().then((browserDevices) => {
+				browserDevices.map(async (dev) => {
+					console.debug("found stream device", dev, streamDeck);
+					
+					if (dev.vendorId == 4057 && streamDeck) {
+						await dev.forget()
+					}					
+				});
+			});				
+		}
+	});
 	
+	getStreamDeck();
 	letsGo();
 }
 
+async function getStreamDeck() {
+	const devices = await (0, window.StreamDeckUI.getStreamDecks)();
+	
+	for (device of devices) 
+	{
+		if (device) {
+			streamDeck = device;
+			openDevice().catch(console.error);
+			break;
+		}
+	}	
+}
+
+function closeDevice() {
+	if (streamDeck) {
+		if (interval) window.clearInterval(interval)
+		console.debug('Closing streamDeck');
+		try {streamDeck.close()} catch (e) {};
+		streamDeck = null;
+	}	
+}
+
+async function openDevice() {
+    console.debug(`StreamDeck device opened. Serial: ${await streamDeck.getSerialNumber()} Firmware: ${await streamDeck.getFirmwareVersion()}`);
+	
+    streamDeck.on('down', (key) => {
+        console.debug(`Key ${key} down`);
+    });
+    streamDeck.on('up', async (key) => {
+        console.debug(`Key ${key} up`);	
+		
+		if (styleStarted) {
+			
+		} else {
+			recallRegistration(key + streamDeckPointer + 1);	
+		}		
+		
+    });
+    streamDeck.on('encoderDown', async (encoder) => {
+        console.debug(`Encoder ${encoder} down`);				
+    });
+    streamDeck.on('encoderUp', (encoder) => {
+        console.debug(`Encoder ${encoder} up`);
+
+		if (encoder == 0) {		
+			toggleStartStop();
+		}
+
+		if (styleStarted) {
+			
+		} else {
+				
+			if (encoder == 1) {		
+				const drumChecked = document.getElementById("arr-instrument-16");
+				drumChecked.checked = !drumChecked.checked;
+			}
+			else
+
+			if (encoder == 2) {		
+				const bassChecked = document.getElementById("arr-instrument-17");
+				bassChecked.checked = !bassChecked.checked;				
+			}
+			else
+
+			if (encoder == 3) {		
+				const chordChecked = document.getElementById("arr-instrument-18");
+				chordChecked.checked = !chordChecked.checked;				
+			}				
+		}
+    });
+    streamDeck.on('rotateLeft', async (encoder, amount) => {
+        console.debug(`Encoder ${encoder} left (${amount})`);
+
+		if (styleStarted) {
+			
+		} else {		
+			if (encoder == 0) {		
+				const guitar_vol = document.querySelector("#volume");
+				const oldVol = guitar_vol.value;
+				guitar_vol.value = oldVol -  amount;
+				console.debug("main vol down", oldVol, guitar_vol.value);				
+			}
+			else
+				
+			if (encoder == 1) {		
+				const drum_vol = document.querySelector("#audio-vol-16");
+				const oldVol = drum_vol.value;
+				drum_vol.value = oldVol -  amount;
+				console.debug("drum vol down", oldVol, drum_vol.value);	
+				drumVol = drum_vol.value;				
+			}
+			else
+
+			if (encoder == 2) {		
+				const bass_vol = document.querySelector("#audio-vol-17");
+				const oldVol = bass_vol.value;
+				bass_vol.value = oldVol -  amount;
+				console.debug("bass vol down", oldVol, bass_vol.value);		
+				bassVol = bass_vol.value;				
+			}
+			else
+
+			if (encoder == 3) {		
+				const chord_vol = document.querySelector("#audio-vol-18");
+				const oldVol = chord_vol.value;
+				chord_vol.value = oldVol -  amount;
+				console.debug("chord vol down", oldVol, chord_vol.value);	
+				chordVol = chord_vol.value;					
+			}
+		}
+    });
+    streamDeck.on('rotateRight', async (encoder, amount) => {
+        console.debug(`Encoder ${encoder} right (${amount})`);
+
+		if (styleStarted) {
+			
+		} else {		
+			if (encoder == 0) {		
+				const guitar_vol = document.querySelector("#volume");
+				const oldVol = guitar_vol.value;
+				guitar_vol.value = oldVol + amount;
+				console.debug("main vol up", oldVol, guitar_vol.value);				
+			}
+			else
+				
+			if (encoder == 1) {		
+				const drum_vol = document.querySelector("#audio-vol-16");
+				const oldVol = drum_vol.value;
+				drum_vol.value = oldVol + amount;
+				console.debug("drum vol up", oldVol, drum_vol.value);
+				drumVol = drum_vol.value;
+			}
+			else
+
+			if (encoder == 2) {		
+				const bass_vol = document.querySelector("#audio-vol-17");
+				const oldVol = bass_vol.value;
+				bass_vol.value = oldVol + amount;
+				console.debug("bass vol up", oldVol, bass_vol.value);
+				bassVol = bass_vol.value;				
+			}
+			else
+
+			if (encoder == 3) {		
+				const chord_vol = document.querySelector("#audio-vol-18");
+				const oldVol = chord_vol.value;
+				chord_vol.value = oldVol + amount;
+				console.debug("chord vol up", oldVol, chord_vol.value);	
+				chordVol = chord_vol.value;				
+			}
+		}
+	
+    });
+    streamDeck.on('lcdShortPress', (encoder, position) => {
+        console.debug(`LCD short press ${encoder} (${position.x},${position.y})`);
+		drawButtons(1 + ( streamDeck.NUM_KEYS * encoder));	
+    });
+    streamDeck.on('lcdLongPress', (encoder, position) => {
+        console.debug(`LCD long press ${encoder} (${position.x},${position.y})`);
+		//handleAction('lcdLongPress', encoder, true);		
+    });
+    streamDeck.on('lcdSwipe', (_fromEncoder, _toEncoder, fromPosition, toPosition) => {
+        console.debug(`LCD swipe (${fromPosition.x},${fromPosition.y}) -> (${toPosition.x},${toPosition.y})`);
+		//handleSwipe(fromPosition.x < toPosition.x);
+    });
+	
+	await streamDeck.clearPanel();	
+	drawLogo();	
+	drawButtons(1);
+}
+
+function clearLcd() {
+	const canvas = new OffscreenCanvas(streamDeck.LCD_ENCODER_SIZE.width * 4, streamDeck.LCD_ENCODER_SIZE.height);	
+	const background = "#000";
+	const context = canvas.getContext('2d', { willReadFrequently: true });
+	context.clearRect(0, 0, canvas.width, canvas.height);	
+	
+	for (let i=0; i<4; i++) {
+		const imgData = context.getImageData(i * 200, 0, streamDeck.LCD_ENCODER_SIZE.width, canvas.height);
+		streamDeck.fillEncoderLcd(i, Buffer.from(imgData.data), { format: 'rgba' });
+	}				
+}
+
+function drawLogo() {
+	if (streamDeck.PRODUCT_NAME !== 'Streamdeck +') return;
+	
+	const canvas = new OffscreenCanvas(streamDeck.LCD_ENCODER_SIZE.width * 4, streamDeck.LCD_ENCODER_SIZE.height);	
+	const background = "#ffffff";
+	const url = "/assets/login_logo.png";
+	const context = canvas.getContext('2d', { willReadFrequently: true });
+	const img = new Image;
+
+	img.onload = function() {
+		context.fillStyle = background;
+		context.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
+				
+		for (let i=0; i<4; i++) {
+			const imgData = context.getImageData(i * 200, 0, streamDeck.LCD_ENCODER_SIZE.width, canvas.height);
+			streamDeck.fillEncoderLcd(i, Buffer.from(imgData.data), { format: 'rgba' });
+		}				
+	};
+	img.src = url;
+}
+
+async function drawButtons(c) {
+	let slotFound = false;
+	const canvas = new OffscreenCanvas(streamDeck.ICON_SIZE, streamDeck.ICON_SIZE); //document.createElement('canvas');	
+	const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+	for (let i = 0; i < streamDeck.NUM_KEYS; i++) {
+		const n = c + i;
+		ctx.save();
+		ctx.clearRect(0, 0, canvas.width, canvas.height);		
+		
+		if (localStorage.getItem("orin.ayo.slot." + n)) {
+			slotFound = true;
+			// Start with a font that's 80% as high as the button. maxWidth
+			// is used on the stroke and fill calls below to scale down.
+			ctx.font = `${canvas.height * 0.8}px "Arial"`;
+			ctx.strokeStyle = 'blue';
+			ctx.lineWidth = 1;
+			ctx.strokeText(n.toString(), 8, canvas.height * 0.9, canvas.width * 0.8);
+			ctx.fillStyle = 'white';
+			ctx.fillText(n.toString(), 8, canvas.height * 0.9, canvas.width * 0.8);
+		}
+		const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
+		streamDeck.fillKeyBuffer(i, Buffer.from(id.data), { format: 'rgba' });		
+		ctx.restore();		
+	}
+	if (slotFound) 	streamDeckPointer = c - 1;
+}
+	
 async function setupMicrophone() {
 	console.debug("setupMicrophone");
 	
@@ -2623,6 +2874,7 @@ async function setupUI(config,err) {
 	strum2 = config.strum2 || strum2;
 	strum3 = config.strum3 || strum3;
 	
+	const effectsPreset =  document.getElementById("effectsPreset");
 	const guitarPosition = document.getElementById("guitarPosition");
 	guitarPosition.selectedIndex = config.strumPos
 	
@@ -2663,6 +2915,7 @@ async function setupUI(config,err) {
 		guitarStrum[2].style.display = "none";		
 		guitarStrum[3].style.display = "none";	
 		guitarPosition.style.display = "none";
+		effectsPreset.style.display = "none";
 		
 		guitarName = guitarType.value;
 		
@@ -2670,7 +2923,8 @@ async function setupUI(config,err) {
 			guitarStrum[1].style.display = "";		
 			guitarStrum[2].style.display = "";		
 			guitarStrum[3].style.display = "";	
-			guitarPosition.style.display = "";			
+			guitarPosition.style.display = "";	
+			effectsPreset.style.display = "";
 				
 			if (guitarReverb.checked) {		
 
@@ -2690,7 +2944,8 @@ async function setupUI(config,err) {
 	
 	if (guitarName == "none") {
 		for (let i=1; i<4; i++) guitarStrum[i].style.display = "none";
-		guitarPosition.style.display = "none";		
+		guitarPosition.style.display = "none";	
+		effectsPreset.style.display = "none";
 	}		
 	
 	if (guitarName != "none") 
