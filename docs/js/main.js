@@ -1239,7 +1239,8 @@ async function onloadHandler() {
 					console.debug("found stream device", dev, streamDeck);
 					
 					if (dev.vendorId == 4057 && streamDeck) {
-						await dev.forget()
+						await dev.forget();
+						streamDeck = null;
 					}					
 				});
 			});				
