@@ -1273,6 +1273,16 @@ function closeDevice() {
 	}	
 }
 
+function adjustVol(selector, amount, max, min) {
+	const vol = document.querySelector(selector);
+	const oldVol = parseInt(vol.value);
+	vol.value = oldVol +  amount;
+	if (vol.value < min) vol.value = min;
+	if (vol.value > max) vol.value = max;	
+	console.debug("adjustVol", oldVol, vol.value);		
+	return vol.value;
+}
+
 async function openDevice() {
     console.debug(`StreamDeck device opened. Serial: ${await streamDeck.getSerialNumber()} Firmware: ${await streamDeck.getFirmwareVersion()}`);
 	
@@ -1298,109 +1308,76 @@ async function openDevice() {
 		if (encoder == 0) {		
 			toggleStartStop();
 		}
-
-		if (styleStarted) {
+		else
 			
-		} else {
-				
-			if (encoder == 1) {		
-				const drumChecked = document.getElementById("arr-instrument-16");
-				drumChecked.checked = !drumChecked.checked;
-			}
-			else
-
-			if (encoder == 2) {		
-				const bassChecked = document.getElementById("arr-instrument-17");
-				bassChecked.checked = !bassChecked.checked;				
-			}
-			else
-
-			if (encoder == 3) {		
-				const chordChecked = document.getElementById("arr-instrument-18");
-				chordChecked.checked = !chordChecked.checked;				
-			}				
+		if (encoder == 1) {		
+			const drumChecked = document.getElementById("arr-instrument-16");
+			drumChecked.checked = !drumChecked.checked;
+			if (drumLoop) drumLoop.muteToggle();
 		}
+		else
+
+		if (encoder == 2) {		
+			const bassChecked = document.getElementById("arr-instrument-17");
+			bassChecked.checked = !bassChecked.checked;	
+			if (bassLoop) bassLoop.muteToggle();			
+		}
+		else
+
+		if (encoder == 3) {		
+			const chordChecked = document.getElementById("arr-instrument-18");
+			chordChecked.checked = !chordChecked.checked;	
+			if (chordLoop) chordLoop.muteToggle();			
+		}				
     });
     streamDeck.on('rotateLeft', async (encoder, amount) => {
         console.debug(`Encoder ${encoder} left (${amount})`);
-
-		if (styleStarted) {
+		
+		if (encoder == 0) {		
+			guitarVolume =  adjustVol("#volume", -amount, 100, 1) / 100;
+		}
+		else
 			
-		} else {		
-			if (encoder == 0) {		
-				const guitar_vol = document.querySelector("#volume");
-				const oldVol = parseInt(guitar_vol.value);
-				guitar_vol.value = oldVol -  amount;
-				console.debug("main vol down", oldVol, guitar_vol.value);				
-			}
-			else
-				
-			if (encoder == 1) {		
-				const drum_vol = document.querySelector("#audio-vol-16");
-				const oldVol = parseInt(drum_vol.value);
-				drum_vol.value = oldVol -  amount;
-				console.debug("drum vol down", oldVol, drum_vol.value);	
-				drumVol = drum_vol.value;				
-			}
-			else
+		if (encoder == 1) {		
+			drumVol =  adjustVol("#audio-vol-16", -amount, 100, 0.0001);
+			if (drumLoop) drumLoop.setVolume(drumVol / 100);			
+		}
+		else
 
-			if (encoder == 2) {		
-				const bass_vol = document.querySelector("#audio-vol-17");
-				const oldVol = parseInt(bass_vol.value);
-				bass_vol.value = oldVol -  amount;
-				console.debug("bass vol down", oldVol, bass_vol.value);		
-				bassVol = bass_vol.value;				
-			}
-			else
+		if (encoder == 2) {		
+			bassVol =  adjustVol("#audio-vol-17", -amount, 100, 0.0001);
+			if (bassLoop) bassLoop.setVolume(bassVol / 100);				
+		}
+		else
 
-			if (encoder == 3) {		
-				const chord_vol = document.querySelector("#audio-vol-18");
-				const oldVol = parseInt(chord_vol.value);
-				chord_vol.value = oldVol -  amount;
-				console.debug("chord vol down", oldVol, chord_vol.value);	
-				chordVol = chord_vol.value;					
-			}
+		if (encoder == 3) {		
+			chordVol =  adjustVol("#audio-vol-18", -amount, 100, 0.0001);
+			if (chordLoop) chordLoop.setVolume(chordVol / 100);				
 		}
     });
     streamDeck.on('rotateRight', async (encoder, amount) => {
         console.debug(`Encoder ${encoder} right (${amount})`);
 
-		if (styleStarted) {
-			
-		} else {		
-			if (encoder == 0) {		
-				const guitar_vol = document.querySelector("#volume");
-				const oldVol = parseInt(guitar_vol.value);
-				guitar_vol.value = oldVol + amount;
-				console.debug("main vol up", oldVol, guitar_vol.value);				
-			}
-			else
+		if (encoder == 0) {		
+			guitarVolume =  adjustVol("#volume", amount, 100, 1) / 100;		
+		}
+		else
 				
-			if (encoder == 1) {		
-				const drum_vol = document.querySelector("#audio-vol-16");
-				const oldVol = parseInt(drum_vol.value);
-				drum_vol.value = oldVol + amount;
-				console.debug("drum vol up", oldVol, drum_vol.value);
-				drumVol = drum_vol.value;
-			}
-			else
+		if (encoder == 1) {		
+			drumVol =  adjustVol("#audio-vol-16", amount, 100, 0.0001);
+			if (drumLoop) drumLoop.setVolume(drumVol / 100);				
+		}
+		else
 
-			if (encoder == 2) {		
-				const bass_vol = document.querySelector("#audio-vol-17");
-				const oldVol = parseInt(bass_vol.value);
-				bass_vol.value = oldVol + amount;
-				console.debug("bass vol up", oldVol, bass_vol.value);
-				bassVol = bass_vol.value;				
-			}
-			else
+		if (encoder == 2) {		
+			bassVol =  adjustVol("#audio-vol-17", amount, 100, 0.0001);			
+			if (bassLoop) bassLoop.setVolume(bassVol / 100);	
+		}
+		else
 
-			if (encoder == 3) {		
-				const chord_vol = document.querySelector("#audio-vol-18");
-				const oldVol = parseInt(chord_vol.value);
-				chord_vol.value = oldVol + amount;
-				console.debug("chord vol up", oldVol, chord_vol.value);	
-				chordVol = chord_vol.value;				
-			}
+		if (encoder == 3) {		
+			chordVol =  adjustVol("#audio-vol-18", amount, 100, 0.0001);				
+			if (chordLoop) chordLoop.setVolume(chordVol / 100);				
 		}
 	
     });
