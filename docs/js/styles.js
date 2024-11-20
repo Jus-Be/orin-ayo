@@ -121,18 +121,24 @@ var internal_styles = [
 	]			
 ]
 
-var chord_loops = [
-	"assets/chords/6-8_48_10000_10000_4.chord",
+var chord_loops = [	
 	"assets/chords/8beat_94_20425.chord",
 	"assets/chords/8beat_100_19200_19200_2.chord",	
 	"assets/chords/16beat_082_23414.chord",	
 	"assets/chords/acoustic_90_5333.chord",	
-	"assets/chords/acoustic-guitar_75_6400_6400_2.chord",	
+	"assets/chords/acoustic-arp-6-8_60_4000.chord",	
+	"assets/chords/acoustic-guitar_75_6400_6400_2.chord",
+	"assets/chords/acoustic-guitar_80_6000.chord",	
 	"assets/chords/acoustic-guitar_85_22588_22588_2.chord",
 	"assets/chords/acoustic-guitar_95_20211_20211_2.chord",
 	"assets/chords/acoustic-guitar_100_4800_4800_2.chord",
 	"assets/chords/acoustic-guitar_103_4660.chord",
 	"assets/chords/acoustic-guitar_120_4000_4000_2.chord",
+	"assets/chords/acoustic-strum_85_5647_5647_2.chord",
+	"assets/chords/acoustic-strum_120_4000_4000_2.chord",
+	"assets/chords/acoustic-strum_145_3310_3310_2.chord",
+	"assets/chords/acoustic-strum-6-8_48_10000_10000_4.chord",
+	"assets/chords/acoustic-strum-6-8_60_8000.chord",	
 	"assets/chords/afro-beat_96_10000_10000_4.chord",
 	"assets/chords/analog-ballad_85_11293.chord",	
 	"assets/chords/ballad_90_10667_5333.chord",
@@ -149,7 +155,6 @@ var chord_loops = [
 	"assets/chords/country_073_26301.chord",	
 	"assets/chords/country-rock_180_21333_10667.chord", 
 	"assets/chords/da-funk_110_8727.chord", 
-	"assets/chords/dance_118_32520.chord",	
 	"assets/chords/dirty-guitar_90_10667.chord",	
 	"assets/chords/disco-funk_120_8000.chord",
 	"assets/chords/dream_85_22588.chord",
@@ -215,7 +220,7 @@ var chord_loops = [
 ]
 
 var drum_loops = [
-	"assets/drums/6-8_48_2500_10000_2500_2500_5000.drum",
+	"assets/drums/acoustic-strum-6-8_48_2500_10000_2500_2500_5000.drum",
 	"assets/drums/8beat_90_2667_21333_2667_2667_8000.drum",
 	"assets/drums/8beat1_94_2553_20426_2553_2553_5106.drum",
 	"assets/drums/8beat2_94_5106_20426_2553_2553_2553.drum",

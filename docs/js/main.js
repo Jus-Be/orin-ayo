@@ -861,7 +861,7 @@ async function doLiberLiveSetup(device) {
 						}	
 						else
 	
-						if (eventData[5] == 64) {			// Mute Pad
+						if (eventData[5] == 64 && !styleStarted) {			// change pads mode only when not paying, otherwise prev variation will trigger
 							paddleMoved = true;	
 							
 							pad.buttons[START] = true;		// set PadsMode/strum style	
@@ -1313,21 +1313,21 @@ async function openDevice() {
 		if (encoder == 1) {		
 			const drumChecked = document.getElementById("arr-instrument-16");
 			drumChecked.checked = !drumChecked.checked;
-			if (drumLoop) drumLoop.muteToggle();
+			pressFootSwitch(7);
 		}
 		else
 
 		if (encoder == 2) {		
 			const bassChecked = document.getElementById("arr-instrument-17");
 			bassChecked.checked = !bassChecked.checked;	
-			if (bassLoop) bassLoop.muteToggle();			
+			pressFootSwitch(8);			
 		}
 		else
 
 		if (encoder == 3) {		
 			const chordChecked = document.getElementById("arr-instrument-18");
 			chordChecked.checked = !chordChecked.checked;	
-			if (chordLoop) chordLoop.muteToggle();			
+			pressFootSwitch(9);		
 		}				
     });
     streamDeck.on('rotateLeft', async (encoder, amount) => {
