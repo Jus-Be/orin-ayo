@@ -35,6 +35,7 @@ function AudioLooper(styleType) {
 		
 		this.source = this.audioContext.createBufferSource();		
 		this.source.buffer = this.sample;	
+		this.source.playbackRate.value = 1;
 		this.gainNode = this.audioContext.createGain();
 		this.gainNode.gain.value = 0.01;			
 			

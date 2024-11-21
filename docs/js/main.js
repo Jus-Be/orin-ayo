@@ -7005,6 +7005,7 @@ function saveRegistration(slot) {
 	registration = slot;
 	const config = saveConfig();
 	localStorage.setItem("orin.ayo.slot." + slot, JSON.stringify(config));
+	if (streamDeck) drawButtons(streamDeckPointer + 1);
 }
 
 function midiProgramChangeEvent(target) {
