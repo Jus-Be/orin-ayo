@@ -3287,10 +3287,12 @@ async function setupUI(config,err) {
 	
 
 	realBassLoop.addEventListener("change", function() {
+		if (styleStarted) return;		
 		bassLoopChanged(realBassLoop);		
 	});	
 	
 	realDrumsLoop.addEventListener("change", function() {
+		if (styleStarted) return;		
 		drumLoopChanged(realDrumsLoop);		
 	});		
 
@@ -3304,7 +3306,7 @@ async function setupUI(config,err) {
 			realInstrument.chordUrl = realChordsLoop.value;				
 			const loopData = realChordsLoop.value.replace(".chord", "");
 			realInstrument.chord = loopData.split("_");			
-			setupRealInstruments();
+			if (!styleStarted) setupRealInstruments();
 			saveConfig();	
 
 			createDrumList(config, realDrumsLoop, realChordsLoop);					
@@ -3515,7 +3517,7 @@ function bassLoopChanged(realBassLoop) {
 		const loopData = realBassLoop.value.replace(".bass", "");
 		realInstrument.bass = loopData.split("_");						
 	}
-	setupRealInstruments();		
+	if (!styleStarted) setupRealInstruments();		
 	saveConfig();		
 	console.debug("selected real drums loop", realInstrument, realBassLoop.value);		
 }
@@ -3531,7 +3533,7 @@ function drumLoopChanged(realDrumsLoop) {
 		const loopData = realDrumsLoop.value.replace(".drum", "");
 		realInstrument.drum = loopData.split("_");							
 	}
-	setupRealInstruments();		
+	if (!styleStarted) setupRealInstruments();		
 	saveConfig();	
 	console.debug("selected real drums loop", realInstrument, realDrumsLoop.value);		
 }
