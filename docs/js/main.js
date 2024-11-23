@@ -83,7 +83,7 @@ var orinayo_section = null;
 var orinayo_strum = null;
 var orinayo_pad = null;
 var orinayo_reg = null;
-var statusMsg = null;
+
 var base = BASE;
 var key = "C"
 var keyChange = 0;
@@ -581,7 +581,7 @@ async function doLiberLiveSetup(device) {
 						const eventData = new Uint8Array(buffer);					
 						
 						if (eventData.length != 14 || (eventData.length == 14 && eventData[9] != 49 && eventData[9] != 50 && eventData[10] != 49 && eventData[10] != 50)) {
-							for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);						
+							//for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);						
 						}
 						
 						if (eventData[7]) {
@@ -767,6 +767,21 @@ async function doLiberLiveSetup(device) {
 							chordSelected = true;
 						}						
 							
+							
+						if (eventData[5] == 15) {			// Paddle A+B
+							paddleMoved = true;	
+
+							if (eventData[10] < 48) { // UP
+								pad.buttons[LOGO] = true;
+							}
+							else
+								
+							if (eventData[10] > 58) { // DOWN
+								pad.buttons[LOGO] = true;
+							}							
+
+						}	
+						else							
 						
 						if (eventData[5] == 12) {			// Paddle A
 							paddleMoved = true;	
@@ -845,21 +860,6 @@ async function doLiberLiveSetup(device) {
 
 						}
 						else
-							
-						if (eventData[5] == 15) {			// Paddle A+B
-							paddleMoved = true;	
-
-							if (eventData[10] < 48) { // UP
-								pad.buttons[LOGO] = true;
-							}
-							else
-								
-							if (eventData[10] > 58) { // DOWN
-								pad.buttons[LOGO] = true;
-							}							
-
-						}	
-						else
 	
 						if (eventData[5] == 64 && !styleStarted) {			// change pads mode only when not paying, otherwise prev variation will trigger
 							paddleMoved = true;	
@@ -896,7 +896,7 @@ async function doLiberLiveSetup(device) {
 							cannotFire = true;
 							
 							if (pad.buttons[LOGO]) {
-								toggleStartStop();
+								setTimeout(toggleStartStop);
 							} else {
 								updateCanvas();	
 
@@ -1003,7 +1003,6 @@ async function onloadHandler() {
 	orinayo_strum = document.querySelector('#orinayo-strum');
 	orinayo_pad = document.querySelector('#orinayo-pad');
 	orinayo_reg = document.querySelector('#orinayo-reg');	
-	statusMsg = document.querySelector('#statusMsg');
 	guitarReverb = document.querySelector("#reverb");
 	
 	document.body.addEventListener('click', function(event) 	{
@@ -2555,8 +2554,6 @@ function normaliseSffStyle() {
 
 async function setupUI(config,err) {	
 	console.debug("setupUI", config);
-	
-	statusMsg.innerHTML = "Orin Ayo";	
 	
 	//guitarDeviceId = config.guitarDeviceId;
 	guitarVolume = config.guitarVolume ? config.guitarVolume : guitarVolume;		
