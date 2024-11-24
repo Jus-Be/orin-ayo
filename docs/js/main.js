@@ -1463,6 +1463,7 @@ async function setupMicrophone() {
 	console.debug("setupMicrophone");
 	
 	if (microphone.checked) {	
+		/*	
 		const audioCtx = new AudioContext();	
 		let audioMidiConfig = {tempo: 80,  maxTempo: 720,  resolution: 16,  channel: 2,  sampleRate: 32000};		
 		const midiCreator = new MidiCreator({audioMidiConfig});
@@ -1470,7 +1471,13 @@ async function setupMicrophone() {
 		midiCreator.onPreviewNote = (data) => {
 			//console.debug("midiCreator.onPreviewNote", data);		
 		};	
-		
+		*/
+		const basicPitch = new basic_pitch.BasicPitch("../model/model.json");		
+		const audioCtx = new AudioContext({ sampleRate: 22050 });	
+		const frames = [];
+		const onsets = [];
+		const contours = [];
+  
 		const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: false});
 		console.debug("setupMicrophone", stream);		
 			
@@ -1480,12 +1487,14 @@ async function setupMicrophone() {
 		
 		processorNode.port.onmessage = (event) => {
 			//console.debug("processorNode.port.onmessage", event.data);
+			/*
 			let pitchInfo = midiCreator.autoCorrelate(event.data.channel, audioCtx.sampleRate);
 			
 			if (pitchInfo?.pitch > -1) {	
 				//console.debug("processorNode.port.onmessage", pitchInfo);			
 				midiCreator.addNote(pitchInfo.pitch, pitchInfo.velocity);				
 			}
+			*/
 		};
   
 		inputNode.connect(processorNode).connect(audioCtx.destination);
@@ -3315,8 +3324,11 @@ async function setupUI(config,err) {
 
 	console.debug("WebMidi devices", input, midiOutput, midiRealGuitar, chordTracker);
 	
-	const audioMedia = await navigator.mediaDevices.getUserMedia({audio:true});
-	audioMedia.getTracks().forEach( (track) => track.stop());				
+	if (guitarDevice.value != "guitarDevice") {	
+		const audioMedia = await navigator.mediaDevices.getUserMedia({audio:true});
+		audioMedia.getTracks().forEach( (track) => track.stop());				
+	}
+	
 	const devices = await navigator.mediaDevices.enumerateDevices();
 	const outputs = devices.filter(({ kind }) => kind === 'audiooutput');			
 	const inputs = devices.filter(({ kind }) => kind === 'audioinput');
