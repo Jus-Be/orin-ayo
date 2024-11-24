@@ -3502,7 +3502,10 @@ async function setupUI(config,err) {
 			} else {
 				// use gmgsx.sf2 as dummy midiSynth
 				loadMidiSynth();
-				if (arranger != "webaudio") playButton.innerText = "Play";				
+				if (arranger != "webaudio") {
+					playButton.innerText = "Play";				
+					playButton.style.setProperty("--accent-fill-rest", "green");
+				}
 			}
 			
 			if (arranger == "webaudio" && realInstrument) {
@@ -5207,7 +5210,8 @@ function doChord() {
 	if (pad.buttons[YELLOW] && pad.buttons[BLUE]) {	
 		styleStarted = false;	
 		resetArrToA();
-		playButton.innerText = !styleStarted ? "Play" : "Stop";				
+		playButton.innerText = !styleStarted ? "Play" : "Stop";	
+		playButton.style.setProperty("--accent-fill-rest", !styleStarted ? "green" : "red");		
 		
 	} else {		
 		if (handledStartStop) 
@@ -5745,7 +5749,8 @@ function toggleStartStop() {
 		orinayo_section.innerHTML = SECTIONS[sectionChange];			
 	}	
 
-	playButton.innerText = !styleStarted ? "Play" : "Stop";	
+	playButton.innerText = !styleStarted ? "Play" : "Stop";
+	playButton.style.setProperty("--accent-fill-rest", !styleStarted ? "green" : "red");		
 	handledStartStop = true;
 }
 
@@ -5990,6 +5995,7 @@ function doStartStopSequencer() {
 				requestArrEnd = false;
 				styleStarted = !styleStarted;	
 				playButton.innerText = !styleStarted ? "Play" : "Stop";	
+				playButton.style.setProperty("--accent-fill-rest", !styleStarted ? "green" : "red");	
 				orinayo_section.innerHTML = currentSffVar;	
 				endAudioStyle();
 				return;
@@ -6044,7 +6050,8 @@ function doStartStopSequencer() {
 	}
 
 	styleStarted = !styleStarted;	
-	playButton.innerText = !styleStarted ? "Play" : "Stop";			
+	playButton.innerText = !styleStarted ? "Play" : "Stop";		
+	playButton.style.setProperty("--accent-fill-rest", !styleStarted ? "green" : "red");		
 }
 
 function resetCanvas (e) {
@@ -6683,6 +6690,7 @@ function setupSongSequence() {
 		console.debug("setupSongSequence", flag, songSequence);	
 		
 		playButton.innerText = "Wait..";
+		playButton.style.setProperty("--accent-fill-rest", "red");
 		const bpm = Math.floor(60 /(songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
 		if (!registration) setTempo(bpm);	
 	} 
@@ -6731,7 +6739,8 @@ function setupSongSequence() {
 		timerWorker.postMessage({"interval":lookahead});	
 	}	
 		
-	playButton.innerText = "Play";		
+	playButton.innerText = "Play";	
+	playButton.style.setProperty("--accent-fill-rest", "green");	
 }
 
 function setupRealInstruments() {
@@ -6740,6 +6749,7 @@ function setupRealInstruments() {
 	
 	console.debug("setupRealInstruments", realInstrument);
 	playButton.innerText = "Wait..";
+	playButton.style.setProperty("--accent-fill-rest", "red");	
 
 	if (realInstrument.drum && realInstrument.drum.length == 7) {	
 		realInstrument.drums = {};
@@ -6937,7 +6947,10 @@ function setupRealInstruments() {
 	
 	if (!registration && realInstrument.bpm) setTempo(realInstrument.bpm);	
 	
-	setTimeout(() => playButton.innerText = "Play", wait);	
+	setTimeout(() => {
+		playButton.innerText = "Play";
+		playButton.style.setProperty("--accent-fill-rest", "green");		
+	}, wait);	
 }
 
 function soundsLoaded() {
