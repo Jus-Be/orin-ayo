@@ -1028,8 +1028,6 @@ async function onloadHandler() {
 	microphone.addEventListener('click', function(event) {
 		if (microphone?.checked) setupMicrophone();
 	});	
-	
-	setupMicrophone();
 
 	window.addEventListener("gamepadconnected", connectHandler);
 	window.addEventListener("gamepaddisconnected", disconnectHandler);
@@ -1460,9 +1458,9 @@ async function drawButtons(c) {
 }
 	
 async function setupMicrophone() {
-	console.debug("setupMicrophone");
 	
 	if (microphone.checked) {	
+		console.debug("setupMicrophone");
 		/*	
 		const audioCtx = new AudioContext();	
 		let audioMidiConfig = {tempo: 80,  maxTempo: 720,  resolution: 16,  channel: 2,  sampleRate: 32000};		
@@ -1472,7 +1470,7 @@ async function setupMicrophone() {
 			//console.debug("midiCreator.onPreviewNote", data);		
 		};	
 		*/
-		const basicPitch = new basic_pitch.BasicPitch("../model/model.json");		
+		const basicPitch = new basic_pitch.BasicPitch("./model/model.json");		
 		const audioCtx = new AudioContext({ sampleRate: 22050 });	
 		const frames = [];
 		const onsets = [];
@@ -1485,8 +1483,8 @@ async function setupMicrophone() {
 		await audioCtx.audioWorklet.addModule('/js/audio-midi.js')
 		const processorNode = new AudioWorkletNode(audioCtx, 'audio-midi');
 		
-		processorNode.port.onmessage = (event) => {
-			//console.debug("processorNode.port.onmessage", event.data);
+		processorNode.port.onmessage = async (event) => {
+			//console.debug("processorNode.port.onmessage", event.data.channel);
 			/*
 			let pitchInfo = midiCreator.autoCorrelate(event.data.channel, audioCtx.sampleRate);
 			
@@ -1495,9 +1493,36 @@ async function setupMicrophone() {
 				midiCreator.addNote(pitchInfo.pitch, pitchInfo.velocity);				
 			}
 			*/
+			
+			/*
+			await basicPitch.evaluateModel(event.data.channel,  (frame, onset, contour) => {
+				frames.push(...frame);
+				onsets.push(...onset);
+				contours.push(...contour);
+				
+			  }, (pct) => {
+				console.debug("basicPitch - progress", pct);
+			  });
+
+			const onsetThresh = 0.5, frameThresh = 0.3, minNoteLen = 5, inferOnsets = true, maxFreq = null,  minFreq = null,  melodiaTrick = true, energyTolerance = 11;
+			const notes = basic_pitch.noteFramesToTime(basic_pitch.addPitchBendsToNoteEvents(contours, basic_pitch.outputToNotesPoly(frames, onsets, onsetThresh, frameThresh, minNoteLen, inferOnsets, maxFreq, minFreq, melodiaTrick, energyTolerance)));
+			
+			const noteEvents = notes.map((n) => ({
+			  pitch: n.pitchMidi,
+			  duration: n.durationSeconds,
+			  onset: n.startTimeSeconds,
+			  pitchBends: n.pitchBends,
+			  velocity: n.amplitude,
+			}));
+
+			// Sort the note events by onset time and pitch
+			noteEvents.sort((a, b) => a.onset - b.onset || a.pitch - b.pitch);	
+			console.debug("basicPitch - completed", noteEvents);
+			*/
 		};
   
 		inputNode.connect(processorNode).connect(audioCtx.destination);
+		console.debug("setupMicrophone - processorNode active");
 	}	
 }
 
@@ -3476,6 +3501,7 @@ async function setupUI(config,err) {
 	setupPedalBoard(guitarContext, guitarName, guitarDeviceId, guitarReverb.checked);
 	
 	microphone.checked = config.microphone;	
+	setupMicrophone();	
 	document.querySelector("#program-change").checked = config.programChange;	
 	document.querySelector("#volume").value = (config.guitarVolume || guitarVolume) * 100;
 	
