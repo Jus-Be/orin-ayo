@@ -522,14 +522,50 @@ function packString(str) {
 	return bArr;
 }
 
+function startXMPP(username, password) {
+	let url = "wss://" + location.host + "/ws/";
+	
+	if (location.origin.startsWith("chrome-extension") || location.origin.startsWith("https://jus-be.github.io/")) {
+		url = "wss://pade.chat:5443/ws/";
+	}
+	
+    const jid = username ? username + "@" + location.hostname : location.hostname;
+    console.debug("XMPPConnection JID", jid, url);	
+	
+    window.connection = new Strophe.Connection(url);	
+
+    window.connection.connect(jid, password, function (status) {
+        console.debug("XMPPConnection.connect", status);
+
+        if (status === Strophe.Status.CONNECTED)  {
+            window.connection.send($pres());
+        }
+        else
+
+        if (status === Strophe.Status.DISCONNECTED)  {
+
+        }
+    });
+
+    window.connection.addHandler(function (message) {
+        const json_ele = message.querySelector("json");
+        const json = JSON.parse(json_ele.innerHTML);
+
+        return true;
+
+    }, "urn:xmpp:json:0", 'message');
+}
+
 async function doLiberLiveSetup(device) {
 	console.debug('doLiberLiveSetup', device);
 
-	if (device) {			
+	if (device) {	
+		startXMPP(device.name, device.id); // VbvhH2d5pwVDlZmOm2p4kQ==
 		const ui = document.getElementById("lyrics");
 
 		device.addEventListener('gattserverdisconnected', (event) => {
 			console.debug('Bluetooth device ' + device.name + ' is disconnected.', event);
+			if (window.connection) window.connection.disconnect();
 		});
 		
 		const server = await device.gatt.connect();
@@ -1563,7 +1599,12 @@ async function handleChordPro(file, data) {
 	const song = chordproParser.parse(body);	// TODO - Implement server-side chord to midi
 	console.debug("handleChordPro", file.name, song);	
 	
-	const url = "https://pade.chat:5443/broadcastbox-jsp/cp2midi";
+	let url = location.origin + "/orinayo/cp2midi";
+	
+	if (location.origin.startWith("chrome-extension") || location.origin.startWith("https://jus-be.github.io/")) {
+		url = "https://pade.chat:5443/orinayo/cp2midi";
+	}
+	
 	const response = await fetch(url, {method: "POST", body});
 	const blob = await response.blob();	
 	const buffer = await blob.arrayBuffer();
