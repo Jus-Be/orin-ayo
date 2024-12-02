@@ -146,6 +146,7 @@ var chord_loops = [
 	"assets/chords/analog-ballad_85_11293.chord",	
 	"assets/chords/ballad_90_10667_5333.chord",
 	"assets/chords/ballad_102_9412_9412_2.chord",
+	"assets/chords/ballad-rock_75_12800_12800_2.chord",
 	"assets/chords/beat-arp_118_16271.chord",
 	"assets/chords/beat-arp_120_16000.chord",
 	"assets/chords/beat-arp2_120_4000.chord",	
@@ -228,6 +229,7 @@ var chord_loops = [
 	"assets/chords/u2-guitar_105_22857.chord",
 	"assets/chords/village-pop_107_8972_8972_4.chord",
 	"assets/chords/way-pop_75_12800.chord",
+	"assets/chords/wild-rock_120_8000.chord"	
 ]
 
 var drum_loops = [
@@ -248,6 +250,7 @@ var drum_loops = [
 	"assets/drums/ballad_90_5333_21333_2667_2667_8000.drum",
 	"assets/drums/ballad1_102_2353_9412_2353_2353_7059.drum",
 	"assets/drums/ballad2_102_2353_9412_2353_2353_7059.drum",
+	"assets/drums/ballad-rock_75_3200_25600_3200_3200_12800.drum",	
 	"assets/drums/beat-arp_120_2000_16000_2000_2000_4000.drum",
 	"assets/drums/beat-arp1_118_10170_16271_2034_2034_22373.drum",
 	"assets/drums/beat-arp1_120_2000_32000_2000_2000_4000.drum",
@@ -326,11 +329,13 @@ var drum_loops = [
 	"assets/drums/triple-hop_85_2824_11294_2824_2824_5647.drum",		
 	"assets/drums/u2-guitar_105_27429_18286_2286_2286_11429.drum",
 	"assets/drums/village-pop_107_2243_8972_2243_2243_4486.drum",
+	"assets/drums/wild-rock_120_2000_16000_2000_2000_8000.drum",
 	"assets/drums/wonderfull_94_2553_10213_2553_2553_5106.drum"
 ]
 
 var bass_loops = [
 	"assets/bass/acoustic-guitar_75_25600.bass",
+	"assets/bass/ballad-rock_75_12800.bass",
 	"assets/bass/bluey_88_21818.bass",	
 	"assets/bass/country_073_26300.bass",	
 	"assets/bass/country-beat_124_15484.bass",
@@ -350,5 +355,6 @@ var bass_loops = [
 	"assets/bass/rock_120_8000.bass",
 	"assets/bass/rock-ballad_80_24000.bass",
 	"assets/bass/soul-band_90_21333.bass",
-	"assets/bass/u2-guitar_105_18286.bass"	
+	"assets/bass/u2-guitar_105_18286.bass",
+	"assets/bass/wild-rock_120_8000.bass"
 ]
