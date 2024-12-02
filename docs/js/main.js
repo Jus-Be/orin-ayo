@@ -4475,7 +4475,8 @@ function playChord(chord, root, type, bass) {
 	if (!activeChord) {
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
-		const bassKey = "key" + (firstNote % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
+		//const bassKey = "key" + (firstNote % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
+		const bassKey = "key" + (bassNote % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 
 		if (guitarName != "none" && !guitarDeviceId) 
 		{	
@@ -6201,7 +6202,7 @@ function scheduleGuitarNote() {
 		}
 	} else {
 		const pattern = window[realGuitarStyle][rgIndex];
-		const beat = pattern.next();
+		const beat = pattern?.next();
 		
 		if (beat) {
 			const strumDuration = beat.duration * 60 / tempo / 4;

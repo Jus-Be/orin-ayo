@@ -3,7 +3,7 @@
 	"name": "OrinAyo",  
 	"short_name": "OrinAyo",
 	"description": "The Guitar Arranger",
-	"version": "0.9.7",
+	"version": "0.9.8",
 
 	"background": {
 		"service_worker": "./js/background.js"
