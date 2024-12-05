@@ -5044,6 +5044,8 @@ function stopChord() {
 }
 
 function playSectionCheck() {
+	//console.debug("playSectionCheck", sectionChange);
+	
 	let arrChanged = false;
 	const oldSection = sectionChange;
 				
@@ -5082,22 +5084,24 @@ function playSectionCheck() {
 	}	
 	
 	arrChanged = oldSection != sectionChange;	
-	if (realGuitarStyle == "none") changeArrSection(arrChanged);		
+	if (realGuitarStyle == "none" && styleStarted) changeArrSection(arrChanged);		
 
 	if (window[realGuitarStyle]) {
 		orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;	
 	}
-
+	
+	if (padsDevice?.playNote) padsDevice.sendControlChange(105, sectionChange, 2);		
+	
+	orinayo_section.innerHTML = SECTIONS[sectionChange];
 }
 
-function changeArrSection(changed) {
-	orinayo_section.innerHTML = SECTIONS[sectionChange];	
+function changeArrSection(changed) {	
 	
 	if (arranger == "webaudio") {
 		const autoFill = document.querySelector("#autoFill").checked;	
 				
 		if (realInstrument && drumLoop && document.getElementById("arr-instrument-16")?.checked) {
-			console.debug("playSectionCheck pressed " + changed, sectionChange);		
+			console.debug("changeArrSection pressed " + changed, sectionChange);		
 			orinayo_section.innerHTML = ">" + orinayo_section.innerHTML;	
 			
 			if (sectionChange == 0) drumLoop.update(!changed || !autoFill ? 'arra': 'fila', false);
@@ -5166,8 +5170,6 @@ function changeArrSection(changed) {
 		doModxFill();
 		console.debug("changeArrSection MODX " + sectionChange);			
 	}
-	
-	if (padsDevice?.playNote) padsDevice.sendControlChange(105, sectionChange, 2);	
 }
 
 function dokeyUp() {
@@ -5272,7 +5274,9 @@ function doChord() {
 			if (padsMode != 0) orinayo_pad.innerHTML = "Pad " + padsMode;		
 		}			
 	}
-    if (styleStarted) playSectionCheck();
+	
+	playSectionCheck();
+
   }
 
   if (pad.buttons[LOGO])
