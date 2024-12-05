@@ -5090,7 +5090,7 @@ function playSectionCheck() {
 		orinayo_strum.innerHTML = ">Strum " + (nextRgIndex + 1) + "/" + window[realGuitarStyle].length;	
 	}
 	
-	if (padsDevice?.playNote) padsDevice.sendControlChange(105, sectionChange, 2);		
+	if (padsDevice?.playNote) padsDevice.sendControlChange(105 + sectionChange, 127, 2);		
 	
 	orinayo_section.innerHTML = SECTIONS[sectionChange];
 }
