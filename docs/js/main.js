@@ -4428,14 +4428,14 @@ function playPadSynthNote(note, channel, velocity) {
 	arrSynth.onmessage(evt);	
 }
 
-function playPads(chords, channel, opts) {
-	console.debug("playPads", chords, channel, opts);
+function playPads(chords, opts) {
+	console.debug("playPads", chords, opts);
 	
 	if (!styleStarted || realGuitarStyle != "none") 
 	{	
 		if (!padsInitialised) {
 			padsInitialised = true;
-			sendProgramChange({programNumber: 89, channel: channel - 1});
+			if (padsDevice?.name == "soundfont") sendProgramChange({programNumber: 89, channel: 1});	// warm pad sound
 		}
 		
 		if (arrSynth?.onmessage && padsDevice?.name == "soundfont") 
@@ -4443,17 +4443,17 @@ function playPads(chords, channel, opts) {
 			if (chords instanceof Array) 
 			{
 				for (note of chords) {
-					playPadSynthNote(note, channel - 1, opts.velocity * 127);
+					playPadSynthNote(note, 1, opts.velocity * 127);
 				}
 				
 			} else {
-				playPadSynthNote(chords, channel - 1, opts.velocity * 127);
+				playPadSynthNote(chords, 1, opts.velocity * 127);
 			}			
 		} 
 		else 
 		
-		if (padsDevice?.stopNote) {
-			padsDevice.playNote(chords, channel, opts);			
+		if (padsDevice?.playNote) {
+			padsDevice.playNote(chords, 2, opts);			
 		}
 	}
 }
@@ -4475,7 +4475,6 @@ function playChord(chord, root, type, bass) {
 	if (!activeChord) {
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
-		//const bassKey = "key" + (firstNote % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 		const bassKey = "key" + (bassNote % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 
 		if (guitarName != "none" && !guitarDeviceId) 
@@ -4533,32 +4532,32 @@ function playChord(chord, root, type, bass) {
 				//console.debug("playChord pads", chord);
 			
 				if (padsMode == 1) {
-					if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 2, {velocity: getVelocity()});		// up root
-					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 2, {velocity: getVelocity()});   // down	root				
+					if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, {velocity: getVelocity()});		// up root
+					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, {velocity: getVelocity()});   // down	root				
 				}		
 				else
 					
 				if (padsMode == 2) {
-					if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 2, {velocity: getVelocity()});		// down chord
-					if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, 2, {velocity: getVelocity()});     // up	root				
+					if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, {velocity: getVelocity()});		// down chord
+					if (pad.axis[STRUM] == STRUM_UP) playPads(rootNote, {velocity: getVelocity()});     // up	root				
 				}	
 				else
 					
 				if (padsMode == 3) {
-					if (pad.axis[STRUM] == STRUM_UP) playPads(thirdNote, 2, {velocity: getVelocity()});	// up third
-					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 2, {velocity: getVelocity()});   // down	root				
+					if (pad.axis[STRUM] == STRUM_UP) playPads(thirdNote, {velocity: getVelocity()});	// up third
+					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, {velocity: getVelocity()});   // down	root				
 				}
 				else
 					
 				if (padsMode == 4) {
-					if (pad.axis[STRUM] == STRUM_UP) playPads(fifthNote, 2, {velocity: getVelocity()});	// up fifth
-					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, 2, {velocity: getVelocity()});   // down	root				
+					if (pad.axis[STRUM] == STRUM_UP) playPads(fifthNote, {velocity: getVelocity()});	// up fifth
+					if (pad.axis[STRUM] == STRUM_DOWN) playPads(rootNote, {velocity: getVelocity()});   // down	root				
 				}
 				else
 					
 				if (padsMode == 5) {
-					if (pad.axis[STRUM] == STRUM_UP) playPads(chord, 2, {velocity: getVelocity()});		// up chord
-					if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, 2, {velocity: getVelocity()});   	// down	chord				
+					if (pad.axis[STRUM] == STRUM_UP) playPads(chord, {velocity: getVelocity()});		// up chord
+					if (pad.axis[STRUM] == STRUM_DOWN) playPads(chord, {velocity: getVelocity()});   	// down	chord				
 				}			
 			}
 			
@@ -5167,6 +5166,8 @@ function changeArrSection(changed) {
 		doModxFill();
 		console.debug("changeArrSection MODX " + sectionChange);			
 	}
+	
+	if (padsDevice?.playNote) padsDevice.sendControlChange(105, sectionChange, 2);	
 }
 
 function dokeyUp() {
@@ -5191,6 +5192,7 @@ function dokeyChange() {
     base = BASE + keyChange;
 
     if (midiRealGuitar) midiRealGuitar.playNote(84 + keyChange, 1, {velocity: getVelocity(), duration: 1000});
+	if (padsDevice?.playNote) padsDevice.sendControlChange(104, keyChange, 2);	
 }
 
 function doChord() {
