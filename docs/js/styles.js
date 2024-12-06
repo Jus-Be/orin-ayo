@@ -276,6 +276,7 @@ var drum_loops = [
 	"assets/drums/country-8beat_073_3288_26300_3288_3288_6575.drum",		
 	"assets/drums/country-rnb_073_3288_26301_3288_3288_2450.drum",	
 	"assets/drums/da-funk_110_2182_8727_2182_2182_4364.drum",	
+	"assets/drums/latin-pop_110_2182_8727_2182_2182_4364.drum",
 	"assets/drums/contry-rock_180_2667_10667_1333_1333_9333.drum",
 	"assets/drums/cosmic-pop_105_2286_9143_2286_2286_4571.drum",
 	"assets/drums/dance_100_2400_9600_2400_2400_4800.drum",	
