@@ -808,7 +808,7 @@ var WebAudioFontPlayer = /** @class */ (function () {
         return volume;
     };
     ;
-    WebAudioFontPlayer.prototype.queueChord = function (audioContext, target, preset, when, pitches, duration, volume, slides) {
+    WebAudioFontPlayer.prototype.queueChord = function (audioContext, target, preset, when, pitches, duration, volume, slides, effects) {
         volume = this.limitVolume(volume);
         var envelopes = [];
         for (var i = 0; i < pitches.length; i++) {
@@ -816,28 +816,28 @@ var WebAudioFontPlayer = /** @class */ (function () {
             if (slides) {
                 singleSlide = slides[i];
             }
-            var envlp = this.queueWaveTable(audioContext, target, preset, when, pitches[i], duration, volume - Math.random() * 0.01, singleSlide);
+            var envlp = this.queueWaveTable(audioContext, target, preset, when, pitches[i], duration, volume - Math.random() * 0.01, singleSlide, effects);
             if (envlp)
                 envelopes.push(envlp);
         }
         return envelopes;
     };
     ;
-    WebAudioFontPlayer.prototype.queueStrumUp = function (audioContext, target, preset, when, pitches, duration, volume, slides) {
+    WebAudioFontPlayer.prototype.queueStrumUp = function (audioContext, target, preset, when, pitches, duration, volume, slides, effects) {
         pitches.sort(function (a, b) {
             return b - a;
         });
-        return this.queueStrum(audioContext, target, preset, when, pitches, duration, volume, slides);
+        return this.queueStrum(audioContext, target, preset, when, pitches, duration, volume, slides, effects);
     };
     ;
-    WebAudioFontPlayer.prototype.queueStrumDown = function (audioContext, target, preset, when, pitches, duration, volume, slides) {
+    WebAudioFontPlayer.prototype.queueStrumDown = function (audioContext, target, preset, when, pitches, duration, volume, slides, effects) {
         pitches.sort(function (a, b) {
             return a - b;
         });
-        return this.queueStrum(audioContext, target, preset, when, pitches, duration, volume, slides);
+        return this.queueStrum(audioContext, target, preset, when, pitches, duration, volume, slides, effects);
     };
     ;
-    WebAudioFontPlayer.prototype.queueStrum = function (audioContext, target, preset, when, pitches, duration, volume, slides) {
+    WebAudioFontPlayer.prototype.queueStrum = function (audioContext, target, preset, when, pitches, duration, volume, slides, effects) {
         volume = this.limitVolume(volume);
         if (when < audioContext.currentTime) {
             when = audioContext.currentTime;
@@ -848,7 +848,7 @@ var WebAudioFontPlayer = /** @class */ (function () {
             if (slides) {
                 singleSlide = slides[i];
             }
-            var envlp = this.queueWaveTable(audioContext, target, preset, when + i * 0.01, pitches[i], duration, volume - Math.random() * 0.01, singleSlide);
+            var envlp = this.queueWaveTable(audioContext, target, preset, when + i * 0.01, pitches[i], duration, volume - Math.random() * 0.01, singleSlide, effects);
             if (envlp)
                 envelopes.push(envlp);
             volume = 0.9 * volume;
@@ -856,11 +856,11 @@ var WebAudioFontPlayer = /** @class */ (function () {
         return envelopes;
     };
     ;
-    WebAudioFontPlayer.prototype.queueSnap = function (audioContext, target, preset, when, pitches, duration, volume, slides) {
+    WebAudioFontPlayer.prototype.queueSnap = function (audioContext, target, preset, when, pitches, duration, volume, slides, effects) {
         volume = this.limitVolume(volume);
         volume = 1.5 * (volume || 1.0);
         duration = 0.05;
-        return this.queueChord(audioContext, target, preset, when, pitches, duration, volume, slides);
+        return this.queueChord(audioContext, target, preset, when, pitches, duration, volume, slides, effects);
     };
     ;
     WebAudioFontPlayer.prototype.resumeContext = function (audioContext) {
@@ -890,8 +890,8 @@ var WebAudioFontPlayer = /** @class */ (function () {
 			}
 		}
 	};	
-    WebAudioFontPlayer.prototype.queueWaveTable = function (audioContext, target, preset, when, pitch, duration, volume, slides) {
-		console.debug("queueWaveTable", pitch, duration, volume, midiOutput);
+    WebAudioFontPlayer.prototype.queueWaveTable = function (audioContext, target, preset, when, pitch, duration, volume, slides, effects) {
+		console.debug("queueWaveTable", pitch, duration, volume, midiOutput, effects);
 		this.displayUI(true);
 		
 		if (midiOutput) {
@@ -949,7 +949,7 @@ var WebAudioFontPlayer = /** @class */ (function () {
                 envelope.audioBufferSourceNode.loop = false;
             }
 		
-			if (guitarReverb.checked) {
+			if (effects) {
 				window.pedalInput.source = envelope.audioBufferSourceNode;		
 				pedalInput.source.connect(pedalInput);				
 				window.pedalInput.gain.setValueAtTime(guitarVolume, audioContext.currentTime);		
