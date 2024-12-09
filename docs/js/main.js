@@ -1025,7 +1025,7 @@ function loadMidiSynth() {
 
 async function onloadHandler() {
 	console.debug("onloadHandler");
-
+	
 	let version = "latest";
 	if (!!chrome.runtime?.getManifest) version = chrome.runtime.getManifest().version;
 	document.title = "Orin Ayo | " + version;

@@ -8,8 +8,8 @@ self.addEventListener('install', function(event) {
     console.debug('activate', event);
 });
 self.addEventListener('activate', function (event) {
-    console.debug('activate', event);
-	openOrinAyoWindow();	
+    console.debug('activate', event);	
+	createOffscreen();
 });
 
 self.addEventListener('message', function (event) {
@@ -53,7 +53,7 @@ if (location.protocol == "chrome-extension:") {
 		console.debug("onStartup");	
 	});
 	
-	chrome.action.onClicked.addListener(() => {
+	chrome.action.onClicked.addListener( () => {
 		console.debug("action onClicked");	
 		openOrinAyoWindow();
 	});	
@@ -68,9 +68,10 @@ if (location.protocol == "chrome-extension:") {
 
 	chrome.windows.onRemoved.addListener((win) => {
 		//console.debug("onRemoved", win);	
-		chrome.storage.local.get('orinAyoWin', (data) => {	
+		chrome.storage.local.get('orinAyoWin', async (data) => {	
 			if (data.orinAyoWin && data.orinAyoWin == win) {	
 				chrome.storage.local.remove('orinAyoWin');	
+				createOffscreen();
 			}
 		});	
 	});
@@ -82,11 +83,26 @@ if (location.protocol == "chrome-extension:") {
 //
 // -------------------------------------------------------
 
+async function createOffscreen() {
+	try {
+		if (await chrome.offscreen.hasDocument()) return;
+
+		await chrome.offscreen.createDocument({
+			url: "index.html",
+			reasons: ["WEB_RTC"],
+			justification: "testing",
+		});
+	} catch (e) {
+		console.warn("createOffscreen", e);
+	}
+}
+
 const createOrinAyoWindow = () => {
 	console.debug("createOrinAyoWindow");		
 	const data = {url: chrome.runtime.getURL("index.html"), type: 'popup'};
 	
-	chrome.windows.create(data, (win) => {
+	chrome.windows.create(data, async (win) => {
+		await chrome.offscreen.closeDocument();
 		chrome.storage.local.set({orinAyoWin: win.id});			
 		chrome.windows.update(win.id, {width: 1050, height: 1040});
 	});

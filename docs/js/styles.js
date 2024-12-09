@@ -213,6 +213,8 @@ var chord_loops = [
 	"assets/chords/power-strum_96_10000_10000_4.chord",
 	"assets/chords/praise_127_15118.chord",
 	"assets/chords/praise2_127_7559_7559_4.chord",
+	"assets/chords/qy-irish-pop_108_8889_8889_2.chord",
+	"assets/chords/qy-mixture_94_10213_10213_2.chord",
 	"assets/chords/regaaton_100_9600.chord",
 	"assets/chords/rock_90_21333.chord",	
 	"assets/chords/rnb_100_19200.chord",
