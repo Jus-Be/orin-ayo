@@ -25,6 +25,7 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var midiNotes = new Map();
 var streamDeckPointer = 0;
 var streamDeck = null;
 var bassVol = 95;
@@ -1908,6 +1909,7 @@ function toggleStrumUpDown() {
 
 function handleNoteOff(note, device, velocity, channel) {	
 	console.debug("handleNoteOff", inputDeviceType, note);
+	midiNotes.delete(note.number);
 	
 	if (inputDeviceType == "chorda" && device != "INSTRUMENT1") {
 		//console.debug("chorda handleNoteOff", note.number, device, velocity, channel);
@@ -2024,6 +2026,37 @@ function handleNoteOff(note, device, velocity, channel) {
 
 function handleNoteOn(note, device, velocity, channel) {
 	console.debug("handleNoteOn", inputDeviceType, note, device, velocity, channel);
+	midiNotes.set(note.number, {inputDeviceType, note, device, velocity, channel});
+	
+	if (midiNotes.size == 4 || midiNotes.size == 3) {
+		const chord = []; 
+		for (let [keyNote, value] of midiNotes) chord.push(value.note.number);	
+		chord.sort();
+		
+		const sorted = [];
+		for (no of chord)  sorted.push(Tonal.Midi.midiToNoteName(no));		
+		const chords = Tonal.Chord.detect(sorted);
+		
+		if (chords.length > 0) {
+			const chordName = (midiNotes.size == 4 && chords.length > 1) ? chords[1] : chords[0];			
+			const detectedChord = Tonal.Chord.get(chordName);
+			console.debug("detected chord", detectedChord, midiNotes.size, chord);
+			
+			const arrChordType = (detectedChord.type == "suspended fourth" ? "sus" : (detectedChord.type == "minor" ? "min" : (detectedChord.type == "major" ? "maj" : "maj7")));	
+			const arrChord = (midiNotes.size == 4 ? chord[1] : chord[0]) % 12;
+			const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
+			const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
+
+			if (arranger == "webaudio" && realInstrument && styleStarted) {	
+				const bassChecked = document.getElementById("arr-instrument-17")?.checked;
+				const chordChecked = document.getElementById("arr-instrument-18")?.checked;
+				console.debug("playing chord", bassChecked, bassKey, chordChecked, key);					
+				
+				if (bassLoop && bassChecked) bassLoop.update(bassKey, false);
+				if (chordLoop && chordChecked) chordLoop.update(key, false);		
+			}
+		}
+	}
 	
 	if (inputDeviceType == "chorda" && device != "INSTRUMENT1") {
 		//console.debug("chorda handleNoteOn", note.number, device, velocity);		
