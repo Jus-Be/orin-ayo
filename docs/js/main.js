@@ -1327,6 +1327,13 @@ async function openDevice() {
         console.debug(`Key ${key} up`);	
 		
 		if (styleStarted) {
+			sectionChange = key % 4;
+			
+			if (midiNotes.size == 0) {
+				changeArrSection(true);
+			} else {
+				if (key > 3) doBreak(); else doFill();
+			}
 			
 		} else {
 			recallRegistration(key + streamDeckPointer + 1);	
@@ -1910,6 +1917,10 @@ function toggleStrumUpDown() {
 function handleNoteOff(note, device, velocity, channel) {	
 	console.debug("handleNoteOff", inputDeviceType, note);
 	midiNotes.delete(note.number);
+
+	if (chordTracker) {
+		chordTracker.stopNote(note.number, channel, {velocity});
+	}
 	
 	if (inputDeviceType == "chorda" && device != "INSTRUMENT1") {
 		//console.debug("chorda handleNoteOff", note.number, device, velocity, channel);
@@ -2056,6 +2067,10 @@ function handleNoteOn(note, device, velocity, channel) {
 				if (chordLoop && chordChecked) chordLoop.update(key, false);		
 			}
 		}
+	}
+	
+	if (chordTracker) {
+		chordTracker.playNote(note.number, channel, {velocity});
 	}
 	
 	if (inputDeviceType == "chorda" && device != "INSTRUMENT1") {
@@ -5548,7 +5563,7 @@ function startStopWebAudio() {
 			if (chordLoop && chordChecked?.checked) chordLoop.start("key" + (keyChange % 12), goTime);
 				
 		} else {
-			if (pad.buttons[YELLOW] && introEnd) {					
+			if ((pad.buttons[YELLOW] || midiNotes.size > 2) && introEnd) {					
 				orinayo_section.innerHTML = ">Arr A";
 										
 				if (drumLoop && drumChecked?.checked) {
@@ -5568,7 +5583,7 @@ function startStopWebAudio() {
 		}
 		
 	} else {
-		if (pad.buttons[YELLOW] && introEnd) {	
+		if ((pad.buttons[YELLOW] || midiNotes.size > 2) && introEnd) {	
 			orinayo_section.innerHTML = ">End 1";					
 			if (drumLoop) drumLoop.update('end1', false);	
 		} else {
