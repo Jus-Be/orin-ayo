@@ -25,6 +25,9 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var savedDrumVol = 100;
+var savedBassVol = 100;
+var savedChordVol = 100;
 var midiNotesProceesed = false;
 var midiNotes = new Map();
 var streamDeckPointer = 0;
@@ -1321,23 +1324,23 @@ function adjustVol(selector, amount, max, min) {
 async function openDevice() {
     console.debug(`StreamDeck device opened. Serial: ${await streamDeck.getSerialNumber()} Firmware: ${await streamDeck.getFirmwareVersion()}`);
 	
-    streamDeck.on('down', (key) => {
-        console.debug(`Key ${key} down`);
+    streamDeck.on('down', (panel) => {
+        console.debug(`Key ${panel} down`);
     });
-    streamDeck.on('up', async (key) => {
-        console.debug(`Key ${key} up`);	
+    streamDeck.on('up', async (panel) => {
+        console.debug(`Key ${panel} up`);	
 		
 		if (styleStarted) {
-			sectionChange = key % 4;
+			sectionChange = panel % 4;
 			
 			if (midiNotes.size == 0) {
 				changeArrSection(true);
 			} else {
-				if (key > 3) doBreak(); else doFill();
+				if (panel > 3) doBreak(); else doFill();
 			}
 			
 		} else {
-			recallRegistration(key + streamDeckPointer + 1);	
+			recallRegistration(panel + streamDeckPointer + 1);	
 		}		
 		
     });
@@ -1347,7 +1350,7 @@ async function openDevice() {
     streamDeck.on('encoderUp', (encoder) => {
         console.debug(`Encoder ${encoder} up`);
 
-		if (encoder == 0) {		
+		if (encoder == 0) {				
 			toggleStartStop();
 		}
 		else
@@ -2061,7 +2064,7 @@ function handleNoteOn(note, device, velocity, channel) {
 			const arrChordType = (detectedChord.type == "suspended fourth" ? "sus" : (detectedChord.type == "minor" ? "min" : (detectedChord.type == "major" ? "maj" : null)));	
 			
 			if (arrChordType) {
-				orinayo.innerHTML = detectedChord.symbol;									
+				orinayo.innerHTML = key + " - " + detectedChord.symbol;									
 				const arrChord = (midiNotes.size == 4 ? chord[1] : chord[0]) % 12;
 				const chordKey = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 				const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];		
@@ -3586,6 +3589,67 @@ async function setupUI(config,err) {
 					aerosAuxMode = true;
 				}					
 				
+			} else {
+				// CC 12 - All Audio loops vol
+				// CC 13 - keyboard volume
+				// CC 14 - prev variation
+				// CC 15 - start/stop
+				// CC 16 - next variation
+
+				const drumEl = document.querySelector("#audio-vol-16");
+				const bassEl = document.querySelector("#audio-vol-17");
+				const chordEl = document.querySelector("#audio-vol-18");				
+				
+				if (e?.controller.number == 14 && e.value == 127) 
+				{					
+					if (midiNotes.size == 0) {
+						sectionChange--;
+						if (sectionChange < 0) sectionChange = 3;						
+						changeArrSection(true);
+					} else {
+						doFill();
+					}					
+				}
+				else
+					
+				if (e?.controller.number == 16 && e.value == 127) {
+
+					if (midiNotes.size == 0) {
+						sectionChange++;
+						if (sectionChange > 3) sectionChange = 0;						
+						changeArrSection(true);
+					} else {
+						doBreak();
+					}					
+				}
+				else
+
+				if (e?.controller.number == 15 && e.value == 127) {
+					sectionChange = 0;
+					savedDrumVol = drumEl.value;
+					savedBassVol = bassEl.value;
+					savedChordVol = chordEl.value;					
+					toggleStartStop();
+				}
+				else 
+
+				if (e?.controller.number == 12) 
+				{
+					if (drumLoop) {
+						drumEl.value = (e.value / 127) * savedDrumVol;
+						drumLoop.setVolume(drumEl.value / 100);
+					}
+					
+					if (bassLoop) {
+						bassEl.value = (e.value / 127) * savedBassVol;
+						bassLoop.setVolume(bassEl.value / 100);
+					}
+
+					if (chordLoop) {
+						chordEl.value = (e.value / 127) * savedChordVol;
+						chordLoop.setVolume(chordEl.value / 100);
+					}					
+				}				
 			}
 		});
 	}									
