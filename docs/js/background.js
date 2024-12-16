@@ -9,7 +9,8 @@ self.addEventListener('install', function(event) {
 });
 self.addEventListener('activate', function (event) {
     console.debug('activate', event);	
-	createOffscreen();
+	//createOffscreen();
+	openOrinAyoWindow();
 });
 
 self.addEventListener('message', function (event) {
@@ -71,7 +72,7 @@ if (location.protocol == "chrome-extension:") {
 		chrome.storage.local.get('orinAyoWin', async (data) => {	
 			if (data.orinAyoWin && data.orinAyoWin == win) {	
 				chrome.storage.local.remove('orinAyoWin');	
-				createOffscreen();
+				//createOffscreen();
 			}
 		});	
 	});

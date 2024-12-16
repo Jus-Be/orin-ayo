@@ -3131,7 +3131,7 @@ async function setupUI(config,err) {
 			outSelected = true;
 			midiOutput = WebMidi.outputs[i];
 		}
-		midiOut.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, outSelected, outSelected);
+		midiOut.options[i + 1] = new Option(WebMidi.outputs[i].name.trim(), WebMidi.outputs[i].name.trim(), outSelected, outSelected);
 
 		let padsSelected = false;
 		
@@ -3147,7 +3147,7 @@ async function setupUI(config,err) {
 			fwdSelected = true;
 			midiRealGuitar = WebMidi.outputs[i];
 		}
-		midiFwd.options[i + 1] = new Option(WebMidi.outputs[i].name, WebMidi.outputs[i].name, fwdSelected, fwdSelected);
+		midiFwd.options[i + 1] = new Option(WebMidi.outputs[i].name.trim(), WebMidi.outputs[i].name.trim(), fwdSelected, fwdSelected);
 
 		let chordTrackerSelected = false;	
 	
@@ -7401,7 +7401,6 @@ function handleButtonPress(panel) {
 		recallRegistration(panel + 1);			
 	}		
 }
-
 
 function handleEncoderPress(encoder) {
 	console.debug("handleEncoderPress", encoder);	
