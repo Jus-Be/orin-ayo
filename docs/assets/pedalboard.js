@@ -55,7 +55,7 @@ window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, use
 
   const onMidiMessage = ({ data }) => {
     if (data[0] === 144) {
-      window.dispatchEvent(new CustomEvent('MIDI', { detail: data[1] }));
+      //window.dispatchEvent(new CustomEvent('MIDI', { detail: data[1] }));
     }
 
     if (data[0] === 176) {

@@ -77,10 +77,11 @@ export const createPedal = ({ name, label, toggle, active, index = 0 }) => {
   const input = pedal.querySelector('[type="checkbox"]');
   input.addEventListener('change', () => toggle());
 
-  window.addEventListener('MIDI', ({ detail }) => {
-    if (detail === index) {
-      input.checked = !input.checked;
-      toggle();
+  window.addEventListener('MIDI', ({ detail }) => 
+  {	
+    if (detail === index) {	
+		input.checked = !input.checked;
+		toggle();
     }
   });
 
@@ -92,7 +93,7 @@ export const createPedal = ({ name, label, toggle, active, index = 0 }) => {
 };
 
 export const toggleOnOff = (dry, wet) => {
-  return on => {
+  return on => { 
     const active = on === undefined ? !!dry.gain.value : on;
 
     if (active) {
