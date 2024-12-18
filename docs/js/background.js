@@ -103,7 +103,7 @@ const createOrinAyoWindow = () => {
 	const data = {url: chrome.runtime.getURL("index.html"), type: 'popup'};
 	
 	chrome.windows.create(data, async (win) => {
-		await chrome.offscreen.closeDocument();
+		//await chrome.offscreen.closeDocument();
 		chrome.storage.local.set({orinAyoWin: win.id});			
 		chrome.windows.update(win.id, {width: 1060, height: 1040});
 	});

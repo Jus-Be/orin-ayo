@@ -5674,6 +5674,7 @@ function startStopWebAudio() {
 
 function toggleStartStop() {
 	console.debug("toggleStartStop", styleStarted);
+	audioContext.resume();
 	
 	handledStartStop = false;
 	if (!styleStarted) resetArrToA();
@@ -7339,17 +7340,17 @@ function handleXTouchNoteEvent(event) {
 	else
 		
 	if (event.note.number > 15 && event.note.number < 24) {	// layer A bottom row
-		handleButtonPress(event.note.number - 16);
+		handleButtonPress(event.note.number - 8);
 	}	
 	else
 
 	if (event.note.number > 31 && event.note.number < 40) {	// layer B top row
-		handleButtonPress(event.note.number - 32);
+		handleButtonPress(event.note.number - 16);
 	}
 	else
 		
 	if (event.note.number > 39 && event.note.number < 48) {	// layer B bottom row
-		handleButtonPress(event.note.number - 40);
+		handleButtonPress(event.note.number - 16);
 	}
 	else
 		
@@ -7359,19 +7360,19 @@ function handleXTouchNoteEvent(event) {
 	else
 		
 	if (event.note.number > 23 && event.note.number < 32) {	// layer B speakers
-		handleEncoderPress(event.note.number - 24);
+		handleEncoderPress(event.note.number - 16);
 	}	
 }
 
 function handleButtonPress(panel) {
 	console.debug("handleButtonPress", panel);	
 	
-	if (panel == 0 || panel == 8) {
-		setXTouchButton(0, "off");
-		setXTouchButton(8, "off");
-			
-		sectionChange = 0;	
+	if (panel == 0 || panel == 8) {			
+		sectionChange = 0;
+		
+		pad.buttons[YELLOW] = false;		
 		if (panel == 8) pad.buttons[YELLOW] = true;	// play intro
+		
 		toggleStartStop();	
 	}
 	else
