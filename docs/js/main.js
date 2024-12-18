@@ -259,7 +259,7 @@ var idbKeyval = (function (exports) {
 
 window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
-window.addEventListener("beforeunload", () => {if (!registration) saveConfig();});
+window.addEventListener("beforeunload", () => {event.preventDefault(); if (!registration) saveConfig(); });
 window.addEventListener('message', messageHandler);
 
 //document.addEventListener('contextmenu', event => event.preventDefault());
@@ -1030,6 +1030,15 @@ function loadMidiSynth() {
 	xhr.send();	
 }
 
+function initLiberLive() {
+	console.debug("initLiberLive");
+	
+	if (inputDeviceType == "liberlivec1" && !textDecoder) {	
+		textDecoder = new TextDecoder("utf-8"); 
+		onLiberLiveClick();			
+	}	
+}
+
 async function onloadHandler() {
 	console.debug("onloadHandler");
 
@@ -1049,12 +1058,7 @@ async function onloadHandler() {
 	guitarReverb = document.querySelector("#reverb");
 	
 	document.body.addEventListener('click', function(event) 	{
-			
-		if (inputDeviceType == "liberlivec1" && !textDecoder) {	
-			console.debug("first gesture click", event.target);
-			textDecoder = new TextDecoder("utf-8"); 
-			onLiberLiveClick();			
-		}
+		initLiberLive();
 	})
 	
 	guitarReverb.addEventListener('click', function(event) 
@@ -3099,6 +3103,7 @@ async function setupUI(config,err) {
 	midiInType.selectedIndex = deviceIndex;	
 	
 	inputDeviceType = config.inputDeviceType;
+	if (inputDeviceType == "liberlivec1") initLiberLive();	
 	handleLiberLive(inputDeviceType == "liberlivec1");
 	
 	midiInType.addEventListener("change", function()
@@ -5635,7 +5640,7 @@ function startStopWebAudio() {
 			if (chordLoop && chordChecked?.checked) chordLoop.start("key" + (keyChange % 12), goTime);
 				
 		} else {
-			if ((pad.buttons[YELLOW] || midiNotes.size > 2) && introEnd) {					
+			if ((pad.buttons[YELLOW] || midiNotes.size > 2) && introEnd && drumLoop) {		// intro requires drumbeat			
 				orinayo_section.innerHTML = ">Arr A";
 										
 				if (drumLoop && drumChecked?.checked) {
@@ -7399,7 +7404,7 @@ function handleButtonPress(panel) {
 		}
 		
 	} else {
-		recallRegistration(panel + 1);			
+		recallRegistration(panel);			
 	}		
 }
 
