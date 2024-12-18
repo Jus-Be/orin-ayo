@@ -402,6 +402,7 @@ async function onLiberLiveClick() {
 			
 			if (!ready) {
 				ready = true;
+				textDecoder = new TextDecoder("utf-8"); 
 				doLiberLiveSetup(device);
 			}
 		});
@@ -414,7 +415,10 @@ async function onLiberLiveClick() {
 			services: ["000000ff-0000-1000-8000-00805f9b34fb"],
 		}]});
 
-		if (device) doLiberLiveSetup(device);		
+		if (device) {
+			textDecoder = new TextDecoder("utf-8"); 			
+			doLiberLiveSetup(device);		
+		}
 	}
 	
 	console.debug('onLiberLiveClick', device);	
@@ -1034,7 +1038,6 @@ function initLiberLive() {
 	console.debug("initLiberLive");
 	
 	if (inputDeviceType == "liberlivec1" && !textDecoder) {	
-		textDecoder = new TextDecoder("utf-8"); 
 		onLiberLiveClick();			
 	}	
 }
