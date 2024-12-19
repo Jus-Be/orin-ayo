@@ -259,7 +259,7 @@ var idbKeyval = (function (exports) {
 
 window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
-window.addEventListener("beforeunload", () => {event.preventDefault(); if (!registration) saveConfig(); });
+window.addEventListener("beforeunload", () => {if (!registration) saveConfig(); });
 window.addEventListener('message', messageHandler);
 
 //document.addEventListener('contextmenu', event => event.preventDefault());
@@ -3515,8 +3515,13 @@ async function setupUI(config,err) {
 			}
 			console.debug("selected real drums device ", realdrumDevice, realDrumsDevice.value);
 		}
-	});				
+	});		
 
+
+	registration = parseInt(config.registration || registration);
+	orinayo_reg.innerHTML = "Slot " + registration;	
+	if (registration) setTempo(config.tempo || tempo); 	
+	
 	if (input)
 	{
 		input.addListener('noteon', "all", function (e) {		
@@ -3644,13 +3649,14 @@ async function setupUI(config,err) {
 		
 
 		if (midiIn.value == "X-TOUCH MINI") {	
-			resetXTouch();					
+			resetXTouch();	
+
+			if (registration && parseInt(registration) > 0 && midiOutput && midiOutput.name == "X-TOUCH MINI") {
+				const slot = registration > 8 ? registration - 1 : registration;
+				//setXTouchButton(slot, "flash");
+			}					
 		}			
 	}									
-
-	registration = config.registration || registration;
-	orinayo_reg.innerHTML = "Slot " + registration;
-	if (registration) setTempo(config.tempo || tempo); 	
 	
 	document.querySelector("#autoFill").checked = config.autoFill;	
 	document.querySelector("#introEnd").checked = config.introEnd;
@@ -5953,7 +5959,8 @@ function toggleStartStop() {
 	}	
 
 	playButton.innerText = !styleStarted ? "Play" : "Stop";
-	playButton.style.setProperty("--accent-fill-rest", !styleStarted ? "green" : "red");		
+	playButton.style.setProperty("--accent-fill-rest", !styleStarted ? "green" : "red");
+	if (midiOutput.name == "X-TOUCH MINI" && !styleStarted) resetXTouch();	
 	handledStartStop = true;
 }
 
@@ -7152,7 +7159,12 @@ function setupRealInstruments() {
 	
 	setTimeout(() => {
 		playButton.innerText = "Play";
-		playButton.style.setProperty("--accent-fill-rest", "green");		
+		playButton.style.setProperty("--accent-fill-rest", "green");	
+
+		if (midiOutput.name == "X-TOUCH MINI") {
+			const slot = registration > 8 ? registration + 1 : (registration == 0 ? 0 : registration);
+			setXTouchButton(slot, "flash");
+		}		
 	}, wait);	
 }
 
@@ -7184,12 +7196,12 @@ function eventStatus(event, id) {
 }
 
 function outputSendProgramChange(program, channel) {
-	if (midiOutput.value == "X-TOUCH MINI") return;	
+	if (midiOutput.name == "X-TOUCH MINI") return;	
 	midiOutput.sendProgramChange(program, channel);	
 }
 
 function outputSendControlChange(cc, value, channel) {
-	if (midiOutput.value == "X-TOUCH MINI") return;	
+	if (midiOutput.name == "X-TOUCH MINI") return;	
 	midiOutput.sendControlChange(cc, value, channel);	
 }
 
@@ -7198,12 +7210,12 @@ function outputSendChannelMode(cc, value, channel) {
 }
 
 function outputPlayNote(chord, channel, options) {
-	if (midiOutput.value == "X-TOUCH MINI") return;
+	if (midiOutput.name == "X-TOUCH MINI") return;
 	midiOutput.playNote(chord, channel, options);	
 }
 
 function outputStopNote(chord, channel, options) {
-	if (midiOutput.value == "X-TOUCH MINI") return;	
+	if (midiOutput.name == "X-TOUCH MINI") return;	
 	midiOutput.stopNote(chord, channel, options)	
 }
 
@@ -7239,7 +7251,7 @@ function recallRegistration(slot) {
 	let data = localStorage.getItem("orin.ayo.slot." + slot);	
 	
 	if (data) {
-		registration = slot;		
+		registration = parseInt(slot);		
 		localStorage.setItem("orin.ayo.config", data);
 		setTimeout(() => location.reload(), 500 );		
 	}
@@ -7248,7 +7260,7 @@ function recallRegistration(slot) {
 
 function saveRegistration(slot) {
 	console.debug("saveRegistration", slot);
-	registration = slot;
+	registration = parseInt(slot);
 	const config = saveConfig();
 	localStorage.setItem("orin.ayo.slot." + slot, JSON.stringify(config));
 	if (streamDeck) drawButtons(streamDeckPointer + 1);
@@ -7267,15 +7279,19 @@ function midiProgramChangeEvent(target) {
 function resetXTouch() {	
 	if (!midiOutput) return;
 	
-	for (let i=0; i<32; i++) {
-		setXTouchButton(i, "off");
-	}
-	
-	for (let i=0; i<16; i++) {
-		setXTouchSpeaker(i, "off");
-	}
+	for (let i=0; i<32; i++) setXTouchButton(i, "off");
+	for (let i=0; i<16; i++) setXTouchSpeaker(i, "off");
 
 	setTimeout(() => midiOutput.sendProgramChange(0), 1000);
+	
+	for (let i=0; i<32; i++) {
+		const slot = (i > 8) ? i - 1 : i; 
+		
+		if (localStorage.getItem("orin.ayo.slot." + slot)) {
+			console.debug("resetXTouch - found slot", slot);
+			setXTouchButton(i, "on");
+		}
+	}	
 }
 
 function setXTouchButton(button, state) {
@@ -7407,7 +7423,7 @@ function handleButtonPress(panel) {
 		}
 		
 	} else {
-		recallRegistration(panel);			
+		recallRegistration(panel > 8 ? panel - 1 : panel);			
 	}		
 }
 
