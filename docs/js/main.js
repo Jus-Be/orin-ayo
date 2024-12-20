@@ -4084,6 +4084,11 @@ function setupMidiChannels() {
 		return;
 	}
 	
+	for (let i=0; i<19; i++) {
+		const box = document.getElementById("arr-instrument-" + i);
+		if (box) box.checked = !!tempConfig["channel" + i];
+	}	
+	
 	keysSound1 = document.getElementById("arr-instrument-0");
 	keysSound2 = document.getElementById("arr-instrument-1");
 
@@ -4119,7 +4124,7 @@ function setupMidiChannels() {
 		if (chordLoop) chordLoop.setVolume(chordVol / 100);			
 	});	
 	
-	//delete window.tempConfig;	
+	delete window.tempConfig;	
 }
 
 function getSongSequence(songName, callback) {
