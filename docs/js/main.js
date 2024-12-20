@@ -25,6 +25,8 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var keysSound1 = null;
+var keysSound2 = null;
 var savedDrumVol = 100;
 var savedBassVol = 100;
 var savedChordVol = 100;
@@ -35,6 +37,8 @@ var streamDeck = null;
 var bassVol = 95;
 var chordVol = 40;
 var drumVol = 85;
+var keysSound1Vol = 100;
+var keysSound2Vol = 50;
 var chordproParser = new ChordSheetJS.ChordProParser();
 var lyricsX = 2;
 var lyricsY = 18;
@@ -44,6 +48,7 @@ var recorderDestination = null;
 var mediaRecorder = null;
 var recordMode = false;
 var writeCharacteristic = null;
+var readCharacteristic = null;
 var appliedVelocity = 0;
 var microphone = true;
 var handledStartStop = true;
@@ -294,11 +299,11 @@ function messageHandler(evt) {
 }
 
 function handleLiberLive(selected) {
-	const liberlive = document.querySelector("#liber_live");
-	liberlive.style.display = selected ? "" : "none";	
+	const bluetooth = document.querySelector("#bluetooth");
+	bluetooth.style.display = selected ? "" : "none";	
 	let device;
 	
-	liberlive.addEventListener("click", async (evt) => {
+	if (selected) bluetooth.addEventListener("click", async (evt) => {
 
 		device = await navigator.bluetooth.requestDevice({		
 			filters: [{
@@ -306,6 +311,23 @@ function handleLiberLive(selected) {
 		}]});
 
 		if (device) await device.forget();			
+	});
+}
+
+function handleLavaGenie(selected) {
+	const bluetooth = document.querySelector("#bluetooth");
+	bluetooth.style.display = selected ? "" : "none";	
+	let device;
+	
+	if (selected) bluetooth.addEventListener("click", async (evt) => {
+		console.debug('handleLavaGenie - click');	
+	
+		device = await navigator.bluetooth.requestDevice({		
+			filters: [{
+			services: ["0000fee0-0000-1000-8000-00805f9b34fb"],		
+		}]});
+
+		//if (device) await device.forget();	// MIDI_SERVICE_UID		
 	});
 }
 
@@ -378,6 +400,42 @@ function startRecording() {
 	mediaRecorder.start();
 }
 
+async function onLavaGenieClick() {
+	console.debug('onLavaGenieClick');		
+	
+	let ready, device;
+	const devices = await navigator.bluetooth.getDevices();
+
+	if (devices.length > 0) {
+		device = devices[0];
+		
+		device.addEventListener('advertisementreceived', (event) => {	
+			//console.debug('Bluetooth device advert', event);
+			
+			if (!ready) {
+				ready = true;
+				textDecoder = new TextDecoder("utf-8"); 
+				doLavaGenieSetup(device);
+			}
+		});
+		
+		await device.watchAdvertisements();		
+		
+	} else {
+		device = await navigator.bluetooth.requestDevice({		
+			filters: [{
+			services: ["0000fee0-0000-1000-8000-00805f9b34fb"],
+		}]});
+
+		if (device) {
+			textDecoder = new TextDecoder("utf-8"); 			
+			doLavaGenieSetup(device);		
+		}
+	}
+	
+	console.debug('onLavaGenieClick', device);		
+}
+
 async function onLiberLiveClick() {
 	console.debug('onLiberLiveClick');	
 	
@@ -422,6 +480,93 @@ async function onLiberLiveClick() {
 	}
 	
 	console.debug('onLiberLiveClick', device);	
+}
+
+async function doLavaGenieSetup(device) {
+	console.debug('doLavaGenieSetup', device);	
+	
+	if (device) {	
+		//startXMPP(device.name, device.id); // VbvhH2d5pwVDlZmOm2p4kQ==
+		const ui = document.getElementById("lyrics");
+
+		device.addEventListener('gattserverdisconnected', (event) => {
+			console.debug('Bluetooth device ' + device.name + ' is disconnected.', event);
+			if (window.connection) window.connection.disconnect();
+		});
+		
+		const handlers = {};		
+		const server = await device.gatt.connect();
+		console.debug('GATT server', server);
+
+		const services = await server.getPrimaryServices();
+		
+		for (let service of services) {
+			const characteristics = await service.getCharacteristics();
+			
+			for (let characteristic of characteristics) 
+			{
+				try {				
+					const descriptors = await characteristic.getDescriptors();
+				
+					for (let descriptor of descriptors) {
+						const value = await descriptor.readValue();
+						console.debug('Found Descriptor', descriptor.uuid, value);				
+					}
+				} catch (e) {
+
+				}
+
+				console.debug('Found Characteristic', characteristic.uuid, characteristic.properties, service.uuid);										
+
+				if (characteristic.properties.read) {
+					handlers[characteristic.uuid] = characteristic;	
+					
+					handlers[characteristic.uuid].addEventListener('characteristicvaluechanged',  (evt) => {
+						const {buffer}  = evt.target.value;
+						const eventData = new Uint8Array(buffer);					
+						
+						for (let i in eventData) console.debug("Read", eventData.length, i + ":" + eventData[i]);						
+					});					
+
+				}
+				else
+					
+				if (characteristic.properties.write) {
+					writeCharacteristic = characteristic;	
+					//setTimeout(setLiberLiveChordMappings);
+					//setTimeout(setLiberLiveDeviceSettings, 1000);
+				}
+				else
+					
+				if (characteristic.properties.notify) {
+					console.debug('Setup Notifier', characteristic.uuid);					
+					handlers[characteristic.uuid] = await characteristic.startNotifications();
+					
+					let cannotFire = true;
+					let haveFired = false;
+					let tempoDiv = document.getElementById('showTempo');
+					let volDiv = document.getElementById('showVol');					
+					
+					if (!game) {
+						setup();
+						resetGuitarHero();
+					}	
+
+					document.getElementById("liberlive").style.display = "";					
+					
+					handlers[characteristic.uuid].addEventListener('characteristicvaluechanged', (evt) => {
+						const {buffer}  = evt.target.value;
+						const eventData = new Uint8Array(buffer);					
+						
+						//if (eventData.length != 14 || (eventData.length == 14 && eventData[9] != 49 && eventData[9] != 50 && eventData[10] != 49 && eventData[10] != 50)) {
+							for (let i in eventData) console.debug("Event", eventData.length, i + ":" + eventData[i]);						
+						//}	
+						
+					});					
+				}
+			}
+		}
+	}						
 }
 
 async function setLiberLiveChordMappings() {
@@ -1042,6 +1187,14 @@ function initLiberLive() {
 	}	
 }
 
+function initLavaGenie() {
+	console.debug("initLavaGenie");
+	
+	if (inputDeviceType == "lavagenie" && !textDecoder) {	
+		onLavaGenieClick();			
+	}	
+}
+
 async function onloadHandler() {
 	console.debug("onloadHandler");
 
@@ -1061,7 +1214,8 @@ async function onloadHandler() {
 	guitarReverb = document.querySelector("#reverb");
 	
 	document.body.addEventListener('click', function(event) 	{
-		initLiberLive();
+		//if (inputDeviceType == "liberlivec1") initLiberLive();
+		//if (inputDeviceType == "lavagenie") initLavaGenie();		
 	})
 	
 	guitarReverb.addEventListener('click', function(event) 
@@ -1900,6 +2054,12 @@ function toggleStrumUpDown() {
 
 function handleNoteOff(note, device, velocity, channel) {	
 	console.debug("handleNoteOff", inputDeviceType, note);
+	
+	if (arrSynth?.onmessage) {
+		if (keysSound1?.checked) stopSynthNote(note.number, channel - 1, velocity  * 127);		
+		if (keysSound2?.checked) stopSynthNote(note.number, channel, velocity  * 127);				
+	}
+	
 	midiNotes.delete(note.number);
 	
 	if (midiNotes.size == 0) {
@@ -2025,7 +2185,13 @@ function handleNoteOff(note, device, velocity, channel) {
 
 function handleNoteOn(note, device, velocity, channel) {
 	console.debug("handleNoteOn", inputDeviceType, note, device, velocity, channel);
-	midiNotes.set(note.number, {inputDeviceType, note, device, velocity, channel});
+	
+	if (arrSynth?.onmessage) {
+		if (keysSound1?.checked) playSynthNote(note.number, channel - 1, velocity  * 127);				
+		if (keysSound2?.checked) playSynthNote(note.number, channel, velocity  * 127);						
+	}
+
+	midiNotes.set(note.number, {inputDeviceType, note, device, velocity, channel});	
 	
 	if (!midiNotesProceesed && midiNotes.size == 4 || midiNotes.size == 3) {
 		const chord = []; 
@@ -2034,31 +2200,35 @@ function handleNoteOn(note, device, velocity, channel) {
 		
 		const sorted = [];
 		for (no of chord)  sorted.push(Tonal.Midi.midiToNoteName(no));		
-		const chords = Tonal.Chord.detect(sorted);
+		const chords = Tonal.Chord.detect(sorted); // multiple indentifications
 		
 		if (chords.length > 0) {
 			const chordName = (midiNotes.size == 4 && chords.length > 1) ? chords[1] : chords[0];			
-			const detectedChord = Tonal.Chord.get(chordName);
-			console.debug("detected chord", detectedChord, midiNotes.size, chord);
+			let detectedChord = Tonal.Chord.get(chordName);
+			let tonic = Tonal.Midi.toMidi(detectedChord.tonic + "1") % 12;  //(midiNotes.size == 4 ? chord[1] : chord[0]) % 12;			
+			console.debug("detected chord", detectedChord, midiNotes.size, tonic);
+						
+			let arrChordType = (detectedChord.type == "suspended fourth" ? "sus" : (detectedChord.type == "minor" ? "min" : (detectedChord.type == "major" ? "maj" : null)));	
 			
-			const arrChordType = (detectedChord.type == "suspended fourth" ? "sus" : (detectedChord.type == "minor" ? "min" : (detectedChord.type == "major" ? "maj" : null)));	
+			if (!arrChordType) {
+				arrChordType = "maj";
+				detectedChord = Tonal.Chord.get((detectedChord.bass || detectedChord.tonic) + "M");	// use bass otherwise new tonic as root for major chord
+				tonic = Tonal.Midi.toMidi(detectedChord.tonic + "1") % 12;
+			}
 			
-			if (arrChordType) {
-				orinayo.innerHTML = key + " - " + detectedChord.symbol;									
-				const arrChord = (midiNotes.size == 4 ? chord[1] : chord[0]) % 12;
-				const chordKey = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
-				const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];		
+			orinayo.innerHTML = key + " - " + detectedChord.symbol;									
+			const chordKey = "key" + tonic + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
+			const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];		
 
-				if (arranger == "webaudio" && realInstrument && styleStarted) {	
-					const bassChecked = document.getElementById("arr-instrument-17")?.checked;
-					const chordChecked = document.getElementById("arr-instrument-18")?.checked;
-					console.debug("playing chord", bassChecked, bassKey, chordChecked, chordKey);					
-					
-					if (bassLoop && bassChecked) bassLoop.update(bassKey, false);
-					if (chordLoop && chordChecked) chordLoop.update(chordKey, false);
+			if (arranger == "webaudio" && realInstrument && styleStarted) {	
+				const bassChecked = document.getElementById("arr-instrument-17")?.checked;
+				const chordChecked = document.getElementById("arr-instrument-18")?.checked;
+				console.debug("playing chord", bassChecked, bassKey, chordChecked, chordKey);					
 				
-					midiNotesProceesed = true;				
-				}
+				if (bassLoop && bassChecked) bassLoop.update(bassKey, false);
+				if (chordLoop && chordChecked) chordLoop.update(chordKey, false);
+			
+				midiNotesProceesed = true;				
 			}
 		}
 	}
@@ -2678,6 +2848,8 @@ async function setupUI(config,err) {
 	bassVol = config.bassVol ? config.bassVol : bassVol;	
 	drumVol = config.drumVol ? config.drumVol : drumVol;
 	chordVol = config.chordVol ? config.chordVol : chordVol;
+	keysSound1Vol = config.keysSound1Vol ? config.keysSound1Vol : keysSound1Vol;
+	keysSound2Vol = config.keysSound2Vol ? config.keysSound2Vol : keysSound2Vol;	
 
 	savedDrumVol = drumVol;
 	savedBassVol = bassVol;	
@@ -3096,6 +3268,7 @@ async function setupUI(config,err) {
 	midiInType.options[2] = new Option("Artiphon Instrument 1", "instrument1", config.inputDeviceType == "instrument1");		
 	midiInType.options[3] = new Option("Artiphon Chorda", "chorda", config.inputDeviceType == "chorda");
 	midiInType.options[4] = new Option("LiberLive C1", "liberlivec1", config.inputDeviceType == "liberlivec1");
+	midiInType.options[5] = new Option("Lava Genie", "lavagenie", config.inputDeviceType == "lavagenie");	
 	
 	let deviceIndex = 0;
 	deviceIndex = config.inputDeviceType == "games-controller" ? 0 : deviceIndex;
@@ -3103,18 +3276,30 @@ async function setupUI(config,err) {
 	deviceIndex = config.inputDeviceType == "instrument1" ? 2 : deviceIndex;
 	deviceIndex = config.inputDeviceType == "chorda" ? 3 : deviceIndex;	
 	deviceIndex = config.inputDeviceType == "liberlivec1" ? 4 : deviceIndex;		
+	deviceIndex = config.inputDeviceType == "lavagenie" ? 5 : deviceIndex;	
 	midiInType.selectedIndex = deviceIndex;	
 	
 	inputDeviceType = config.inputDeviceType;
-	if (inputDeviceType == "liberlivec1") initLiberLive();	
-	handleLiberLive(inputDeviceType == "liberlivec1");
+	
+	if (inputDeviceType == "liberlivec1") {
+		initLiberLive();	
+		handleLiberLive(inputDeviceType == "liberlivec1");
+	} else {
+		initLavaGenie();
+		handleLavaGenie(inputDeviceType == "lavagenie");		
+	}	
 	
 	midiInType.addEventListener("change", function()
 	{
 		inputDeviceType = midiInType.value;
 		console.debug("selected midi device type", inputDeviceType, midiInType.value);				
 		saveConfig();
-		handleLiberLive(inputDeviceType == "liberlivec1");
+		
+		if (inputDeviceType == "liberlivec1") {
+			handleLiberLive(inputDeviceType == "liberlivec1");
+		} else {
+			handleLavaGenie(inputDeviceType == "lavagenie");		
+		}
 	});	
 
 	setGigladUI();
@@ -3583,12 +3768,16 @@ async function setupUI(config,err) {
 				}					
 				
 			} else {
-				// CC 12 - All Audio loops vol
-				// CC 13 - keyboard volume
+				// CC 12 - Keyboard piano volume
+				// CC 13 - Keyboard pads volume				
+				// CC 1 - All Audio loops vol
 				// CC 14 - prev variation
 				// CC 15 - start/stop
 				// CC 16 - next variation
 
+				const keysSound1El = document.querySelector("#audio-vol-0");
+				const keysSound2El = document.querySelector("#audio-vol-1");
+				
 				const drumEl = document.querySelector("#audio-vol-16");
 				const bassEl = document.querySelector("#audio-vol-17");
 				const chordEl = document.querySelector("#audio-vol-18");				
@@ -3623,24 +3812,43 @@ async function setupUI(config,err) {
 				}
 				else 
 
-				if (e?.controller.number == 12) 
+				if (e?.controller.number == 12) {
+					if (keysSound1El) {
+						keysSound1El.value = (e.value / 127) * 100;
+						keysSound1Vol = keysSound1El.value;
+					}
+				}					
+				else 
+
+				if (e?.controller.number == 13) 
 				{
+					if (keysSound2El) {
+						keysSound2El.value = (e.value / 127) * 100;
+						keysSound2Vol = keysSound2El.value;						
+					}						
+				}
+				else 
+
+				if (e?.controller.number == 1) {
+					setGuitarVolume(e.value);	
+					
 					if (drumLoop) {
 						drumEl.value = (e.value / 127) * savedDrumVol;
 						drumLoop.setVolume(drumEl.value / 100);
+						drumVol = drumEl.value;
 					}
 					
 					if (bassLoop) {
 						bassEl.value = (e.value / 127) * savedBassVol;
 						bassLoop.setVolume(bassEl.value / 100);
+						bassVol = bassEl.value;
 					}
 
 					if (chordLoop) {
 						chordEl.value = (e.value / 127) * savedChordVol;
 						chordLoop.setVolume(chordEl.value / 100);
-					}
-					
-					setGuitarVolume(e.value);		
+						chordVol = chordEl.value;
+					}					
 				}	
 
 				if (midiIn.value == "X-TOUCH MINI") handleXTouchControlEvent(e);
@@ -3676,8 +3884,9 @@ async function setupUI(config,err) {
 		getSongSequence(config.songName);		
 	}
 
+	window.tempConfig = config; // store config for later access
+
 	if (config.arrName) {	
-		window.tempConfig = config; // store config for later access
 		arrSynth = {name: config.sf2Name};	
 		getArrSequence(config.arrName, arrSequenceLoaded);	
 		document.querySelector("#delete_style").style.display = "";		
@@ -3692,6 +3901,7 @@ async function setupUI(config,err) {
 			} else {
 				// use gmgsx.sf2 as dummy midiSynth
 				loadMidiSynth();
+				
 				if (arranger != "webaudio") {
 					playButton.innerText = "Play";				
 					playButton.style.setProperty("--accent-fill-rest", "green");
@@ -3701,9 +3911,7 @@ async function setupUI(config,err) {
 			if (arranger == "webaudio" && realInstrument) {
 				setupRealInstruments();				
 			}			
-		}	
-
-		window.tempConfig = config; // store config for later access		
+		}			
 		setupMidiChannels();		
 	}	
 };
@@ -3876,13 +4084,23 @@ function setupMidiChannels() {
 		return;
 	}
 	
-	for (let i=0; i<19; i++) {
-		if (window.tempConfig["instrument" + i] || i == 0 ) {
-			document.getElementById("arr-instrument-" + i).checked = window.tempConfig["channel" + i];
-			if (i < 16) document.getElementById("midi-channel-" + i).selectedIndex = window.tempConfig["instrument" + i];		
-		}
-	}
+	keysSound1 = document.getElementById("arr-instrument-0");
+	keysSound2 = document.getElementById("arr-instrument-1");
 
+	const keysSound1Ele = document.querySelector("#audio-vol-0");
+	const keysSound2Ele = document.querySelector("#audio-vol-1");
+
+	keysSound1Ele.value = keysSound1Vol;
+	keysSound2Ele.value = keysSound2Vol;	
+
+	keysSound1Ele.addEventListener("input", function(event) {
+		keysSound1Vol = +event.target.value; 			
+	});
+
+	keysSound2Ele.addEventListener("input", function(event) {
+		keysSound2Vol = +event.target.value; 			
+	});
+	
 	document.querySelector("#audio-vol-16").addEventListener("input", function(event) {
 		drumVol = +event.target.value; 
 		savedDrumVol = drumVol;			
@@ -3901,7 +4119,7 @@ function setupMidiChannels() {
 		if (chordLoop) chordLoop.setVolume(chordVol / 100);			
 	});	
 	
-	delete window.tempConfig;
+	//delete window.tempConfig;	
 }
 
 function getSongSequence(songName, callback) {
@@ -4057,6 +4275,8 @@ function saveConfig() {
 	config.drumVol = savedDrumVol;
 	config.chordVol = savedChordVol;
 	config.bassVol = savedBassVol;
+	config.keysSound1Vol = keysSound1Vol;
+	config.keysSound2Vol = keysSound2Vol;
 	
 	for (let i=0; i<19; i++) {
 		config["channel" + i] = document.getElementById("arr-instrument-" + i)?.checked;
@@ -4486,7 +4706,7 @@ function checkForTouchArea() {
 	}			
 }
 
-function stopPadSynthNote(note, channel, velocity) {
+function stopSynthNote(note, channel, velocity) {
 	const eventTypeByte = 0x80 | channel;
 	const evt = {data: "midi," + eventTypeByte + "," + note + "," + velocity}
 	arrSynth.onmessage(evt);	
@@ -4502,14 +4722,14 @@ function stopPads() {
 			if (firstChord instanceof Array) 
 			{
 				for (note of firstChord) {
-					stopPadSynthNote(note, 1, getVelocity() * 127);
+					stopSynthNote(note, 1, getVelocity() * 127);
 				}
 				
-				stopPadSynthNote(firstChord[0] + 12, 1, getVelocity() * 127);		
-				stopPadSynthNote(firstChord[0] - 12, 1, getVelocity() * 127);						
+				stopSynthNote(firstChord[0] + 12, 1, getVelocity() * 127);		
+				stopSynthNote(firstChord[0] - 12, 1, getVelocity() * 127);						
 							
 			} else {
-				stopPadSynthNote(firstChord, 1, getVelocity() * 127);
+				stopSynthNote(firstChord, 1, getVelocity() * 127);
 			}			
 
 		} 
@@ -4555,7 +4775,7 @@ function getPitches(seq) {
 	return p;
 }
 
-function playPadSynthNote(note, channel, velocity) {
+function playSynthNote(note, channel, velocity) {
 	const eventTypeByte = 0x90 | channel;
 	const evt = {data: "midi," + eventTypeByte + "," + note + "," + velocity}
 	arrSynth.onmessage(evt);	
@@ -4576,11 +4796,11 @@ function playPads(chords, opts) {
 			if (chords instanceof Array) 
 			{
 				for (note of chords) {
-					playPadSynthNote(note, 1, opts.velocity * 127);
+					playSynthNote(note, 1, opts.velocity * 127);
 				}
 				
 			} else {
-				playPadSynthNote(chords, 1, opts.velocity * 127);
+				playSynthNote(chords, 1, opts.velocity * 127);
 			}			
 		} 
 		else 
@@ -5960,7 +6180,7 @@ function toggleStartStop() {
 
 	playButton.innerText = !styleStarted ? "Play" : "Stop";
 	playButton.style.setProperty("--accent-fill-rest", !styleStarted ? "green" : "red");
-	if (midiOutput.name == "X-TOUCH MINI" && !styleStarted) resetXTouch();	
+	if (midiOutput?.name == "X-TOUCH MINI" && !styleStarted) resetXTouch();	
 	handledStartStop = true;
 }
 
@@ -7161,7 +7381,7 @@ function setupRealInstruments() {
 		playButton.innerText = "Play";
 		playButton.style.setProperty("--accent-fill-rest", "green");	
 
-		if (midiOutput.name == "X-TOUCH MINI") {
+		if (midiOutput?.name == "X-TOUCH MINI") {
 			const slot = registration > 8 ? registration + 1 : (registration == 0 ? 0 : registration);
 			setXTouchButton(slot, "flash");
 		}		
@@ -7196,12 +7416,12 @@ function eventStatus(event, id) {
 }
 
 function outputSendProgramChange(program, channel) {
-	if (midiOutput.name == "X-TOUCH MINI") return;	
+	if (midiOutput?.name == "X-TOUCH MINI") return;	
 	midiOutput.sendProgramChange(program, channel);	
 }
 
 function outputSendControlChange(cc, value, channel) {
-	if (midiOutput.name == "X-TOUCH MINI") return;	
+	if (midiOutput?.name == "X-TOUCH MINI") return;	
 	midiOutput.sendControlChange(cc, value, channel);	
 }
 
@@ -7210,12 +7430,12 @@ function outputSendChannelMode(cc, value, channel) {
 }
 
 function outputPlayNote(chord, channel, options) {
-	if (midiOutput.name == "X-TOUCH MINI") return;
+	if (midiOutput?.name == "X-TOUCH MINI") return;
 	midiOutput.playNote(chord, channel, options);	
 }
 
 function outputStopNote(chord, channel, options) {
-	if (midiOutput.name == "X-TOUCH MINI") return;	
+	if (midiOutput?.name == "X-TOUCH MINI") return;	
 	midiOutput.stopNote(chord, channel, options)	
 }
 
@@ -7434,7 +7654,7 @@ function handleEncoderPress(encoder) {
 		savedPadsMode = padsMode == 0 ? savedPadsMode : padsMode;	
 		padsMode = padsMode == 0 ? savedPadsMode : 0;		
 		orinayo_pad.innerHTML =  padsMode == 0 ? "None" : "Pad " + padsMode;
-		if (input.name == "X-TOUCH MINI") setXTouchSpeaker(encoder, padsMode == 0  ? "flash": "off");		
+		if (input?.name == "X-TOUCH MINI") setXTouchSpeaker(encoder, padsMode == 0  ? "flash": "off");		
 	}
 	else
 		
@@ -7442,7 +7662,7 @@ function handleEncoderPress(encoder) {
 		const drumChecked = document.getElementById("arr-instrument-16");
 		drumChecked.checked = !drumChecked.checked;
 		pressFootSwitch(7);
-		if (input.name == "X-TOUCH MINI") setXTouchSpeaker(encoder, !drumChecked.checked ? "flash": "off");			
+		if (input?.name == "X-TOUCH MINI") setXTouchSpeaker(encoder, !drumChecked.checked ? "flash": "off");			
 	}
 	else
 
@@ -7450,7 +7670,7 @@ function handleEncoderPress(encoder) {
 		const bassChecked = document.getElementById("arr-instrument-17");
 		bassChecked.checked = !bassChecked.checked;	
 		pressFootSwitch(8);	
-		if (input.name == "X-TOUCH MINI") setXTouchSpeaker(encoder, !bassChecked.checked ? "flash": "off");		
+		if (input?.name == "X-TOUCH MINI") setXTouchSpeaker(encoder, !bassChecked.checked ? "flash": "off");		
 	}
 	else
 
@@ -7458,7 +7678,7 @@ function handleEncoderPress(encoder) {
 		const chordChecked = document.getElementById("arr-instrument-18");
 		chordChecked.checked = !chordChecked.checked;	
 		pressFootSwitch(9);
-		if (input.name == "X-TOUCH MINI") setXTouchSpeaker(encoder, !chordChecked.checked ? "flash": "off");		
+		if (input?.name == "X-TOUCH MINI") setXTouchSpeaker(encoder, !chordChecked.checked ? "flash": "off");		
 	}	
 	else
 		
