@@ -266,7 +266,7 @@ window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
 window.addEventListener("beforeunload", () => {if (!registration) saveConfig(); });
 window.addEventListener('message', messageHandler);
-
+window.addEventListener('resize', (event) =>	{setup()});	
 //document.addEventListener('contextmenu', event => event.preventDefault());
 			
 function myWorkerTimer(evt) {
@@ -486,7 +486,6 @@ async function doLavaGenieSetup(device) {
 	console.debug('doLavaGenieSetup', device);	
 	
 	if (device) {	
-		//startXMPP(device.name, device.id); // VbvhH2d5pwVDlZmOm2p4kQ==
 		const ui = document.getElementById("lyrics");
 
 		device.addEventListener('gattserverdisconnected', (event) => {
@@ -678,19 +677,19 @@ function packString(str) {
 	return bArr;
 }
 
-function startXMPP(username, password) {
-	let url = "wss://" + location.host + "/ws/";
+function startXMPP() {
 	
 	if (location.origin.startsWith("chrome-extension") || location.origin.startsWith("https://jus-be.github.io/")) {
-		url = "wss://pade.chat:5443/ws/";
+		return;
 	}
 	
-    const jid = username ? username + "@" + location.hostname : location.hostname;
+	let url = "wss://" + location.host + "/ws/";	
+    const jid = location.hostname;
     console.debug("XMPPConnection JID", jid, url);	
 	
     window.connection = new Strophe.Connection(url);	
 
-    window.connection.connect(jid, password, function (status) {
+    window.connection.connect(jid, null, function (status) {
         console.debug("XMPPConnection.connect", status);
 
         if (status === Strophe.Status.CONNECTED)  {
@@ -716,7 +715,6 @@ async function doLiberLiveSetup(device) {
 	console.debug('doLiberLiveSetup', device);
 
 	if (device) {	
-		startXMPP(device.name, device.id); // VbvhH2d5pwVDlZmOm2p4kQ==
 		const ui = document.getElementById("lyrics");
 
 		device.addEventListener('gattserverdisconnected', (event) => {
@@ -1214,9 +1212,11 @@ async function onloadHandler() {
 	guitarReverb = document.querySelector("#reverb");
 	
 	document.body.addEventListener('click', function(event) 	{
+		// TODO
 		//if (inputDeviceType == "liberlivec1") initLiberLive();
 		//if (inputDeviceType == "lavagenie") initLavaGenie();		
 	})
+	
 	
 	guitarReverb.addEventListener('click', function(event) 
 	{
@@ -2783,6 +2783,7 @@ function letsGo() {
 	  }
 	  
 	  setupUI(config, err);	
+	  startXMPP();
     }, true);
 }
 
@@ -3284,7 +3285,8 @@ async function setupUI(config,err) {
 	if (inputDeviceType == "liberlivec1") {
 		initLiberLive();	
 		handleLiberLive(inputDeviceType == "liberlivec1");
-	} else {
+		
+	} else if (inputDeviceType == "lavagenie") {
 		initLavaGenie();
 		handleLavaGenie(inputDeviceType == "lavagenie");		
 	}	
@@ -3297,7 +3299,8 @@ async function setupUI(config,err) {
 		
 		if (inputDeviceType == "liberlivec1") {
 			handleLiberLive(inputDeviceType == "liberlivec1");
-		} else {
+			
+		} else if (inputDeviceType == "lavagenie") {
 			handleLavaGenie(inputDeviceType == "lavagenie");		
 		}
 	});	
@@ -6198,23 +6201,25 @@ function updateCanvas() {
 }
 
 async function setup() {
-  var gameCanvas = document.getElementById('gameCanvas');
-  canvas.context = gameCanvas.getContext('2d');
-  canvas.gameWidth = gameCanvas.width;
-  canvas.gameHeight = gameCanvas.height;
+	var gameCanvas = document.getElementById('gameCanvas');
+	gameCanvas.width = window.innerWidth  * 0.88;
+	canvas.context = gameCanvas.getContext('2d');
+	canvas.gameWidth = gameCanvas.width;
+	canvas.gameHeight = gameCanvas.height;
 
-  game = new GameBoard(canvas.context, canvas.gameWidth / 4, 0,  canvas.gameWidth / 2, canvas.gameHeight);
-  
-  document.addEventListener("pointerlockchange", lockChangeAlert, false);
-  
-  if (inputDeviceType == "orinayo") 
-  {
-	  if (!document.pointerLockElement) {
-		await document.body.requestPointerLock({
-		  unadjustedMovement: true,
-		});
-	  } 
-  }
+	if (!game) {
+		game = new GameBoard(canvas.context, canvas.gameWidth / 4, 0,  canvas.gameWidth / 2, canvas.gameHeight);
+		document.addEventListener("pointerlockchange", lockChangeAlert, false);
+
+		if (inputDeviceType == "orinayo") 
+		{
+		  if (!document.pointerLockElement) {
+			await document.body.requestPointerLock({
+			  unadjustedMovement: true,
+			});
+		  } 
+		}
+	}
 }
 
 function lockChangeAlert() {
