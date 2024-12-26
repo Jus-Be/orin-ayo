@@ -494,10 +494,6 @@ async function doLavaGenieSetup(device) {
 		const handlers = {};		
 		const server = await device.gatt.connect();
 		console.debug('GATT server', server);
-		
-		//const test = await server.getPrimaryService("f000ffc0-0451-4000-b000-000000000000");
-		//console.debug('GATT test server', test);
-		
 
 		const services = await server.getPrimaryServices();
 		
@@ -554,7 +550,7 @@ async function doLavaGenieSetup(device) {
 						resetGuitarHero();
 					}	
 
-					document.getElementById("liberlive").style.display = "";					
+					document.getElementById("lavagenie").style.display = "";					
 					
 					handlers[characteristic.uuid].addEventListener('characteristicvaluechanged', (evt) => {
 						const {buffer}  = evt.target.value;
@@ -564,30 +560,17 @@ async function doLavaGenieSetup(device) {
 
 						let chordSelected = false;
 						let paddleMoved = false;
+						resetGuitarHero();
 						
 						if (eventData[0] == 202 && eventData[1] == 2 && eventData[2] == 101) { // control buttons
-						
-							if (eventData[3] == 1 && eventData[4] == 100) { // STOP-START
-								resetGuitarHero();															
+								
+							if (eventData[3] == 2 && eventData[4] == 103) { // START - STOP							
 								pad.buttons[LOGO] = true;
-							}
-							else
-								
-							if (eventData[3] == 0 && eventData[4] == 101) { // NEXT
-								resetGuitarHero();								
-								pad.buttons[STARPOWER] = true;	// next style																	
-							}
-							else
-								
-							if (eventData[3] == 2 && eventData[4] == 103) { // PREV
-								resetGuitarHero();								
-								pad.buttons[START] = true;	// prev style
 							}							
 						}
 						else
 
-						if (eventData[0] == 202 && eventData[1] == 2 && eventData[2] == 92) { // chord key press
-							resetGuitarHero();	
+						if (eventData[0] == 202 && eventData[1] == 2 && eventData[2] == 92) { // chord key press	
 						
 							if (eventData[3] == 27 && eventData[4] == 71) {
 								pad.buttons[YELLOW] = true;		// 7b			
@@ -734,7 +717,7 @@ async function doLavaGenieSetup(device) {
 						}
 
 						if (pad.buttons[LOGO]) {
-							setTimeout(toggleStartStop);
+							toggleStartStop();
 						} else {
 							updateCanvas();	
 
