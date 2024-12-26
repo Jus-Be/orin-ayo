@@ -918,7 +918,7 @@ function packString(str) {
 
 function startXMPP() {
 	
-	if (location.origin.startsWith("chrome-extension") || location.origin.startsWith("https://jus-be.github.io/")) {
+	if (location.origin.startsWith("chrome-extension") || location.hostname == "jus-be.github.io") {
 		return;
 	}
 	
@@ -1452,8 +1452,8 @@ async function onloadHandler() {
 	
 	document.body.addEventListener('click', function(event) 	{
 		// TODO
-		//if (inputDeviceType == "liberlivec1") initLiberLive();
-		//if (inputDeviceType == "lavagenie") initLavaGenie();		
+		if (inputDeviceType == "liberlivec1") initLiberLive();
+		if (inputDeviceType == "lavagenie") initLavaGenie();		
 	})
 	
 	
