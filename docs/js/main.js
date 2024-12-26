@@ -564,9 +564,22 @@ async function doLavaGenieSetup(device) {
 						
 						if (eventData[0] == 202 && eventData[1] == 2 && eventData[2] == 101) { // control buttons
 								
-							if (eventData[3] == 2 && eventData[4] == 103) { // START - STOP							
-								pad.buttons[LOGO] = true;
+							if (eventData[3] == 2 && eventData[4] == 103) {	
+
+								if (!styleStarted) {
+									pad.buttons[LOGO] = true;		// START
+								} else {
+									pad.buttons[STARPOWER] = true;	// next style
+								}
+							}
+							else
+								
+							if (eventData[3] == 0 && eventData[4] == 101) {	
+								if (styleStarted) {
+									pad.buttons[LOGO] = true;		// STOP
+								}
 							}							
+	
 						}
 						else
 
