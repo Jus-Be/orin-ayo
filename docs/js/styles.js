@@ -233,6 +233,7 @@ var chord_loops = [
 	"assets/chords/strum_100_9600_9600_2.chord",	
 	"assets/chords/strum2_96_10000.chord",	
 	"assets/chords/surf_170_11294.chord",	
+	"assets/chords/sweet-pop_85_11294_11294_2.chord",
 	"assets/chords/sweet-pop_114_8421.chord",
 	"assets/chords/tight-eight_110_8727.chord",	
 	"assets/chords/triple-hop_85_11294_11294_4.chord",		
@@ -349,6 +350,7 @@ var drum_loops = [
 	"assets/drums/strum2_96_10000_10000_2500_2500_12500.drum",
 	"assets/drums/strum3_96_5385_10000_2500_2500_5000.drum",	
 	"assets/drums/surf_170_2824_11294_1412_1412_8471.drum",	
+	"assets/drums/sweet-pop_85_2824_11294_2824_2824_11294.drum",
 	"assets/drums/triple-hop_85_2824_11294_2824_2824_5647.drum",		
 	"assets/drums/u2-guitar_105_27429_18286_2286_2286_11429.drum",
 	"assets/drums/village-pop_107_2243_8972_2243_2243_4486.drum",
@@ -381,6 +383,7 @@ var bass_loops = [
 	"assets/bass/rock_120_8000.bass",
 	"assets/bass/rock-ballad_80_24000.bass",
 	"assets/bass/soul-band_90_21333.bass",
+	"assets/bass/sweet-pop_85_11294.bass",
 	"assets/bass/u2-guitar_105_18286.bass",
 	"assets/bass/wild-rock_120_8000.bass"
 ]

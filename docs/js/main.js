@@ -25,6 +25,9 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var recorderDestination = null;
+var streamDestination = null;
+var peerConnection = null;
 var lavaGenieWaitout = 1000;
 var keysSound1 = null;
 var keysSound2 = null;
@@ -45,7 +48,6 @@ var lyricsX = 2;
 var lyricsY = 18;
 var lyricsCanvas = null;
 var recorderFilename = null;
-var recorderDestination = null;
 var mediaRecorder = null;
 var recordMode = false;
 var writeCharacteristic = null;
@@ -311,7 +313,10 @@ function handleLiberLive(selected) {
 			services: ["000000ff-0000-1000-8000-00805f9b34fb"],
 		}]});
 
-		if (device) await device.forget();			
+		if (device) {
+			await device.forget();			
+			console.debug("forget liberlive", device);
+		}
 	});
 }
 
@@ -328,7 +333,7 @@ function handleLavaGenie(selected) {
 			services: ["0000fee0-0000-1000-8000-00805f9b34fb"],		
 		}]});
 
-		//if (device) await device.forget();	// MIDI_SERVICE_UID		
+		if (device) await device.forget();	// MIDI_SERVICE_UID		
 	});
 }
 
@@ -423,7 +428,7 @@ async function onLavaGenieClick() {
 		await device.watchAdvertisements();		
 		
 	} else {
-		device = await navigator.bluetooth.requestDevice({filters: [{services: ["0000fee0-0000-1000-8000-00805f9b34fb"]}], optionalServices: ["f000ffc0-0451-4000-b000-000000000000"]});
+		device = await navigator.bluetooth.requestDevice({filters: [{services: ["0000fee0-0000-1000-8000-00805f9b34fb"]}]});
 
 		if (device) {
 			textDecoder = new TextDecoder("utf-8"); 			
@@ -449,6 +454,7 @@ async function onLiberLiveClick() {
 	
 	let ready, device;
 	const devices = await navigator.bluetooth.getDevices();
+	console.debug('onLiberLiveClick - devices', devices);
 
 	if (devices.length > 0) {
 		device = devices[0];
@@ -466,10 +472,7 @@ async function onLiberLiveClick() {
 		await device.watchAdvertisements();		
 		
 	} else {
-		device = await navigator.bluetooth.requestDevice({		
-			filters: [{
-			services: ["000000ff-0000-1000-8000-00805f9b34fb"],
-		}]});
+		device = await navigator.bluetooth.requestDevice({filters: [{services: ["000000ff-0000-1000-8000-00805f9b34fb"]}]});
 
 		if (device) {
 			textDecoder = new TextDecoder("utf-8"); 			
@@ -912,14 +915,73 @@ function packString(str) {
 	return bArr;
 }
 
+async function handleMediaStream(started) {
+	console.debug("handleMediaStream", started);
+		
+	if (!started) {
+		const gain = audioContext.createGain();	
+		streamDestination = audioContext.createMediaStreamDestination();	
+		gain.connect(streamDestination);	
+		
+		if (window.pedalOutput) pedalOutput.connect(streamDestination);	
+
+		let mediaOptions = {audio: true, video: false}
+		
+		peerConnection = new RTCPeerConnection();
+
+		peerConnection.oniceconnectionstatechange = () => {
+			console.debug("handleMediaStream - status", peerConnection.iceConnectionState);
+		}
+		
+		streamDestination.stream.getTracks().forEach(t => {
+			if (t.kind === 'audio') {
+				console.debug('handleMediaStream track', t.kind, t.id, t);				
+				peerConnection.addTransceiver(t, {direction: 'sendonly'})
+			}
+		})		
+		
+		const offer = await peerConnection.createOffer();
+		peerConnection.setLocalDescription(offer);
+		console.debug('handleMediaStream offer', offer.sdp);	
+		
+		window.connection.sendIQ($iq({type: 'set', to: window.connection.domain}).c('whip', {xmlns: 'urn:xmpp:whip:0'}).c('sdp', offer.sdp), 
+			function (res)  {
+				const answer = res.querySelector('sdp').innerHTML;
+				peerConnection.setRemoteDescription({sdp: answer,  type: 'answer'});	
+				console.debug('handleMediaStream answer', answer);			
+
+			}, function (err) {
+				console.warn('handleMediaStream failed', err);
+			}
+		);
+		
+	} else {
+		if (peerConnection) {			
+			peerConnection.close();
+			peerConnection = null;
+		}
+	}		
+}
+
 function startXMPP() {
+	const streamSong = document.querySelector("#stream_song");	
 	
-	if (location.origin.startsWith("chrome-extension") || location.hostname == "jus-be.github.io") {
-		return;
-	}
+	streamSong.addEventListener("click", async (evt) => {
+		const streamStarted = streamSong.innerText == "Stop Stream";
+		console.debug("Stream clicked", streamStarted);
+		streamSong.innerText = streamStarted ? "Start Stream" : "Stop Stream";		
+		await handleMediaStream(streamStarted);
+		streamSong.style.setProperty("--accent-fill-rest", !streamStarted ? "red" : "green");			
+	});		
 	
 	let url = "wss://" + location.host + "/ws/";	
-    const jid = location.hostname;
+    let jid = location.hostname;
+	
+	if (location.hostname == "oeplgfliognafobghehfffbppakffdkc") {
+		url = "ws://localhost:7070/ws/";	
+		jid = "localhost";
+	}
+	
     console.debug("XMPPConnection JID", jid, url);	
 	
     window.connection = new Strophe.Connection(url);	
@@ -929,21 +991,15 @@ function startXMPP() {
 
         if (status === Strophe.Status.CONNECTED)  {
             window.connection.send($pres());
+			streamSong.style.display = "";
+			streamSong.style.setProperty("--accent-fill-rest", "green");	
         }
         else
 
         if (status === Strophe.Status.DISCONNECTED)  {
-
+			streamSong.style.display = "none";
         }
     });
-
-    window.connection.addHandler(function (message) {
-        const json_ele = message.querySelector("json");
-        const json = JSON.parse(json_ele.innerHTML);
-
-        return true;
-
-    }, "urn:xmpp:json:0", 'message');
 }
 
 async function doLiberLiveSetup(device) {
@@ -3018,7 +3074,10 @@ function letsGo() {
 	  }
 	  
 	  setupUI(config, err);	
-	  startXMPP();
+	  
+	  if (!location.origin.startsWith("chrome-extension") && location.hostname != "jus-be.github.io") {
+		startXMPP();
+	  }	  
     }, true);
 }
 

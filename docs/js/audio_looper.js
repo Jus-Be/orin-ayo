@@ -49,6 +49,7 @@ function AudioLooper(styleType) {
 		
 		this.gainNode.connect(this.audioContext.destination);		
 		if (recorderDestination) this.gainNode.connect(recorderDestination);		
+		if (streamDestination) this.gainNode.connect(streamDestination);			
 		this.source.connect(this.gainNode);			
 		
 		try {
