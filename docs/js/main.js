@@ -944,6 +944,31 @@ function fetchStreams() {
 	const streamSong = document.querySelector("#stream_song");	
 	const activeStreams = document.querySelector("#activeStreams");	
 	activeStreams.options[0] = new Option("**UNUSED**", "activeStreams", false, false);		
+
+	activeStreams.addEventListener("click", function() {
+		console.debug("fetchStreams refresh streams");
+		
+		window.connection.sendIQ($iq({type: 'get', to: window.connection.domain}).c('whep', {xmlns: 'urn:xmpp:whep:0'}), 
+			function (res)  {
+				console.debug('fetchStreams response', res);						
+				const items = res.querySelectorAll('item');
+				const temp = activeStreams.selectedIndex;
+				activeStreams.innerHTML = "";
+				activeStreams.options[0] = new Option("**UNUSED**", "activeStreams", false, false);					
+				let count = 1;
+				
+				for (item of items) {		
+					const id = item.getAttribute("id");
+					activeStreams.options[count++] = new Option(id, id, false, false);	
+				}
+				
+				activeStreams.selectedIndex = temp;
+				
+			}, function (err) {
+				console.warn('fetchStreams failed', err);
+			}
+		);
+	});
 	
 	activeStreams.addEventListener("change", function() {
 		console.debug("fetchStreams selected stream", activeStreams.value);
@@ -966,7 +991,7 @@ function fetchStreams() {
 			}
 
 			watchConnection.oniceconnectionstatechange = () => {
-				console.debug("", watchConnection.iceConnectionState);
+				console.debug("fetchStreams status", watchConnection.iceConnectionState);
 				streamSong.style.setProperty("--accent-fill-rest", "purple");			
 			}
 
@@ -997,7 +1022,7 @@ function fetchStreams() {
 			
 			for (item of items) {		
 				const id = item.getAttribute("id");
-				activeStreams.options[count] = new Option(id, id, false, false);	
+				activeStreams.options[count++] = new Option(id, id, false, false);	
 			}
 			
 		}, function (err) {
