@@ -16,7 +16,7 @@
     <input style="display:none" id="load-midifile" type="file" />
 	<table width="100%">	
 	<tr>
-		<td><img height=96 src="./assets/icon_128.png"/></td>
+		<td><img height=64 src="./assets/icon_128.png"/></td>
 		<td>
 			<div><center>
 				<fluent-button appearance="accent" title='Toggle play/stop' id="play">On</fluent-button>
@@ -24,7 +24,7 @@
 				<fluent-button appearance="accent" title='Guitar playing style' id="gamepad_mode">Color Tabs</fluent-button>
 				<fluent-button appearance="accent" title='Load external file (drum, chord, bass, midi, sty, etc)' id="load_file">Load</fluent-button>
 				<fluent-button appearance="accent" title='Pair/Unpair Stream Deck' id="stream_deck">Stream Deck</fluent-button>					
-				<fluent-button appearance="accent" title='Pair/Unpair LiberLive Guitar' style="display: none;" id="bluetooth">LiberLive C1</fluent-button>					
+				<fluent-button appearance="accent" title='Pair/Unpair LiberLive/Lava Genie Guitar' style="display: none;" id="bluetooth">Bluetooth</fluent-button>					
 				<fluent-button appearance="accent" style="display: none;" id="chorda_bluetooth">BT OFF</fluent-button>	
 				<fluent-button appearance="accent" style="display: none;" id="delete_style">Delete Style</fluent-button>				
 				<fluent-button appearance="accent" title='Toggle Pedalboard Display' id="pedal_board">Pedal Board</fluent-button>			
@@ -57,7 +57,8 @@
 	<iframe src="https://jus-be.github.io/chordpro-pdf-online/" style="display: none;" id="chordpro"></iframe>	
 	
 	<table id="settings" width="90%">	
-	<tr><td><b>Guitar Strum</b></td><td><select id="guitarType" type="text" class="form-control input"></select></td>	
+	<tr><td><b>Guitar Strum</b></td>
+	    <td><select id="guitarType" type="text" class="form-control input"></select></td>	
 	    <td><select  title='Strum type for Pad 3'id="guitarStrum1" type="text" class="form-control input"></select></td>	
 	    <td><select  title='Strum type for Pad 4'id="guitarStrum2" type="text" class="form-control input"></select></td>
 	    <td><select title='Strum type for Pad 5' id="guitarStrum3" type="text" class="form-control input"></select></td>
@@ -106,6 +107,7 @@
 		</td>
 	</tr>
 	<tr><td><b>Song Sequence</b></td><td><select id="songSequence" type="text" class="form-control input"></select></td><td></td></tr>	
+	<tr id="active_streams" style="display:none"><td><b>Active Streams</b></td><td colspan=7><select id="activeStreams" type="text" class="form-control input"></select></td></tr>		
 	</table>
   </div>  
   <div style="margin-top: 20px;">	
@@ -158,6 +160,7 @@
   <script src="./js/sf2.synth.min.js"></script>	 
   <script src="./js/midi.ble.js"></script>	
   <script src="./js/midi-creator.js"></script>	
-  <script src="./js/main.js"></script>  
+  <script src="./js/main.js"></script> 
+  <audio id="audioPlayer" autoplay style="display: none"> </audio>
 </body>
 </html>
