@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Orin Ayo</title>
     <link rel="stylesheet" href="./css/bootstrap.css">
+    <link rel="stylesheet" href="./dist/converse.min.css" />	
     <link rel="stylesheet" href="./css/synth.css">	
     <link rel="stylesheet" href="./css/main.css">	
 	<!--link rel="stylesheet" href="./assets/chordpro.css" /-->
@@ -27,6 +28,7 @@
 				<fluent-button appearance="accent" title='Pair/Unpair LiberLive/Lava Genie Guitar' style="display: none;" id="bluetooth">Bluetooth</fluent-button>					
 				<fluent-button appearance="accent" style="display: none;" id="chorda_bluetooth">BT OFF</fluent-button>	
 				<fluent-button appearance="accent" style="display: none;" id="delete_style">Delete Style</fluent-button>				
+				<fluent-button appearance="accent" style="display: none;" id="toggle_chat">Chat</fluent-button>					
 				<fluent-button appearance="accent" title='Toggle Pedalboard Display' id="pedal_board">Pedal Board</fluent-button>			
 				<fluent-button appearance="accent" title='Edit Extended ChordPro song' id="chord_pro">ChordPro</fluent-button>
 				<fluent-button appearance="accent" title='Display song lyrics' id="show_lyrics">Lyrics</fluent-button>				
@@ -55,6 +57,9 @@
 	</fluent-tabs>		
 	</div>	
 	<iframe src="https://jus-be.github.io/chordpro-pdf-online/" style="display: none;" id="chordpro"></iframe>	
+	<div style="display: none;" id="chatview" class="converse-container">
+		<converse-root></converse-root>	
+	</div>		
 	
 	<table id="settings" width="90%">	
 	<tr><td><b>Guitar Strum</b></td>
@@ -139,12 +144,15 @@
   <script src='./js/0253_Acoustic_Guitar_sf2_file.js'></script>
   <script src='./js/0341_Aspirin_sf2_file.js'></script>  
   <script src='./js/0260_JCLive_sf2_file.js'></script>
+
+  <script src="./dist/libsignal-protocol.min.js"></script>
+  <script src="./dist/converse.js"></script>
+	
   <script src="./assets/pedalboard.js" type="module"></script>   
   <script src="./js/basic-pitch.js"></script>    
   <script src="./js/tonal.min.js"></script>    
   <script src="./js/stream-deck.js"></script>  
   <script src="./js/chordsheet.js"></script>  
-  <script src="./js/stophe.min.js"></script>  
   <script src='./js/webaudio-font-player.js'></script>  
   <script src="./js/web-components.min.js" type="module"></script>
   <script src="./js/note.js"></script>

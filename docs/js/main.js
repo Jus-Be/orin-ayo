@@ -25,6 +25,7 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var _converse;
 var recorderDestination = null;
 var streamDestination = null;
 var publishConnection = null;
@@ -514,7 +515,7 @@ async function doLavaGenieSetup(device) {
 
 		device.addEventListener('gattserverdisconnected', (event) => {
 			console.debug('Bluetooth device ' + device.name + ' is disconnected.', event);
-			if (window.connection) window.connection.disconnect();
+			if (_converse.api.connection) _converse.api.disconnect();
 		});
 		
 		const handlers = {};		
@@ -938,39 +939,33 @@ function packString(str) {
 	return bArr;
 }
 
-function fetchStreams() {
-	console.debug("fetchStreams");
+async function fetchStreams() {
+	console.debug("fetchStreams", _converse);
 
 	const streamSong = document.querySelector("#stream_song");	
 	const activeStreams = document.querySelector("#activeStreams");	
 	activeStreams.options[0] = new Option("**UNUSED**", "activeStreams", false, false);		
 
-	activeStreams.addEventListener("click", function() {
+	activeStreams.addEventListener("click", async () => {
 		console.debug("fetchStreams refresh streams");
 		
-		window.connection.sendIQ($iq({type: 'get', to: window.connection.domain}).c('whep', {xmlns: 'urn:xmpp:whep:0'}), 
-			function (res)  {
-				console.debug('fetchStreams response', res);						
-				const items = res.querySelectorAll('item');
-				const temp = activeStreams.selectedIndex;
-				activeStreams.innerHTML = "";
-				activeStreams.options[0] = new Option("**UNUSED**", "activeStreams", false, false);					
-				let count = 1;
-				
-				for (item of items) {		
-					const id = item.getAttribute("id");
-					activeStreams.options[count++] = new Option(id, id, false, false);	
-				}
-				
-				activeStreams.selectedIndex = temp;
-				
-			}, function (err) {
-				console.warn('fetchStreams failed', err);
-			}
-		);
+		const res = await _converse.api.sendIQ($iq({type: 'get', to: _converse.api.domain}).c('whep', {xmlns: 'urn:xmpp:whep:0'}));
+		console.debug('fetchStreams response', res);						
+		const items = res.querySelectorAll('item');
+		const temp = activeStreams.selectedIndex;
+		activeStreams.innerHTML = "";
+		activeStreams.options[0] = new Option("**UNUSED**", "activeStreams", false, false);					
+		let count = 1;
+		
+		for (item of items) {		
+			const id = item.getAttribute("id");
+			activeStreams.options[count++] = new Option(id, id, false, false);	
+		}
+		
+		activeStreams.selectedIndex = temp;
 	});
 	
-	activeStreams.addEventListener("change", function() {
+	activeStreams.addEventListener("change", async function() {
 		console.debug("fetchStreams selected stream", activeStreams.value);
 		
 		if ("activeStreams" == activeStreams.value) {
@@ -995,40 +990,28 @@ function fetchStreams() {
 				streamSong.style.setProperty("--accent-fill-rest", "purple");			
 			}
 
-			watchConnection.createOffer().then(offer => {
+			watchConnection.createOffer().then(async (offer) => {
 				watchConnection.setLocalDescription(offer);
 				console.debug('fetchStreams offer', offer.sdp);					
 				
-				window.connection.sendIQ($iq({type: 'set', to: window.connection.domain}).c('whep', {id: activeStreams.value, xmlns: 'urn:xmpp:whep:0'}).c('sdp', offer.sdp), 
-					function (res)  {
-						console.debug('fetchStreams whep set response', res);						
-						const answer = res.querySelector('sdp').innerHTML;
-						watchConnection.setRemoteDescription({sdp: answer,  type: 'answer'});	
-						console.debug('fetchStreams whep answer', answer);			
-
-					}, function (err) {
-						console.warn('fetchStreams whep failed', err);
-					}
-				);				
+				const res = await _converse.api.sendIQ($iq({type: 'set', to: _converse.api.domain}).c('whep', {id: activeStreams.value, xmlns: 'urn:xmpp:whep:0'}).c('sdp', offer.sdp)); 
+				console.debug('fetchStreams whep set response', res);						
+				const answer = res.querySelector('sdp').innerHTML;
+				watchConnection.setRemoteDescription({sdp: answer,  type: 'answer'});	
+				console.debug('fetchStreams whep answer', answer);						
 			})		
 		}
 	});	
 	
-	window.connection.sendIQ($iq({type: 'get', to: window.connection.domain}).c('whep', {xmlns: 'urn:xmpp:whep:0'}), 
-		function (res)  {
-			console.debug('fetchStreams response', res);						
-			const items = res.querySelectorAll('item');
-			let count = 1;
-			
-			for (item of items) {		
-				const id = item.getAttribute("id");
-				activeStreams.options[count++] = new Option(id, id, false, false);	
-			}
-			
-		}, function (err) {
-			console.warn('fetchStreams failed', err);
-		}
-	);	
+	const res = await _converse.api.sendIQ($iq({type: 'get', to: _converse.api.domain}).c('whep', {xmlns: 'urn:xmpp:whep:0'})); 
+	console.debug('fetchStreams response', res);						
+	const items = res.querySelectorAll('item');
+	let count = 1;
+	
+	for (item of items) {		
+		const id = item.getAttribute("id");
+		activeStreams.options[count++] = new Option(id, id, false, false);	
+	}
 }
 
 async function handleMediaStream(started) {
@@ -1060,16 +1043,10 @@ async function handleMediaStream(started) {
 		publishConnection.setLocalDescription(offer);
 		console.debug('handleMediaStream offer', offer.sdp);	
 		
-		window.connection.sendIQ($iq({type: 'set', to: window.connection.domain}).c('whip', {xmlns: 'urn:xmpp:whip:0'}).c('sdp', offer.sdp), 
-			function (res)  {
-				const answer = res.querySelector('sdp').innerHTML;
-				publishConnection.setRemoteDescription({sdp: answer,  type: 'answer'});	
-				console.debug('handleMediaStream answer', answer);			
-
-			}, function (err) {
-				console.warn('handleMediaStream failed', err);
-			}
-		);
+		const res = await _converse.api.sendIQ($iq({type: 'set', to: _converse.api.domain}).c('whip', {xmlns: 'urn:xmpp:whip:0'}).c('sdp', offer.sdp));
+		const answer = res.querySelector('sdp').innerHTML;
+		publishConnection.setRemoteDescription({sdp: answer,  type: 'answer'});	
+		console.debug('handleMediaStream answer', answer);			
 		
 	} else {
 		if (publishConnection) {			
@@ -1081,7 +1058,9 @@ async function handleMediaStream(started) {
 
 function startXMPP() {
 	const streamSong = document.querySelector("#stream_song");	
-	const activeStreams = document.querySelector("#active_streams");	
+	const activeStreams = document.querySelector("#active_streams");
+	const toggleChat = document.querySelector("#toggle_chat");
+	const chatview = document.querySelector("#chatview");		
 	
 	streamSong.addEventListener("click", async (evt) => {
 		const streamStarted = streamSong.innerText == "Stop Stream";
@@ -1091,35 +1070,96 @@ function startXMPP() {
 		streamSong.style.setProperty("--accent-fill-rest", !streamStarted ? "red" : "green");			
 	});		
 	
-	let url = "wss://" + location.host + "/ws/";	
-    let jid = location.hostname;
+	let ws = location.protocol.replace("http", "ws") + "//" + location.host;	
+	let http = location.origin;		
+    let domain = location.hostname;
 	
 	if (location.hostname == "oeplgfliognafobghehfffbppakffdkc") {
-		url = "ws://localhost:7070/ws/";	
-		jid = "localhost";
+		ws = "ws://localhost:7070";
+		http = "http://localhost:7070";			
+		domain = "localhost";
 	}
 	
-    console.debug("XMPPConnection JID", jid, url);	
-	
-    window.connection = new Strophe.Connection(url);	
+	converse.plugins.add("orinayo", {
+		dependencies: [],
 
-    window.connection.connect(jid, null, function (status) {
-        console.debug("XMPPConnection.connect", status);
+		initialize: function () {
+			_converse = this._converse;
+			const __ = _converse.__;
+			const html = converse.env.html;
+			const Strophe = converse.env.Strophe;
 
-        if (status === Strophe.Status.CONNECTED)  {
-            window.connection.send($pres());
-			streamSong.style.display = "";
-			activeStreams.style.display = "";
-			streamSong.style.setProperty("--accent-fill-rest", "green");
-			fetchStreams();			
-        }
-        else
+			_converse.api.listen.on('getToolbarButtons', function(toolbar_el, buttons)	{
+				let color = "fill:var(--chat-toolbar-btn-color);";
+				if (toolbar_el.model.get("type") === "chatroom") color = "fill:var(--muc-toolbar-btn-color);";
+				
+				buttons.push(html`
+					<button class="toolbar-utilities-refresh" title="${__('Return to group chat')}" @click=${hideChat}/>
+						<converse-icon style="width:18px; height:18px; ${color}" class="fa fa-minus" size="1em"></converse-icon>
+					</button>
+				`);	
+							
+				buttons.push(html`
+					<button class="toolbar-utilities-scroll" title="${__('Scroll to the bottom')}" @click=${scrollToBottom}/>
+						<converse-icon style="width:18px; height:18px; ${color}" class="fa fa-angle-double-down" size="1em"></converse-icon>
+					</button>
+				`);
 
-        if (status === Strophe.Status.DISCONNECTED)  {
-			streamSong.style.display = "none";
-			activeStreams.style.display = "none";			
-        }
-    });
+				buttons.push(html`
+					<button class="toolbar-utilities-thrash" title="${__('Trash chat history')}" @click=${trashHistory}/>
+						<converse-icon style="width:18px; height:18px; ${color}" class="far fa-trash-alt" size="1em"></converse-icon>
+					</button>
+				`);
+
+				buttons.push(html`
+					<button class="toolbar-utilities-refresh" title="${__('Refresh chat history')}" @click=${refreshHistory}/>
+						<converse-icon style="width:18px; height:18px; ${color}" class="fa fa-sync" size="1em"></converse-icon>
+					</button>
+				`);			
+
+				return buttons;
+			});	
+
+			_converse.api.listen.on('connected', function() {	
+				streamSong.style.display = "";
+				activeStreams.style.display = "";
+				toggleChat.style.display = "";
+				streamSong.style.setProperty("--accent-fill-rest", "green");
+				setTimeout(fetchStreams);	
+			});
+			
+		}
+	});			
+		
+	converse.initialize({
+		discover_connection_methods: false,
+		assets_path: "./dist/",	
+		sounds_path: "./dist/sounds/",	
+		allow_logout: false, 
+		allow_muc_invitations: false,                                          
+		allow_contact_requests: false, 
+		authentication: 'anonymous',
+		auto_reconnect: true,			
+		auto_login: true,
+		auto_join_rooms: [
+			'lobby@conference.' + domain,
+		],
+		notify_all_room_messages: [
+			'lobby@conference.' + domain,
+		],
+		websocket_url: ws + '/ws/', 
+		jid: domain,
+		keepalive: true,
+		hide_muc_server: true, 
+		play_sounds: false,
+		show_controlbox_by_default: false,			
+		strict_plugin_dependencies: false,	
+		singleton: true,
+		view_mode: 'embedded',	
+		theme: 'dracula',
+		muc_show_logs_before_join: true,	
+		whitelisted_plugins: ['orinayo']					
+	});
 }
 
 async function doLiberLiveSetup(device) {
@@ -1130,7 +1170,7 @@ async function doLiberLiveSetup(device) {
 
 		device.addEventListener('gattserverdisconnected', (event) => {
 			console.debug('Bluetooth device ' + device.name + ' is disconnected.', event);
-			if (window.connection) window.connection.disconnect();
+			if (_converse.api.connection) _converse.api.disconnect();
 		});
 		
 		const server = await device.gatt.connect();
@@ -1697,11 +1737,34 @@ async function onloadHandler() {
 	lyricsCanvas = document.querySelector("#lyrics");
 	const board = document.querySelector(".pedalboard");
 	const chordpro = document.querySelector("#chordpro");
-	const settings = document.querySelector("#settings");	
+	const chatview = document.querySelector("#chatview");	
+	const settings = document.querySelector("#settings");
+	const gameCanvas = document.querySelector("#gameCanvas");
+	const toggleChat = document.querySelector("#toggle_chat");
+	
+	toggleChat.addEventListener('click', function(event) {	
+		chatview.style.display = "none";	
+		board.style.display = "none";
+		chordpro.style.display = "none";	
+		lyricsCanvas.style.display = "none";		
+			
+		if (settings.style.display == "none") {
+			settings.style.display = "";
+			//gameCanvas.style.display = "";
+			chatview.style.display = "none";
+	
+			
+		} else {
+			chatview.style.display = "";
+			settings.style.display = "none";	
+			//gameCanvas.style.display = "none";			
+		}
+	});
 	
 	const pedalBoard = document.querySelector("#pedal_board");
 	
-	pedalBoard.addEventListener('click', function(event) {		
+	pedalBoard.addEventListener('click', function(event) {	
+		chatview.style.display = "none";		
 		board.style.display = "none";
 		chordpro.style.display = "none";	
 		lyricsCanvas.style.display = "none";		
@@ -1720,6 +1783,7 @@ async function onloadHandler() {
 	const chordPro = document.querySelector("#chord_pro");
 	
 	chordPro.addEventListener('click', function(event) {
+		chatview.style.display = "none";			
 		board.style.display = "none";
 		chordpro.style.display = "none";	
 		lyricsCanvas.style.display = "none";		
@@ -1741,7 +1805,8 @@ async function onloadHandler() {
 	
 	showLyrics.addEventListener('click', function(event) {
 		if (songSequence == null) return;
-		
+
+		chatview.style.display = "none";		
 		board.style.display = "none";
 		chordpro.style.display = "none";	
 		lyricsCanvas.style.display = "none";	
@@ -2297,7 +2362,7 @@ function handleSevenButtons(name, code) {
 function handleNumPad(name, code) {
 	var handled = false;	
 	
-	if (keyboard.get("Enter")) {
+	if (keyboard.get(" ")) {
 		pad.buttons[LOGO] = true;
 		if (keyboard.get("Backspace")) pad.buttons[YELLOW] = true; 	// End1
 		handled = true;				
@@ -8123,4 +8188,72 @@ function handleEncoderPress(encoder) {
 	if (encoder == 7) {
       window.dispatchEvent(new CustomEvent('MIDI', { detail: 10 }));	// reverb effect
 	}	
+}
+
+// -------------------------------------------------------
+//
+//  Converse
+//
+// -------------------------------------------------------
+
+function openChatbox(view) {
+	let jid = view.model.get("jid");
+	let type = view.model.get("type");
+
+	console.debug("openChatbox", jid, type);
+
+	if (jid)
+	{
+		if (type == "chatbox") _converse.api.chats.open(jid, {'bring_to_foreground': true}, true);
+		else
+		if (type == "chatroom") _converse.api.rooms.open(jid, {'bring_to_foreground': true}, true);
+	}
+}
+	
+function refreshHistory(ev) {
+	ev.stopPropagation();
+	ev.preventDefault();
+	
+	const toolbar_el = converse.env.utils.ancestor(ev.target, 'converse-chat-toolbar');
+	const chatview = _converse.chatboxviews.get(toolbar_el.model.get('jid'));		
+	console.debug("refreshHistory", chatview);
+
+	chatview.close();
+	setTimeout(function() { openChatbox(chatview) });
+}
+
+async function trashHistory(ev) {
+	ev.stopPropagation();
+	ev.preventDefault();
+
+	const result = confirm(__('Are you sure you want to clear the messages from this conversation?'));
+
+	if (result === true) {		
+		const toolbar_el = converse.env.utils.ancestor(ev.target, 'converse-chat-toolbar');
+		await toolbar_el.model.messages.clearStore(); 
+		toolbar_el.model.messages.fetched.resolve();		
+	}
+}
+
+function scrollToBottom(ev) {
+	ev.stopPropagation();
+	ev.preventDefault();
+	
+	const toolbar_el = converse.env.utils.ancestor(ev.target, 'converse-chat-toolbar');
+	const chatview = _converse.chatboxviews.get(toolbar_el.model.get('jid'));		
+	console.debug("scrollToBottom", chatview);
+
+	chatview.scrollDown();
+}
+
+function hideChat(ev) {
+	ev.stopPropagation();
+	ev.preventDefault();
+
+    let domain = location.hostname;
+	
+	if (location.hostname == "oeplgfliognafobghehfffbppakffdkc") {		
+		domain = "localhost";
+	}	
+	_converse.api.rooms.open('lobby@conference.' + domain, {'bring_to_foreground': true}, true);	
 }
