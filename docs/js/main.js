@@ -85,7 +85,7 @@ var arrSequence = null;
 var realdrumDevice = null;
 var arranger = "webaudio";
 var arrangerGroup = "imported";
-var inputDeviceType = "games-controller";
+var inputDeviceType = "keyboard";
 var realGuitarStyle = "none";
 var midiOutput = null;
 var input = null;
@@ -114,6 +114,7 @@ var forwardChord = null;
 var arrChordType = "maj";
 var guitarAvailable = false;
 var firstChord = [base, base + 4, base + 7];
+var lastChord = firstChord;
 var rcLooperChord = 0;
 var aerosPart = 1;
 var aerosChordTrack = 1;
@@ -752,8 +753,7 @@ async function doLavaGenieSetup(device) {
 						}
 				
 						if (chordSelected) { 
-							pad.axis[STRUM] = isStrumUp ? STRUM_UP : STRUM_DOWN;			
-							isStrumUp = !isStrumUp;							
+							pad.axis[STRUM] = autoStrumUpDown();								
 						}
 
 						if (pad.buttons[LOGO]) {
@@ -2381,7 +2381,12 @@ function handleNumPad(name, code) {
 	}	
 	  
 	if (keyboard.get("0") || keyboard.get(".") || keyboard.get("1") || keyboard.get("2") || keyboard.get("3") || keyboard.get("4") || keyboard.get("5") || keyboard.get("6") || keyboard.get("7") || keyboard.get("8") || keyboard.get("9") || keyboard.get("*") || keyboard.get("/") || keyboard.get("Backspace")) {	
-		toggleStrumUpDown();
+		pad.axis[STRUM] = autoStrumUpDown();
+		
+		if (midiRealGuitar) {
+			midiRealGuitar.playNote(pad.axis[STRUM] == STRUM_UP ? 122 : 121, 1, {velocity: getVelocity(), duration: 1000});	
+		}
+		
 		handled = true;			
 
 		if (keyboard.get("Backspace") && keyboard.get("0")) {	// Fill
@@ -2522,10 +2527,12 @@ function handleNumPad(name, code) {
 	return handled;
 }
 
-function toggleStrumUpDown() {
-	pad.axis[STRUM] = isStrumUp ? STRUM_UP : STRUM_DOWN;
-	if (midiRealGuitar) midiRealGuitar.playNote(isStrumUp ? 122 : 121, 1, {velocity: getVelocity(), duration: 1000});				
-	isStrumUp = !isStrumUp;
+function autoStrumUpDown() {
+	const sameChord = arraysEqual(lastChord, firstChord);
+	console.debug("autoStrumUpDown", sameChord, firstChord, lastChord);
+	
+	if (sameChord) return STRUM_UP;
+	return STRUM_DOWN;
 }
 
 function handleNoteOff(note, device, velocity, channel) {	
@@ -2930,7 +2937,8 @@ function connectHandler(e) {
   
   if (e.gamepad.id.indexOf("Guitar") > -1 || (e.gamepad.id.indexOf("248a") > -1 && e.gamepad.id.indexOf("8266") > -1) || e.gamepad.id == "Xbox 360 Controller for Windows (STANDARD GAMEPAD)") {
 	console.debug("connectHandler found gamepad " + e.gamepad.id, e.gamepad);
-  
+	
+	inputDeviceType = "games-controller";
 	if (!game) setup();
 		  
 	for (var i=0; i<e.gamepad.buttons.length; i++) {	  
@@ -3749,6 +3757,7 @@ async function setupUI(config,err) {
 	midiInType.options[3] = new Option("Artiphon Chorda", "chorda", config.inputDeviceType == "chorda");
 	midiInType.options[4] = new Option("LiberLive C1", "liberlivec1", config.inputDeviceType == "liberlivec1");
 	midiInType.options[5] = new Option("Lava Genie", "lavagenie", config.inputDeviceType == "lavagenie");	
+	midiInType.options[6] = new Option("PC Keyboard", "keyboard", config.inputDeviceType == "keyboard");	
 	
 	let deviceIndex = 0;
 	deviceIndex = config.inputDeviceType == "games-controller" ? 0 : deviceIndex;
@@ -3757,6 +3766,7 @@ async function setupUI(config,err) {
 	deviceIndex = config.inputDeviceType == "chorda" ? 3 : deviceIndex;	
 	deviceIndex = config.inputDeviceType == "liberlivec1" ? 4 : deviceIndex;		
 	deviceIndex = config.inputDeviceType == "lavagenie" ? 5 : deviceIndex;	
+	deviceIndex = config.inputDeviceType == "keyboard" ? 6 : deviceIndex;
 	midiInType.selectedIndex = deviceIndex;	
 	
 	inputDeviceType = config.inputDeviceType;
@@ -5309,10 +5319,15 @@ function playChord(chord, root, type, bass) {
 	const thirdNote = (chord.length == 4 ? chord[2] : chord[1]);	
 	const fifthNote = (chord.length == 4 ? chord[3] : chord[2]);
 	
-	firstChord = chord;
+
 	arrChordType = (type == 0x20 ? "sus" : (type == 0x08 ? "min" : (type == 0x13 ? "maj7" : "maj")));	
 	
 	if (!activeChord) {
+		lastChord = firstChord;	
+		firstChord = chord;
+		
+		if (inputDeviceType == "lavagenie" || inputDeviceType == "keyboard") pad.axis[STRUM] = autoStrumUpDown();
+	
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 		const bassKey = "key" + (bassNote % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
@@ -7371,8 +7386,7 @@ function scheduleSongNote() {
 			
 			if (chord.length > 0) {
 				activeChord = null;
-				pad.axis[STRUM] = isStrumUp ? STRUM_UP : STRUM_DOWN;			
-				isStrumUp = !isStrumUp;
+				pad.axis[STRUM] = autoStrumUpDown();		
 				orinayo.innerHTML = displayShape;	
 
 				if (!game) {
@@ -7977,6 +7991,17 @@ function saveRegistration(slot) {
 
 function midiProgramChangeEvent(target) {
 	console.debug("midiProgramChangeEvent", target.selectedIndex, target.id);
+}
+
+function arraysEqual(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length !== b.length) return false;
+
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 }
 
 // -------------------------------------------------------
