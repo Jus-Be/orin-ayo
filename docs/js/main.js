@@ -25,7 +25,8 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
-var _converse;
+var activeStreams = null;
+var _converse = null;
 var recorderDestination = null;
 var streamDestination = null;
 var publishConnection = null;
@@ -943,13 +944,13 @@ async function fetchStreams() {
 	console.debug("fetchStreams", _converse);
 
 	const streamSong = document.querySelector("#stream_song");	
-	const activeStreams = document.querySelector("#activeStreams");	
+	activeStreams = document.querySelector("#activeStreams");	
 	activeStreams.options[0] = new Option("**UNUSED**", "activeStreams", false, false);		
 
 	activeStreams.addEventListener("click", async () => {
 		console.debug("fetchStreams refresh streams");
 		
-		const res = await _converse.api.sendIQ($iq({type: 'get', to: _converse.api.domain}).c('whep', {xmlns: 'urn:xmpp:whep:0'}));
+		const res = await _converse.api.sendIQ(converse.env.$iq({type: 'get', to: _converse.api.domain}).c('whep', {xmlns: 'urn:xmpp:whep:0'}));
 		console.debug('fetchStreams response', res);						
 		const items = res.querySelectorAll('item');
 		const temp = activeStreams.selectedIndex;
@@ -994,7 +995,7 @@ async function fetchStreams() {
 				watchConnection.setLocalDescription(offer);
 				console.debug('fetchStreams offer', offer.sdp);					
 				
-				const res = await _converse.api.sendIQ($iq({type: 'set', to: _converse.api.domain}).c('whep', {id: activeStreams.value, xmlns: 'urn:xmpp:whep:0'}).c('sdp', offer.sdp)); 
+				const res = await _converse.api.sendIQ(converse.env.$iq({type: 'set', to: _converse.api.domain}).c('whep', {id: activeStreams.value, xmlns: 'urn:xmpp:whep:0'}).c('sdp', offer.sdp)); 
 				console.debug('fetchStreams whep set response', res);						
 				const answer = res.querySelector('sdp')?.innerHTML;
 				const json = res.querySelector('json')?.innerHTML;
@@ -1014,7 +1015,7 @@ async function fetchStreams() {
 		}
 	});	
 	
-	const res = await _converse.api.sendIQ($iq({type: 'get', to: _converse.api.domain}).c('whep', {xmlns: 'urn:xmpp:whep:0'})); 
+	const res = await _converse.api.sendIQ(converse.env.$iq({type: 'get', to: _converse.api.domain}).c('whep', {xmlns: 'urn:xmpp:whep:0'})); 
 	console.debug('fetchStreams response', res);						
 	const items = res.querySelectorAll('item');
 	let count = 1;
@@ -1055,7 +1056,7 @@ async function handleMediaStream(started) {
 		publishConnection.setLocalDescription(offer);
 		console.debug('handleMediaStream offer', offer.sdp);	
 		
-		const res = await _converse.api.sendIQ($iq({type: 'set', to: _converse.api.domain}).c('whip', {xmlns: 'urn:xmpp:whip:0'}).c('sdp').t(offer.sdp).up().c('json', {xmlns: 'urn:xmpp:json:0'}).t(JSON.stringify(json)));
+		const res = await _converse.api.sendIQ(converse.env.$iq({type: 'set', to: _converse.api.domain}).c('whip', {xmlns: 'urn:xmpp:whip:0'}).c('sdp').t(offer.sdp).up().c('json', {xmlns: 'urn:xmpp:json:0'}).t(JSON.stringify(json)));
 		const answer = res.querySelector('sdp').innerHTML;
 		publishConnection.setRemoteDescription({sdp: answer,  type: 'answer'});	
 		console.debug('handleMediaStream answer', answer);			
@@ -1070,7 +1071,7 @@ async function handleMediaStream(started) {
 
 function startXMPP() {
 	const streamSong = document.querySelector("#stream_song");	
-	const activeStreams = document.querySelector("#active_streams");
+	const streamsList = document.querySelector("#streams_list");
 	const toggleChat = document.querySelector("#toggle_chat");
 	const chatview = document.querySelector("#chatview");		
 	
@@ -1134,7 +1135,7 @@ function startXMPP() {
 
 			_converse.api.listen.on('connected', function() {	
 				streamSong.style.display = "";
-				activeStreams.style.display = "";
+				streamsList.style.display = "";
 				toggleChat.style.display = "";
 				streamSong.style.setProperty("--accent-fill-rest", "green");
 				setTimeout(fetchStreams);	
@@ -2712,7 +2713,7 @@ function handleNoteOn(note, device, velocity, channel) {
 				tonic = Tonal.Midi.toMidi(detectedChord.tonic + "1") % 12;
 			}
 			
-			orinayo.innerHTML = key + " - " + detectedChord.symbol;									
+			// orinayo.innerHTML = key + " - " + detectedChord.symbol;									
 			const chordKey = "key" + tonic + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 			const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];		
 
@@ -5340,10 +5341,18 @@ function playChord(chord, root, type, bass) {
 		firstChord = chord;
 		
 		if (inputDeviceType == "lavagenie" || inputDeviceType == "keyboard") pad.axis[STRUM] = autoStrumUpDown();
-	
+			
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 		const bassKey = "key" + (bassNote % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
+		const chordSymbol = KEYS[arrChord] + arrChordType + (firstChord.length == 4 ? "/" + KEYS[(bassNote % 12)] : "");
+		
+		orinayo.innerHTML = chordSymbol;
+		
+		if (_converse && activeStreams && activeStreams.value != "activeStreams") {
+			_converse.api.send(converse.env.$msg({to: activeStreams.value + "@" + _converse.api.connection.get().domain, type: 'chat'}).c('body').t(chordSymbol));							
+		}
+		
 
 		if (guitarName != "none" && !guitarDeviceId) 
 		{	
@@ -6187,7 +6196,6 @@ function doChord() {
   if (pad.buttons[YELLOW] && pad.buttons[BLUE] && pad.buttons[ORANGE] && pad.buttons[RED])
   {
     playChord([base - 12, base + 5, base + 9, base + 12], 0x34, 0x00, 0x31);
-    orinayo.innerHTML = key + " - " + "4/1";
   }
   else
 
@@ -6196,7 +6204,6 @@ function doChord() {
   if (pad.buttons[YELLOW] && pad.buttons[BLUE] && pad.buttons[ORANGE] && pad.buttons[GREEN])
   {
     playChord([base - 12, base + 7, base + 11, base + 14], 0x35, 0x00, 0x31);
-    orinayo.innerHTML = key + " - " + "5/1";
   }
   else
 
@@ -6205,28 +6212,24 @@ function doChord() {
   if (pad.buttons[RED] && pad.buttons[YELLOW] && pad.buttons[BLUE] && pad.buttons[GREEN])
   {
     playChord([base - 1, base + 3, base + 6], 0x37, 0x00, 0x37);
-    orinayo.innerHTML = key + " - " + "7";
   }
   else
 
   if (pad.buttons[RED] && pad.buttons[YELLOW] && pad.buttons[GREEN])     // Ab
   {
     playChord([base - 4, base, base + 3], 0x26, 0x00, 0x26);
-    orinayo.innerHTML = key + " - " + "6b";
   }
   else
 
   if (pad.buttons[RED] && pad.buttons[YELLOW] && pad.buttons[BLUE])     // A
   {
     playChord([base - 3, base + 13, base + 16], 0x36, 0x00, 0x36);
-    orinayo.innerHTML = key + " - " + "6";
   }
   else
 
   if (pad.buttons[BLUE] && pad.buttons[YELLOW] && pad.buttons[GREEN])     // E
   {
     playChord([base - 8, base + 8, base + 11], 0x33, 0x00, 0x33);
-    orinayo.innerHTML = key + " - " + "3";
   }
   else
 
@@ -6234,121 +6237,104 @@ function doChord() {
   if (pad.buttons[BLUE] && pad.buttons[RED] && pad.buttons[ORANGE])     // Eb
   {
     //playChord([base - 29, base + 9, base + 12, base + 16]);
-    //orinayo.innerHTML = key + " - " + "Am/G";
+    //// orinayo.innerHTML = key + " - " + "Am/G";
     playChord([base - 9, base + 7, base + 10], 0x23, 0x00, 0x23);
-    orinayo.innerHTML = key + " - " + "3b";  
   }
   else
 
   if (pad.buttons[YELLOW] && pad.buttons[BLUE] && pad.buttons[ORANGE])    // F/G
   {
     playChord([base - 17, base + 5, base + 9, base + 12], 0x34, 0x00, 0x35);
-    orinayo.innerHTML = key + " - " + "4/5";
   }
   else
 
   if (pad.buttons[RED] && pad.buttons[YELLOW])     // Bb
   {
     playChord([base - 2, base + 2, base + 5], 0x27, 0x00, 0x27);
-    orinayo.innerHTML = key + " - " + "7b";
   }
   else
 
   if (pad.buttons[GREEN] && pad.buttons[YELLOW])     // Gsus
   {
     playChord([base - 5, base + 12, base + 14], 0x35, 0x20, 0x35);
-    orinayo.innerHTML = key + " - " + "5sus";
   }
   else
 
   if (pad.buttons[ORANGE] && pad.buttons[YELLOW])     // Csus
   {
     playChord([base, base + 5, base + 7], 0x31, 0x20, 0x31);
-    orinayo.innerHTML = key + " - " + "1sus";
   }
   else
 
   if (pad.buttons[YELLOW] && pad.buttons[BLUE])    // C/E
   {
     playChord([base - 20, base, base + 4, base + 7], 0x31, 0x00, 0x33);
-    orinayo.innerHTML = key + " - " + "1/3";
   }
   else
 
   if (pad.buttons[GREEN] && pad.buttons[RED])     // G/B
   {
     playChord([base - 13, base + 7, base + 11, base + 14], 0x35, 0x00, 0x37);
-    orinayo.innerHTML = key + " - " + "5/7";
   }
   else
 
   if (pad.buttons[BLUE] && pad.buttons[ORANGE])     // F/A
   {
     playChord([base - 15, base + 5, base + 9, base + 12], 0x34, 0x00, 0x36);
-    orinayo.innerHTML = key + " - " + "4/6";
   }
   else
 
   if (pad.buttons[GREEN] && pad.buttons[BLUE])     // Em
   {
     playChord([base - 8, base + 7, base + 11], 0x33, 0x08, 0x33);
-    orinayo.innerHTML = key + " - " + "3m";
   }
   else
 
    if (pad.buttons[ORANGE] && pad.buttons[RED])   // Fm
    {
      playChord([base - 7, base + 8, base + 12], 0x34, 0x08, 0x34);
-     orinayo.innerHTML = key + " - " + "4m";
    }
    else
 
    if (pad.buttons[GREEN] && pad.buttons[ORANGE])     // Gm
    {
      playChord([base - 5, base + 10, base + 14], 0x35, 0x08, 0x35);
-     orinayo.innerHTML = key + " - " + "5m";
    }
   else
 
   if (pad.buttons[RED] && pad.buttons[BLUE])     // D
   {
     playChord([base + 2, base + 6, base + 9], 0x32, 0x00, 0x32);
-    orinayo.innerHTML = key + " - " + "2";
   }
   else
 
   if (pad.buttons[YELLOW])    // C
   {
     playChord([base, base + 4, base + 7], 0x31, 0x00, 0x31);
-    orinayo.innerHTML = key + " - " + "1";
   }
   else
 
   if (pad.buttons[BLUE])      // Dm
   {
     playChord([base + 2, base + 5, base + 9], 0x32, 0x08, 0x32);
-    orinayo.innerHTML = key + " - " + "2m";
   }
   else
 
   if (pad.buttons[ORANGE])   // F
   {
     playChord([base - 7, base + 9, base + 12], 0x34, 0x00, 0x34);
-    orinayo.innerHTML = key + " - " + "4";
   }
   else
 
   if (pad.buttons[GREEN])     // G
   {
     playChord([base - 5, base + 11, base + 14], 0x35, 0x00, 0x35);
-    orinayo.innerHTML = key + " - " + "5";
   }
   else
 
   if (pad.buttons[RED])     // Am
   {
     playChord([base - 3, base + 12, base + 16], 0x36, 0x08, 0x36);
-    orinayo.innerHTML = key + " - " + "6m";
   }
 }
 
