@@ -25,6 +25,7 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var loopWait = 0;
 var activeStreams = null;
 var _converse = null;
 var recorderDestination = null;
@@ -270,6 +271,7 @@ var idbKeyval = (function (exports) {
 
 }({}));
 
+window.loopCache = {};
 window.requestAnimFrame = window.requestAnimationFrame;
 window.addEventListener("load", onloadHandler);
 window.addEventListener("beforeunload", () => {if (!registration) saveConfig(); });
@@ -7854,27 +7856,24 @@ function setupRealInstruments() {
 	bassLoop = null;
 	chordLoop = null;
 	
-	let wait = 2000;
+	loopWait = 2000;
 	
 	if (realInstrument.drums) {	
 		drumLoop = new AudioLooper("drum");
 		drumLoop.callback(soundsLoaded, eventStatus);				
 		drumLoop.addUri(realInstrument.drums, realdrumDevice, realInstrument.bpm);
-		wait+=1000;
 	}
 	
 	if (realInstrument.basses) {
 		bassLoop = new AudioLooper("bass");
 		bassLoop.callback(soundsLoaded, eventStatus);		
 		bassLoop.addUri(realInstrument.basses, realdrumDevice, realInstrument.bpm);
-		wait+=1000;
 	}
 	
 	if (realInstrument.chords) {
 		chordLoop = new AudioLooper("chord");
 		chordLoop.callback(soundsLoaded, eventStatus);		
-		chordLoop.addUri(realInstrument.chords, realdrumDevice, realInstrument.bpm);
-		wait+=1000;		
+		chordLoop.addUri(realInstrument.chords, realdrumDevice, realInstrument.bpm);	
 	}
 	
 	if (!registration && realInstrument.bpm) setTempo(realInstrument.bpm);	
@@ -7887,11 +7886,12 @@ function setupRealInstruments() {
 			const slot = registration > 8 ? registration + 1 : (registration == 0 ? 0 : registration);
 			setXTouchButton(slot, "flash");
 		}		
-	}, wait);	
+	}, loopWait);	
 }
 
-function soundsLoaded() {
+function soundsLoaded(cached) {
 	console.debug("audio loaded ok");
+	if (!cached) loopWait+=1000;
 }
 
 function eventStatus(event, id) {

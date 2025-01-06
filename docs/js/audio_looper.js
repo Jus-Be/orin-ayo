@@ -248,14 +248,22 @@ AudioLooper.prototype.addUri = function(loop, output, bpm) {
 	
 	if (loop.url.startsWith("assets")) 
 	{
-		fetch(loop.url)
-			.then(response => response.arrayBuffer())
-			.then(buffer => this.audioContext.decodeAudioData(buffer))
-			.then(sample => {
-				this.sample = sample;
-				console.debug("addUri", loop, sample);
-				if (this.cb_loaded) this.cb_loaded();
-			});
+		this.sample = window.loopCache[loop.url];	
+		
+		if (this.sample == undefined) {
+			fetch(loop.url, {cache: "force-cache"})
+				.then(response => response.arrayBuffer())
+				.then(buffer => this.audioContext.decodeAudioData(buffer))
+				.then(sample => {
+					this.sample = sample;
+					window.loopCache[loop.url] = sample;
+					console.debug("addUri fetched", loop.url, sample);
+					if (this.cb_loaded) this.cb_loaded(false);
+				});
+		} else {
+			console.debug("addUri cached", loop.url, this.sample);
+			if (this.cb_loaded) this.cb_loaded(true);				
+		}
 	} else {
 		const dbName = loop.url;
 		const store = new idbKeyval.Store(dbName, dbName);		
