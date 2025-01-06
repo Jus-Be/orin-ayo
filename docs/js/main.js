@@ -996,9 +996,20 @@ async function fetchStreams() {
 				
 				const res = await _converse.api.sendIQ($iq({type: 'set', to: _converse.api.domain}).c('whep', {id: activeStreams.value, xmlns: 'urn:xmpp:whep:0'}).c('sdp', offer.sdp)); 
 				console.debug('fetchStreams whep set response', res);						
-				const answer = res.querySelector('sdp').innerHTML;
-				watchConnection.setRemoteDescription({sdp: answer,  type: 'answer'});	
-				console.debug('fetchStreams whep answer', answer);						
+				const answer = res.querySelector('sdp')?.innerHTML;
+				const json = res.querySelector('json')?.innerHTML;
+				console.debug('fetchStreams whep answer', answer, json);				
+				
+				if (answer) {
+					watchConnection.setRemoteDescription({sdp: answer,  type: 'answer'});	
+				}
+
+				if (json) {
+					const metaData = JSON.parse(json);
+					setTempo(metaData.tempo);
+					keyChange = metaData.keyChange;
+					dokeyChange();
+				}
 			})		
 		}
 	});	
@@ -1039,11 +1050,12 @@ async function handleMediaStream(started) {
 			}
 		})		
 		
+		const json = {tempo, keyChange, name: arrSequence?.name};
 		const offer = await publishConnection.createOffer();
 		publishConnection.setLocalDescription(offer);
 		console.debug('handleMediaStream offer', offer.sdp);	
 		
-		const res = await _converse.api.sendIQ($iq({type: 'set', to: _converse.api.domain}).c('whip', {xmlns: 'urn:xmpp:whip:0'}).c('sdp', offer.sdp));
+		const res = await _converse.api.sendIQ($iq({type: 'set', to: _converse.api.domain}).c('whip', {xmlns: 'urn:xmpp:whip:0'}).c('sdp').t(offer.sdp).up().c('json', {xmlns: 'urn:xmpp:json:0'}).t(JSON.stringify(json)));
 		const answer = res.querySelector('sdp').innerHTML;
 		publishConnection.setRemoteDescription({sdp: answer,  type: 'answer'});	
 		console.debug('handleMediaStream answer', answer);			
@@ -1135,6 +1147,7 @@ function startXMPP() {
 		discover_connection_methods: false,
 		assets_path: "./dist/",	
 		sounds_path: "./dist/sounds/",	
+		notification_icon: "./assets/icon_128.png",
 		allow_logout: false, 
 		allow_muc_invitations: false,                                          
 		allow_contact_requests: false, 
