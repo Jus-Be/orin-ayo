@@ -616,14 +616,14 @@ async function doLavaGenieSetup(device) {
 
 						if (eventData[0] == 202 && eventData[1] == 2 && eventData[2] == 92) { // chord key press	
 						
-							if (eventData[3] == 27 && eventData[4] == 71) {
+							if (eventData[3] == 25 && eventData[4] == 69) {
 								pad.buttons[YELLOW] = true;		// 7b			
 								pad.buttons[RED] = true;								
 								chordSelected = true;
 							}
 							else
 								
-							if (eventData[3] == 26 && eventData[4] == 70) {
+							if (eventData[3] == 20 && eventData[4] == 72) {
 								pad.buttons[YELLOW] = true;		// 5b			
 								pad.buttons[GREEN] = true;								
 								pad.buttons[RED] = true;							
@@ -643,8 +643,16 @@ async function doLavaGenieSetup(device) {
 								chordSelected = true;
 							}
 							else
+
+							if (eventData[3] == 57 && eventData[4] == 101) {
+								pad.buttons[RED] = true;		// 6
+								pad.buttons[YELLOW] = true;
+								pad.buttons[BLUE] = true;							
+								chordSelected = true;
+							}
+							else
 								
-							if (eventData[3] == 53 && eventData[4] == 105) {
+							if (eventData[3] == 49 && eventData[4] == 109) {
 								pad.buttons[RED] = true;		// 6
 								pad.buttons[YELLOW] = true;
 								pad.buttons[BLUE] = true;							
@@ -665,7 +673,7 @@ async function doLavaGenieSetup(device) {
 							}
 							else
 								
-							if (eventData[3] == 85 && eventData[4] == 9) {
+							if (eventData[3] == 89 && eventData[4] == 5) {
 								pad.buttons[GREEN] = true;		// 5/7
 								pad.buttons[RED] = true;							
 								chordSelected = true;
@@ -678,14 +686,14 @@ async function doLavaGenieSetup(device) {
 							}
 							else
 								
-							if (eventData[3] == 107 && eventData[4] == 55) {
+							if (eventData[3] == 100 && eventData[4] == 56) {
 								pad.buttons[YELLOW] = true;		// 1sus
 								pad.buttons[ORANGE] = true;							
 								chordSelected = true;
 							}
 							else
 
-							if (eventData[3] == 106 && eventData[4] == 54) {
+							if (eventData[3] == 105 && eventData[4] == 53) {
 								pad.buttons[YELLOW] = true;		// 1/3
 								pad.buttons[BLUE] = true;							
 								chordSelected = true;
@@ -698,7 +706,7 @@ async function doLavaGenieSetup(device) {
 							}
 							else
 								
-							if (eventData[3] == 139 && eventData[4] == 215) {
+							if (eventData[3] == 132 && eventData[4] == 216) {
 								pad.buttons[ORANGE] = true;		// 3b
 								pad.buttons[BLUE] = true;		
 								pad.buttons[RED] = true;							
@@ -706,7 +714,7 @@ async function doLavaGenieSetup(device) {
 							}
 							else
 
-							if (eventData[3] == 138 && eventData[4] == 214) {
+							if (eventData[3] == 137 && eventData[4] == 213) {
 								pad.buttons[ORANGE] = true;		// 4/6
 								pad.buttons[BLUE] = true;							
 								chordSelected = true;
@@ -726,14 +734,14 @@ async function doLavaGenieSetup(device) {
 							}
 							else
 								
-							if (eventData[3] == 165 && eventData[4] == 249) {
+							if (eventData[3] == 169 && eventData[4] == 245) {
 								pad.buttons[ORANGE] = true;		// 4m
 								pad.buttons[RED] = true;							
 								chordSelected = true;
 							}	
 							else
 								
-							if (eventData[3] == 177 && eventData[4] == 237) {
+							if (eventData[3] == 199 && eventData[4] == 155) {
 								pad.buttons[GREEN] = true;		// 3m
 								pad.buttons[BLUE] = true;								
 								chordSelected = true;

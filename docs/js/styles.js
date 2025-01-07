@@ -246,6 +246,7 @@ var chord_loops = [
 
 var drum_loops = [
 	"assets/drums/acoustic-strum-6-8_48_2500_10000_2500_2500_5000.drum",
+	"assets/drums/acoustic-strum-6-8_60_2000_8000_2000_2000_4000.drum",	
 	"assets/drums/8beat_90_2667_21333_2667_2667_8000.drum",
 	"assets/drums/8beat1_94_2553_20426_2553_2553_5106.drum",
 	"assets/drums/8beat2_94_5106_20426_2553_2553_2553.drum",
@@ -255,6 +256,7 @@ var drum_loops = [
 	"assets/drums/8beat_100_2400_9600_2400_2400_4800.drum",		
 	"assets/drums/16beat_082_2927_23415_2927_2927_11707.drum",
 	"assets/drums/acoustic-guitar_95_10105_20211_2526_2526_10105.drum",	
+	"assets/drums/acoustic-strum_145_1655_6621_1655_1655_3310.drum",
 	"assets/drums/afro_105_2286_18286_2286_2286_6857.drum",
 	"assets/drums/afro-beat_96_2500_10000_2500_2500_10000.drum",
 	"assets/drums/afro-chaka_100_2400_19200_2400_2400_6724.drum",
@@ -361,7 +363,9 @@ var drum_loops = [
 ]
 
 var bass_loops = [
-	"assets/bass/acoustic-guitar_75_25600.bass",
+	"assets/bass/acoustic-guitar_75_25600.bass",	
+	"assets/bass/acoustic-strum_145_6621_6621_2.bass",
+	"assets/bass/acoustic-strum-6-8_60_8000.bass",
 	"assets/bass/ballad-rock_75_12800.bass",
 	"assets/bass/bluey_88_21818.bass",	
 	"assets/bass/country_073_26300.bass",	
