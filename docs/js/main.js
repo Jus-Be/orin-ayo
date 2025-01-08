@@ -7431,59 +7431,66 @@ function scheduleSongNote() {
 		else
 			
 		if (event.type == "lyrics") {
-			console.debug("scheduleSongNote lyrics", event.text);
 			
-			if (lyricsCanvas.style.display == "none") {			
-				const cntrl = document.getElementById("lyrics");
-				let lyrics = cntrl.innerHTML + event.text;
+			if (event.text == "\n") {
+				console.debug("scheduleSongNote page break");
+				clearLyrics(lyricsContext);					
+			
+			} else {
+				console.debug("scheduleSongNote lyrics", event.text);
 				
-				if (cntrl.innerHTML.length > 80) {
-					lyrics = event.text;
-				}
+				if (lyricsCanvas.style.display == "none") {			
+					const cntrl = document.getElementById("lyrics");
+					let lyrics = cntrl.innerHTML + event.text;
+					
+					if (cntrl.innerHTML.length > 80) {
+						lyrics = event.text;
+					}
 
-				cntrl.innerHTML = lyrics;
+					cntrl.innerHTML = lyrics;
+				}
+				else {
+					
+					if (vocalistMode.checked) {		// show only lyrics
+						lyricsContext.font = "14px Arial";				
+						const width = lyricsContext.measureText(event.text).width;
+						
+						if ((lyricsX + width) >= lyricsCanvas.width) {
+							lyricsX = 2;
+							lyricsY = lyricsY + 18;					
+						}
+						
+						if (lyricsY > lyricsCanvas.height) {
+							clearLyrics(lyricsContext);				
+						}
+
+						lyricsContext.fillStyle = "#ffffff";
+						lyricsContext.fillText(event.text, lyricsX, lyricsY);				
+						lyricsX = lyricsX + width;	
+						
+					} else {	// show both chords and lyrics
+						lyricsContext.font = "10px Arial";				
+						const width1 = lyricsContext.measureText(event.text).width;
+						let width = lyricsContext.measureText(displayShape + " ").width;
+						if (width1 > width) width = width1;
+						
+						if ((lyricsX + width) >= lyricsCanvas.width) {
+							lyricsX = 2;
+							lyricsY = lyricsY + 24;					
+						}
+						
+						if (lyricsY > lyricsCanvas.height) {
+							clearLyrics(lyricsContext);				
+						}
+
+						lyricsContext.fillStyle = "#ffffff";
+						lyricsContext.fillText(displayShape, lyricsX, lyricsY);
+						lyricsContext.fillText(event.text, lyricsX, lyricsY + 12);					
+						lyricsX = lyricsX + width;					
+					}
+				}						
 			}
-			else {
-				
-				if (vocalistMode.checked) {		// show only lyrics
-					lyricsContext.font = "14px Arial";				
-					const width = lyricsContext.measureText(event.text).width;
-					
-					if ((lyricsX + width) >= lyricsCanvas.width) {
-						lyricsX = 2;
-						lyricsY = lyricsY + 18;					
-					}
-					
-					if (lyricsY > lyricsCanvas.height) {
-						clearLyrics(lyricsContext);				
-					}
-
-					lyricsContext.fillStyle = "#ffffff";
-					lyricsContext.fillText(event.text, lyricsX, lyricsY);				
-					lyricsX = lyricsX + width;	
-					
-				} else {	// show both chords and lyrics
-					lyricsContext.font = "10px Arial";				
-					const width1 = lyricsContext.measureText(event.text).width;
-					let width = lyricsContext.measureText(displayShape + " ").width;
-					if (width1 > width) width = width1;
-					
-					if ((lyricsX + width) >= lyricsCanvas.width) {
-						lyricsX = 2;
-						lyricsY = lyricsY + 24;					
-					}
-					
-					if (lyricsY > lyricsCanvas.height) {
-						clearLyrics(lyricsContext);				
-					}
-
-					lyricsContext.fillStyle = "#ffffff";
-					lyricsContext.fillText(displayShape, lyricsX, lyricsY);
-					lyricsContext.fillText(event.text, lyricsX, lyricsY + 12);					
-					lyricsX = lyricsX + width;					
-				}
-			}						
-		}			
+		}
 	}
 }
 
