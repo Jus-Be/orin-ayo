@@ -958,7 +958,7 @@ async function fetchStreams() {
 
 	const streamSong = document.querySelector("#stream_song");	
 	activeStreams = document.querySelector("#activeStreams");	
-	activeStreams.options[0] = new Option("**UNUSED**", "activeStreams", false, false);		
+	activeStreams.options[0] = new Option("NOT USED", "activeStreams", false, false);		
 
 	activeStreams.addEventListener("click", async () => {
 		console.debug("fetchStreams refresh streams");
@@ -968,7 +968,7 @@ async function fetchStreams() {
 		const items = res.querySelectorAll('item');
 		const temp = activeStreams.selectedIndex;
 		activeStreams.innerHTML = "";
-		activeStreams.options[0] = new Option("**UNUSED**", "activeStreams", false, false);					
+		activeStreams.options[0] = new Option("NOT USED", "activeStreams", false, false);					
 		let count = 1;
 		
 		for (item of items) {		
@@ -3386,7 +3386,7 @@ async function setupUI(config,err) {
 	
 	let realGuitarIndex = 0;
 	
-	realguitar.options[0] = new Option("**UNUSED**", "none", config.realguitar == "none");
+	realguitar.options[0] = new Option("NOT USED", "none", config.realguitar == "none");
 	realguitar.options[1] = new Option("Internal Guitar", "Internal_Guitar", config.realguitar == "Internal_Guitar");			
 	realguitar.options[2] = new Option("Funk One - 16th (90-120 BPM)", "Funk1_S_16th_90_120", config.realguitar == "Funk1_S_16th_90_120");			
 	realguitar.options[3] = new Option("Funk Three - 16th (90-120 BPM)", "Funk3_S_16th_90_120", config.realguitar == "Funk3_S_16th_90_120");
@@ -3434,7 +3434,7 @@ async function setupUI(config,err) {
 	createStyleList(config, arrangerStyle, arrangerGrp);
 		
 	const arrangerSf2 =  document.getElementById("arrangerSf2");
-	arrangerSf2.options[0] = new Option("**UNUSED**", "arrangerSf2");	
+	arrangerSf2.options[0] = new Option("NOT USED", "arrangerSf2");	
 	let sf2Selected = false;
 	let iSf2 = 0;	
 	
@@ -3455,7 +3455,7 @@ async function setupUI(config,err) {
 			}				
 		});
 		
-		songSeq.options[0] = new Option("**UNUSED**", "songSeq");
+		songSeq.options[0] = new Option("NOT USED", "songSeq");
 
 		for (var i=0; i<song_sequences.length; i++) {
 			let selectedSong = false;
@@ -3688,7 +3688,7 @@ async function setupUI(config,err) {
 	});	
 
 	const guitarType = document.getElementById("guitarType");
-	guitarType.options[0] = new Option("**UNUSED**", "none", config.guitarName == "none");	
+	guitarType.options[0] = new Option("NOT USED", "none", config.guitarName == "none");	
 	guitarType.options[1] = new Option("RG Acoustic", "0250_RG_Acoustic_SF2_file", config.guitarName == "0250_RG_Acoustic_SF2_file", config.guitarName == "0250_RG_Acoustic_SF2_file");	
 	guitarType.options[2] = new Option("Acoustic Guitar", "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file", config.guitarName == "0253_Acoustic_Guitar_sf2_file");	
 	guitarType.options[3] = new Option("Aspirin", "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file", config.guitarName == "0250_Aspirin_sf2_file");	
@@ -3826,12 +3826,12 @@ async function setupUI(config,err) {
 
 	setGigladUI();
    
-	midiOut.options[0] = new Option("**UNUSED**", "midiOutSel");
-	midiFwd.options[0] = new Option("**UNUSED**", "midiFwdSel");
-	midiPads.options[0] = new Option("**UNUSED**", "midiPadsSel");	
+	midiOut.options[0] = new Option("NOT USED", "midiOutSel");
+	midiFwd.options[0] = new Option("NOT USED", "midiFwdSel");
+	midiPads.options[0] = new Option("NOT USED", "midiPadsSel");	
 
-	midiChordTracker.options[0] = new Option("**UNUSED**", "midiChordTrackerSel");
-	midiIn.options[0] = new Option("**UNUSED**", "midiInSel");
+	midiChordTracker.options[0] = new Option("NOT USED", "midiChordTrackerSel");
+	midiIn.options[0] = new Option("NOT USED", "midiInSel");
 	midiPads.options[1] = new Option("Sound Font", "soundfont");	
 	
 	if (config.padsDevice == "soundfont") {
@@ -4000,11 +4000,11 @@ async function setupUI(config,err) {
 	const realBassLoop = document.getElementById("realbassLoop");		
 	const realChordsLoop = document.getElementById("realchordLoop");
 
-	guitarDevice.options[0] = new Option("**UNUSED**", "guitarDevice", false, false);	
-	realDrumsDevice.options[0] = new Option("**UNUSED**", "realDrumsDevice", false, false);
-	realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop", false, false);		
-	realBassLoop.options[0] = new Option("**UNUSED**", "realBassLoop", false, false);		
-	realChordsLoop.options[0] = new Option("**UNUSED**", "realChordsLoop", false, false);
+	guitarDevice.options[0] = new Option("NOT USED", "guitarDevice", false, false);	
+	realDrumsDevice.options[0] = new Option("NOT USED", "realDrumsDevice", false, false);
+	realDrumsLoop.options[0] = new Option("NOT USED", "realDrumsLoop", false, false);		
+	realBassLoop.options[0] = new Option("NOT USED", "realBassLoop", false, false);		
+	realChordsLoop.options[0] = new Option("NOT USED", "realChordsLoop", false, false);
 			
 	for (var i=0; i<drum_loops.length; i++) {
 		const drumLoop = drum_loops[i];
@@ -4479,7 +4479,7 @@ function drumLoopChanged(realDrumsLoop) {
 
 function createDrumList(config, realDrumsLoop, realChordsLoop) {
 	realDrumsLoop.innerHTML = "";
-	realDrumsLoop.options[0] = new Option("**UNUSED**", "realDrumsLoop");	
+	realDrumsLoop.options[0] = new Option("NOT USED", "realDrumsLoop");	
 	realDrumsLoop.selectedIndex = 0;
 	
 	let s = 1;
@@ -4515,7 +4515,7 @@ function createDrumList(config, realDrumsLoop, realChordsLoop) {
 
 function createBassList(config, realBassLoop, realChordsLoop) {
 	realBassLoop.innerHTML = "";
-	realBassLoop.options[0] = new Option("**UNUSED**", "realBassLoop");	
+	realBassLoop.options[0] = new Option("NOT USED", "realBassLoop");	
 	realBassLoop.selectedIndex = 0;		
 	
 	let s = 1;
@@ -4551,7 +4551,7 @@ function createBassList(config, realBassLoop, realChordsLoop) {
 
 function createStyleList(config, arrangerStyle, arrangerGrp) {
 	arrangerStyle.innerHTML = "";
-	arrangerStyle.options[0] = new Option("**UNUSED**", "arrangerStyle");	
+	arrangerStyle.options[0] = new Option("NOT USED", "arrangerStyle");	
 	let styleSelected = false;
 	let iStyle = 0;
 	
