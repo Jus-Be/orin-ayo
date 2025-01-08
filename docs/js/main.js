@@ -25,6 +25,8 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var vocalistMode = false;
+var muteChords = null;
 var loopWait = 0;
 var activeStreams = null;
 var _converse = null;
@@ -51,6 +53,7 @@ var keysSound2Vol = 50;
 var chordproParser = new ChordSheetJS.ChordProParser();
 var lyricsX = 2;
 var lyricsY = 18;
+var displayShape = null;
 var lyricsCanvas = null;
 var recorderFilename = null;
 var mediaRecorder = null;
@@ -1948,6 +1951,9 @@ async function onloadHandler() {
 			});				
 		}
 	});
+	
+	muteChords = document.getElementById("mute-chords");
+	vocalistMode = document.getElementById("vocalist-mode");
 	
 	getStreamDeck();
 	letsGo();
@@ -5350,7 +5356,9 @@ function playChord(chord, root, type, bass) {
 		lastChord = firstChord;	
 		firstChord = chord;
 		
-		if (inputDeviceType == "lavagenie" || inputDeviceType == "keyboard") pad.axis[STRUM] = autoStrumUpDown();
+		if (inputDeviceType == "lavagenie" || inputDeviceType == "keyboard" || songSequence?.data?.music) {
+			pad.axis[STRUM] = autoStrumUpDown();
+		}
 			
 		const arrChord = (firstChord.length == 4 ? firstChord[1] : firstChord[0]) % 12;
 		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
@@ -7386,7 +7394,7 @@ function scheduleSongNote() {
 			else if (event.chordType == 32)		// sus
 				chord = [note, note + 5, note + 7];	
 				
-			let displayShape = chordShape.shape +  " " + getChordType(event.chordType);
+			displayShape = chordShape.shape +  " " + getChordType(event.chordType);
 
 			if (event.chordRoot != event.chordBass) {
 				chord.unshift(bassShape.note);
@@ -7401,9 +7409,12 @@ function scheduleSongNote() {
 				if (!game) {
 					setup();
 					resetGuitarHero();
-				}				
-				playChord(chord, event.chordRoot,  event.chordType, event.chordBass);
-				//updateCanvas();				
+				}
+				
+				if (!muteChords.checked) {
+					playChord(chord, event.chordRoot,  event.chordType, event.chordBass);
+					//updateCanvas();				
+				}
 			}
 		}
 		else
@@ -7433,21 +7444,44 @@ function scheduleSongNote() {
 				cntrl.innerHTML = lyrics;
 			}
 			else {
-				lyricsContext.font = "14px Arial";				
-				const width = lyricsContext.measureText(event.text).width;
 				
-				if ((lyricsX + width) >= lyricsCanvas.width) {
-					lyricsX = 2;
-					lyricsY = lyricsY + 18;					
-				}
-				
-				if (lyricsY > lyricsCanvas.height) {
-					clearLyrics(lyricsContext);				
-				}
+				if (vocalistMode.checked) {		// show only lyrics
+					lyricsContext.font = "14px Arial";				
+					const width = lyricsContext.measureText(event.text).width;
+					
+					if ((lyricsX + width) >= lyricsCanvas.width) {
+						lyricsX = 2;
+						lyricsY = lyricsY + 18;					
+					}
+					
+					if (lyricsY > lyricsCanvas.height) {
+						clearLyrics(lyricsContext);				
+					}
 
-				lyricsContext.fillStyle = "#ffffff";
-				lyricsContext.fillText(event.text, lyricsX, lyricsY);				
-				lyricsX = lyricsX + width;	
+					lyricsContext.fillStyle = "#ffffff";
+					lyricsContext.fillText(event.text, lyricsX, lyricsY);				
+					lyricsX = lyricsX + width;	
+					
+				} else {	// show both chords and lyrics
+					lyricsContext.font = "10px Arial";				
+					const width1 = lyricsContext.measureText(event.text).width;
+					let width = lyricsContext.measureText(displayShape + " ").width;
+					if (width1 > width) width = width1;
+					
+					if ((lyricsX + width) >= lyricsCanvas.width) {
+						lyricsX = 2;
+						lyricsY = lyricsY + 24;					
+					}
+					
+					if (lyricsY > lyricsCanvas.height) {
+						clearLyrics(lyricsContext);				
+					}
+
+					lyricsContext.fillStyle = "#ffffff";
+					lyricsContext.fillText(displayShape, lyricsX, lyricsY);
+					lyricsContext.fillText(event.text, lyricsX, lyricsY + 12);					
+					lyricsX = lyricsX + width;					
+				}
 			}						
 		}			
 	}
