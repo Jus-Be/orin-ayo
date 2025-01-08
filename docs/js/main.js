@@ -2392,7 +2392,7 @@ function handleSevenButtons(name, code) {
 function handleNumPad(name, code) {
 	var handled = false;	
 	
-	if (keyboard.get(" ")) {
+	if (keyboard.get(" ") || code == "NumpadEnter") {
 		pad.buttons[LOGO] = true;
 		if (keyboard.get("Backspace")) pad.buttons[YELLOW] = true; 	// End1
 		handled = true;				
