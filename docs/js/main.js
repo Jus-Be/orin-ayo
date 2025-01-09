@@ -68,6 +68,7 @@ var lyricsX = 2;
 var lyricsY = 18;
 var displayShape = null;
 var lyricsCanvas = null;
+var lyricsContext = null;
 var recorderFilename = null;
 var mediaRecorder = null;
 var recordMode = false;
@@ -1125,6 +1126,14 @@ function startXMPP() {
 			const __ = _converse.__;
 			const html = converse.env.html;
 			const Strophe = converse.env.Strophe;
+			
+			_converse.api.listen.on('parseMessage', (stanza, attrs) => {
+				return parseStanza(stanza, attrs);
+			});	
+			
+			_converse.api.listen.on('parseMUCMessage', (stanza, attrs) => {
+				return parseStanza(stanza, attrs);
+			});				
 
 			_converse.api.listen.on('getToolbarButtons', function(toolbar_el, buttons)	{
 				let color = "fill:var(--chat-toolbar-btn-color);";
@@ -1198,6 +1207,38 @@ function startXMPP() {
 		muc_show_logs_before_join: true,	
 		whitelisted_plugins: ['orinayo']					
 	});
+}
+
+function parseStanza(stanza, attrs) {
+	console.log("parseStanza", stanza, attrs);	
+    const json = stanza.querySelector('json');	
+		
+    if (json) {	
+		const metaData = JSON.parse(json.innerHTML);
+		console.log("parseStanza song metadata", metaData);	
+		/*
+			{
+				"bassNote":30,"rootNote":54,"firstNote":50,"thirdNote":54,"fifthNote":57,"displaySymbol":"Dmaj/F#"
+			}
+		*/
+		
+		displayChordAndLyrics(metaData.displaySymbol, " ");
+    }
+	
+	return attrs;
+}
+
+function getSelectedChatBox() {
+	var models = _converse.chatboxes.models;
+	console.debug("getSelectedChatBox", models);
+
+	for (var i=0; i<models.length; i++) 
+	{
+		if (models[i].get('type') === "chatbox" && !models[i].get('hidden')) {
+			return models[i].get('jid');
+		}
+	}
+	return null;
 }
 
 async function doLiberLiveSetup(device) {
@@ -1778,6 +1819,8 @@ async function onloadHandler() {
 	});		
 	
 	lyricsCanvas = document.querySelector("#lyrics");
+	lyricsContext = lyricsCanvas.getContext('2d');	
+	
 	const board = document.querySelector(".pedalboard");
 	const chordpro = document.querySelector("#chordpro");
 	const chatview = document.querySelector("#chatview");	
@@ -1842,13 +1885,10 @@ async function onloadHandler() {
 	});	
 	
 	const showLyrics = document.querySelector("#show_lyrics");
-	const lyricsContext = lyricsCanvas.getContext('2d');
 	lyricsContext.fillStyle = "#000000";	
     lyricsContext.fillRect(0, 0, lyricsCanvas.width, lyricsCanvas.height);	
 	
 	showLyrics.addEventListener('click', function(event) {
-		if (songSequence == null) return;
-
 		chatview.style.display = "none";		
 		board.style.display = "none";
 		chordpro.style.display = "none";	
@@ -2750,7 +2790,7 @@ function handleNoteOn(note, device, velocity, channel) {
 			const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];			
 			const chordSymbol = KEYS[tonic] + arrChordType + (chord.length == 4 ? "/" + KEYS[(chord[0] % 12)] : "");	
 
-			orinayo.innerHTML = chordSymbol;												
+			orinayo.innerHTML = chordSymbol.replace("maj", "");												
 
 			if (arranger == "webaudio" && realInstrument && styleStarted) {	
 				const bassChecked = bassCheckedEle?.checked;
@@ -5398,11 +5438,17 @@ function playChord(chord, root, type, bass) {
 		const key = "key" + arrChord + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 		const bassKey = "key" + (bassNote % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];
 		const chordSymbol = KEYS[arrChord] + arrChordType + (firstChord.length == 4 ? "/" + KEYS[(bassNote % 12)] : "");
+		const displaySymbol = chordSymbol.replace("maj", "");
 		
-		orinayo.innerHTML = chordSymbol;
+		orinayo.innerHTML = displaySymbol;
 		
-		if (_converse && activeStreams && activeStreams.value != "activeStreams") {
-			_converse.api.send(converse.env.$msg({to: activeStreams.value + "@" + _converse.api.connection.get().domain, type: 'chat'}).c('body').t(chordSymbol));							
+		if (_converse) {
+			const jid = getSelectedChatBox();
+			
+			if (jid) {
+				const json = {bassNote, rootNote, firstNote, thirdNote, fifthNote, displaySymbol};
+				_converse.api.send(converse.env.$msg({to: jid, type: 'chat'}).c("json", {'xmlns': 'urn:xmpp:json:0'}).t(JSON.stringify(json)));							
+			}
 		}
 		
 
@@ -7343,8 +7389,7 @@ function getNoteName(chordRoot) {
 
 function scheduleSongNote() {
 	
-	if (songSequence?.data.music[currentSongNote]) {
-		const lyricsContext = lyricsCanvas.getContext('2d');			
+	if (songSequence?.data.music[currentSongNote]) {			
 		const event = songSequence.data.music[currentSongNote];	
 		console.debug("scheduleSongNote", event);		
 		
@@ -7488,29 +7533,35 @@ function scheduleSongNote() {
 						lyricsX = lyricsX + width;	
 						
 					} else {	// show both chords and lyrics
-						lyricsContext.font = "10px Arial";				
-						const width1 = lyricsContext.measureText(event.text).width;
-						let width = lyricsContext.measureText(displayShape + " ").width;
-						if (width1 > width) width = width1;
-						
-						if ((lyricsX + width) >= lyricsCanvas.width) {
-							lyricsX = 2;
-							lyricsY = lyricsY + 24;					
-						}
-						
-						if (lyricsY > lyricsCanvas.height) {
-							clearLyrics(lyricsContext);				
-						}
-
-						lyricsContext.fillStyle = "#ffffff";
-						lyricsContext.fillText(displayShape, lyricsX, lyricsY);
-						lyricsContext.fillText(event.text, lyricsX, lyricsY + 12);					
-						lyricsX = lyricsX + width;					
+						displayChordAndLyrics(displayShape, event.text);
 					}
 				}						
 			}
 		}
 	}
+}
+
+function displayChordAndLyrics(chord, lyrics) {
+	console.debug("displayChord", chord);
+	
+	lyricsContext.font = "10px Arial";				
+	const width1 = lyricsContext.measureText(lyrics).width;
+	let width = lyricsContext.measureText(chord + " ").width;
+	if (width1 > width) width = width1;
+
+	if ((lyricsX + width) >= lyricsCanvas.width) {
+		lyricsX = 2;
+		lyricsY = lyricsY + 24;					
+	}
+
+	if (lyricsY > lyricsCanvas.height) {
+		clearLyrics(lyricsContext);				
+	}
+
+	lyricsContext.fillStyle = "#ffffff";
+	lyricsContext.fillText(chord, lyricsX, lyricsY);
+	lyricsContext.fillText(lyrics, lyricsX, lyricsY + 12);					
+	lyricsX = lyricsX + width;	
 }
 
 function clearLyrics(lyricsContext) {
