@@ -4305,9 +4305,14 @@ async function setupUI(config,err) {
 			//console.debug("Received after touch message", e);
 		});		
 		
-		input.addListener("programchange", "all", function (e) {
+		input.addListener("programchange", "all", function (e) {	// recall slot - use with m-vave foot control and desktop app BLE -> MIDI IN
 			console.debug("Received program change message", e.value);
-			recallRegistration(e.value + 1);
+			
+			if (styleStarted) {
+				handleEncoderPress(e.value);
+			} else {
+				recallRegistration(e.value + 1);
+			}
 		});		
 
 		
@@ -4441,7 +4446,7 @@ async function setupUI(config,err) {
 			resetXTouch();	
 
 			if (registration && parseInt(registration) > 0 && midiOutput && midiOutput.name == "X-TOUCH MINI") {
-				const slot = registration > 8 ? registration - 1 : registration;
+				//const slot = registration > 8 ? registration - 1 : registration;
 				//setXTouchButton(slot, "flash");
 			}					
 		}			
@@ -8282,7 +8287,7 @@ function handleButtonPress(panel) {
 function handleEncoderPress(encoder) {
 	console.debug("handleEncoderPress", encoder);	
 	
-	if (encoder == 0) {	
+	if (encoder == 0) {		// BANK 1 - MUTE Instruments
 		savedPadsMode = padsMode == 0 ? savedPadsMode : padsMode;	
 		padsMode = padsMode == 0 ? savedPadsMode : 0;		
 		orinayo_pad.innerHTML =  padsMode == 0 ? "None" : "Pad " + padsMode;
@@ -8311,23 +8316,48 @@ function handleEncoderPress(encoder) {
 	}	
 	else
 		
-	if (encoder == 4) {
-      window.dispatchEvent(new CustomEvent('MIDI', { detail: 2 }));	// compressor effect
-	}	
+	if (encoder == 4) {	// BANK 2 - effects
+      window.dispatchEvent(new CustomEvent('MIDI', { detail: 6 }));	// chorus effect
+	}
 	else
 		
 	if (encoder == 5) {
-      window.dispatchEvent(new CustomEvent('MIDI', { detail: 6 }));	// chorus effect
-	}
-
+      window.dispatchEvent(new CustomEvent('MIDI', { detail: 10 }));	// reverb effect
+	}	
+	else
+		
 	if (encoder == 6) {
+      window.dispatchEvent(new CustomEvent('MIDI', { detail: 2 }));	// compressor effect
+	}		
+	else
+		
+	if (encoder == 7) {
       window.dispatchEvent(new CustomEvent('MIDI', { detail: 7 }));	// delay effect
 	}	
 	else
 		
-	if (encoder == 7) {
-      window.dispatchEvent(new CustomEvent('MIDI', { detail: 10 }));	// reverb effect
-	}	
+	if (encoder == 8) {	// BANK 3 - variations
+		sectionChange = 0;
+		changeArrSection(true);
+    }
+	else
+		
+	if (encoder == 9) {
+		sectionChange = 1;
+		changeArrSection(true);  
+    }	
+	else
+		
+	if (encoder == 10) {
+		sectionChange = 2;
+		changeArrSection(true);   
+    }		
+	else
+		
+	if (encoder == 11) {
+		sectionChange = 3;
+		changeArrSection(true);   
+	}		
 }
 
 // -------------------------------------------------------
