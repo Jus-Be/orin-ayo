@@ -44,7 +44,8 @@ Currently, the following devices and applications are supported and confirmed wo
 ### Guitar Controllers
 - Logitech Guitar Hero Controller
 - PDP Riff Master Guitar Controller (PS4/PS5)
-- LiberLive C1 Guitar Controller
+- LiberLive C1 Guitar
+- Lava Genie Guitar
 
 ### Arrangers
 - Ketron Event 76/61 keyboards, Event EVM, Event-X module, SD9 Series keyboard and SD90 module
