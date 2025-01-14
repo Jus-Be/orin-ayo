@@ -73,7 +73,7 @@ window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, use
     console.log('No midi connectivity');
   }
 
-  await fetch("/audio/ir/" + guitarIR + ".wav")
+  await fetch("./audio/ir/" + guitarIR + ".wav")
     .then(response => response.arrayBuffer())
     .then(data => {
       return ctx.decodeAudioData(data, b => {

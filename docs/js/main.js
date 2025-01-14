@@ -3825,7 +3825,7 @@ async function setupUI(config,err) {
 		guitarIR = guitarIRDef.value;
 		console.debug("selected guitar IR", guitarIR, guitarIRDef.value);	
 
-		fetch("/audio/ir/" + guitarIR + ".wav")
+		fetch("./audio/ir/" + guitarIR + ".wav")
 		.then(response => response.arrayBuffer())
 		.then(data => {
 		  return ctx.decodeAudioData(data, b => {
