@@ -9,7 +9,6 @@ self.addEventListener('install', function(event) {
 });
 self.addEventListener('activate', function (event) {
     console.debug('activate', event);	
-	//createOffscreen();
 	openOrinAyoWindow();
 });
 
@@ -72,7 +71,6 @@ if (location.protocol == "chrome-extension:") {
 		chrome.storage.local.get('orinAyoWin', async (data) => {	
 			if (data.orinAyoWin && data.orinAyoWin == win) {	
 				chrome.storage.local.remove('orinAyoWin');	
-				//createOffscreen();
 			}
 		});	
 	});
@@ -83,20 +81,6 @@ if (location.protocol == "chrome-extension:") {
 //  Functions
 //
 // -------------------------------------------------------
-
-async function createOffscreen() {
-	try {
-		if (await chrome.offscreen.hasDocument()) return;
-
-		await chrome.offscreen.createDocument({
-			url: "index.html",
-			reasons: ["WEB_RTC"],
-			justification: "testing",
-		});
-	} catch (e) {
-		console.warn("createOffscreen", e);
-	}
-}
 
 const createOrinAyoWindow = () => {
 	console.debug("createOrinAyoWindow");		

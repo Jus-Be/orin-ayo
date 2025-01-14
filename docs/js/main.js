@@ -3025,7 +3025,7 @@ function resetGuitarHero() {
 function connectHandler(e) {
   console.debug("connectHandler " + e.gamepad.id, e.gamepad);	
   
-  if (e.gamepad.id.indexOf("Guitar") > -1 || (e.gamepad.id.indexOf("248a") > -1 && e.gamepad.id.indexOf("8266") > -1) || e.gamepad.id == "Xbox 360 Controller for Windows (STANDARD GAMEPAD)") {
+  if (e.gamepad.id.indexOf("Guitar") > -1 || (e.gamepad.id.indexOf("248a") > -1 && e.gamepad.id.indexOf("8266") > -1) || e.gamepad.id == "Xbox 360 Controller for Windows (STANDARD GAMEPAD)" || e.gamepad.id == "DS4 Wired Controller (Vendor: 7545 Product: 1073)") {
 	console.debug("connectHandler found gamepad " + e.gamepad.id, e.gamepad);
 	
 	inputDeviceType = "games-controller";
@@ -3053,15 +3053,22 @@ function updateStatus() {
 	var ring = null
 	var riffMasterXbox = null;
 	var riffMasterPS = null;
+	var ds4WiredController = null;	
 	
 	var gamepads = navigator.getGamepads();	
 	  
 	for (var i = 0; i < gamepads.length; i++) {
 		//console.debug("found gamepad " + gamepads[i].id, gamepads[i]);
 
-			
 		if (gamepads[i] && gamepads[i].id.indexOf("PDP RiffMaster Guitar") > -1) {
 		  riffMasterPS = gamepads[i];
+		  guitarAvailable = true;
+		  break;
+		}
+		else
+			
+		if (gamepads[i] && gamepads[i].id.indexOf("DS4 Wired Controller (Vendor: 7545 Product: 1073)") > -1) {
+		  ds4WiredController = gamepads[i];
 		  guitarAvailable = true;
 		  break;
 		}
@@ -3111,6 +3118,81 @@ function updateStatus() {
 		}
 
 	}
+	else	
+		
+	if (ds4WiredController) {
+		//console.debug("using ds4 controller" + ds4WiredController.id, ds4WiredController);
+		
+		for (var i=0; i<ds4WiredController.buttons.length; i++) 
+		{
+			var val = ds4WiredController.buttons[i];
+			var touched = false;							
+		  
+			if (typeof(val) == "object") 
+			{	  			
+				if ('touched' in val) {
+				  touched = val.touched;
+				}			
+			}
+
+			let j = i;
+			if (i == BLUE) j = YELLOW;
+			if (i == YELLOW) j = BLUE;	
+			//if (i == 11) j = LOGO;
+			//if (i == LOGO) j = 11;
+			
+			if (pad.buttons[j] != touched) {
+				console.debug("button " + i, j, touched);									
+				pad.buttons[j] = touched;
+				updated = true;
+			}
+			
+			
+			if (i == 10) {
+				pad.axis[TOUCH] = 0;
+				
+				if (pad.buttons[10]) {
+					if (pad.buttons[GREEN]) pad.axis[TOUCH] = -0.7;	
+					if (pad.buttons[RED]) pad.axis[TOUCH] = -0.4; 	
+					if (pad.buttons[YELLOW]) pad.axis[TOUCH] = 0.2;	
+					if (pad.buttons[BLUE]) pad.axis[TOUCH] = 0.4; 				
+					if (pad.buttons[ORANGE]) pad.axis[TOUCH] = 1.0; 
+					
+					pad.buttons[GREEN] = false;
+					pad.buttons[RED] = false;
+					pad.buttons[YELLOW] = false;
+					pad.buttons[BLUE] = false;
+					pad.buttons[ORANGE] = false;					
+				}					
+			}			
+		}
+		
+		if (ds4WiredController.axes.length > STRUM) 
+		{			
+			if (pad.axis[STRUM] != ds4WiredController.axes[STRUM].toFixed(4)) {
+				//console.debug("strum", ds4WiredController.axes[STRUM].toFixed(4));							
+				pad.axis[STRUM] = ds4WiredController.axes[STRUM].toFixed(4);
+				updated = true;
+			}
+
+			if (pad.axis[JSTICKX] != ds4WiredController.axes[JSTICKX].toFixed(1)) {
+				console.debug("joy stick X", ds4WiredController.axes[JSTICKX].toFixed(1));							
+				pad.axis[JSTICKX] = ds4WiredController.axes[JSTICKX].toFixed(1);
+				
+				if (pad.axis[JSTICKX] == 1.0) {
+					pad.buttons[LOGO] = true;
+					updated = true;				
+				}
+			}	
+
+			if (pad.axis[JSTICKY] != ds4WiredController.axes[JSTICKY].toFixed(1)) {
+				console.debug("joy stick Y", ds4WiredController.axes[JSTICKY].toFixed(1));							
+				pad.axis[JSTICKY] = ds4WiredController.axes[JSTICKY].toFixed(1);
+				updated = true;				
+			}			
+		}		
+
+	}		
 	else	
 		
 	if (riffMasterXbox) {
@@ -3735,6 +3817,9 @@ async function setupUI(config,err) {
 	guitarIRDef.options[7] = new Option("captain 1960", "captain 1960", config.guitarIR == "captain 1960", config.guitarIR == "captain 1960");
 	guitarIRDef.options[8] = new Option("AK SPKRS Vintage US", "AK SPKRS Vintage US", config.guitarIR == "AK SPKRS Vintage US", config.guitarIR == "AK SPKRS Vintage US");
 	guitarIRDef.options[9] = new Option("AKIR Dual Springer", "AKIR Dual Springer", config.guitarIR == "AKIR Dual Springer", config.guitarIR == "AKIR Dual Springer");
+	guitarIRDef.options[10] = new Option("1st baptist nashville balcony", "1st baptist nashville balcony", config.guitarIR == "1st baptist nashville balcony", config.guitarIR == "1st baptist nashville balcony");
+	guitarIRDef.options[11] = new Option("1st baptist nashville far close", "1st baptist nashville far close", config.guitarIR == "1st baptist nashville far close", config.guitarIR == "1st baptist nashville far close");
+	guitarIRDef.options[12] = new Option("1st baptist nashville fa _wide", "1st baptist nashville far wide", config.guitarIR == "1st baptist nashville far wide", config.guitarIR == "1st baptist nashville far wide");
 
 	guitarIRDef.addEventListener("change", function() {
 		guitarIR = guitarIRDef.value;

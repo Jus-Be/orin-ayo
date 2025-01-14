@@ -3,13 +3,12 @@
 	"name": "OrinAyo",  
 	"short_name": "OrinAyo",
 	"description": "The Guitar Arranger",
-	"version": "0.9.11",
+	"version": "0.9.12",
 
 	"background": {
 		"service_worker": "./js/background.js"
 	}, 
-	"permissions": [
-		"offscreen",		
+	"permissions": [		
 		"background",	
 		"storage",   
 		"unlimitedStorage"
