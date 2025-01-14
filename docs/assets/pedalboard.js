@@ -73,11 +73,12 @@ window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, use
     console.log('No midi connectivity');
   }
 
-  await fetch('./assets/Conic Long Echo Hall.wav')
+  await fetch("/audio/ir/" + guitarIR + ".wav")
     .then(response => response.arrayBuffer())
     .then(data => {
       return ctx.decodeAudioData(data, b => {
-        buffer = b;
+		console.debug("pedalboard IR loader", guitarIR, b);
+        window.buffer = b;
       });
     })
     .catch(e => onError('Failed to load reverb impulse'));

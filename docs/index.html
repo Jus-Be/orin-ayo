@@ -70,7 +70,7 @@
 	    <td><select  title='Strum type for Pad 4'id="guitarStrum2" type="text" class="form-control input"></select></td>
 	    <td><select title='Strum type for Pad 5' id="guitarStrum3" type="text" class="form-control input"></select></td>
 	    <td><select title='Neck Position' id="guitarPosition" type="text" class="form-control input"><option value=1>I</option><option selected value=2>II</option><option value=3>III&nbsp;</option></select></td>		
-	    <td><select title='Guitar Effects Preset' id="effectsPreset" type="text" class="form-control input"><option selected value='default'>Default</option></select></td>				
+	    <td><select title='Guitar Impulse Response Definitions' id="guitarIRDef" type="text" class="form-control input"></select></td>				
 	</tr>	
 	<tr><td><b>Arranger Type</b></td><td><select id="arrangerType" type="text" class="form-control input"></select></td><td valign="top" rowspan="13" colspan="5"><div id="synth"></div></td></tr>	
 	<tr><td><b>Arranger Group</b></td><td><select id="arrangerGroup" type="text" class="form-control input"></select></td><td></td></tr>	
@@ -147,9 +147,9 @@
   <script src='./js/0341_Aspirin_sf2_file.js'></script>  
   <script src='./js/0260_JCLive_sf2_file.js'></script>
 
-  <script src="./dist/converse.js"></script>
-	
+  <script src="./dist/converse.js"></script>  
   <script src="./assets/pedalboard.js" type="module"></script>   
+  
   <script src="./js/basic-pitch.js"></script>    
   <script src="./js/tonal.min.js"></script>    
   <script src="./js/stream-deck.js"></script>  
@@ -163,6 +163,7 @@
   <script src="./js/midi-parser.js"></script>    
   <script src="./js/guitar-loops.js"></script>
   <script src="./js/styles.js"></script>  
+  <script src="./js/impulse-responses.js"></script> 
   <script src="./js/songs.js"></script>    
   <script src="./js/audio_looper.js"></script>    
   <script src="./js/sf2.parser.min.js"></script>
@@ -170,6 +171,7 @@
   <script src="./js/midi.ble.js"></script>	
   <script src="./js/midi-creator.js"></script>	
   <script src="./js/main.js"></script> 
+  
   <audio id="audioPlayer" autoplay style="display: none"> </audio>
 </body>
 </html>

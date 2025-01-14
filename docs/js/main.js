@@ -33,7 +33,7 @@ var bassCheckedEle = null;
 var chordCheckedEle = null;
 var autoFillCheckedEle = null;
 var introEndCheckedEle = null;
-var effectsPreset = null;
+var guitarIRDef = null;
 var guitarPosition = null;
 let tempoDiv = null;
 let volDiv = null;
@@ -166,6 +166,7 @@ var timerWorker = null;     		// The Web Worker used to fire timer messages
 var strum1 = "3-2-1-2";
 var strum2 = "[3+2+1]";
 var strum3 = "3-2-4-1-4-2-4";
+var guitarIR = "Conic Long Echo Hall";
 var guitarName = "none";
 var player = new WebAudioFontPlayer();
 var midiGuitar = null;
@@ -3721,9 +3722,40 @@ async function setupUI(config,err) {
 	strum2 = config.strum2 || strum2;
 	strum3 = config.strum3 || strum3;
 	
-	effectsPreset =  document.getElementById("effectsPreset");
+	guitarIR = config.guitarIR || guitarIR;
+
+	guitarIRDef =  document.getElementById("guitarIRDef");
+	guitarIRDef.options[0] = new Option("Conic Long Echo Hall", "Conic Long Echo Hall", config.guitarIR == "Conic Long Echo Hall", config.guitarIR == "Conic Long Echo Hall");	
+	guitarIRDef.options[1] = new Option("hall", "hall", config.guitarIR == "hall", config.guitarIR == "hall");	
+	guitarIRDef.options[2] = new Option("pcm 90 clean plate", "pcm 90 clean plate", config.guitarIR == "pcm 90 clean plate", config.guitarIR == "pcm 90 clean plate");	
+	guitarIRDef.options[3] = new Option("plate", "plate", config.guitarIR == "plate", config.guitarIR == "plate");	
+	guitarIRDef.options[4] = new Option("room", "room", config.guitarIR == "room", config.guitarIR == "room");	
+	guitarIRDef.options[5] = new Option("space", "space", config.guitarIR == "space", config.guitarIR == "space");	
+	guitarIRDef.options[6] = new Option("spring", "spring", config.guitarIR == "spring", config.guitarIR == "spring");	
+	guitarIRDef.options[7] = new Option("captain 1960", "captain 1960", config.guitarIR == "captain 1960", config.guitarIR == "captain 1960");
+	guitarIRDef.options[8] = new Option("AK SPKRS Vintage US", "AK SPKRS Vintage US", config.guitarIR == "AK SPKRS Vintage US", config.guitarIR == "AK SPKRS Vintage US");
+	guitarIRDef.options[9] = new Option("AKIR Dual Springer", "AKIR Dual Springer", config.guitarIR == "AKIR Dual Springer", config.guitarIR == "AKIR Dual Springer");
+
+	guitarIRDef.addEventListener("change", function() {
+		guitarIR = guitarIRDef.value;
+		console.debug("selected guitar IR", guitarIR, guitarIRDef.value);	
+
+		fetch("/audio/ir/" + guitarIR + ".wav")
+		.then(response => response.arrayBuffer())
+		.then(data => {
+		  return ctx.decodeAudioData(data, b => {
+			console.debug("pedalboard IR loader", guitarIR, b);
+			window.buffer = b;
+			window.convolver.buffer = b;
+			saveConfig();			
+		  });
+		})
+		.catch(e => onError('Failed to load reverb impulse'));
+	});
+	
+	
 	guitarPosition = document.getElementById("guitarPosition");
-	guitarPosition.selectedIndex = config.strumPos
+	guitarPosition.selectedIndex = config.strumPos	
 	
 	guitarStrum[1].addEventListener("change", function()
 	{
@@ -3762,7 +3794,7 @@ async function setupUI(config,err) {
 		guitarStrum[2].style.display = "none";		
 		guitarStrum[3].style.display = "none";	
 		guitarPosition.style.display = "none";
-		effectsPreset.style.display = "none";
+		guitarIRDef.style.display = "none";
 		
 		guitarName = guitarType.value;
 		
@@ -3771,7 +3803,7 @@ async function setupUI(config,err) {
 			guitarStrum[2].style.display = "";		
 			guitarStrum[3].style.display = "";	
 			guitarPosition.style.display = "";	
-			effectsPreset.style.display = "";
+			guitarIRDef.style.display = "";
 				
 			if (guitarReverb.checked) {		
 
@@ -3792,7 +3824,7 @@ async function setupUI(config,err) {
 	if (guitarName == "none") {
 		for (let i=1; i<4; i++) guitarStrum[i].style.display = "none";
 		guitarPosition.style.display = "none";	
-		effectsPreset.style.display = "none";
+		guitarIRDef.style.display = "none";
 	}		
 	
 	if (guitarName != "none") 
@@ -4845,6 +4877,7 @@ function saveConfig() {
 	config.tempo = tempo;
 	config.guitarVolume = savedGuitarVolume;
 	config.guitarName = guitarName;
+	config.guitarIR = guitarIR;
 	config.strum1 = strum1;
 	config.strum2 = strum2;	
 	config.strum3 = strum3;	

@@ -9,7 +9,7 @@ export const reverbPedal = function(input, index) {
   };
 
   // Create audio nodes
-  const reverb = ctx.createConvolver();
+  window.convolver = ctx.createConvolver();
   const tone = ctx.createBiquadFilter();
   const mixIn = ctx.createGain();
   const mixOut = ctx.createGain();
@@ -28,12 +28,12 @@ export const reverbPedal = function(input, index) {
   fxSend.connect(mixIn);
   mixIn.connect(fxReturn);
 
-  fxSend.connect(reverb);
-  reverb.connect(tone);
+  fxSend.connect(convolver);
+  convolver.connect(tone);
   tone.connect(mixOut);
   mixOut.connect(fxReturn);
 
-  reverb.buffer = buffer;
+  convolver.buffer = buffer;
 
   // Create the DOM nodes
   const pedal = createPedal({
