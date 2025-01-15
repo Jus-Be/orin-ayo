@@ -1284,7 +1284,7 @@ async function doLiberLiveSetup(device) {
 
 				console.debug('Found Characteristic', service.uuid, characteristic.uuid, characteristic.properties.notify);										
 				
-				if (characteristic.properties.writeWithoutResponse) {
+				if (characteristic.properties.write) {
 					writeCharacteristic = characteristic;	
 					setTimeout(setLiberLiveChordMappings);
 					setTimeout(setLiberLiveDeviceSettings, 1000);
@@ -1312,9 +1312,9 @@ async function doLiberLiveSetup(device) {
 						}
 						
 						if (eventData[7]) {
-							tempo = eventData[7];
-							volDiv.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100); 
-							tempoDiv.innerHTML = tempo;								
+							//tempo = eventData[7];
+							//tempoDiv.innerHTML = tempo;								
+							volDiv.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100); 							
 						}
 						
 						/*let html = "<table><tr>";
@@ -3496,7 +3496,7 @@ function normaliseSffStyle() {
 		}	
 				
 		const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
-		if (!registration) setTempo(bpm);	
+		if (!registration || registration == 0) setTempo(bpm);	
 		
 		const initHdr = arrSequence.data["SFF1"] || arrSequence.data["SFF2"];
 		
@@ -6584,7 +6584,7 @@ function startStopWebAudio() {
 	
 	if (!styleStarted) {
 		if (recordMode) startRecording();				
-		if (!registration) setTempo(realInstrument.bpm);	
+		if (!registration || registration == 0) setTempo(realInstrument.bpm);	
 		const goTime = audioContext.currentTime + gapTime;				
 
 		if (songSequence) {
@@ -7886,17 +7886,17 @@ function setupSongSequence() {
 		playButton.innerText = "Wait..";
 		playButton.style.setProperty("--accent-fill-rest", "red");
 		const bpm = Math.floor(60 /(songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
-		if (!registration) setTempo(bpm);	
+		if (!registration || registration == 0) setTempo(bpm);	
 	} 
 	else
 		
 	if (arrSequence?.data?.Hdr) {
 		
 		if (realInstrument) {
-			if (!registration) setTempo(realInstrument.bpm);	
+			if (!registration || registration == 0) setTempo(realInstrument.bpm);	
 		} else {
 			const bpm = Math.floor(60 /(arrSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
-			if (!registration) setTempo(bpm);			
+			if (!registration || registration == 0) setTempo(bpm);			
 		}
 
 		if (arrSequence.data[currentSffVar]?.length) {
@@ -8136,7 +8136,9 @@ function setupRealInstruments() {
 		chordLoop.addUri(realInstrument.chords, realdrumDevice, realInstrument.bpm);	
 	}
 	
-	if (!registration && realInstrument.bpm) setTempo(realInstrument.bpm);	
+	if ((!registration || registration == 0) && realInstrument.bpm && tempo != realInstrument.bpm) {
+		setTempo(realInstrument.bpm);	
+	}
 	
 	setTimeout(() => {
 		playButton.innerText = "Play";
