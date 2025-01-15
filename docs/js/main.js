@@ -122,6 +122,7 @@ var orinayo_reg = null;
 var base = BASE;
 var key = "C"
 var keyChange = 0;
+var keySign = null;
 var padsMode = 0;
 var savedPadsMode = 0;
 var sectionChange = 0;
@@ -580,6 +581,7 @@ async function doLavaGenieSetup(device) {
 					
 				if (characteristic.properties.writeWithoutResponse) {
 					writeCharacteristic = characteristic;	
+					// TODO
 					//setTimeout(setLiberLiveChordMappings);
 					setTimeout(setLavaGenieSettings, 1000);
 				}
@@ -859,7 +861,9 @@ function writeGenie(bytes) {
 
 async function setLiberLiveChordMappings() {
 	const hdr = packString("b11e");
-	console.debug("setLiberLiveChordMappings", hdr, writeCharacteristic);	
+	const offset = parseInt(keySign.value);	
+	console.debug("setLiberLiveChordMappings", offset, hdr, writeCharacteristic);
+	if (!writeCharacteristic) return;
 	
 	const keys = [
 		{level: 10, type: 5},	// Bbadd9	
@@ -898,7 +902,11 @@ async function setLiberLiveChordMappings() {
 	let i = 0;
 	
 	for (let key of keys) {
-		dataView[5+i] = packString(parseChar(key.level) + parseChar(key.type));
+		let keyVal = offset + key.level;
+		if (keyVal > 11) keyVal = 0;
+		if (keyVal < 0) keyVal = 11;
+		
+		dataView[5+i] = packString(parseChar(keyVal) + parseChar(key.type));
 		i++;
 	}
 	
@@ -1276,7 +1284,7 @@ async function doLiberLiveSetup(device) {
 
 				console.debug('Found Characteristic', service.uuid, characteristic.uuid, characteristic.properties.notify);										
 				
-				if (characteristic.properties.write) {
+				if (characteristic.properties.writeWithoutResponse) {
 					writeCharacteristic = characteristic;	
 					setTimeout(setLiberLiveChordMappings);
 					setTimeout(setLiberLiveDeviceSettings, 1000);
@@ -1324,17 +1332,27 @@ async function doLiberLiveSetup(device) {
 						html += "</tr></table>"
 						ui.innerHTML = html;*/				
 						
-						const oldKey = keyChange;
-						
-						if (eventData[1] == 0) keyChange = 0;	// C
-						if (eventData[1] == 1) keyChange = 2;	// D
-						if (eventData[1] == 2) keyChange = 4;	// E
-						if (eventData[1] == 3) keyChange = 5;	// F
-						if (eventData[1] == 4) keyChange = 7;	// G
-						if (eventData[1] == 5) keyChange = 9;	// A
-						if (eventData[1] == 6) keyChange = 11;	// B
-						
-						if (oldKey != keyChange) dokeyChange();
+						if ( eventData[5] == 0) {	// paddle is neutral
+							const oldKey = keyChange;
+							const offset = parseInt(keySign.value);
+							
+							if (eventData[1] == 0) keyChange = 0;	// C
+							if (eventData[1] == 1) keyChange = 2;	// D
+							if (eventData[1] == 2) keyChange = 4;	// E
+							if (eventData[1] == 3) keyChange = 5;	// F
+							if (eventData[1] == 4) keyChange = 7;	// G
+							if (eventData[1] == 5) keyChange = 9;	// A
+							if (eventData[1] == 6) keyChange = 11;	// B
+							
+							keyChange = keyChange + offset;
+							if (keyChange < 0) keyChage = 11;
+							if (keyChange > 11) keyChage = 0;
+							
+							if (oldKey != keyChange) {
+								dokeyChange();
+								setLiberLiveChordMappings();
+							}
+						}
 						
 						let chordSelected = false;
 						let paddleMoved = false;
@@ -1600,7 +1618,7 @@ async function doLiberLiveSetup(device) {
 						}
 						else
 	
-						if (eventData[1] >= 16 && !styleStarted && eventData[5] != 64) {			// Tempo Pad
+						if (eventData[1] >= 16 && !styleStarted && eventData[5] == 0) {			// Tempo Pad on no paddle movement
 							if (eventData[4] == 2) recallRegistration(1);	
 							if (eventData[4] == 4) recallRegistration(2);		
 							if (eventData[4] == 8) recallRegistration(3);	
@@ -1740,6 +1758,7 @@ async function onloadHandler() {
 	orinayo_reg = document.querySelector('#orinayo-reg');	
 	guitarReverb = document.querySelector("#reverb");
 	
+  	keySign = document.getElementById("ll-keysign");	
 	tempoDiv = document.getElementById('showTempo');
 	volDiv = document.getElementById('showVol');	
 	
@@ -6285,8 +6304,7 @@ function dokeyDown() {
 
 function dokeyChange() {
     keyChange = (keyChange % 12);
-
-    console.debug("Received 'key change (" + KEYS[keyChange] + ")");
+    console.debug("Received 'key change (" + KEYS[keyChange] + ")", keySign.value);
 
     orinayo.innerHTML = KEYS[keyChange];
     key = KEYS[keyChange];

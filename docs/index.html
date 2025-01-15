@@ -90,7 +90,7 @@
 	<tr>
 		<td><b>ChordTracker</b></td>
 		<td><select id="midiChordTrackerSel" type="text" class="form-control input"></select></td>
-		<td valign="top" rowspan="2" colspan="4">
+		<td valign="top" rowspan="2" colspan="5">
 			<div id="liberlive" style="display:none;">
 				<div><center><b>Liber Live Style</b></center></div>
 				<table width="100%">
@@ -99,12 +99,20 @@
 						<td>Paddle A Drums</td>
 						<td>Paddle B Chord</td>
 						<td>Paddle B Drums</td>					
+						<td>Key Sign</td>							
 					</tr>
 					<tr>				
 						<td><select id="ll-chord1" type="text" class="form-control input"></select></td>	
 						<td><select id="ll-drums1" type="text" class="form-control input"></select></td>
 						<td><select id="ll-chord2" type="text" class="form-control input"></select></td>
 						<td><select id="ll-drums2" type="text" class="form-control input"></select></td>					
+						<td>
+							<select id="ll-keysign" type="text" class="form-control input">
+								<option selected value=0>Normal</option>
+								<option value=-1>Flat</option>
+								<option value=1>Sharp</option>
+							</select>
+						</td>							
 					</tr>
 				</table>
 			</div>
