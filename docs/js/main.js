@@ -1794,11 +1794,11 @@ async function onloadHandler() {
 		mobileToolbar.append(playButton);
 		mobileToolbar.append(loadFile);
 		mobileToolbar.append(saveReg);
-		mobileToolbar.append(resetApp);		
-		mobileToolbar.append(pedalBoard);
-
-		const mobileBodyContainer = document.getElementById("mobile-body");		
-		mobileBodyContainer.append(board);
+		mobileToolbar.append(resetApp);	
+		
+		//mobileToolbar.append(pedalBoard);
+		//const mobileBodyContainer = document.getElementById("mobile-body");		
+		//mobileBodyContainer.append(board);
 		
 		drumKnob = createKnob("drum-volume", 50, 0, 100, '#88ff88');
 		const drumChoice = document.getElementById("drum-choice");
@@ -1838,7 +1838,20 @@ async function onloadHandler() {
 			guitarVolume = value / 100; 
 			savedGuitarVolume = guitarVolume;
 			showVol.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100);		
-		});		
+		});	
+
+		const controlItems1 = document.getElementById("control-items-1");
+		controlItems1.append(document.getElementById("guitarStrum1"));
+		controlItems1.append(document.getElementById("guitarStrum2"));
+		controlItems1.append(document.getElementById("guitarStrum3"));		
+		
+		const controlItems2 = document.getElementById("control-items-2");
+		controlItems2.append(document.getElementById("guitarPosition"));
+		controlItems2.append(document.getElementById("guitarIRDef"));
+
+		const controlItems3 = document.getElementById("control-items-3");
+		controlItems3.append(document.getElementById("control-fill"));
+		controlItems3.append(document.getElementById("control-intro"));		
 
 	} else {
 		mobileContainer.style.display = "none";

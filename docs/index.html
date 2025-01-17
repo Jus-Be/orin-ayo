@@ -53,6 +53,18 @@
 				<div id="bass-choice"></div>
 			</center></td>				
 		</tr>	
+		<tr valign="top">
+			<td><center>
+				<h3><span style="margin-right: 20px" id="play-control"></span>Control</h3>	
+				<div id="control-items-1"></div>
+			</center></td>
+			<td><center>
+				<h3><span style="margin-right: 20px" id="extern-device"></span></h3>
+				<div id="control-items-2"></div>
+				<div id="control-items-3"></div>				
+			</center></td>				
+		</tr>	
+		
 		</table>
 	</div>	
   </div>
@@ -85,8 +97,8 @@
 			    <span style="font-size: 14px;margin-left:2px" id="sequencer">Tempo:<span id="showTempo">100</span></span>	
 				<input title='Overall Tempo control' id="tempo" type="range" min="30.0" max="180.0" step="1" value="100" style="height: 20px; width: 150px">
 				<span style="display: none;"><input title='Enable microphone' style="margin-left: 10px;margin-right: 10px;" id="microphone" type="checkbox">Mic</span>
-				<input title='Play Drum Fills automatically when variation chnages' style="margin-left: 10px;margin-right: 10px;" id="autoFill" type="checkbox" checked>Auto Fill
-				<input title='Play Intro end Ending' style="margin-left: 10px;margin-right: 10px;" id="introEnd" type="checkbox" checked>Intro/Outro
+				<span id="control-fill"><input title='Play Drum Fills automatically when variation chnages' style="margin-left: 10px;margin-right: 10px;" id="autoFill" type="checkbox" checked>Auto Fill</span>
+				<span id="control-intro"><input title='Play Intro end Ending' style="margin-left: 10px;margin-right: 10px;" id="introEnd" type="checkbox" checked>Intro/Outro</span>
 				<input title='Enable Guitar pedal effects' checked style="margin-left: 10px;margin-right: 10px;" id="reverb" type="checkbox">Pedals
 				<input title='Dont override midi file program change settings' style="margin-left: 10px;margin-right: 10px;" id="program-change" type="checkbox">No P.Change
 				<input title='Dont play chords in midi song file' style="margin-left: 10px;margin-right: 10px;" id="mute-chords" type="checkbox">Mute Chords
