@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Orin Ayo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">	
     <link rel="stylesheet" href="./css/bootstrap.css">
     <link rel="stylesheet" href="./dist/converse.min.css" />	
     <link rel="stylesheet" href="./css/synth.css">	
@@ -13,7 +14,26 @@
 </head>
 
 <body>
-  <div style="margin: 10px">
+  <div id="mobile" style="display: none; margin: 10px">
+	<table>	
+	<tr>
+		<td style="width: 64px"><img height=64 src="./assets/icon_128.png"/></td>
+		<td>
+			<div><center id="mobile-toolbar"></center></div>	
+		</td>
+	</tr>
+	<tr>
+		<td><div id="drum-volume"/></td>
+		<td><div id="bass-volume"/></td>		
+	</tr>
+	<tr>
+		<td><div id="chord-volume"/></td>
+		<td><div id="lead-volume"/></td>		
+	</tr>	
+	</table>			
+  </div>
+  <div id="desktop" style="display: none">
+    <div style="margin: 10px">
     <input style="display:none" id="load-midifile" type="file" />
 	<table width="100%">	
 	<tr>
@@ -36,7 +56,7 @@
 				<fluent-button appearance="accent" title='Record performance as video or audio file' style="display: none;" id="record_song">Record</fluent-button>				
 				<fluent-button appearance="accent" title='Stream performance to hosted server' style="display: none;" id="stream_song">Start Stream</fluent-button>					
 				<fluent-button appearance="accent" title='Refresh application for new settings to take effect' id="reset_app">Refresh</fluent-button>			
-			</center><div>	
+			</center></div>	
 			<div id="sequencer2" style="margin:10px">
 			    <span style="font-size: 14px;margin-left:2px" id="sequencer">Tempo:<span id="showTempo">100</span></span>	
 				<input title='Overall Tempo control' id="tempo" type="range" min="30.0" max="180.0" step="1" value="100" style="height: 20px; width: 150px">
@@ -157,7 +177,8 @@
 
   <script src="./dist/converse.js"></script>  
   <script src="./assets/pedalboard.js" type="module"></script>   
-  
+
+  <script src="./js/pureknob.js"></script>  
   <script src="./js/basic-pitch.js"></script>    
   <script src="./js/tonal.min.js"></script>    
   <script src="./js/stream-deck.js"></script>  
@@ -180,5 +201,6 @@
   <script src="./js/main.js"></script> 
   
   <audio id="audioPlayer" autoplay style="display: none"> </audio>
+  </div>
 </body>
 </html>
