@@ -17,14 +17,18 @@
   <div id="mobile" style="display: none; margin: 5px">
 	<div id="mobile-header">  
 		<table>	
-		<tr>
+		<tr valign="top">
 			<td>
 			  <img style="width: 64px; margin-right: 10px;" src="./assets/icon_128.png"/>		
 			</td>
 			<td>
 			  <div id="mobile-toolbar"></div>
 			  <div style="margin-top: 5px;" id="mobile-controller"></div>			  
-			</td>			
+			</td>
+			<td>
+			  <div id="mobile-chord-view" style="position: absolute; top: 5px; right: 0;"></div>			
+			  <div id="mobile-arr-view" style="position: absolute; top: 35px; right: 0;"></div>				  
+			</td>
 		</tr>	
 		</table>
 	</div>
@@ -184,11 +188,11 @@
   <div style="margin-top: 20px;">	
 	<table width="90%">
 	  <tr>	  
-      <td align="left" width="20%"><span style="font-size: 28px" id="orinayo">C</span></td>
-      <td align="left" width="20%"><span style="font-size: 28px" id="orinayo-section">Arr A</span></td>
-      <td align="left" width="20%"><span style="font-size: 28px" id="orinayo-pad">Pad 2</span></td>
-      <td align="left" width="20%"><span style="font-size: 28px" id="orinayo-strum">Strum 1</span></td>
-      <td align="left" width="20%"><span style="font-size: 28px" id="orinayo-reg">Slot 0</span></td>	  
+      <td align="left" width="20%"><span style="font-size: 24px" id="orinayo">C</span></td>
+      <td align="left" width="20%"><span style="font-size: 24px" id="orinayo-section">Arr A</span></td>
+      <td align="left" width="20%"><span style="font-size: 24px" id="orinayo-pad">Pad 2</span></td>
+      <td align="left" width="20%"><span style="font-size: 24px" id="orinayo-strum">Strum 1</span></td>
+      <td align="left" width="20%"><span style="font-size: 24px" id="orinayo-reg">Slot 0</span></td>	  
 	  </tr>
 	  <tr> <td colspan="5"><canvas id="tempoCanvas" width="1150" height="50" style="margin: 0px; display:none"></canvas></td></tr>
 	  </table>	

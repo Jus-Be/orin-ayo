@@ -1827,6 +1827,12 @@ async function onloadHandler() {
 		//const mobileBodyContainer = document.getElementById("mobile-body");		
 		//mobileBodyContainer.append(board);
 		
+		const chordView = document.getElementById("mobile-chord-view");	
+		chordView.append(document.getElementById("orinayo"));
+		
+		const arrView = document.getElementById("mobile-arr-view");			
+		arrView.append(document.getElementById("orinayo-section"));
+		
 		drumKnob = createKnob("drum-volume", 50, 0, 100, '#88ff88');
 		const drumChoice = document.getElementById("drum-choice");
 		drumChoice.append(realDrumsLoop);
