@@ -1,0 +1,24 @@
+{
+    "short_name": "orinayo",
+    "name": "Orin Ayo",
+    "version": "1.0",	
+    "categories": ["social"],	
+    "description": "Orin Ayo is live music production web application",    
+    "icons": [
+        {
+            "src": "./assets/icon_16.png",
+            "sizes": "16x16",
+            "type": "image/png"
+        },
+        {
+            "src": "./assets/icon_128.png",
+            "sizes": "128x128",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "./",
+    "background_color": "#FFFFFF",
+    "theme_color": "#FFFFFF",
+    "display": "standalone",
+    "orientation": "portrait"
+}
