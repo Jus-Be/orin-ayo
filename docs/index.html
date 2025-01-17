@@ -14,23 +14,47 @@
 </head>
 
 <body>
-  <div id="mobile" style="display: none; margin: 10px">
-	<table>	
-	<tr>
-		<td style="width: 64px"><img height=64 src="./assets/icon_128.png"/></td>
-		<td>
-			<div><center id="mobile-toolbar"></center></div>	
-		</td>
-	</tr>
-	<tr>
-		<td><div id="drum-volume"/></td>
-		<td><div id="bass-volume"/></td>		
-	</tr>
-	<tr>
-		<td><div id="chord-volume"/></td>
-		<td><div id="lead-volume"/></td>		
-	</tr>	
-	</table>			
+  <div id="mobile" style="display: none; margin: 5px">
+	<div id="mobile-header">  
+		<table>	
+		<tr>
+			<td colspan=2>
+			  <div>
+				<img style="width: 64px; margin-right: 10px;" src="./assets/icon_128.png"/>		
+				<span id="mobile-toolbar"></span>	
+			  </div>
+			</td>
+		</tr>	
+		</table>
+	</div>
+	<div id="mobile-body">
+		<table id="mobile-body-detail">
+		<tr>
+			<td><center>
+				<h3><span style="margin-right: 20px" id="chord-mute"></span>Keys</h3>		
+				<div id="chord-volume"></div>
+				<div id="chord-choice"></div>
+			</center></td>
+			<td><center>
+				<h3><span style="margin-right: 20px" id="lead-mute"></span>Guitar</h3>		
+				<div id="lead-volume"></div>
+				<div id="lead-choice"></div>
+			</center></td>				
+		</tr>	
+		<tr>
+			<td><center>
+				<h3><span style="margin-right: 20px" id="drum-mute"></span>Drums</h3>		
+				<div id="drum-volume"></div>
+				<div id="drum-choice"></div>
+			</center></td>
+			<td><center>
+				<h3><span style="margin-right: 20px" id="bass-mute"></span>Bass</h3>		
+				<div id="bass-volume"></div>
+				<div id="bass-choice"></div>
+			</center></td>				
+		</tr>	
+		</table>
+	</div>	
   </div>
   <div id="desktop" style="display: none">
     <div style="margin: 10px">

@@ -37,9 +37,12 @@ var autoFillCheckedEle = null;
 var introEndCheckedEle = null;
 var guitarIRDef = null;
 var guitarPosition = null;
-let tempoDiv = null;
-let volDiv = null;
-
+var tempoDiv = null;
+var showVol = null;
+var bassKnob = null;
+var chordKnob = null;
+var drumKnob = null;
+var leadKnob = null;
 var vocalistMode = false;
 var muteChords = null;
 var loopWait = 0;
@@ -1316,7 +1319,7 @@ async function doLiberLiveSetup(device) {
 						if (eventData[7]) {
 							//tempo = eventData[7];
 							//tempoDiv.innerHTML = tempo;								
-							volDiv.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100); 							
+							showVol.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100); 							
 						}
 						
 						/*let html = "<table><tr>";
@@ -1765,16 +1768,24 @@ async function onloadHandler() {
 	
   	keySign = document.getElementById("ll-keysign");	
 	tempoDiv = document.getElementById('showTempo');
-	volDiv = document.getElementById('showVol');	
+	showVol = document.getElementById('showVol');	
 	
 	programChangeEle = document.querySelector("#program-change");
 	autoFillCheckedEle = document.querySelector("#autoFill");
 	introEndCheckedEle = document.querySelector("#introEnd");		
 	loadFile = document.querySelector("#load_file")
+	resetApp = document.querySelector("#reset_app")	
 	
-	const saveReg = document.querySelector("#save_reg")
-	
-
+	const saveReg = document.querySelector("#save_reg");
+	const realDrumsLoop = document.getElementById("realdrumLoop");	
+	const realBassLoop = document.getElementById("realbassLoop");		
+	const realChordsLoop = document.getElementById("realchordLoop");		
+	const guitarType = document.getElementById("guitarType");
+	const guitarVolEle = document.querySelector("#volume");	
+	const pedalBoard = document.querySelector("#pedal_board");
+	const board = document.querySelector(".pedalboard");	
+	const mobileBody = document.getElementById("mobile-body-detail"); 
+		
 	if (mobileCheck()) {
 		desktopContainer.style.display = "none";	
 		
@@ -1783,12 +1794,51 @@ async function onloadHandler() {
 		mobileToolbar.append(playButton);
 		mobileToolbar.append(loadFile);
 		mobileToolbar.append(saveReg);
+		mobileToolbar.append(resetApp);		
+		mobileToolbar.append(pedalBoard);
+
+		const mobileBodyContainer = document.getElementById("mobile-body");		
+		mobileBodyContainer.append(board);
 		
-		const drumKnob = createKnob("drum-volume", 50, 0, 100, '#88ff88');
-		const bassKnob = createKnob("bass-volume", 50, 0, 100, '#ff8888');
-		const chordKnob = createKnob("chord-volume", 50, 0, 100, '#8888ff');
-		const leadKnob = createKnob("lead-volume", 50, 0, 100, '#888888');		
-			
+		drumKnob = createKnob("drum-volume", 50, 0, 100, '#88ff88');
+		const drumChoice = document.getElementById("drum-choice");
+		drumChoice.append(realDrumsLoop);
+		
+		drumKnob.addListener((knob, value) => {
+			drumVol = value; 
+			savedDrumVol = drumVol;	
+			if (drumLoop) drumLoop.setVolume(drumVol / 100);			
+		});			
+		
+		bassKnob = createKnob("bass-volume", 50, 0, 100, '#ff8888');
+		const bassChoice = document.getElementById("bass-choice");
+		bassChoice.append(realBassLoop);
+		
+		bassKnob.addListener((knob, value) => {
+			bassVol = value; 
+			savedBassVol = bassVol;	
+			if (bassLoop) bassLoop.setVolume(bassVol / 100);			
+		});			
+		
+		chordKnob = createKnob("chord-volume", 50, 0, 100, '#8888ff');
+		const chordChoice = document.getElementById("chord-choice");
+		chordChoice.append(realChordsLoop);
+		
+		chordKnob.addListener((knob, value) => {
+			chordVol = value; 
+			savedChordVol = chordVol;	
+			if (chordLoop) chordLoop.setVolume(chordVol / 100);			
+		});		
+		
+		leadKnob = createKnob("lead-volume", 50, 0, 100, '#ff88ff');		
+		const leadChoice = document.getElementById("lead-choice");
+		leadChoice.append(guitarType);	
+
+		leadKnob.addListener((knob, value) => {
+			guitarVolume = value / 100; 
+			savedGuitarVolume = guitarVolume;
+			showVol.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100);		
+		});		
 
 	} else {
 		mobileContainer.style.display = "none";
@@ -1871,10 +1921,9 @@ async function onloadHandler() {
 	lyricsCanvas = document.querySelector("#lyrics");
 	lyricsContext = lyricsCanvas.getContext('2d');	
 	
-	const board = document.querySelector(".pedalboard");
+	const settings = document.querySelector("#settings");	
 	const chordpro = document.querySelector("#chordpro");
 	const chatview = document.querySelector("#chatview");	
-	const settings = document.querySelector("#settings");
 	const gameCanvas = document.querySelector("#gameCanvas");
 	const toggleChat = document.querySelector("#toggle_chat");
 	
@@ -1886,18 +1935,18 @@ async function onloadHandler() {
 			
 		if (settings.style.display == "none") {
 			settings.style.display = "";
+			mobileBody.style.display = "";
 			//gameCanvas.style.display = "";
 			chatview.style.display = "none";
 	
 			
 		} else {
 			chatview.style.display = "";
-			settings.style.display = "none";	
+			settings.style.display = "none";
+			mobileBody.style.display = "none";
 			//gameCanvas.style.display = "none";			
 		}
 	});
-	
-	const pedalBoard = document.querySelector("#pedal_board");
 	
 	pedalBoard.addEventListener('click', function(event) {	
 		chatview.style.display = "none";		
@@ -1907,12 +1956,14 @@ async function onloadHandler() {
 			
 		if (settings.style.display == "none") {
 			settings.style.display = "";
+			mobileBody.style.display = "";			
 			board.style.display = "none";
 	
 			
 		} else if (guitarReverb?.checked) {
 			board.style.display = "";
-			settings.style.display = "none";			
+			settings.style.display = "none";	
+			mobileBody.style.display = "none";
 		}
 	});	
 	
@@ -1926,11 +1977,13 @@ async function onloadHandler() {
 		
 		if (settings.style.display == "none") {
 			settings.style.display = "";
+			mobileBody.style.display = "";			
 			chordpro.style.display = "none";		
 			
 		} else {
 			chordpro.style.display = "";
-			settings.style.display = "none";			
+			settings.style.display = "none";	
+			mobileBody.style.display = "none";			
 		}
 	});	
 	
@@ -1946,11 +1999,13 @@ async function onloadHandler() {
 		
 		if (settings.style.display == "none") {
 			settings.style.display = "";
+			mobileBody.style.display = "";			
 			lyricsCanvas.style.display = "none";	
 			
 		} else {
 			lyricsCanvas.style.display = "";
-			settings.style.display = "none";			
+			settings.style.display = "none";	
+			mobileBody.style.display = "none";
 		}
 	});		
 	
@@ -1968,9 +2023,7 @@ async function onloadHandler() {
 			saveRegistration(slot);
 		}
 	});
-	
-	resetApp = document.querySelector("#reset_app")
-		
+			
 	resetApp.addEventListener('click', function(event) {
 		registration = 0;
 		location.reload();
@@ -2002,13 +2055,14 @@ async function onloadHandler() {
 		}
 	});	
 
-	const showVol = document.querySelector("#showVol");
 	showVol.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100);
 	
-	document.querySelector("#volume").addEventListener("input", function(event) {
+	guitarVolEle.addEventListener("input", function(event) {
 		guitarVolume = +event.target.value / 100; 
 		savedGuitarVolume = guitarVolume;
-		showVol.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100);
+		const displayVol =  Math.trunc(guitarVolume * 100);
+		showVol.innerHTML = "Vol: " + displayVol;
+		if (leadKnob) leadKnob.setValue(displayVol);
 	});
 	
 	document.querySelector("#tempo").addEventListener("input", function(event) {
@@ -4836,6 +4890,17 @@ function setupMidiChannels() {
 	bassCheckedEle = document.getElementById("arr-instrument-17");
 	chordCheckedEle = document.getElementById("arr-instrument-18");
 	
+	if (mobileCheck()) {
+		const chordMute = document.getElementById("chord-mute");
+		chordMute.append(chordCheckedEle);
+		
+		const drumMute = document.getElementById("drum-mute");
+		drumMute.append(drumCheckedEle);
+
+		const bassMute = document.getElementById("bass-mute");
+		bassMute.append(bassCheckedEle);		
+	}
+	
 	drumCheckedEle.addEventListener("click", function(event) {
 		pressFootSwitch(7);
 	});
@@ -4869,21 +4934,29 @@ function setupMidiChannels() {
 		keysSound2Vol = +event.target.value; 			
 	});
 	
+	if (drumKnob) drumKnob.setValue(midiVolumeEle[16].value);
+	if (chordKnob) chordKnob.setValue(midiVolumeEle[18].value);
+	if (bassKnob) bassKnob.setValue(midiVolumeEle[17].value);	
+	if (leadKnob) leadKnob.setValue(Math.trunc(guitarVolume * 100));	
+	
 	midiVolumeEle[16].addEventListener("input", function(event) {
 		drumVol = +event.target.value; 
-		savedDrumVol = drumVol;			
+		savedDrumVol = drumVol;	
+		if (drumKnob) drumKnob.setValue(drumVol);
 		if (drumLoop) drumLoop.setVolume(drumVol / 100);			
 	});
 
 	midiVolumeEle[17].addEventListener("input", function(event) {
 		bassVol = +event.target.value; 
 		savedBassVol = bassVol;	
+		if (bassKnob) bassKnob.setValue(drumVol);		
 		if (bassLoop) bassLoop.setVolume(bassVol / 100);			
 	});
 	
 	midiVolumeEle[18].addEventListener("input", function(event) {
 		chordVol = +event.target.value; 
-		savedChordVol = chordVol;			
+		savedChordVol = chordVol;	
+		if (chordKnob) chordKnob.setValue(drumVol);		
 		if (chordLoop) chordLoop.setVolume(chordVol / 100);			
 	});	
 	
@@ -5036,7 +5109,7 @@ function saveConfig() {
 	config.reverb = guitarReverb.checked;
 	config.microphone = microphone.checked;
 	config.programChange = programChangeEle.checked;
-	config.strumPos = guitarPosition.selectedIndex;
+	config.strumPos = guitarPosition?.selectedIndex;
 	config.liberLiveChrd1 = liberLive.chord1;
 	config.liberLiveChrd2 = liberLive.chord2;
 	config.liberLiveDrms1 = liberLive.drums1;
@@ -8308,7 +8381,8 @@ function createKnob(id, value, valMin, valMax, color) {
 	knob.setProperty('valMax', valMax);
 
 	knob.setValue(value);
-	document.getElementById(id).appendChild(knob.node());							
+	document.getElementById(id).appendChild(knob.node());	
+	return knob;
 }
 // -------------------------------------------------------
 //

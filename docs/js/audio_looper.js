@@ -198,7 +198,7 @@ AudioLooper.prototype.displayUI = function(flag) {
 	this.instrumentNode = document.getElementById("arr-instrument-" + this.channel);	
 	console.debug("displayUI", this.instrumentNode, this.channel);
 	
-	if (this.instrumentNode) {
+	if (this.instrumentNode && !mobileCheck()) {
 		const classList = this.instrumentNode.parentNode.parentNode.parentNode.parentNode.querySelector("tbody > tr:nth-child(" + (parseInt(this.channel) + 1) + ") > td:nth-child(" + this.counter + ")").classList;				
 		
 		if (classList) 
