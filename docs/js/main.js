@@ -616,7 +616,8 @@ async function doLavaGenieSetup(device) {
 						resetGuitarHero();
 					}	
 
-					document.getElementById("lavagenie").style.display = "";					
+					document.getElementById("extern-device").innerHTML = "Lava Genie Guitar";
+					document.getElementById("lavagenie").style.display = "";
 					
 					handlers[characteristic.uuid].addEventListener('characteristicvaluechanged', (evt) => {
 						const {buffer}  = evt.target.value;
@@ -1318,10 +1319,10 @@ async function doLiberLiveSetup(device) {
 						resetGuitarHero();
 					}	
 					
-					const liberLiveSettings = document.getElementById("liberlive");
-					liberLiveSettings.style.display = "";						
+					document.getElementById("liberlive").style.display = "";						
 
 					if (mobileCheck()) {
+						document.getElementById("extern-device").innerHTML = "LiberLive C1 Guitar";						
 						const controlDevice = document.getElementById("control-device");
 						controlDevice.append(document.getElementById("ll-chord1"));			
 						controlDevice.append(document.getElementById("ll-drums1"));	
@@ -1873,17 +1874,14 @@ async function onloadHandler() {
 			showVol.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100);		
 		});	
 
-		const controlItems1 = document.getElementById("control-items-1");
-		const controlItems2 = document.getElementById("control-items-2");		
-		const controlItems3 = document.getElementById("control-items-3");
-		
-		controlItems1.append(document.getElementById("guitarStrum1"));
-		controlItems1.append(document.getElementById("guitarStrum2"));
-		controlItems1.append(document.getElementById("guitarStrum3"));				
-		controlItems1.append(document.getElementById("guitarPosition"));
-		controlItems1.append(document.getElementById("guitarIRDef"));
-		controlItems1.append(document.getElementById("control-fill"));
-		controlItems1.append(document.getElementById("control-intro"));		
+		const controlItems = document.getElementById("control-items");	
+		controlItems.append(document.getElementById("guitarStrum1"));
+		controlItems.append(document.getElementById("guitarStrum2"));
+		controlItems.append(document.getElementById("guitarStrum3"));				
+		controlItems.append(document.getElementById("guitarPosition"));
+		controlItems.append(document.getElementById("guitarIRDef"));
+		controlItems.append(document.getElementById("control-fill"));
+		controlItems.append(document.getElementById("control-intro"));		
 
 	} else {
 		mobileContainer.style.display = "none";
@@ -6723,10 +6721,11 @@ function doChord() {
 
 function startStopWebAudio() {
 	let gapTime = 0.5;
+	const stillPlaying = drumLoop?.looping || bassLoop?.looping || chordLoop?.looping;
+
+	console.debug("startStopWebAudio", styleStarted, stillPlaying, pad.buttons[YELLOW]);
 	
-	console.debug("startStopWebAudio", styleStarted, pad.buttons[YELLOW]);
-	
-	if (!styleStarted) {
+	if (!styleStarted) {		
 		if (recordMode) startRecording();				
 		if (!registration || registration == 0) setTempo(realInstrument.bpm);	
 		const goTime = audioContext.currentTime + gapTime;				
@@ -7865,7 +7864,9 @@ function scheduleArrNote() {
 		const secondsPerBeat = 60.0 / tempo; 
 		const beatTime = (0.25 * secondsPerBeat); 		
 		const goTime = audioContext.currentTime + beatTime;
-			
+		
+		// TODO SFF plus WebAudio
+		/*
 		if (drumLoop && !drumLoop.looping && drumCheckedEle?.checked) {
 			drumLoop.start("arra", goTime);
 		}	
@@ -7877,7 +7878,8 @@ function scheduleArrNote() {
 		if (chordLoop && !chordLoop.looping && chordCheckedEle?.checked) {
 			chordLoop.start("key" + (keyChange % 12), goTime);
 		}		
-				
+		*/
+		
 		// TODO implement CASM
 		const channel = getCasmChannel(currentSffVar, event.channel); 
 
