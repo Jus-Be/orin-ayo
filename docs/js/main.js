@@ -2329,7 +2329,7 @@ async function handleChordPro(file, data) {
 	
 	let url = location.origin + "/orinayo/cp2midi";
 	
-	if (location.origin.startWith("chrome-extension") || location.origin.startWith("https://jus-be.github.io/")) {
+	if (location.origin.startsWith("chrome-extension") || location.origin.startsWith("https://jus-be.github.io/")) {
 		url = "https://pade.chat:5443/orinayo/cp2midi";
 	}
 	
