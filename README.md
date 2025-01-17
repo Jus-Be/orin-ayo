@@ -1,6 +1,8 @@
 # Introduction
 Orin Ayo is live music production web application implemented in JavaScript and runs inside a browser as a web page or browser extension external window.
 
+<img src=https://jus-be.github.io/orin-ayo/assets/orinayo_mobile.jpeg>
+
 It was originally developed to turn a guitar games controller HID device into a chord based MIDI controller for an arranger keyboard (Yamaha PSR SX-600), module (Ketron SD90), looper (Boss RC600) device or application (Giglad). It lets you play chords and control the hardware arranger or looper with the buttons on a gutar games controller. When combined with RealGuitar or RealLPC from MusicLabs, it becomes a complete live music production system.
 
 <img src=https://jus-be.github.io/orin-ayo/assets/orinayo.png>
