@@ -337,25 +337,29 @@ function handleLiberLive(selected) {
 	bluetooth.style.display = selected ? "" : "none";	
 	let device;
 	
-	if (selected) bluetooth.addEventListener("click", async (evt) => {
-
-		device = await navigator.bluetooth.requestDevice({		
-			filters: [{
-			services: ["000000ff-0000-1000-8000-00805f9b34fb"],
-		}]});
-
-		if (device) {
-			console.debug("found liberlive", device);	
-			
-			if (bluetoothGuitar) {
-				await device.forget();	
-				bluetoothGuitar	= null;
-				console.debug("forget liberlive", device);
-			} else {
-				bluetoothGuitar = device;
-			}
+	if (selected) 
+	{	
+		if (mobileCheck()) {
+			const mobileToolbar = document.getElementById("mobile-toolbar");
+			mobileToolbar.append(bluetooth);			
 		}
-	});
+	
+		bluetooth.addEventListener("click", async (evt) => {
+			device = await navigator.bluetooth.requestDevice({filters: [{services: ["000000ff-0000-1000-8000-00805f9b34fb"]}]});
+
+			if (device) {
+				console.debug("found liberlive", device);	
+				
+				if (bluetoothGuitar) {
+					await device.forget();	
+					bluetoothGuitar	= null;
+					console.debug("forget liberlive", device);
+				} else {
+					bluetoothGuitar = device;
+				}
+			}
+		});
+	}
 }
 
 function handleLavaGenie(selected) {
@@ -363,26 +367,34 @@ function handleLavaGenie(selected) {
 	bluetooth.style.display = selected ? "" : "none";	
 	let device;
 	
-	if (selected) bluetooth.addEventListener("click", async (evt) => {
-		console.debug('handleLavaGenie - click');	
-	
-		device = await navigator.bluetooth.requestDevice({		
-			filters: [{
-			services: ["0000fee0-0000-1000-8000-00805f9b34fb"],		
-		}]});
-
-		if (device) {
-			console.debug("found lavagenie", device);				
-			
-			if (bluetoothGuitar) {			
-				await device.forget();
-				bluetoothGuitar	= null;				
-				console.debug("forget lavagenie", device);				
-			} else {
-				bluetoothGuitar = device;
-			}				
+	if (selected) 
+	{
+		if (mobileCheck()) {
+			const mobileToolbar = document.getElementById("mobile-toolbar");
+			mobileToolbar.append(bluetooth);			
 		}
-	});
+		
+		bluetooth.addEventListener("click", async (evt) => {
+			console.debug('handleLavaGenie - click');	
+		
+			device = await navigator.bluetooth.requestDevice({		
+				filters: [{
+				services: ["0000fee0-0000-1000-8000-00805f9b34fb"],		
+			}]});
+
+			if (device) {
+				console.debug("found lavagenie", device);				
+				
+				if (bluetoothGuitar) {			
+					await device.forget();
+					bluetoothGuitar	= null;				
+					console.debug("forget lavagenie", device);				
+				} else {
+					bluetoothGuitar = device;
+				}				
+			}
+		});
+	}
 }
 
 function handleRecordSong(selected) {
@@ -1305,8 +1317,18 @@ async function doLiberLiveSetup(device) {
 						setup();
 						resetGuitarHero();
 					}	
+					
+					const liberLiveSettings = document.getElementById("liberlive");
+					liberLiveSettings.style.display = "";						
 
-					document.getElementById("liberlive").style.display = "";					
+					if (mobileCheck()) {
+						const controlDevice = document.getElementById("control-device");
+						controlDevice.append(document.getElementById("ll-chord1"));			
+						controlDevice.append(document.getElementById("ll-drums1"));	
+						controlDevice.append(document.getElementById("ll-chord2"));	
+						controlDevice.append(document.getElementById("ll-drums2"));	
+						controlDevice.append(document.getElementById("ll-keysign"));							
+					}				
 					
 					handler.addEventListener('characteristicvaluechanged', (evt) => {
 						const {buffer}  = evt.target.value;
@@ -1775,6 +1797,7 @@ async function onloadHandler() {
 	introEndCheckedEle = document.querySelector("#introEnd");		
 	loadFile = document.querySelector("#load_file")
 	resetApp = document.querySelector("#reset_app")	
+	bluetoothEle = document.querySelector("#bluetooth")		
 	
 	const saveReg = document.querySelector("#save_reg");
 	const realDrumsLoop = document.getElementById("realdrumLoop");	
@@ -1785,6 +1808,7 @@ async function onloadHandler() {
 	const pedalBoard = document.querySelector("#pedal_board");
 	const board = document.querySelector(".pedalboard");	
 	const mobileBody = document.getElementById("mobile-body-detail"); 
+	const midiInType = document.getElementById("midiInType");	
 		
 	if (mobileCheck()) {
 		desktopContainer.style.display = "none";	
@@ -1794,7 +1818,10 @@ async function onloadHandler() {
 		mobileToolbar.append(playButton);
 		mobileToolbar.append(loadFile);
 		mobileToolbar.append(saveReg);
-		mobileToolbar.append(resetApp);	
+		mobileToolbar.append(resetApp);
+
+		const mobileController = document.getElementById("mobile-controller");
+		mobileController.append(midiInType);			
 		
 		//mobileToolbar.append(pedalBoard);
 		//const mobileBodyContainer = document.getElementById("mobile-body");		
@@ -1841,17 +1868,16 @@ async function onloadHandler() {
 		});	
 
 		const controlItems1 = document.getElementById("control-items-1");
+		const controlItems2 = document.getElementById("control-items-2");		
+		const controlItems3 = document.getElementById("control-items-3");
+		
 		controlItems1.append(document.getElementById("guitarStrum1"));
 		controlItems1.append(document.getElementById("guitarStrum2"));
-		controlItems1.append(document.getElementById("guitarStrum3"));		
-		
-		const controlItems2 = document.getElementById("control-items-2");
-		controlItems2.append(document.getElementById("guitarPosition"));
-		controlItems2.append(document.getElementById("guitarIRDef"));
-
-		const controlItems3 = document.getElementById("control-items-3");
-		controlItems3.append(document.getElementById("control-fill"));
-		controlItems3.append(document.getElementById("control-intro"));		
+		controlItems1.append(document.getElementById("guitarStrum3"));				
+		controlItems1.append(document.getElementById("guitarPosition"));
+		controlItems1.append(document.getElementById("guitarIRDef"));
+		controlItems1.append(document.getElementById("control-fill"));
+		controlItems1.append(document.getElementById("control-intro"));		
 
 	} else {
 		mobileContainer.style.display = "none";
