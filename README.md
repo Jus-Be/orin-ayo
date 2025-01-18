@@ -3,13 +3,18 @@ Orin Ayo is live music production web application implemented in JavaScript and 
 
 # Screenshots
 ## Progressive Web App (PWA)
+Only live music playing is accesible from this application mode.
+
 <img width=512 src=https://jus-be.github.io/orin-ayo/assets/orinayo_mobile.jpeg>
 
 ## Browser Extension/Web Page/Desktop App View
+The full application features to create, extend and play live music is available from this application mode.
+
 <img src=https://jus-be.github.io/orin-ayo/assets/orinayo.png>
 
 # Description
 It was originally developed to turn a guitar games controller HID device into a chord based MIDI controller for an arranger keyboard (Yamaha PSR SX-600), module (Ketron SD90), looper (Boss RC600) device or application (Giglad). It lets you play chords and control the hardware arranger or looper with the buttons on a gutar games controller. When combined with RealGuitar or RealLPC from MusicLabs, it becomes a complete live music production system.
+
 Now it can work standalone without depending on an external musical hardware device to create quality backing music to accompany a singer (including yourself) or a solo musician playing a melodic instrument.
 
 - It has an internal smart sampler that can play audio loops in like midi styles files. It can be extended with external OGG audio loop files in OrinAyo format.
@@ -36,7 +41,7 @@ The music is played live with the same Logitech Guitar controller, but using the
 https://github.com/user-attachments/assets/12c69505-3887-4a6f-af7a-124bebd15741
 
 # How to setup
-To use OrinAyo is standalone mode and generating all the music from WebAudio, you would need a high spec PC or mobile phone like an Intel iCore 7 or Apple M series laptop or a Samsung S24 mobile phone.
+To use OrinAyo in standalone mode, generating all the music from WebAudio, you would need a high spec PC or mobile phone like an Intel iCore 7 or Apple M series laptop or a Samsung S24 mobile phone.
 To use it as a midi controller on external hardware, a standard laptop should work fine.
 
 Orinayo can be setup and accessed as follows:
