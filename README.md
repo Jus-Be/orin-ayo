@@ -1,16 +1,15 @@
 # Introduction
-Orin Ayo is live music production web application implemented in JavaScript and runs inside a browser as a web page or browser extension external window.
+Orin Ayo is live music production web application implemented in JavaScript and runs inside a browser as a web page, progressive web app (PWA) or browser extension external window.
 
 # Screenshots
-## Mobile View
+## Progressive Web App (PWA)
 <img width=512 src=https://jus-be.github.io/orin-ayo/assets/orinayo_mobile.jpeg>
 
-## Desktop View
+## Browser Extension/Web Page/Desktop App View
 <img src=https://jus-be.github.io/orin-ayo/assets/orinayo.png>
 
 # Description
 It was originally developed to turn a guitar games controller HID device into a chord based MIDI controller for an arranger keyboard (Yamaha PSR SX-600), module (Ketron SD90), looper (Boss RC600) device or application (Giglad). It lets you play chords and control the hardware arranger or looper with the buttons on a gutar games controller. When combined with RealGuitar or RealLPC from MusicLabs, it becomes a complete live music production system.
-
 Now it can work standalone without depending on an external musical hardware device to create quality backing music to accompany a singer (including yourself) or a solo musician playing a melodic instrument.
 
 - It has an internal smart sampler that can play audio loops in like midi styles files. It can be extended with external OGG audio loop files in OrinAyo format.
@@ -37,9 +36,13 @@ The music is played live with the same Logitech Guitar controller, but using the
 https://github.com/user-attachments/assets/12c69505-3887-4a6f-af7a-124bebd15741
 
 # How to setup
+To use OrinAyo is standalone mode and generating all the music from WebAudio, you would need a high spec PC or mobile phone like an Intel iCore 7 or Apple M series laptop or a Samsung S24 mobile phone.
+To use it as a midi controller on external hardware, a standard laptop should work fine.
+
 Orinayo can be setup and accessed as follows:
 
-- Type https://jus-be.github.io/orin-ayo/index.html directly into a Chrome or Edge browser.
+- Type https://jus-be.github.io/orin-ayo/index.html into a Chrome or Edge browser to use it directly from a web page.
+- Install it as a progressive web app from the web page. Click on the "install" or "Add to home page" browser links/buttons.
 - Install it as a browser extension for Google Chrome and Microsoft Edge from https://chromewebstore.google.com/detail/orinayo/mhnemaeacdgnkmoibfeodelijegakklp
 - On Windows 10+ desktops, download orinayo.exe and run it directly from a desktop. It loads the above web page using webview2. See https://github.com/jchv/go-webview2. If you are using Windows 10+, the WebView2 runtime should already be installed. If you don't have it installed, you can download and install a copy from Microsoft's website - https://developer.microsoft.com/en-us/microsoft-edge/webview2/
 
