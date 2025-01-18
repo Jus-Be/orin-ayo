@@ -1139,7 +1139,7 @@ function startXMPP() {
 	let http = location.origin;		
     let domain = location.hostname;
 	
-	if (location.hostname == "oeplgfliognafobghehfffbppakffdkc") {
+	if (location.hostname == "oileglflkhgmeabhodafmhahdbfbekdh") {
 		ws = "ws://localhost:7070";
 		http = "http://localhost:7070";			
 		domain = "localhost";
@@ -8731,7 +8731,7 @@ function hideChat(ev) {
 
     let domain = location.hostname;
 	
-	if (location.hostname == "oeplgfliognafobghehfffbppakffdkc") {		
+	if (location.hostname == "oileglflkhgmeabhodafmhahdbfbekdh") {		
 		domain = "localhost";
 	}	
 	_converse.api.rooms.open('lobby@conference.' + domain, {'bring_to_foreground': true}, true);	
