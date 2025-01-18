@@ -1770,6 +1770,11 @@ function initLavaGenie() {
 
 async function onloadHandler() {
 	console.debug("onloadHandler");
+	
+    navigator.serviceWorker
+      .register("./js/main-sw.js")
+      .then(res => console.log("service worker registered"))
+      .catch(err => console.log("service worker not registered", err));	
 		
 	let version = "1.0.0";
 	if (!!chrome.runtime?.getManifest) version = chrome.runtime.getManifest().version;
