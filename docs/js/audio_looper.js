@@ -75,7 +75,8 @@ function AudioLooper(styleType) {
 				this.finished = false;
 				this.mute();
 				this.source.stop();
-				this.displayUI(false);				
+				this.displayUI(false);		
+				setTimeout(checkStartStopWebAudio, 5000);				
 			}
 			
 			if (this.id.startsWith("fil") || this.id.startsWith("brk")) this.id = "arr" + this.id.substring(3);					
@@ -122,7 +123,7 @@ AudioLooper.prototype.unmute = function(id) {
 
 AudioLooper.prototype.update = function(id, sync) {
 	if (id == this.id) return;	
-    if (this.id == "int1") return;
+    if (!styleStarted) return;
 
 	this.vol = this.styleType == "bass" ? bassVol/100 : ( this.styleType == "chord" ? chordVol/100 : drumVol/100);
 	console.debug("update", id, sync);	
@@ -158,7 +159,7 @@ AudioLooper.prototype.update = function(id, sync) {
 };
 
 AudioLooper.prototype.start = function(id, when) {
-    if (this.id == "int1") return;
+    if (styleStarted) return;
 	
 	this.displayUI(true);	
 	this.looping = true;
@@ -179,6 +180,7 @@ AudioLooper.prototype.start = function(id, when) {
 		console.debug("AudioLooper " + this.styleType + " start", when);	
 
 		if (this.sample) this.doLoop(id, beginTime, howLong, when);
+		setTimeout(checkStartStopWebAudio, howLong + 1000);
 	}
 };
 
