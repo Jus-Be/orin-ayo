@@ -5,12 +5,12 @@ Orin Ayo is live music production web application implemented in JavaScript and 
 ## Progressive Web App (PWA)
 Only live music playing is accesible from this application mode.
 
-<img width=512 src=https://jus-be.github.io/orin-ayo/assets/orinayo_mobile.jpeg>
+<img width=512 src=https://jus-be.github.io/orinayo/assets/orinayo_mobile.jpeg>
 
 ## Browser Extension/Web Page/Desktop App View
 The full application features to create, extend and play live music is available from this application mode.
 
-<img src=https://jus-be.github.io/orin-ayo/assets/orinayo.png>
+<img src=https://jus-be.github.io/orinayo/assets/orinayo.png>
 
 # Description
 It was originally developed to turn a guitar games controller HID device into a chord based MIDI controller for an arranger keyboard (Yamaha PSR SX-600), module (Ketron SD90), looper (Boss RC600) device or application (Giglad). It lets you play chords and control the hardware arranger or looper with the buttons on a gutar games controller. When combined with RealGuitar or RealLPC from MusicLabs, it becomes a complete live music production system.
@@ -80,7 +80,7 @@ The Yamaha MODX and Montage are not really arrangers, but have arpeggios that ca
 
 Orin Ayo can also play the strum/pick patterns for the virtual guitars from Music Labs like RealGuitar, RealLPC, etc in joystick mode along with the arranger or looper patterns.
 
-<img src=https://jus-be.github.io/orin-ayo/assets/guitar_hero.png>
+<img src=https://jus-be.github.io/orinayo/assets/guitar_hero.png>
 
 # Chords
 The five colored fret buttons generate CHORD midi notes which are send on MIDI channel 4 when the strum bar goes up or down.  Twenty chord shapes are supported. There are six basic popular chords (I, IIm, IIIm, IV, V & VIm) playable with a single or two fingers and fourteen other less used chords requring two, three or even four fingers. The chord mapping in Nashville number format is fixed for now. It will become configureable in a future version.
