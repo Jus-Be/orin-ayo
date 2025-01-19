@@ -1969,11 +1969,17 @@ async function onloadHandler() {
 	lyricsCanvas = document.querySelector("#lyrics");
 	lyricsContext = lyricsCanvas.getContext('2d');	
 	
-	const settings = document.querySelector("#settings");	
 	const chordpro = document.querySelector("#chordpro");
+	chordpro.src = "https://pade.chat:5443/orinayo/chordpro-pdf-online/";
+	
+	if (!location.origin.startsWith("chrome-extension") && !location.origin.startsWith("https://jus-be.github.io/")) {
+		chordpro.src = location.host + "/orinayo/chordpro-pdf-online/";
+	}		
+	
 	const chatview = document.querySelector("#chatview");	
 	const gameCanvas = document.querySelector("#gameCanvas");
 	const toggleChat = document.querySelector("#toggle_chat");
+	const settings = document.querySelector("#settings");		
 	
 	toggleChat.addEventListener('click', function(event) {	
 		chatview.style.display = "none";	
