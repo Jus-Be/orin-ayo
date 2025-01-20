@@ -2078,8 +2078,8 @@ async function onloadHandler() {
 	const chordpro = document.querySelector("#chordpro");
 	chordpro.src = "https://pade.chat:5443/orinayo/chordpro-pdf-online/";
 	
-	if (!location.origin.startsWith("chrome-extension") && !location.origin.startsWith("https://jus-be.github.io/")) {
-		chordpro.src = location.host + "/orinayo/chordpro-pdf-online/";
+	if (!location.origin.startsWith("chrome-extension") && !location.origin.startsWith("https://jus-be.github.io")) {
+		chordpro.src = "/orinayo/chordpro-pdf-online/";
 	}		
 	
 	const chatview = document.querySelector("#chatview");	
