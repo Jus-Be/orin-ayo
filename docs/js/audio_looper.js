@@ -1,4 +1,6 @@
 function AudioLooper(styleType) {
+	this.looping = false;
+	this.finished = true;	
 	this.styleType = styleType;
 	this.cb_loaded = null;
 	this.cb_status = null;
@@ -72,11 +74,12 @@ function AudioLooper(styleType) {
 			
 			if (id == "end1" || this.finished) 	{
 				this.looping = false;	
-				this.finished = false;
+				this.finished = true;
 				this.mute();
 				this.source.stop();
 				this.displayUI(false);		
-				setTimeout(checkStartStopWebAudio, 5000);				
+				setTimeout(verifyStartStopWebAudio, 3000);	
+				return;
 			}
 			
 			if (this.id.startsWith("fil") || this.id.startsWith("brk")) this.id = "arr" + this.id.substring(3);					
@@ -122,8 +125,8 @@ AudioLooper.prototype.unmute = function(id) {
 }
 
 AudioLooper.prototype.update = function(id, sync) {
-	if (id == this.id) return;	
-    if (!styleStarted) return;
+	//if (id == this.id) return;	
+
 
 	this.vol = this.styleType == "bass" ? bassVol/100 : ( this.styleType == "chord" ? chordVol/100 : drumVol/100);
 	console.debug("update", id, sync);	
@@ -159,10 +162,11 @@ AudioLooper.prototype.update = function(id, sync) {
 };
 
 AudioLooper.prototype.start = function(id, when) {
-    if (styleStarted) return;
+    if (!this.finished || this.looping) return;
 	
 	this.displayUI(true);	
 	this.looping = true;
+	this.finished = false;	
 	this.reloop = true;
 	this.firstTime = true;
 	this.offset = 0;
@@ -180,7 +184,7 @@ AudioLooper.prototype.start = function(id, when) {
 		console.debug("AudioLooper " + this.styleType + " start", when);	
 
 		if (this.sample) this.doLoop(id, beginTime, howLong, when);
-		setTimeout(checkStartStopWebAudio, howLong + 1000);
+		setTimeout(verifyStartStopWebAudio, howLong + 1000);
 	}
 };
 

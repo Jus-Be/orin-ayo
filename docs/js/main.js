@@ -25,6 +25,7 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var mobileViewpoint = false;
 var desktopContainer = null;
 var mobileContainer = null;
 var midiInstrCheckedEle = [];
@@ -1768,8 +1769,95 @@ function initLavaGenie() {
 	}	
 }
 
+function getDefaultData() {
+	console.debug("getDefaultData");
+	
+	const data = {
+		"registration": 0,
+		"tempo": 120,
+		"guitarVolume": 0.25,
+		"guitarName": "0260_JCLive_sf2_file",
+		"guitarIR": "Conic Long Echo Hall",
+		"strum1": "4-3-4-2-4-3-1-3-2",
+		"strum2": "[3+2+1]",
+		"strum3": "3-2-4-1-4-2-4",
+		"padsMode": 3,
+		"keyChange": 7,
+		"arranger": "webaudio",
+		"inputDeviceType": "games-controller",
+		"realGuitarStyle": "none",
+		"realDrum": "assets/drums/beat-arp_120_2000_16000_2000_2000_4000.drum",
+		"realChord": "assets/chords/acoustic-strum_120_4000_4000_2.chord",
+		"realBass": "assets/bass/rock_120_8000.bass",
+		"arrangerGroup": "yamaha",
+		"rgIndex": 0,
+		"autoFill": true,
+		"introEnd": true,
+		"reverb": true,
+		"microphone": false,
+		"programChange": false,
+		"strumPos": 2,
+		"liberLiveChrd1": "1/0",
+		"liberLiveChrd2": "1/0",
+		"liberLiveDrms1": "6/24",
+		"liberLiveDrms2": "16/24",
+		"drumVol": 100,
+		"chordVol": 32,
+		"bassVol": 60,
+		"keysSound1Vol": 100,
+		"keysSound2Vol": 50,
+		"channel0": true,
+		"instrument0": 0,
+		"channel1": true,
+		"instrument1": 1,
+		"channel2": false,
+		"instrument2": 2,
+		"channel3": false,
+		"instrument3": 3,
+		"channel4": false,
+		"instrument4": 4,
+		"channel5": false,
+		"instrument5": 5,
+		"channel6": false,
+		"instrument6": 6,
+		"channel7": false,
+		"instrument7": 7,
+		"channel8": false,
+		"instrument8": 8,
+		"channel9": false,
+		"instrument9": 0,
+		"channel10": false,
+		"instrument10": 10,
+		"channel11": false,
+		"instrument11": 11,
+		"channel12": false,
+		"instrument12": 12,
+		"channel13": false,
+		"instrument13": 13,
+		"channel14": false,
+		"instrument14": 14,
+		"channel15": false,
+		"instrument15": 15,
+		"channel16": true,
+		"channel17": true,
+		"channel18": true
+	};
+	
+	return data;
+}
+
 async function onloadHandler() {
-	console.debug("onloadHandler");
+	const data = localStorage.getItem("orin.ayo.config");
+	let config = {};
+	
+	if (!data) {
+		config = getDefaultData();	
+	} else {
+		config = JSON.parse(data);
+	}
+		
+	console.debug("onloadHandler", config);
+	mobileViewpoint = config.mobileViewpoint || mobileViewpoint;
 	
     navigator.serviceWorker
       .register("./js/main-sw.js")
@@ -1820,6 +1908,7 @@ async function onloadHandler() {
 		desktopContainer.style.display = "none";	
 		
 		mobileContainer.style.display = "";
+		window.resizeTo(450, 950);
 		const mobileToolbar = document.getElementById("mobile-toolbar");
 		mobileToolbar.append(playButton);
 		mobileToolbar.append(loadFile);
@@ -1886,11 +1975,28 @@ async function onloadHandler() {
 		controlItems.append(document.getElementById("guitarPosition"));
 		controlItems.append(document.getElementById("guitarIRDef"));
 		controlItems.append(document.getElementById("control-fill"));
-		controlItems.append(document.getElementById("control-intro"));		
+		controlItems.append(document.getElementById("control-intro"));	
+
+		const mobileLogo = document.querySelector("#mobile_logo");
+	
+		mobileLogo.addEventListener("click", function() {
+			mobileViewpoint = false;
+			saveConfig();
+			location.reload();
+		});		
 
 	} else {
 		mobileContainer.style.display = "none";
-		desktopContainer.style.display = "";			
+		window.resizeTo(1190, 1040);
+		desktopContainer.style.display = "";	
+
+		const desktopLogo = document.querySelector("#desktop_logo");
+	
+		desktopLogo.addEventListener("click", function() {
+			mobileViewpoint = true;
+			saveConfig();
+			location.reload();
+		});		
 	}
 	
 	
@@ -2086,7 +2192,7 @@ async function onloadHandler() {
 	loadFile.addEventListener('click', function(event) {
 		upload.click();	
 	});	
-
+	
 	styleType.addEventListener("click", function() {
 		styleType.innerText = styleType.innerText == "DJ" ? "Normal" : "DJ";	
 	});
@@ -2166,7 +2272,7 @@ async function onloadHandler() {
 	vocalistMode = document.getElementById("vocalist-mode");
 	
 	getStreamDeck();
-	letsGo();
+	letsGo(config);
 }
 
 async function getStreamDeck() {
@@ -3577,13 +3683,8 @@ function handleSongMode() {
 	}
 }
 
-function letsGo() {
-	let data = localStorage.getItem("orin.ayo.config");
-	if (!data) data = '{"arranger": "webaudio"}';	
-	const config = JSON.parse(data);
-	
+function letsGo(config) {
 	console.debug("letsGo", config, WebMidi);		
-	
 	
     WebMidi.enable(async function (err)
     {
@@ -5130,6 +5231,7 @@ function setGigladUI() {
 
 function saveConfig() {
     let config = {};
+	config.mobileViewpoint = mobileViewpoint;
 	config.registration = registration;
 	config.tempo = tempo;
 	config.guitarVolume = savedGuitarVolume;
@@ -6730,7 +6832,7 @@ function doChord() {
   }
 }
 
-function checkStartStopWebAudio() {
+function verifyStartStopWebAudio() {
 	if (chordLoop) {
 		styleStarted = chordLoop.looping;
 	} 
@@ -6796,12 +6898,15 @@ function startStopWebAudio() {
 function endAudioStyle() {
 	console.debug("endAudioStyle");
 	
-	if ((pad.buttons[YELLOW] || midiNotes.size > 2) && introEnd) {	
-		orinayo_section.innerHTML = ">End 1";					
-		if (drumLoop) drumLoop.update('end1', false);	
-	} else {
-		orinayo_section.innerHTML = "End 1";						
-		if (drumLoop) drumLoop.stop();
+	if (drumLoop) {
+		if (((pad.buttons[GREEN] || pad.buttons[RED] || pad.buttons[YELLOW] || pad.buttons[BLUE] || pad.buttons[ORANGE]) || midiNotes.size > 2) && introEnd) {	
+			orinayo_section.innerHTML = ">End 1";					
+			drumLoop.update('end1', false);	
+		} else {
+			orinayo_section.innerHTML = "End 1";
+			drumLoop.finished = true;
+			drumLoop.stop();
+		}
 	}
 	
 	if (bassLoop) {	
@@ -8437,9 +8542,10 @@ function arraysEqual(a, b) {
 }
 
 function mobileCheck() {
-  let check = false;
-  (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
-  return check;
+	if (mobileViewpoint) return true;
+	let check = false;
+	(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
+	return check;
 };
 
 function createKnob(id, value, valMin, valMax, color) {
