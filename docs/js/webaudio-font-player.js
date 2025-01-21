@@ -963,6 +963,8 @@ var WebAudioFontPlayer = /** @class */ (function () {
             envelope.duration = waveDuration;
             envelope.pitch = pitch;
             envelope.preset = preset;
+			
+			console.debug("queueWaveTable envelope", loop, waveDuration, envelope, zone);			
             return envelope;
         }
         else {

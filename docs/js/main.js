@@ -170,10 +170,11 @@ var last16thNoteDrawn = -1; 		// the last "box" we drew on the screen
 var notesInQueue = [];      		// the notes that have been put into the web audio,
 									// and may or may not have played yet. {note, time}
 var timerWorker = null;     		// The Web Worker used to fire timer messages
-var strum1 = "3-2-1-2";
-var strum2 = "[3+2+1]";
-var strum3 = "3-2-4-1-4-2-4";
-var guitarIR = "Conic Long Echo Hall";
+
+var keysName = "0000_FluidR3_GM_sf2_file";
+var keysPadName = "0890_FluidR3_GM_sf2_file";
+var keysPlayer = new WebAudioFontPlayer();
+
 var guitarName = "none";
 var player = new WebAudioFontPlayer();
 var midiGuitar = null;
@@ -182,8 +183,12 @@ var savedGuitarVolume = 0.25;
 var guitarReverb = null;
 var guitarContext = audioContext; //new AudioContext();
 var guitarSource = guitarContext.destination;
-var seqIndex = 0;
+var strum1 = "3-2-1-2";
+var strum2 = "[3+2+1]";
+var strum3 = "3-2-4-1-4-2-4";
+var guitarIR = "Conic Long Echo Hall";
 
+var seqIndex = 0;
 var liberLive = {drums1: "6/24", drums2: "16/24", chord1: "1/0", chord2: "1/0"};
 var lock = {counter: 0, up: 0, down: 0, button: -1};
 
@@ -1863,7 +1868,10 @@ async function onloadHandler() {
       .register("./js/main-sw.js")
       .then(res => console.log("service worker registered"))
       .catch(err => console.log("service worker not registered", err));	
-		
+	
+	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_' + keysName);		  
+	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_' + keysPadName);	
+	
 	let version = "1.0.0";
 	if (!!chrome.runtime?.getManifest) version = chrome.runtime.getManifest().version;
 	document.title = "Orin Ayo | " + version;
@@ -2885,12 +2893,14 @@ function autoStrumUpDown() {
 function handleNoteOff(note, device, velocity, channel) {	
 	console.debug("handleNoteOff", inputDeviceType, note);
 	
-	if (arrSynth?.onmessage) {
-		if (keysSound1?.checked) stopSynthNote(note.number, channel - 1, velocity  * 127);		
-		if (keysSound2?.checked) stopSynthNote(note.number, channel, velocity  * 127);				
-	}
-	
-	midiNotes.delete(note.number);
+	for (let [keyNote, value] of midiNotes)	
+	{
+		if (keyNote == note.number) {
+			if (value.envelope1) value.envelope1.cancel();
+			if (value.envelope2) value.envelope2.cancel();			
+			midiNotes.delete(note.number);
+		}
+	}	
 	
 	if (midiNotes.size == 0) {
 		midiNotesProceesed = false;
@@ -3016,12 +3026,18 @@ function handleNoteOff(note, device, velocity, channel) {
 function handleNoteOn(note, device, velocity, channel) {
 	console.debug("handleNoteOn", inputDeviceType, note, device, velocity, channel);
 	
-	if (arrSynth?.onmessage) {
-		if (keysSound1?.checked) playSynthNote(note.number, channel - 1, velocity  * 127);				
-		if (keysSound2?.checked) playSynthNote(note.number, channel, velocity  * 127);						
+	const keysDuration = 240 / tempo;
+	let envelope1, envelope2;
+	
+	if (keysSound1?.checked) {
+		envelope1 = keysPlayer.queueWaveTable(audioContext, audioContext.destination, window["_tone_" + keysName], 0, note.number, keysDuration, (velocity * midiVolumeEle[0].value / 100));
 	}
-
-	midiNotes.set(note.number, {inputDeviceType, note, device, velocity, channel});	
+	
+	if (keysSound2?.checked) {
+		envelope2 = keysPlayer.queueWaveTable(audioContext, audioContext.destination, window["_tone_" + keysPadName], 0, note.number, 3600, (velocity * midiVolumeEle[1].value / 100));
+	}	
+	
+	midiNotes.set(note.number, {inputDeviceType, note, device, velocity, channel, envelope1, envelope2});	
 	
 	if (!midiNotesProceesed && midiNotes.size == 4 || midiNotes.size == 3) {
 		const chord = []; 
@@ -4668,7 +4684,7 @@ async function setupUI(config,err) {
 		});
 
 		input.addListener("noteoff", "all", function (e) {
-			//debug("Received noteoff message", e);
+			//console.debug("Received noteoff message", e);
 			handleNoteOff(e.note, midiIn.value, e.velocity, e.channel);			
 		});	
 		
@@ -5040,6 +5056,9 @@ function setupMidiChannels() {
 		setTimeout(setupMidiChannels, 1000);
 		return;
 	}
+	
+	document.getElementById("midi-channel-0").selectedIndex = 0;
+	document.getElementById("midi-channel-1").selectedIndex = 89;
 	
 	drumCheckedEle = document.getElementById("arr-instrument-16");
 	bassCheckedEle = document.getElementById("arr-instrument-17");
