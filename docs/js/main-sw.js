@@ -333,13 +333,13 @@ const assets = [
 ];
 
 self.addEventListener("install", installEvent => {
-  console.log("[Service Worker] Install", location.protocol);
+  console.debug("[Service Worker] Install", location.protocol);
   
   installEvent.waitUntil(
     caches.open(staticOrinAyo).then(cache => {
       
 	  if (location.protocol != "chrome-extension:") {
-		  console.log("[Service Worker] Caching all");		  
+		  console.debug("[Service Worker] Caching all");		  
 		  cache.addAll(assets);
 	  }
     })
@@ -347,13 +347,13 @@ self.addEventListener("install", installEvent => {
 });
 
 self.addEventListener("fetch", (e) => {
-  console.log("[Service Worker] Fetch", location.protocol, e.request.url);
+  console.debug("[Service Worker] Fetch", location.protocol, e.request.url);
   
   if (location.protocol != "chrome-extension:") {		
 	  e.respondWith(
 		(async () => {
 		  const r = await caches.match(e.request);
-		  console.log(`[Service Worker] Fetching resource: ${e.request.url}`);
+		  console.debug(`[Service Worker] Fetching resource: ${e.request.url}`);
 		  
 		  if (r) {
 			return r;
@@ -361,7 +361,7 @@ self.addEventListener("fetch", (e) => {
 		  
 		  const response = await fetch(e.request);
 		  const cache = await caches.open(staticOrinAyo);
-		  console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
+		  console.debug(`[Service Worker] Caching new resource: ${e.request.url}`);
 		  cache.put(e.request, response.clone());
 		  return response;
 		})(),

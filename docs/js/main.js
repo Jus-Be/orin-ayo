@@ -171,9 +171,12 @@ var notesInQueue = [];      		// the notes that have been put into the web audio
 									// and may or may not have played yet. {note, time}
 var timerWorker = null;     		// The Web Worker used to fire timer messages
 
-var keysName = "0000_FluidR3_GM_sf2_file";
+var keysName = "0040_FluidR3_GM_sf2_file";
 var keysPadName = "0890_FluidR3_GM_sf2_file";
 var keysPlayer = new WebAudioFontPlayer();
+var keysMaster = null;
+var keysCheckEle1 = null;
+var keysCheckEle2 = null;
 
 var guitarName = "none";
 var player = new WebAudioFontPlayer();
@@ -1243,12 +1246,12 @@ function startXMPP() {
 }
 
 function parseStanza(stanza, attrs) {
-	console.log("parseStanza", stanza, attrs);	
+	console.debug("parseStanza", stanza, attrs);	
     const json = stanza.querySelector('json');	
 		
     if (json) {	
 		const metaData = JSON.parse(json.innerHTML);
-		console.log("parseStanza song metadata", metaData);	
+		console.debug("parseStanza song metadata", metaData);	
 		/*
 			{
 				"bassNote":30,"rootNote":54,"firstNote":50,"thirdNote":54,"fifthNote":57,"displaySymbol":"Dmaj/F#"
@@ -1866,11 +1869,19 @@ async function onloadHandler() {
 	
     navigator.serviceWorker
       .register("./js/main-sw.js")
-      .then(res => console.log("service worker registered"))
-      .catch(err => console.log("service worker not registered", err));	
+      .then(res => console.debug("service worker registered"))
+      .catch(err => console.debug("service worker not registered", err));	
+
+	keysMaster = keysPlayer.createChannel(audioContext);		  
+	const reverberator = keysPlayer.createReverberator(audioContext);	
+	reverberator.output.connect(audioContext.destination);
+	reverberator.wet.gain.setTargetAtTime(0.25, 0, 0.0001);	
+	keysMaster.output.connect(reverberator.input);		
 	
-	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_' + keysName);		  
-	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_' + keysPadName);	
+	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_0000_FluidR3_GM_sf2_file');		  
+	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_0040_FluidR3_GM_sf2_file');	
+	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_0940_FluidR3_GM_sf2_file');	
+	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_0890_FluidR3_GM_sf2_file');	
 	
 	let version = "1.0.0";
 	if (!!chrome.runtime?.getManifest) version = chrome.runtime.getManifest().version;
@@ -3030,11 +3041,13 @@ function handleNoteOn(note, device, velocity, channel) {
 	let envelope1, envelope2;
 	
 	if (keysSound1?.checked) {
-		envelope1 = keysPlayer.queueWaveTable(audioContext, audioContext.destination, window["_tone_" + keysName], 0, note.number, keysDuration, (velocity * midiVolumeEle[0].value / 100));
+		keysName = keysCheckEle1.selectedIndex < 4 ? "0000_FluidR3_GM_sf2_file" : "0040_FluidR3_GM_sf2_file";
+		envelope1 = keysPlayer.queueWaveTable(audioContext, keysMaster.input, window["_tone_" + keysName], 0, note.number, keysDuration, (velocity * midiVolumeEle[0].value / 100));
 	}
 	
 	if (keysSound2?.checked) {
-		envelope2 = keysPlayer.queueWaveTable(audioContext, audioContext.destination, window["_tone_" + keysPadName], 0, note.number, 3600, (velocity * midiVolumeEle[1].value / 100));
+		keysPadName = keysCheckEle2.selectedIndex  == 89 ? "0890_FluidR3_GM_sf2_file" : "0940_FluidR3_GM_sf2_file";	
+		envelope2 = keysPlayer.queueWaveTable(audioContext, keysMaster.input, window["_tone_" + keysPadName], 0, note.number, 3600, (velocity * midiVolumeEle[1].value / 100));
 	}	
 	
 	midiNotes.set(note.number, {inputDeviceType, note, device, velocity, channel, envelope1, envelope2});	
@@ -5057,9 +5070,8 @@ function setupMidiChannels() {
 		return;
 	}
 	
-	document.getElementById("midi-channel-0").selectedIndex = 0;
-	document.getElementById("midi-channel-1").selectedIndex = 89;
-	
+	keysCheckEle1 = document.getElementById("midi-channel-0");
+	keysCheckEle2 = document.getElementById("midi-channel-1");	
 	drumCheckedEle = document.getElementById("arr-instrument-16");
 	bassCheckedEle = document.getElementById("arr-instrument-17");
 	chordCheckedEle = document.getElementById("arr-instrument-18");
