@@ -1953,7 +1953,7 @@ async function onloadHandler() {
 		
 		drumKnob.addListener((knob, value) => {
 			drumVol = value; 
-			savedDrumVol = drumVol;	
+			//savedDrumVol = drumVol;	
 			if (drumLoop) drumLoop.setVolume(drumVol / 100);			
 		});			
 		
@@ -1963,7 +1963,7 @@ async function onloadHandler() {
 		
 		bassKnob.addListener((knob, value) => {
 			bassVol = value; 
-			savedBassVol = bassVol;	
+			//savedBassVol = bassVol;	
 			if (bassLoop) bassLoop.setVolume(bassVol / 100);			
 		});			
 		
@@ -1973,7 +1973,7 @@ async function onloadHandler() {
 		
 		chordKnob.addListener((knob, value) => {
 			chordVol = value; 
-			savedChordVol = chordVol;	
+			//savedChordVol = chordVol;	
 			if (chordLoop) chordLoop.setVolume(chordVol / 100);			
 		});		
 		
@@ -1983,7 +1983,7 @@ async function onloadHandler() {
 
 		leadKnob.addListener((knob, value) => {
 			guitarVolume = value / 100; 
-			savedGuitarVolume = guitarVolume;
+			//savedGuitarVolume = guitarVolume;
 			showVol.innerHTML = "Vol: " + Math.trunc(guitarVolume * 100);		
 		});	
 
@@ -1995,6 +1995,9 @@ async function onloadHandler() {
 		controlItems.append(document.getElementById("guitarIRDef"));
 		controlItems.append(document.getElementById("control-fill"));
 		controlItems.append(document.getElementById("control-intro"));	
+		
+		const controlDevice = document.getElementById("control-device");
+		controlDevice.append(document.getElementById("midiInSel"));		
 
 		const mobileLogo = document.querySelector("#mobile_logo");
 	
@@ -2320,24 +2323,28 @@ function handleEncoderRotate(encoder, amount, absolute) {
 	if (encoder == 0) {		
 		guitarVolume =  adjustVol(absolute, "#volume", amount, 100, 1) / 100;	
 		savedGuitarVolume = guitarVolume;
+		if (leadKnob) leadKnob.setValue(guitarVolume * 100);		
 	}
 	else
 			
 	if (encoder == 1) {		
 		drumVol =  adjustVol(absolute, "#audio-vol-16", amount, 100, 0.0001);
-		if (drumLoop) drumLoop.setVolume(drumVol / 100);				
+		if (drumLoop) drumLoop.setVolume(drumVol / 100);	
+		if (drumKnob) drumKnob.setValue(drumVol);			
 	}
 	else
 
 	if (encoder == 2) {		
 		bassVol =  adjustVol(absolute, "#audio-vol-17", amount, 100, 0.0001);			
 		if (bassLoop) bassLoop.setVolume(bassVol / 100);	
+		if (bassKnob) bassKnob.setValue(bassVol);			
 	}
 	else
 
 	if (encoder == 3) {		
 		chordVol =  adjustVol(absolute, "#audio-vol-18", amount, 100, 0.0001);				
-		if (chordLoop) chordLoop.setVolume(chordVol / 100);				
+		if (chordLoop) chordLoop.setVolume(chordVol / 100);	
+		if (chordKnob) chordKnob.setValue(chordVol);		
 	}	
 }
 
@@ -4907,6 +4914,7 @@ function setGuitarVolume(value) {
 	guitarVol.value = (value / 127) * (savedGuitarVolume * 100);					
 	showVol.innerHTML = "Vol: " + guitarVol.value;	
 	guitarVolume = guitarVol.value / 100;	
+	if (leadKnob) leadKnob.setValue(guitarVol.value);	
 }
 
 function bassLoopChanged(realBassLoop) {
@@ -5135,14 +5143,14 @@ function setupMidiChannels() {
 	midiVolumeEle[17].addEventListener("input", function(event) {
 		bassVol = +event.target.value; 
 		savedBassVol = bassVol;	
-		if (bassKnob) bassKnob.setValue(drumVol);		
+		if (bassKnob) bassKnob.setValue(bassVol);		
 		if (bassLoop) bassLoop.setVolume(bassVol / 100);			
 	});
 	
 	midiVolumeEle[18].addEventListener("input", function(event) {
 		chordVol = +event.target.value; 
 		savedChordVol = chordVol;	
-		if (chordKnob) chordKnob.setValue(drumVol);		
+		if (chordKnob) chordKnob.setValue(chordVol);		
 		if (chordLoop) chordLoop.setVolume(chordVol / 100);			
 	});	
 	
@@ -8654,22 +8662,26 @@ function handleXTouchControlEvent(event) {
 	{		
 		if (drumLoop) {
 			const drumEl = midiVolumeEle[16];			
-			drumEl.value = (event.value / 127) * savedDrumVol;
+			drumEl.value = (+event.value / 127) * savedDrumVol;
 			drumLoop.setVolume(drumEl.value / 100);
+			if (drumKnob) drumKnob.setValue(drumEl.value);			
 		}
 		
 		if (bassLoop) {
 			const bassEl = midiVolumeEle[17];			
-			bassEl.value = (event.value / 127) * savedBassVol;
-			bassLoop.setVolume(bassEl.value / 100);
+			bassEl.value = (+event.value / 127) * savedBassVol;
+			bassLoop.setVolume(bassEl.value / 100);		
+			if (bassKnob) bassKnob.setValue(bassEl.value);						
 		}
 
 		if (chordLoop) {
 			const chordEl = midiVolumeEle[18];								
-			chordEl.value = (event.value / 127) * savedChordVol;
-			chordLoop.setVolume(chordEl.value / 100);
+			chordEl.value = (+event.value / 127) * savedChordVol;
+			chordLoop.setVolume(chordEl.value / 100);	
+			if (chordKnob) chordKnob.setValue(chordEl.value);						
 		}	
-		setGuitarVolume(event.value);
+		
+		setGuitarVolume(event.value);	
 	}
 	else
 
