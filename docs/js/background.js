@@ -89,7 +89,7 @@ const createOrinAyoWindow = () => {
 	chrome.windows.create(data, async (win) => {
 		//await chrome.offscreen.closeDocument();
 		chrome.storage.local.set({orinAyoWin: win.id});			
-		chrome.windows.update(win.id, {width: 1190, height: 1040});
+		chrome.windows.update(win.id, {width: 1200, height: 1140});
 	});
 }
 
