@@ -61,6 +61,7 @@ var savedBassVol = 100;
 var savedChordVol = 100;
 var midiNotesProceesed = false;
 var midiNotes = new Map();
+var padsEnvelopes = [];
 var streamDeckPointer = 0;
 var streamDeck = null;
 var bluetoothGuitar = null;
@@ -171,12 +172,10 @@ var notesInQueue = [];      		// the notes that have been put into the web audio
 									// and may or may not have played yet. {note, time}
 var timerWorker = null;     		// The Web Worker used to fire timer messages
 
-var keysName = "0040_FluidR3_GM_sf2_file";
-var keysPadName = "0890_FluidR3_GM_sf2_file";
 var keysPlayer = new WebAudioFontPlayer();
 var keysMaster = null;
-var keysCheckEle1 = null;
-var keysCheckEle2 = null;
+var keysSelectedEle1 = null;
+var keysSelectedEle2 = null;
 
 var guitarName = "none";
 var player = new WebAudioFontPlayer();
@@ -310,7 +309,6 @@ window.addEventListener("load", onloadHandler);
 window.addEventListener("beforeunload", () => {if (!registration) saveConfig(); });
 window.addEventListener('message', messageHandler);
 window.addEventListener('resize', (event) =>	{setup()});	
-//document.addEventListener('contextmenu', event => event.preventDefault());
 			
 function myWorkerTimer(evt) {
   var data = evt.data,
@@ -1777,10 +1775,90 @@ function initLavaGenie() {
 	}	
 }
 
+function getConfig() {
+	const data = localStorage.getItem("orin.ayo.config");
+	let config = {};
+	
+	if (!data) {
+		config = getDefaultData();	
+	} else {
+		config = JSON.parse(data);
+	}
+	return config;	
+}
+
+function saveConfig() {
+    let config = {};
+	config.mobileViewpoint = mobileViewpoint;
+	config.registration = registration;
+	config.tempo = tempo;
+	config.guitarVolume = savedGuitarVolume;
+	config.guitarName = guitarName;
+	config.guitarIR = guitarIR;
+	config.strum1 = strum1;
+	config.strum2 = strum2;	
+	config.strum3 = strum3;	
+	config.padsMode = padsMode;
+	config.keyChange = keyChange;
+    config.midiOutput = midiOutput ? midiOutput.name : null;
+    config.midiRealGuitar = midiRealGuitar ? midiRealGuitar.name : null;
+    config.padsDevice = padsDevice ? padsDevice.name : null;	
+	config.chordTracker = chordTracker ? chordTracker.name : null;
+    config.input = input ? input.name : null;
+	config.arranger = arranger;
+	config.inputDeviceType = inputDeviceType;
+	config.realGuitarStyle = realGuitarStyle;
+	config.realDrum = realInstrument?.drumUrl;	
+	config.realChord = realInstrument?.chordUrl;	
+	config.realBass = realInstrument?.bassUrl;	
+	config.realdrumDevice = realdrumDevice ? realdrumDevice.deviceId : null;
+	config.guitarDeviceId = guitarDeviceId;
+	config.songName = songSequence ? songSequence.name : null;
+	config.arrName = arrSequence ? arrSequence.name : null;
+	config.sf2Name = arrSynth ? arrSynth.name : null;
+	config.arrangerGroup = arrangerGroup;
+	config.rgIndex = rgIndex;
+	config.autoFill = autoFillCheckedEle.checked;
+	config.introEnd = introEndCheckedEle.checked;
+	config.reverb = guitarReverb.checked;
+	config.microphone = microphone.checked;
+	config.programChange = programChangeEle.checked;
+	config.strumPos = guitarPosition?.selectedIndex;
+	config.liberLiveChrd1 = liberLive.chord1;
+	config.liberLiveChrd2 = liberLive.chord2;
+	config.liberLiveDrms1 = liberLive.drums1;
+	config.liberLiveDrms2 = liberLive.drums2;
+	config.drumVol = savedDrumVol;
+	config.chordVol = savedChordVol;
+	config.bassVol = savedBassVol;
+	config.keysSound1Vol = keysSound1Vol;
+	config.keysSound2Vol = keysSound2Vol;
+	
+	for (let i=0; i<19; i++) {
+		config["channel" + i] = document.getElementById("arr-instrument-" + i)?.checked;
+		if (i < 16) config["instrument" + i] = document.getElementById("midi-channel-" + i)?.selectedIndex;
+	}	
+	
+	console.debug("saveConfig", config);
+
+    localStorage.setItem("orin.ayo.config", JSON.stringify(config));
+	
+	if (!bluetoothDevice) {
+		return config;
+	}
+	console.debug('Disconnecting from Artiphone Bluetooth Chorda Device...');
+	
+	if (bluetoothDevice.gatt.connected) {
+		bluetoothDevice.gatt.disconnect();
+	}	
+	return config;
+}
+
 function getDefaultData() {
 	console.debug("getDefaultData");
 	
 	const data = {
+		"mobileViewpoint": true,
 		"registration": 0,
 		"tempo": 120,
 		"guitarVolume": 0.25,
@@ -1815,9 +1893,9 @@ function getDefaultData() {
 		"keysSound1Vol": 100,
 		"keysSound2Vol": 50,
 		"channel0": true,
-		"instrument0": 0,
+		"instrument0": 4,
 		"channel1": true,
-		"instrument1": 1,
+		"instrument1": 89,
 		"channel2": false,
 		"instrument2": 2,
 		"channel3": false,
@@ -1832,19 +1910,19 @@ function getDefaultData() {
 		"instrument7": 7,
 		"channel8": false,
 		"instrument8": 8,
-		"channel9": false,
+		"channel9": true,
 		"instrument9": 0,
-		"channel10": false,
+		"channel10": true,
 		"instrument10": 10,
-		"channel11": false,
+		"channel11": true,
 		"instrument11": 11,
-		"channel12": false,
+		"channel12": true,
 		"instrument12": 12,
-		"channel13": false,
+		"channel13": true,
 		"instrument13": 13,
-		"channel14": false,
+		"channel14": true,
 		"instrument14": 14,
-		"channel15": false,
+		"channel15": true,
 		"instrument15": 15,
 		"channel16": true,
 		"channel17": true,
@@ -1855,22 +1933,11 @@ function getDefaultData() {
 }
 
 async function onloadHandler() {
-	const data = localStorage.getItem("orin.ayo.config");
-	let config = {};
-	
-	if (!data) {
-		config = getDefaultData();	
-	} else {
-		config = JSON.parse(data);
-	}
-		
+	const config = getConfig();
 	console.debug("onloadHandler", config);
-	mobileViewpoint = config.mobileViewpoint || mobileViewpoint;
 	
-    navigator.serviceWorker
-      .register("./js/main-sw.js")
-      .then(res => console.debug("service worker registered"))
-      .catch(err => console.debug("service worker not registered", err));	
+	mobileViewpoint = config.mobileViewpoint || mobileViewpoint;
+    navigator.serviceWorker.register("./js/main-sw.js").then(res => console.debug("service worker registered")).catch(err => console.debug("service worker not registered", err));	
 
 	keysMaster = keysPlayer.createChannel(audioContext);		  
 	const reverberator = keysPlayer.createReverberator(audioContext);	
@@ -1947,7 +2014,7 @@ async function onloadHandler() {
 		const arrView = document.getElementById("mobile-arr-view");			
 		arrView.append(document.getElementById("orinayo-section"));
 		
-		drumKnob = createKnob("drum-volume", 50, 0, 100, '#88ff88');
+		drumKnob = createKnob("drum-volume", 50, 1, 100, '#88ff88');
 		const drumChoice = document.getElementById("drum-choice");
 		drumChoice.append(realDrumsLoop);
 		
@@ -1957,7 +2024,7 @@ async function onloadHandler() {
 			if (drumLoop) drumLoop.setVolume(drumVol / 100);			
 		});			
 		
-		bassKnob = createKnob("bass-volume", 50, 0, 100, '#ff8888');
+		bassKnob = createKnob("bass-volume", 50, 1, 100, '#ff8888');
 		const bassChoice = document.getElementById("bass-choice");
 		bassChoice.append(realBassLoop);
 		
@@ -1967,7 +2034,7 @@ async function onloadHandler() {
 			if (bassLoop) bassLoop.setVolume(bassVol / 100);			
 		});			
 		
-		chordKnob = createKnob("chord-volume", 50, 0, 100, '#8888ff');
+		chordKnob = createKnob("chord-volume", 50, 1, 100, '#8888ff');
 		const chordChoice = document.getElementById("chord-choice");
 		chordChoice.append(realChordsLoop);
 		
@@ -1977,7 +2044,7 @@ async function onloadHandler() {
 			if (chordLoop) chordLoop.setVolume(chordVol / 100);			
 		});		
 		
-		leadKnob = createKnob("lead-volume", 50, 0, 100, '#ff88ff');		
+		leadKnob = createKnob("lead-volume", 50, 1, 100, '#ff88ff');		
 		const leadChoice = document.getElementById("lead-choice");
 		leadChoice.append(guitarType);	
 
@@ -1997,7 +2064,9 @@ async function onloadHandler() {
 		controlItems.append(document.getElementById("control-intro"));	
 		
 		const controlDevice = document.getElementById("control-device");
-		controlDevice.append(document.getElementById("midiInSel"));		
+		controlDevice.append(document.getElementById("midiInSel"));	
+		// TODO volume control for keyboard voices 1 & 2
+		//controlDevice.append(document.getElementById("midiPadsSel"));		
 
 		const mobileLogo = document.querySelector("#mobile_logo");
 	
@@ -3048,17 +3117,19 @@ function handleNoteOn(note, device, velocity, channel) {
 	let envelope1, envelope2;
 	
 	if (keysSound1?.checked) {
-		keysName = keysCheckEle1.selectedIndex < 4 ? "0000_FluidR3_GM_sf2_file" : "0040_FluidR3_GM_sf2_file";
+		const keysName = keysSelectedEle1.selectedIndex < 4 ? "0000_FluidR3_GM_sf2_file" : "0040_FluidR3_GM_sf2_file";
 		envelope1 = keysPlayer.queueWaveTable(audioContext, keysMaster.input, window["_tone_" + keysName], 0, note.number, keysDuration, (velocity * midiVolumeEle[0].value / 100));
 	}
 	
 	if (keysSound2?.checked) {
-		keysPadName = keysCheckEle2.selectedIndex  == 89 ? "0890_FluidR3_GM_sf2_file" : "0940_FluidR3_GM_sf2_file";	
+		const keysPadName = keysSelectedEle2.selectedIndex  == 89 ? "0890_FluidR3_GM_sf2_file" : "0940_FluidR3_GM_sf2_file";	
 		envelope2 = keysPlayer.queueWaveTable(audioContext, keysMaster.input, window["_tone_" + keysPadName], 0, note.number, 3600, (velocity * midiVolumeEle[1].value / 100));
 	}	
 	
-	midiNotes.set(note.number, {inputDeviceType, note, device, velocity, channel, envelope1, envelope2});	
+	midiNotes.set(note.number, {inputDeviceType, note, device, velocity, channel, envelope1, envelope2});		
 	
+	if (inputDeviceType != "keyboard") return; // guitar controllers have prime control of guitar and arranger 
+		
 	if (!midiNotesProceesed && midiNotes.size == 4 || midiNotes.size == 3) {
 		const chord = []; 
 		for (let [keyNote, value] of midiNotes) chord.push(value.note.number);	
@@ -3071,7 +3142,7 @@ function handleNoteOn(note, device, velocity, channel) {
 		if (chords.length > 0) {
 			const chordName = (midiNotes.size == 4 && chords.length > 1) ? chords[1] : chords[0];			
 			let detectedChord = Tonal.Chord.get(chordName);
-			let tonic = Tonal.Midi.toMidi(detectedChord.tonic + "1") % 12;  //(midiNotes.size == 4 ? chord[1] : chord[0]) % 12;			
+			let tonic = Tonal.Midi.toMidi(detectedChord.tonic + "1") % 12;  		
 			console.debug("detected chord", detectedChord, midiNotes.size, tonic);
 						
 			let arrChordType = (detectedChord.type == "suspended fourth" ? "sus" : (detectedChord.type == "minor" ? "min" : (detectedChord.type == "major" ? "maj" : null)));	
@@ -3086,18 +3157,18 @@ function handleNoteOn(note, device, velocity, channel) {
 			const bassKey = "key" + (chord[0] % 12) + "_" + arrChordType + "_" + SECTION_IDS[sectionChange];			
 			const chordSymbol = KEYS[tonic] + arrChordType + (chord.length == 4 ? "/" + KEYS[(chord[0] % 12)] : "");	
 
-			orinayo.innerHTML = chordSymbol.replace("maj", "");												
-
-			if (arranger == "webaudio" && realInstrument && styleStarted) {	
-				const bassChecked = bassCheckedEle?.checked;
-				const chordChecked = chordCheckedEle?.checked;
-				console.debug("playing chord", bassChecked, bassKey, chordChecked, chordKey);					
-				
-				if (bassLoop && bassChecked) bassLoop.update(bassKey, false);
-				if (chordLoop && chordChecked) chordLoop.update(chordKey, false);
+			orinayo.innerHTML = chordSymbol.replace("maj", "");	
 			
-				midiNotesProceesed = true;				
-			}
+			const chordTable = [0x31, 0x22, 0x32, 0x23, 0x33, 0x34, 0x25, 0x35, 0x26, 0x36, 0x27, 0x37];
+			const typeHex = (arrChordType == "sus" ? 0x20 : (arrChordType == "min" ? 0x08 : (arrChordType == "maj7" ? 0x13 : 0x00)));			
+			const bassHex = chordTable[chord[0] % 12];
+			const rootHex = chordTable[tonic];
+			
+			activeChord = null;
+			pad.axis[STRUM] = STRUM_DOWN;			
+			playChord(chord, rootHex, typeHex, bassHex);
+			
+			midiNotesProceesed = true;	
 		}
 	}
 	
@@ -4253,7 +4324,7 @@ async function setupUI(config,err) {
 	midiInType.options[3] = new Option("Artiphon Chorda", "chorda", config.inputDeviceType == "chorda");
 	midiInType.options[4] = new Option("LiberLive C1", "liberlivec1", config.inputDeviceType == "liberlivec1");
 	midiInType.options[5] = new Option("Lava Genie", "lavagenie", config.inputDeviceType == "lavagenie");	
-	midiInType.options[6] = new Option("PC Keyboard", "keyboard", config.inputDeviceType == "keyboard");	
+	midiInType.options[6] = new Option("Keyboard", "keyboard", config.inputDeviceType == "keyboard");	
 	
 	let deviceIndex = 0;
 	deviceIndex = config.inputDeviceType == "games-controller" ? 0 : deviceIndex;
@@ -4298,11 +4369,11 @@ async function setupUI(config,err) {
 
 	midiChordTracker.options[0] = new Option("NOT USED", "midiChordTrackerSel");
 	midiIn.options[0] = new Option("NOT USED", "midiInSel");
-	midiPads.options[1] = new Option("Sound Font", "soundfont");	
+	midiPads.options[1] = new Option("Keyboard Voice 2", "soundfont");	
 	
 	if (config.padsDevice == "soundfont") {
 		padsDevice = {name : "soundfont"};	
-		midiPads.options[1] = new Option("Sound Font", "soundfont", true, true);		
+		midiPads.options[1] = new Option("Keyboard Voice 2", "soundfont", true, true);		
 	}	
 
 	if (!err) for (var i=0; i<WebMidi.outputs.length; i++) 	{
@@ -4877,8 +4948,6 @@ async function setupUI(config,err) {
 		getSongSequence(config.songName);		
 	}
 
-	window.tempConfig = config; // store config for later access
-
 	if (config.arrName) {	
 		arrSynth = {name: config.sf2Name};	
 		getArrSequence(config.arrName, arrSequenceLoaded);	
@@ -5078,8 +5147,14 @@ function setupMidiChannels() {
 		return;
 	}
 	
-	keysCheckEle1 = document.getElementById("midi-channel-0");
-	keysCheckEle2 = document.getElementById("midi-channel-1");	
+	config = getConfig();
+	
+	keysSelectedEle1 = document.getElementById("midi-channel-0");
+	keysSelectedEle1.selectedIndex = config["instrument" + 0];
+	
+	keysSelectedEle2 = document.getElementById("midi-channel-1");	
+	keysSelectedEle1.selectedIndex = config["instrument" + 0];	
+	
 	drumCheckedEle = document.getElementById("arr-instrument-16");
 	bassCheckedEle = document.getElementById("arr-instrument-17");
 	chordCheckedEle = document.getElementById("arr-instrument-18");
@@ -5111,7 +5186,7 @@ function setupMidiChannels() {
 		midiVolumeEle[i] = document.getElementById("audio-vol-" + i);
 		midiInstrCheckedEle[i] = document.getElementById("arr-instrument-" + i);
 		
-		if (midiInstrCheckedEle[i]) midiInstrCheckedEle[i].checked = !!tempConfig["channel" + i];
+		if (midiInstrCheckedEle[i]) midiInstrCheckedEle[i].checked = !!config["channel" + i];
 	}	
 	
 	keysSound1 = midiInstrCheckedEle[0];
@@ -5152,9 +5227,7 @@ function setupMidiChannels() {
 		savedChordVol = chordVol;	
 		if (chordKnob) chordKnob.setValue(chordVol);		
 		if (chordLoop) chordLoop.setVolume(chordVol / 100);			
-	});	
-	
-	delete window.tempConfig;	
+	});		
 }
 
 function getSongSequence(songName, callback) {
@@ -5266,73 +5339,6 @@ function getArrSynth(sf2Name) {
 function setGigladUI() {
 	document.getElementById("giglad").style.display = "none";
 	if (arranger == "giglad") document.getElementById("giglad").style.display = "";	
-}
-
-function saveConfig() {
-    let config = {};
-	config.mobileViewpoint = mobileViewpoint;
-	config.registration = registration;
-	config.tempo = tempo;
-	config.guitarVolume = savedGuitarVolume;
-	config.guitarName = guitarName;
-	config.guitarIR = guitarIR;
-	config.strum1 = strum1;
-	config.strum2 = strum2;	
-	config.strum3 = strum3;	
-	config.padsMode = padsMode;
-	config.keyChange = keyChange;
-    config.midiOutput = midiOutput ? midiOutput.name : null;
-    config.midiRealGuitar = midiRealGuitar ? midiRealGuitar.name : null;
-    config.padsDevice = padsDevice ? padsDevice.name : null;	
-	config.chordTracker = chordTracker ? chordTracker.name : null;
-    config.input = input ? input.name : null;
-	config.arranger = arranger;
-	config.inputDeviceType = inputDeviceType;
-	config.realGuitarStyle = realGuitarStyle;
-	config.realDrum = realInstrument?.drumUrl;	
-	config.realChord = realInstrument?.chordUrl;	
-	config.realBass = realInstrument?.bassUrl;	
-	config.realdrumDevice = realdrumDevice ? realdrumDevice.deviceId : null;
-	config.guitarDeviceId = guitarDeviceId;
-	config.songName = songSequence ? songSequence.name : null;
-	config.arrName = arrSequence ? arrSequence.name : null;
-	config.sf2Name = arrSynth ? arrSynth.name : null;
-	config.arrangerGroup = arrangerGroup;
-	config.rgIndex = rgIndex;
-	config.autoFill = autoFillCheckedEle.checked;
-	config.introEnd = introEndCheckedEle.checked;
-	config.reverb = guitarReverb.checked;
-	config.microphone = microphone.checked;
-	config.programChange = programChangeEle.checked;
-	config.strumPos = guitarPosition?.selectedIndex;
-	config.liberLiveChrd1 = liberLive.chord1;
-	config.liberLiveChrd2 = liberLive.chord2;
-	config.liberLiveDrms1 = liberLive.drums1;
-	config.liberLiveDrms2 = liberLive.drums2;
-	config.drumVol = savedDrumVol;
-	config.chordVol = savedChordVol;
-	config.bassVol = savedBassVol;
-	config.keysSound1Vol = keysSound1Vol;
-	config.keysSound2Vol = keysSound2Vol;
-	
-	for (let i=0; i<19; i++) {
-		config["channel" + i] = document.getElementById("arr-instrument-" + i)?.checked;
-		if (i < 16) config["instrument" + i] = document.getElementById("midi-channel-" + i)?.selectedIndex;
-	}	
-	
-	console.debug("saveConfig", config);
-
-    localStorage.setItem("orin.ayo.config", JSON.stringify(config));
-	
-	if (!bluetoothDevice) {
-		return config;
-	}
-	console.debug('Disconnecting from Artiphone Bluetooth Chorda Device...');
-	
-	if (bluetoothDevice.gatt.connected) {
-		bluetoothDevice.gatt.disconnect();
-	}	
-	return config;
 }
 
 function doBreak() {
@@ -5751,31 +5757,14 @@ function stopSynthNote(note, channel, velocity) {
 
 function stopPads() {
 	console.debug("stopPads");
-	
-	if (!styleStarted || realGuitarStyle != "none") 
-	{
-		if (arrSynth?.onmessage && padsDevice?.name == "soundfont") 
-		{
-			if (firstChord instanceof Array) 
-			{
-				for (note of firstChord) {
-					stopSynthNote(note, 1, getVelocity() * 127);
-				}
-				
-				stopSynthNote(firstChord[0] + 12, 1, getVelocity() * 127);		
-				stopSynthNote(firstChord[0] - 12, 1, getVelocity() * 127);						
-							
-			} else {
-				stopSynthNote(firstChord, 1, getVelocity() * 127);
-			}			
-
-		} 
-		else 
 			
-		if (padsDevice?.stopNote) {
-			padsDevice.stopNote(firstChord, 2, {velocity: getVelocity()}); 
-			if (firstChord instanceof Array && firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 2, {velocity: getVelocity()}); 		
-		}
+	if (padsDevice?.stopNote) {
+		padsDevice.stopNote(firstChord, 2, {velocity: getVelocity()}); 
+		if (firstChord instanceof Array && firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 2, {velocity: getVelocity()}); 
+		
+	} else {
+		for (let envelope of padsEnvelopes)	envelope.cancel();		
+		padsEnvelopes = [];	
 	}
 }
 
@@ -5821,30 +5810,25 @@ function playSynthNote(note, channel, velocity) {
 function playPads(chords, opts) {
 	console.debug("playPads", chords, opts);
 	
-	if (!styleStarted || realGuitarStyle != "none") 
-	{	
-		if (!padsInitialised) {
-			padsInitialised = true;
-			if (padsDevice?.name == "soundfont") sendProgramChange({programNumber: 89, channel: 1});	// warm pad sound
-		}
+	if (padsDevice?.playNote) {
+		padsDevice.playNote(chords, 2, opts);	
 		
-		if (arrSynth?.onmessage && padsDevice?.name == "soundfont") 
+	} else {
+		const keysPadName = keysSelectedEle2.selectedIndex  == 89 ? "0890_FluidR3_GM_sf2_file" : "0940_FluidR3_GM_sf2_file";
+		const keysDuration = 240 / tempo;		
+		padsEnvelopes = [];
+	
+		if (chords instanceof Array) 
 		{
-			if (chords instanceof Array) 
-			{
-				for (note of chords) {
-					playSynthNote(note, 1, opts.velocity * 127);
-				}
-				
-			} else {
-				playSynthNote(chords, 1, opts.velocity * 127);
-			}			
-		} 
-		else 
-		
-		if (padsDevice?.playNote) {
-			padsDevice.playNote(chords, 2, opts);			
-		}
+			for (note of chords) {
+				const envelope = keysPlayer.queueWaveTable(audioContext, keysMaster.input, window["_tone_" + keysPadName], 0, note, keysDuration, (opts.velocity * midiVolumeEle[1].value / 100));
+				padsEnvelopes.push(envelope);
+			}
+			
+		} else {
+			const envelope = keysPlayer.queueWaveTable(audioContext, keysMaster.input, window["_tone_" + keysPadName], 0, chords, keysDuration, (opts.velocity * midiVolumeEle[1].value / 100));
+			padsEnvelopes.push(envelope);
+		}		
 	}
 }
 
