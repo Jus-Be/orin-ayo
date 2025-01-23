@@ -5,12 +5,12 @@ Orin Ayo is live music production web application implemented in JavaScript and 
 ## Progressive Web App (PWA)
 Only live music playing is accesible from this application mode.
 
-<img width=512 src=https://jus-be.github.io/orinayo/assets/orinayo_mobile.jpeg>
+<img width=512 src=https://jus-be.github.io/orinayo/assets/screenshots/orinayo_mobile.jpeg>
 
 ## Browser Extension/Web Page/Desktop App View
 The full application features to create, extend and play live music is available from this application mode.
 
-<img src=https://jus-be.github.io/orinayo/assets/orinayo.png>
+<img src=https://jus-be.github.io/orinayo/assets/screenshots/orinayo.png>
 
 # Description
 It was originally developed to turn a guitar games controller HID device into a chord based MIDI controller for an arranger keyboard (Yamaha PSR SX-600), module (Ketron SD90), looper (Boss RC600) device or application (Giglad). It lets you play chords and control the hardware arranger or looper with the buttons on a gutar games controller. When combined with RealGuitar or RealLPC from MusicLabs, it becomes a complete live music production system.
@@ -33,7 +33,7 @@ This is Orin Ayo in action on a typical Sunday Morning church service.
 
 The music is played live with a [Logitech Wireless Guitar Controller](https://www.amazon.co.uk/Logitech-Wireless-Guitar-Controller-Premiere/dp/B001MV7D10/ref=sr_1_16?crid=14Y5WHJKI2DVE). The wireless dongle is plugged into a MacAir laptop running Orin Ayo and [Musiclab's Real LPC](https://www.musiclab.com/products/reallpc/info.html). The [Boss RC 600 Loop Station](https://www.boss.info/global/products/rc-600) is connected to the MacAir by MIDI and audio with a USB cable. It sounds like a backing track, but those chord loops (C, F, G & Am) are played live on the Logitech with realtime MIDI messages to the looper and drum machine in the RC 600.
 
-https://github.com/Jus-Be/orin-ayo/assets/110731/cd309c44-3d11-4fe2-b19d-0ca406c18fa5
+https://github.com/Jus-Be/orinayo/assets/110731/cd309c44-3d11-4fe2-b19d-0ca406c18fa5
 
 ## Playing stand alone with WebAudio
 The music is played live with the same Logitech Guitar controller, but using the interal smart audio loops which vary depending on what chord is played like a midi arranger. The guitar sound is coming from the internal guitar with effects from the internal pedal board.
@@ -46,7 +46,7 @@ To use it as a midi controller on external hardware, a standard laptop should wo
 
 Orinayo can be setup and accessed as follows:
 
-- Type https://jus-be.github.io/orin-ayo/index.html into a Chrome or Edge browser to use it directly from a web page.
+- Type https://jus-be.github.io/orinayo/index.html into a Chrome or Edge browser to use it directly from a web page.
 - Install it as a progressive web app from the web page. Click on the "install" or "Add to home page" browser links/buttons.
 - Install it as a browser extension for Google Chrome and Microsoft Edge from https://chromewebstore.google.com/detail/orinayo/mhnemaeacdgnkmoibfeodelijegakklp
 - On Windows 10+ desktops, download orinayo.exe and run it directly from a desktop. It loads the above web page using webview2. See https://github.com/jchv/go-webview2. If you are using Windows 10+, the WebView2 runtime should already be installed. If you don't have it installed, you can download and install a copy from Microsoft's website - https://developer.microsoft.com/en-us/microsoft-edge/webview2/
@@ -80,7 +80,7 @@ The Yamaha MODX and Montage are not really arrangers, but have arpeggios that ca
 
 Orin Ayo can also play the strum/pick patterns for the virtual guitars from Music Labs like RealGuitar, RealLPC, etc in joystick mode along with the arranger or looper patterns.
 
-<img src=https://jus-be.github.io/orinayo/assets/guitar_hero.png>
+<img src=https://jus-be.github.io/orinayo/assets/screenshots/guitar_hero.png>
 
 # Chords
 The five colored fret buttons generate CHORD midi notes which are send on MIDI channel 4 when the strum bar goes up or down.  Twenty chord shapes are supported. There are six basic popular chords (I, IIm, IIIm, IV, V & VIm) playable with a single or two fingers and fourteen other less used chords requring two, three or even four fingers. The chord mapping in Nashville number format is fixed for now. It will become configureable in a future version.
