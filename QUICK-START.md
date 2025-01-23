@@ -21,21 +21,25 @@ First install OrinAyo as a browser extension or as a progressive web app on your
 Clicking on this toggle between mobile view and desktop views as shown above. Mobile view gives you simple straightforward access to live playing of audio loop styles with a guitar controller or a numeric keypad. Desktop view gives you access to evrything else.
 
 ## 2 - Guitar Strum
-<img src=https://jus-be.github.io/orinayo/assets/screenshots/feature2.png />
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature2.png />
 
 Select what type of guitar to play. There is a selection of strumable acoustic and electric guitars. How the guitar plays arpeggios or strums is determined by the guitar controls. See feature #25 below.
+<br clear="left"/>
 
 ## 3 - Arranger Type
-<img src=https://jus-be.github.io/orinayo/assets/screenshots/feature3.png />
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature3.png />
 
-Select what type of music arranger will generate the accompanying live drums, bass and rhythm sounds from the chords being played by the controller device. Three types of arrangers ara available to select from.
+Select what type of music arranger will generate the accompanying live drums, bass and rhythm sounds from the chords being played by the controller device. 
+<br clear="left"/>
+
+Three types of arrangers ara available to select from.
 
 - Midi Style Files
 - WebAudio Loops (OGG files)
 - External Hardware
 
 ### Midi Style Files
-The accompaniment music will be generated from MIDI style files used by Yamaha, Ketron and Casio. See features [#4](#4--arranger-group) and [#5](#5--arranger-style) below on how to select and load a style file.
+The accompaniment music will be generated from MIDI style files used by Yamaha, Ketron and Casio. See features [#4](#4---arranger-group) and [#5](#5---arranger-style) below on how to select and load a style file.
 
 ### Web Audio Loops
 The accompaniment music will be generated from WebAudio loops that have been played and recorded from a range of arranger keyboards that includes Ketron, Yamaha and Roland. See features #15, #16 and #17 below on how to select and load audio loops for drums, bass and chordal instruments.
@@ -53,9 +57,10 @@ The accompaniment music will be generated from MIDI messages passed live to an a
 - Aeros Loop Studio
 
 ## 4 - Arranger Group
-<img src=https://jus-be.github.io/orinayo/assets/screenshots/feature4.png />
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature4.png />
 
 Use this dropdown box list to select what group of style files you want to select from.
+<br clear="left"/>
 
 ## 5 - Arranger Style
 This dropdown box list will contain a list of loaded style files for the current selected arranger group. To load a style file use the **Load** button. See feature #27 for more details.
