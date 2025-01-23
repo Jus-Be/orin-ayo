@@ -1858,7 +1858,7 @@ function getDefaultData() {
 	console.debug("getDefaultData");
 	
 	const data = {
-		"mobileViewpoint": true,
+		"mobileViewpoint": false,
 		"registration": 0,
 		"tempo": 120,
 		"guitarVolume": 0.25,
