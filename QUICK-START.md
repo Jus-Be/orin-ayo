@@ -26,7 +26,7 @@ Clicking on this toggle between mobile view and desktop views as shown above. Mo
 Select what type of guitar to play. There is a selection of strumable acoustic and electric guitars. How the guitar plays arpeggios or strums is determined by the guitar controls. See feature #25 below.
 
 ## 3 - Arranger Type
-tps://jus-be.github.io/orinayo/assets/screenshots/feature2.png />
+<img src=htps://jus-be.github.io/orinayo/assets/screenshots/feature2.png />
 
 Select what type of music arranger will generate the accompanying live drums, bass and rhythm sounds from the chords being played by the controller device. Three types of arrangers ara available to select from.
 
@@ -35,10 +35,19 @@ Select what type of music arranger will generate the accompanying live drums, ba
 - External Hardware
 
 ### Midi Style Files
-The accompaniment music will be generated from MIDI style files used by Yamaha, Ketron and Casio
+The accompaniment music will be generated from MIDI style files used by Yamaha, Ketron and Casio. See features #4 and #5 below on how to select and load a style file.
 
 ### Web Audio Loops
-The accompaniment music will be generated from WebAudio loops that have been played and recorded from a range of arranger keyboards that includes Ketron, Yamaha and Roland.
+The accompaniment music will be generated from WebAudio loops that have been played and recorded from a range of arranger keyboards that includes Ketron, Yamaha and Roland. See features #15, #16 and #17 below on how to select and load audio loops for drums, bass and chordal instruments.
 
 ### External Hardware
-The accompaniment music will be generated from MIDI messages passed live to an arranger keyboard or arranger module or a looper that can be controlled externally with MIDI.
+The accompaniment music will be generated from MIDI messages passed live to an arranger keyboard or arranger module or a looper that can be controlled externally with MIDI. The following hardware devices are supported:
+
+- Ketron Event 76/61 keyboards, Event EVM, Event-X module, SD9 Series keyboard and SD90 module
+- Yamaha PSR SX-600
+- Yamaha MODX and Montage
+- Yamaha QY100
+- Korg Micro Arranger
+- Giglad (Application)
+- Boss RC 600 Loop Station
+- Aeros Loop Studio
