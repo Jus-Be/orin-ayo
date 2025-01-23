@@ -126,6 +126,7 @@ AudioLooper.prototype.unmute = function(id) {
 
 AudioLooper.prototype.update = function(id, sync) {
 	if (id == this.id) return;	
+	if (drumLoop?.id == "end1") return;	
 
 	this.vol = this.styleType == "bass" ? bassVol/100 : ( this.styleType == "chord" ? chordVol/100 : drumVol/100);
 	console.debug("update", id, sync);	
