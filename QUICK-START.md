@@ -210,6 +210,7 @@ Select a loaded sound font file from the list. If your list is empty or you need
 Select an input MIDI device to use with OrinAyo. Only one input device can use at any given time. This excludes the Stream Deck (USB device) that can be used with a MIDI input device. It however includes a MIDI keyboard controller. OrinAyo has only been tested with the Behringer X Touch Mini and the Carry-On Folding Controller 49.
 
 If the [Arranger Type](#3---arranger-type) is set to *keyboard*, the MIDI note on and note off messages will play the *piano* and *pads*  keyboard voices. See feature #24 for more details.
+<br clear="left"/>
 
 ### Program Change Messages (PC)
 With no music style playing, these messages are used to recall application settings saved as slots (1-128). See the Save action button in feature #27 for more details.
@@ -242,7 +243,7 @@ Value    | Action
 15  | Start/stop arranger
 16  | Next style variation
 
-## MIDI Out
+## 9 - MIDI Out
 <img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature8.png />
 
 Select a device from this list only if you plan to control an external arranger or looper device by OrinAyo. See [*External Hardware*](#external-hardware) above for more details.
