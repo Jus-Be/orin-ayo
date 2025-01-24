@@ -157,12 +157,25 @@ Orange | Ketron FS-7  | Ketron FS-6
 
 
 ### LiberLive C1
-If you select the LiberLive C1 guitar, it uses a modified 7 chord keys mapping (7b, 6m, 5, 1, 4, 2m, 3m) different from the standard (1, 2m, 3m, 4, 5, 6m, 7m) by LiberLive and much closer to the 5 buttons of a Gamepad  guitar controller.
-
-It will connect to the LiberLive C1 guitar by the Bluetooth connection used by the LiberLive mobile app. You can't use both OrinAyo and the mobile app at the same time.
+OrinAyo will connect to the LiberLive C1 guitar by the Bluetooth connection used by the LiberLive mobile app. You can't use both OrinAyo and the mobile app at the same time.
 You can select different drum beats and guitar styles for both paddles and OrinAyo will use the tempo set by LiberLive except for web-audio styles that have fixed tempos.
 
+
+You can also use both the audio from LiberLive C1 and OrinAyo together in harmony
+#### Chords
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature6-1.jpeg />
+If you select the LiberLive C1 guitar, it uses a modified 7 basic chord keys mapping (7b, 6m, 5, 1, 4, 2m, 3m) different from the standard (1, 2m, 3m, 4, 5, 6m, 7m) by LiberLive and much closer to the 5 buttons of a Gamepad  guitar controller. There is also support for additional advanced 14 chord key mappings.
+As shown here, the LiberL:ive C1 mobile application may not show them correctly. OrinAyo supports the chromatic scale (12 steps) and converts to and from the diatonic scale (7 steps) used by LiberLive C1 capo. See feature #23 for more details.
+
+#### Start and Stop
+Press both paddles to toggle between starting and stopping the arranger feature. Pressing any of the 21 chord keys before doing so will cause the arranger to play an *intro* style variation before starting and an *end* style variation before stopping.
+
 ### Lava Genie
+The Lava Genie behaves like the LiberLive C1. However, it can only be used as a MIDI controller.  There is currently no support for using the internal sounds with OrinAyo in harmony like the LiberLive C1. 
+#### Chords
+It also uses the modified 7 basic chord key mapping and the 21 advanced key mapping from LiberLive C1.
+
+#### Start and Stop
 
 ### Artiphon Instrument 1 and Chorda
 With Artiphon Instrument 1 and Chorda, only the first five pads are used like a Guitar Hero controller. The strum bridge pads are used to provide control (strum, start/stop, fill, next/previous section).
