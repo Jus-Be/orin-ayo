@@ -1,5 +1,5 @@
 # Quick Start
-## Install
+## Introduction
 Orina Ayo work best with in desktop mode with a Logitech Guitar Hero Controlller or a LiberLive C1. If you do not have a guitar controller nor a keyboard midi controller, you can still use a wireless numeric keypad or the numeric keypad of your desktop computer. See supported devices below for more details.
 
 Also note that Gamepad compatible guitar controllers like the PDP Riff Master or the Logitech Guitar hero have been tested from a desktop computer. On mobile phones, only Bluetooth midi controllers or guitars like LiberLive C1 amd Lava Genie have been tested with OrinAyo. 
@@ -8,7 +8,14 @@ When OrinAyo works in standalone mode and not controlling an external arranger d
 
 If you are using a Bluetooth guitar controller like LiberLive C1 or Lava Genie, you must first give the web browser (Chrome or Edge) permission to acces these devices. See section on Bluetooth below for more details.
 
-First install OrinAyo as a browser extension or as a progressive web app on your desktop or mobile phone and then start the application. If you are unable to install it as an application, open a browser tab in Chome or Edge and goto https://jus-be.github.io/orin-ayo/index.html.
+## Install
+Orinayo can be setup and accessed as follows:
+
+- Type https://jus-be.github.io/orinayo/index.html into a Chrome or Edge browser to use it directly from a web page.
+- Install it as a progressive web app from the web page. Click on the "install" or "Add to home page" browser links/buttons.
+- Install it as a browser extension for Google Chrome and Microsoft Edge from https://chromewebstore.google.com/detail/orinayo/mhnemaeacdgnkmoibfeodelijegakklp
+- On Windows 10+ desktops, download orinayo.exe and run it directly from a desktop. It loads the above web page using webview2. See https://github.com/jchv/go-webview2. If you are using Windows 10+, the WebView2 runtime should already be installed. If you don't have it installed, you can download and install a copy from Microsoft's website - https://developer.microsoft.com/en-us/microsoft-edge/webview2/
+
 
 ## Desktop View
 <img src=https://jus-be.github.io/orinayo/assets/screenshots/orinayo_desktop.svg />
@@ -249,3 +256,30 @@ Value    | Action
 Select a device from this list only if you plan to control an external arranger or looper device by OrinAyo. See [*External Hardware*](#external-hardware) above for more details.
 
 You will need to pre-configure the device and enable it to receive MIDI chord note messages on channel 4.
+<br clear="left"/>
+
+## 10 - MIDI Synth
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature8.png />
+
+If you want to use an external MIDI device to play the keyboard pads voice instead of the internal WebAudio sampler voice , then select it from here. The keyboard pads voice is a synth type voice played with the current active chord.  By default it is the GM voice 90 called *warm pads*. For more details. see feature #24 below.
+<br clear="left"/>
+
+## 11 - RealGuitar Out
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature8.png />
+
+If you want to use any of the soft guitar products from MusicLabs like RealGuitar, RealLPC, RealStrat, etc instead of the internal WebAudio guitar in OrinAyo, then you would need a virtual MIDI device like loopMIDI configured for sending the MIDI messages. Select a device from this pulldown list.
+
+<br clear="left"/>
+
+## 12 - RealGuitar Strum
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature12.png />
+
+If you want to play a MIDI based guitar strum loop pattern with the internal guitar or with an external guitar like RealGuitar or RealLPC, then use this to select on the patterns provided. 
+
+Select *Internal Guitar* to use the internal WebAudio guitar and use the *next* and *previous* style variation controls to cycle through the provided strum patterns. 
+
+Toggle start action button to start and stop the strum pattern loop. The strum will play to the currently set tempo. Please note that this feature cannot be used with a music style. Make sure no style is selected when using this to prevent unexpected results.
+
+<br clear="left"/>
+
+## 13 - Audio Device I
