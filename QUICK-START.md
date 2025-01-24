@@ -2,13 +2,13 @@
 ## Install
 Orina Ayo work best with in desktop mode with a Logitech Guitar Hero Controlller or a LiberLive C1. If you do not have a guitar controller nor a keyboard midi controller, you can still use a wireless numeric keypad or the numeric keypad of your desktop computer. See supported devices below for more details.
 
-Also note that Gamepad compatible guitar controllers like the PDP Riff Master or the Logitech Guitar hero will only work from a desktop computer. On mobile phones, only Bluetooth midi controllers or guitars like LiberLive C1 amd Lava Genie will work with OrinAyo. 
+Also note that Gamepad compatible guitar controllers like the PDP Riff Master or the Logitech Guitar hero have been tested from a desktop computer. On mobile phones, only Bluetooth midi controllers or guitars like LiberLive C1 amd Lava Genie have been tested with OrinAyo. 
 
-When OrinAyo works in standalone mode and not controlling an external device, generating all the music from WebAudio, you would need a high spec PC or mobile phone like an Intel iCore 7 or Apple M series laptop or a Samsung S25 spec type mobile phone.
+When OrinAyo works in standalone mode and not controlling an external arranger device via MIDI and generating all the music internally from WebAudio, you would need a high spec PC or mobile phone like an Intel iCore 7 or Apple M series laptop or a Samsung S25 spec type mobile phone.
 
 If you are using a Bluetooth guitar controller like LiberLive C1 or Lava Genie, you must first give the web browser (Chrome or Edge) permission to acces these devices. See section on Bluetooth below for more details.
 
-First install OrinAyo as a browser extension or as a progressive web app on your desktop or mobile phone. 
+First install OrinAyo as a browser extension or as a progressive web app on your desktop or mobile phone and then start the application. If you are unable to install it as an application, open a browser tab in Chome or Edge and goto https://jus-be.github.io/orin-ayo/index.html.
 
 ## Desktop View
 <img src=https://jus-be.github.io/orinayo/assets/screenshots/orinayo_desktop.svg />
@@ -160,15 +160,25 @@ Orange | Ketron FS-7  | Ketron FS-6
 OrinAyo will connect to the LiberLive C1 guitar by the Bluetooth connection used by the LiberLive mobile app. You can't use both OrinAyo and the mobile app at the same time.
 You can select different drum beats and guitar styles for both paddles and OrinAyo will use the tempo set by LiberLive except for web-audio styles that have fixed tempos.
 
-
 You can also use both the audio from LiberLive C1 and OrinAyo together in harmony
+
 #### Chords
-<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature6-1.jpeg />
+<img width="250px" align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature6-1.jpeg />
 If you select the LiberLive C1 guitar, it uses a modified 7 basic chord keys mapping (7b, 6m, 5, 1, 4, 2m, 3m) different from the standard (1, 2m, 3m, 4, 5, 6m, 7m) by LiberLive and much closer to the 5 buttons of a Gamepad  guitar controller. There is also support for additional advanced 14 chord key mappings.
+
 As shown here, the LiberL:ive C1 mobile application may not show them correctly. OrinAyo supports the chromatic scale (12 steps) and converts to and from the diatonic scale (7 steps) used by LiberLive C1 capo. See feature #23 for more details.
+<br clear="left"/>
 
 #### Start and Stop
 Press both paddles to toggle between starting and stopping the arranger feature. Pressing any of the 21 chord keys before doing so will cause the arranger to play an *intro* style variation before starting and an *end* style variation before stopping.
+
+#### Style Variations/Sections (A,B,C,D)
+Press either strum paddle alone to control the style variations.  
+
+When the first paddle is moved **down** on its own, OrinAyo will cycles the style variations A-->B-->C-->D-->A.  When it is moved **up**, OrinAyo will cycles back down from A<--B<--C<--D<--A. 
+
+When the second paddle is moved **down**, then it will play a fill for the current playing variation. When it is moved **up**, then it plays a break for  the current playing variation. 
+
 
 ### Lava Genie
 The Lava Genie behaves like the LiberLive C1. However, it can only be used as a MIDI controller.  There is currently no support for using the internal sounds with OrinAyo in harmony like the LiberLive C1. 
@@ -176,6 +186,12 @@ The Lava Genie behaves like the LiberLive C1. However, it can only be used as a 
 It also uses the modified 7 basic chord key mapping and the 21 advanced key mapping from LiberLive C1.
 
 #### Start and Stop
+Press the Lava Genie Logo to start the OrinAyo arranger and use the Lava Genie rhythm stop button to stop the arranger.
+
+Pressing any of the 21 chord keys before doing so will cause the arranger to play an *intro* style variation before starting and an *end* style variation before stopping.
+
+#### Style Variations/Sections (A,B,C,D)
+Press the Lava Genie Logo while the music plays to cycles the style variations A-->B-->C-->D-->A.  
 
 ### Artiphon Instrument 1 and Chorda
 With Artiphon Instrument 1 and Chorda, only the first five pads are used like a Guitar Hero controller. The strum bridge pads are used to provide control (strum, start/stop, fill, next/previous section).
