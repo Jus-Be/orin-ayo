@@ -282,4 +282,4 @@ Toggle start action button to start and stop the strum pattern loop. The strum w
 
 <br clear="left"/>
 
-## 13 - Audio Device I
+## 13 - Audio Device In
