@@ -41,6 +41,8 @@ Three types of arrangers ara available to select from.
 ### Midi Style Files
 The accompaniment music will be generated from MIDI style files used by Yamaha, Ketron and Casio. See features [#4](#4---arranger-group) and [#5](#5---arranger-style) below on how to select and load a style file.
 
+In order to play the GM MIDI notes in the style files, you would need to select a sound font. See feature [#7](#7---sound-font-file) for more details.
+
 ### Web Audio Loops
 The accompaniment music will be generated from WebAudio loops that have been played and recorded from a range of arranger keyboards that includes Ketron, Yamaha and Roland. See features #15, #16 and #17 below on how to select and load audio loops for drums, bass and chordal instruments.
 
@@ -195,3 +197,54 @@ Press the Lava Genie Logo while the music plays to cycles the style variations A
 
 ### Artiphon Instrument 1 and Chorda
 With Artiphon Instrument 1 and Chorda, only the first five pads are used like a Guitar Hero controller. The strum bridge pads are used to provide control (strum, start/stop, fill, next/previous section).
+
+## 7 - Sound Font File
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature7.png />
+
+Select a loaded sound font file from the list. If your list is empty or you need a new sound font file, use the *Load* action button to load a sound font file (sf2) from your computer. See #27 for more details.
+<br clear="left"/>
+
+## 8 - MIDI In
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature8.png />
+
+Select an input MIDI device to use with OrinAyo. Only one input device can use at any given time. This excludes the Stream Deck (USB device) that can be used with a MIDI input device. It however includes a MIDI keyboard controller. OrinAyo has only been tested with the Behringer X Touch Mini and the Carry-On Folding Controller 49.
+
+If the [Arranger Type](#3---arranger-type) is set to *keyboard*, the MIDI note on and note off messages will play the *piano* and *pads*  keyboard voices. See feature #24 for more details.
+
+### Program Change Messages (PC)
+With no music style playing, these messages are used to recall application settings saved as slots (1-128). See the Save action button in feature #27 for more details.
+
+Otherwise, they are used to control the playing style as follows:
+Value    | Action
+---      | ---         
+0	 | Mute/unmute lead guitar 
+1		 | Mute/unmute drums
+2		 | Mute/unmute bass 
+3		 | Mute/unmute chords 
+4		 | Mute/unmute guitar chorus effect 
+5		 | Mute/unmute guitar reverb effect 
+6		 | Mute/unmute guitar compression effect
+7		 | Mute/unmute guitar delay effect 
+8		 | Select style variation A 
+9		 | Select style variation B 
+10		 | Select style variation C 
+11		 | Select style variation D
+
+### Control Change Messages (CC)
+These messages are applied anytime
+
+Value    | Action
+---      | ---  
+12  | Keyboard piano volume
+13  | Keyboard pads volume				
+1   | All Audio loops volume
+14  | Previous style variation
+15  | Start/stop arranger
+16  | Next style variation
+
+## MIDI Out
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature8.png />
+
+Select a device from this list only if you plan to control an external arranger or looper device by OrinAyo. See [*External Hardware*](#external-hardware) above for more details.
+
+You will need to pre-configure the device and enable it to receive MIDI chord note messages on channel 4.
