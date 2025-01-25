@@ -2116,6 +2116,10 @@ async function onloadHandler() {
 	window.addEventListener("gamepadconnected", connectHandler);
 	window.addEventListener("gamepaddisconnected", disconnectHandler);
 
+	document.querySelector('#help').addEventListener("click", () => {	
+		window.open("./help.html", "user-guide");
+	});
+	
 	document.querySelector('#giglad').addEventListener("click", () => {			
 		setTimeout(() => outputSendControlChange (85, 127, 4), 10000);	// FADE IN
 		setTimeout(() => outputSendControlChange (86, 127, 4), 20000);	// FADE OUT

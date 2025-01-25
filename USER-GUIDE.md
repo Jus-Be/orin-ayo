@@ -1,5 +1,4 @@
-# Quick Start
-## Introduction
+# Introduction
 Orina Ayo work best with in desktop mode with a Logitech Guitar Hero Controlller or a LiberLive C1. If you do not have a guitar controller nor a keyboard midi controller, you can still use a wireless numeric keypad or the numeric keypad of your desktop computer. See supported devices below for more details.
 
 Also note that Gamepad compatible guitar controllers like the PDP Riff Master or the Logitech Guitar hero have been tested from a desktop computer. On mobile phones, only Bluetooth midi controllers or guitars like LiberLive C1 amd Lava Genie have been tested with OrinAyo. 
@@ -8,7 +7,7 @@ When OrinAyo works in standalone mode and not controlling an external arranger d
 
 If you are using a Bluetooth guitar controller like LiberLive C1 or Lava Genie, you must first give the web browser (Chrome or Edge) permission to acces these devices. See section on Bluetooth below for more details.
 
-## Install
+# Install
 Orinayo can be setup and accessed as follows:
 
 - Type https://jus-be.github.io/orinayo/index.html into a Chrome or Edge browser to use it directly from a web page.
@@ -16,6 +15,15 @@ Orinayo can be setup and accessed as follows:
 - Install it as a browser extension for Google Chrome and Microsoft Edge from https://chromewebstore.google.com/detail/orinayo/mhnemaeacdgnkmoibfeodelijegakklp
 - On Windows 10+ desktops, download orinayo.exe and run it directly from a desktop. It loads the above web page using webview2. See https://github.com/jchv/go-webview2. If you are using Windows 10+, the WebView2 runtime should already be installed. If you don't have it installed, you can download and install a copy from Microsoft's website - https://developer.microsoft.com/en-us/microsoft-edge/webview2/
 
+# Description
+To use the application, you select a number of features you need, click on an action and watch the status display. For example, select web audio as your arranger type, select a web audio chord loop, click on play and watch the chords being displayed as you press the buttons of your guitar controller.
+
+To prevent un-desired results, make sure that unused and uneeded features are set to **NOT USED*
+
+The application views are roughly divided into three sections.
+- Feature Selections
+- Action buttons
+- Status displays
 
 ## Desktop View
 <img src=https://jus-be.github.io/orinayo/assets/screenshots/orinayo_desktop.svg />
@@ -23,7 +31,6 @@ Orinayo can be setup and accessed as follows:
 ## Mobile view
 <img src=https://jus-be.github.io/orinayo/assets/screenshots/orinayo_mobile.svg />
 
-# Features Description
 ## 1 - The application logo/icon
 Clicking on this toggle between mobile view and desktop views as shown above. Mobile view gives you simple straightforward access to live playing of audio loop styles with a guitar controller or a numeric keypad. Desktop view gives you access to evrything else.
 

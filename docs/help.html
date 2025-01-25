@@ -13,15 +13,12 @@
     <div class="stackedit__toc">
       
 <ul>
-<li><a href="#quick-start">Quick Start</a>
-<ul>
+<li><a href="#introduction">Introduction</a></li>
 <li><a href="#install">Install</a></li>
+<li><a href="#description">Description</a>
+<ul>
 <li><a href="#desktop-view">Desktop View</a></li>
 <li><a href="#mobile-view">Mobile view</a></li>
-</ul>
-</li>
-<li><a href="#features-description">Features Description</a>
-<ul>
 <li><a href="#the-application-logoicon">1 - The application logo/icon</a></li>
 <li><a href="#guitar-strum">2 - Guitar Strum</a></li>
 <li><a href="#arranger-type">3 - Arranger Type</a></li>
@@ -31,6 +28,10 @@
 <li><a href="#sound-font-file">7 - Sound Font File</a></li>
 <li><a href="#midi-in">8 - MIDI In</a></li>
 <li><a href="#midi-out">9 - MIDI Out</a></li>
+<li><a href="#midi-synth">10 - MIDI Synth</a></li>
+<li><a href="#realguitar-out">11 - RealGuitar Out</a></li>
+<li><a href="#realguitar-strum">12 - RealGuitar Strum</a></li>
+<li><a href="#audio-device-in">13 - Audio Device In</a></li>
 </ul>
 </li>
 </ul>
@@ -39,12 +40,12 @@
   </div>
   <div class="stackedit__right">
     <div class="stackedit__html">
-      <h1 id="quick-start">Quick Start</h1>
-<h2 id="install">Install</h2>
+      <h1 id="introduction">Introduction</h1>
 <p>Orina Ayo work best with in desktop mode with a Logitech Guitar Hero Controlller or a LiberLive C1. If you do not have a guitar controller nor a keyboard midi controller, you can still use a wireless numeric keypad or the numeric keypad of your desktop computer. See supported devices below for more details.</p>
 <p>Also note that Gamepad compatible guitar controllers like the PDP Riff Master or the Logitech Guitar hero have been tested from a desktop computer. On mobile phones, only Bluetooth midi controllers or guitars like LiberLive C1 amd Lava Genie have been tested with OrinAyo.</p>
 <p>When OrinAyo works in standalone mode and not controlling an external arranger device via MIDI and generating all the music internally from WebAudio, you would need a high spec PC or mobile phone like an Intel iCore 7 or Apple M series laptop or a Samsung S25 spec type mobile phone.</p>
 <p>If you are using a Bluetooth guitar controller like LiberLive C1 or Lava Genie, you must first give the web browser (Chrome or Edge) permission to acces these devices. See section on Bluetooth below for more details.</p>
+<h1 id="install">Install</h1>
 <p>Orinayo can be setup and accessed as follows:</p>
 <ul>
 <li>Type <a href="https://jus-be.github.io/orinayo/index.html">https://jus-be.github.io/orinayo/index.html</a> into a Chrome or Edge browser to use it directly from a web page.</li>
@@ -52,11 +53,19 @@
 <li>Install it as a browser extension for Google Chrome and Microsoft Edge from <a href="https://chromewebstore.google.com/detail/orinayo/mhnemaeacdgnkmoibfeodelijegakklp">https://chromewebstore.google.com/detail/orinayo/mhnemaeacdgnkmoibfeodelijegakklp</a></li>
 <li>On Windows 10+ desktops, download orinayo.exe and run it directly from a desktop. It loads the above web page using webview2. See <a href="https://github.com/jchv/go-webview2">https://github.com/jchv/go-webview2</a>. If you are using Windows 10+, the WebView2 runtime should already be installed. If you don’t have it installed, you can download and install a copy from Microsoft’s website - <a href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/">https://developer.microsoft.com/en-us/microsoft-edge/webview2/</a></li>
 </ul>
+<h1 id="description">Description</h1>
+<p>To use the application, you select a number of features you need, click on an action and watch the status display. For example, select web audio as your arranger type, select a web audio chord loop, click on play and watch the chords being displayed as you press the buttons of your guitar controller.</p>
+<p>To prevent un-desired results, make sure that unused and uneeded features are set to *<em>NOT USED</em></p>
+<p>The application views are roughly divided into three sections.</p>
+<ul>
+<li>Feature Selections</li>
+<li>Action buttons</li>
+<li>Status displays</li>
+</ul>
 <h2 id="desktop-view">Desktop View</h2>
 <img src="https://jus-be.github.io/orinayo/assets/screenshots/orinayo_desktop.svg">
 <h2 id="mobile-view">Mobile view</h2>
 <img src="https://jus-be.github.io/orinayo/assets/screenshots/orinayo_mobile.svg">
-<h1 id="features-description">Features Description</h1>
 <h2 id="the-application-logoicon">1 - The application logo/icon</h2>
 <p>Clicking on this toggle between mobile view and desktop views as shown above. Mobile view gives you simple straightforward access to live playing of audio loop styles with a guitar controller or a numeric keypad. Desktop view gives you access to evrything else.</p>
 <h2 id="guitar-strum">2 - Guitar Strum</h2>
@@ -520,7 +529,23 @@ If you select the LiberLive C1 guitar, it uses a modified 7 basic chord keys map
 </table><h2 id="midi-out">9 - MIDI Out</h2>
 <img align="left" src="https://jus-be.github.io/orinayo/assets/screenshots/feature8.png">
 <p>Select a device from this list only if you plan to control an external arranger or looper device by OrinAyo. See <a href="#external-hardware"><em>External Hardware</em></a> above for more details.</p>
-<p>You will need to pre-configure the device and enable it to receive MIDI chord note messages on channel 4.</p>
+<p>You will need to pre-configure the device and enable it to receive MIDI chord note messages on channel 4.<br>
+<br clear="left"></p>
+<h2 id="midi-synth">10 - MIDI Synth</h2>
+<img align="left" src="https://jus-be.github.io/orinayo/assets/screenshots/feature8.png">
+<p>If you want to use an external MIDI device to play the keyboard pads voice instead of the internal WebAudio sampler voice , then select it from here. The keyboard pads voice is a synth type voice played with the current active chord.  By default it is the GM voice 90 called <em>warm pads</em>. For more details. see feature #24 below.<br>
+<br clear="left"></p>
+<h2 id="realguitar-out">11 - RealGuitar Out</h2>
+<img align="left" src="https://jus-be.github.io/orinayo/assets/screenshots/feature8.png">
+<p>If you want to use any of the soft guitar products from MusicLabs like RealGuitar, RealLPC, RealStrat, etc instead of the internal WebAudio guitar in OrinAyo, then you would need a virtual MIDI device like loopMIDI configured for sending the MIDI messages. Select a device from this pulldown list.</p>
+<br clear="left">
+<h2 id="realguitar-strum">12 - RealGuitar Strum</h2>
+<img align="left" src="https://jus-be.github.io/orinayo/assets/screenshots/feature12.png">
+<p>If you want to play a MIDI based guitar strum loop pattern with the internal guitar or with an external guitar like RealGuitar or RealLPC, then use this to select on the patterns provided.</p>
+<p>Select <em>Internal Guitar</em> to use the internal WebAudio guitar and use the <em>next</em> and <em>previous</em> style variation controls to cycle through the provided strum patterns.</p>
+<p>Toggle start action button to start and stop the strum pattern loop. The strum will play to the currently set tempo. Please note that this feature cannot be used with a music style. Make sure no style is selected when using this to prevent unexpected results.</p>
+<br clear="left">
+<h2 id="audio-device-in">13 - Audio Device In</h2>
 
     </div>
   </div>
