@@ -252,8 +252,7 @@ AudioLooper.prototype.addUri = function(loop, output, bpm) {
 
 	if (output) this.audioContext.setSinkId(output.deviceId);
 	
-	if (loop.url.startsWith("assets")) 
-	{
+	if (loop.url.startsWith("assets")) 	{
 		this.sample = window.loopCache[loop.url];	
 		
 		if (this.sample == undefined) {

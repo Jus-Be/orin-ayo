@@ -8,7 +8,7 @@ import { boostPedal } from './src/pedals/boost.js';
 import { compressorPedal } from './src/pedals/compressor.js';
 import { overdrivePedal } from './src/pedals/overdrive.js';
 import { chorusPedal } from './src/pedals/chorus.js';
-
+import { dronePedal } from './src/pedals/drone.js';
 
 window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, useEffects) {
   window.$pedalboard = document.querySelector('.pedalboard');
@@ -93,7 +93,8 @@ window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, use
 		<fluent-tab id="chorus-delay-reverb">Chorus Delay Reverb</fluent-tab>
 		<fluent-tab id="multi_head_delay">Multi Head Delay</fluent-tab>
 		<fluent-tab id="tremolo">Tremolo</fluent-tab>	
-
+		<fluent-tab id="drone">Drone</fluent-tab>	
+		
 		<fluent-tab-panel id="wahPanel">
 		</fluent-tab-panel>
 		<fluent-tab-panel id="compressorPanel">
@@ -109,7 +110,9 @@ window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, use
 		<fluent-tab-panel id="mhdPanel">
 		</fluent-tab-panel>
 		<fluent-tab-panel id="tremoloPanel">
-		</fluent-tab-panel>		
+		</fluent-tab-panel>	
+		<fluent-tab-panel id="dronePanel">
+		</fluent-tab-panel>			
    </fluent-tabs>		
   `;
   
@@ -123,7 +126,8 @@ window.setupPedalBoard = async function(guitarContext, guitarName, deviceId, use
     delayPedal,
     multiHeadDelay,
     tremoloPedal,
-    reverbPedal
+    reverbPedal,
+	dronePedal	
   ]; 
     
   if (useEffects && guitarName != null && guitarName != "") {  

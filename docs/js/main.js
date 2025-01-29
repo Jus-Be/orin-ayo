@@ -8419,7 +8419,7 @@ function setupRealInstruments() {
 	bassLoop = null;
 	chordLoop = null;
 	
-	loopWait = 2000;
+	loopWait = 3000;
 	
 	if (realInstrument.drums) {	
 		drumLoop = new AudioLooper("drum");
@@ -8456,7 +8456,7 @@ function setupRealInstruments() {
 
 function soundsLoaded(cached) {
 	console.debug("audio loaded ok");
-	if (!cached) loopWait+=1000;
+	if (!cached) loopWait+=2000;
 }
 
 function eventStatus(event, id) {

@@ -23,7 +23,7 @@ export const boostPedal = function(input, index) {
   // Create the DOM nodes
   const pedal = createPedal({
     name: 'boost',
-    label: '!important',
+    label: '',
     toggle,
     active: defaults.active,
     index
