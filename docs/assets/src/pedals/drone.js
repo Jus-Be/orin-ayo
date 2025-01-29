@@ -81,23 +81,29 @@ export const dronePedal = function(input, index) {
 		}
 		
 		defaults.active = !defaults.active;
-		return toggle();
+		toggle();
 	}
 
 
 	// Create audio nodes
 	const [output, toggle] = createInputSwitch(input, sum, defaults.active);
 	root.gain.value = defaults.gain;
-
-	// Connect the nodes togther
-	input.connect(root);
+	fifth.gain.value = defaults.gain;
+	diatonic.gain.value = defaults.gain;
+	high.gain.value = defaults.gain;
+	reverse.gain.value = defaults.gain;
+	shimmer.gain.value = defaults.gain;
+	trempicking.gain.value = defaults.gain;	
+	
+	input.connect(output);	// send guitar input directly. not affected by drone
+	
 	root.connect(sum);
 	fifth.connect(sum);
 	diatonic.connect(sum);
 	high.connect(sum);
 	reverse.connect(sum);
 	shimmer.connect(sum);
-	trempicking.connect(sum);  
+	trempicking.connect(sum);
 
 	// Create the DOM nodes
 	const pedal = createPedal({

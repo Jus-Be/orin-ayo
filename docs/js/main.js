@@ -8589,6 +8589,7 @@ function createKnob(id, value, valMin, valMax, color) {
 	document.getElementById(id).appendChild(knob.node());	
 	return knob;
 }
+
 // -------------------------------------------------------
 //
 //  X-Touch MIDI Controller Device
