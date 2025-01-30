@@ -30,4 +30,4 @@ The music is played live with the same Logitech Guitar controller, but using the
 https://github.com/user-attachments/assets/12c69505-3887-4a6f-af7a-124bebd15741
 
 # How to use
-See [Quick Start](USER-GUIDE.md)
+See [User Guide](USER-GUIDE.md)
