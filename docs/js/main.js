@@ -4790,10 +4790,10 @@ async function setupUI(config,err) {
 		input.addListener("programchange", "all", function (e) {	// recall slot - use with m-vave foot control and desktop app BLE -> MIDI IN
 			console.debug("Received program change message", e.value);
 			
-			if (styleStarted) {
-				handleEncoderPress(e.value);
+			if (!styleStarted && e.value < 8) {	// recall ony 1-7 slots
+				recallRegistration(e.value + 1);				
 			} else {
-				recallRegistration(e.value + 1);
+				handleEncoderPress(e.value);
 			}
 		});		
 
@@ -8824,7 +8824,33 @@ function handleEncoderPress(encoder) {
 	if (encoder == 11) {
 		sectionChange = 3;
 		changeArrSection(true);   
-	}		
+	}	
+	else
+		
+	if (encoder == 12) {	// BANK 4 - Guitar strums
+		padsMode = 2;		
+		orinayo_pad.innerHTML = "Pad " + padsMode;
+    }
+	else
+		
+	if (encoder == 13) {
+		padsMode = 3;		
+		orinayo_pad.innerHTML = "Pad " + padsMode;
+    }	
+	else
+		
+	if (encoder == 14) {
+		padsMode = 4;		
+		orinayo_pad.innerHTML = "Pad " + padsMode;
+  
+    }		
+	else
+		
+	if (encoder == 15) {
+ 		padsMode = 5;		
+		orinayo_pad.innerHTML = "Pad " + padsMode;
+
+	}	
 }
 
 // -------------------------------------------------------
