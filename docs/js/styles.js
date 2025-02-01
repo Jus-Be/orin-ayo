@@ -171,6 +171,7 @@ var chord_loops = [
 	"assets/chords/dirty-guitar_90_10667.chord",	
 	"assets/chords/disco-funk_120_8000.chord",
 	"assets/chords/disco-pop_116_8276_8276_2.chord",
+	"assets/chords/super-disco_125_7680_7680_2.chord",	
 	"assets/chords/dream_85_22588.chord",
 	"assets/chords/electric-chill_85_11294.chord",	
 	"assets/chords/electric-strum_100_9600_9600_2.chord",	
@@ -425,6 +426,7 @@ var bass_loops = [
 	"assets/bass/soft-ballad_75_12800.bass",
 	"assets/bass/soul-band_90_21333.bass",
 	"assets/bass/steel-pop_115_8348.bass",
+	"assets/bass/super-disco_125_7680_2.bass",
 	"assets/bass/sweet-pop_85_11294.bass",
 	"assets/bass/u2-guitar_105_18286.bass",
 	"assets/bass/wild-rock_120_8000.bass"
