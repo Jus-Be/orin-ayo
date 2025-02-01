@@ -1945,10 +1945,10 @@ async function onloadHandler() {
 	reverberator.wet.gain.setTargetAtTime(0.25, 0, 0.0001);	
 	keysMaster.output.connect(reverberator.input);		
 	
-	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_0000_FluidR3_GM_sf2_file');		  
-	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_0040_FluidR3_GM_sf2_file');	
 	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_0940_FluidR3_GM_sf2_file');	
-	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_0890_FluidR3_GM_sf2_file');	
+	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_0890_FluidR3_GM_sf2_file');
+	
+	setupPianos(audioContext, reverberator);
 	
 	let version = "1.0.0";
 	if (!!chrome.runtime?.getManifest) version = chrome.runtime.getManifest().version;
@@ -2987,7 +2987,7 @@ function handleNoteOff(note, device, velocity, channel) {
 	for (let [keyNote, value] of midiNotes)	
 	{
 		if (keyNote == note.number) {
-			if (value.envelope1) value.envelope1.cancel();
+			if (value.envelope1) value.envelope1.stop({ stopId: note.number });
 			if (value.envelope2) value.envelope2.cancel();			
 			midiNotes.delete(note.number);
 		}
@@ -3118,11 +3118,17 @@ function handleNoteOn(note, device, velocity, channel) {
 	console.debug("handleNoteOn", inputDeviceType, note, device, velocity, channel);
 	
 	const keysDuration = 240 / tempo;
-	let envelope1, envelope2;
+	let envelope1, envelope2, thePiano = piano;
 	
 	if (keysSound1?.checked) {
-		const keysName = keysSelectedEle1.selectedIndex < 4 ? "0000_FluidR3_GM_sf2_file" : "0040_FluidR3_GM_sf2_file";
-		envelope1 = keysPlayer.queueWaveTable(audioContext, keysMaster.input, window["_tone_" + keysName], 0, note.number, keysDuration, (velocity * midiVolumeEle[0].value / 100));
+		
+		if (keysSelectedEle1.selectedIndex > 3) {
+			thePiano = epianos[keysSelectedEle1.selectedIndex - 4];
+		}
+		
+		envelope1 = thePiano;
+		thePiano.output.setVolume(midiVolumeEle[0].value / 100 * 127);
+		thePiano.start({ note: parseInt(note.number), velocity: velocity * 127 }); 		
 	}
 	
 	if (keysSound2?.checked) {

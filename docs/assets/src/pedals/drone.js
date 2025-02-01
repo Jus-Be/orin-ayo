@@ -38,10 +38,7 @@ export const dronePedal = function(input, index) {
 		
 		sources[name] = source;	
 		source.buffer = buffer;
-		
-		gainNode.gain.value = 0.01;
-		gainNode.gain.exponentialRampToValueAtTime(defaults.gain, ctx.currentTime + 0.05);	
-		
+				
 		source.connect(gainNode);
 		source.loop = true;		
 		source.loopStart = keyChange * 64;
