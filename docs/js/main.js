@@ -173,7 +173,6 @@ var notesInQueue = [];      		// the notes that have been put into the web audio
 var timerWorker = null;     		// The Web Worker used to fire timer messages
 
 var keysPlayer = new WebAudioFontPlayer();
-var keysMaster = null;
 var keysSelectedEle1 = null;
 var keysSelectedEle2 = null;
 
@@ -1938,16 +1937,10 @@ async function onloadHandler() {
 	
 	mobileViewpoint = config.mobileViewpoint || mobileViewpoint;
     navigator.serviceWorker.register("./js/main-sw.js").then(res => console.debug("service worker registered")).catch(err => console.debug("service worker not registered", err));	
-
-	keysMaster = keysPlayer.createChannel(audioContext);		  
+		  
 	const reverberator = keysPlayer.createReverberator(audioContext);	
 	reverberator.output.connect(audioContext.destination);
-	reverberator.wet.gain.setTargetAtTime(0.25, 0, 0.0001);	
-	keysMaster.output.connect(reverberator.input);		
-	
-	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_0940_FluidR3_GM_sf2_file');	
-	keysPlayer.loader.decodeAfterLoading(audioContext, '_tone_0890_FluidR3_GM_sf2_file');
-	
+	reverberator.wet.gain.setTargetAtTime(0.25, 0, 0.0001);				
 	setupPianos(audioContext, reverberator);
 	
 	let version = "1.0.0";
@@ -2988,7 +2981,7 @@ function handleNoteOff(note, device, velocity, channel) {
 	{
 		if (keyNote == note.number) {
 			if (value.envelope1) value.envelope1.stop({ stopId: note.number });
-			if (value.envelope2) value.envelope2.cancel();			
+			if (value.envelope2) value.envelope2.stop({ stopId: note.number });			
 			midiNotes.delete(note.number);
 		}
 	}	
@@ -3132,8 +3125,9 @@ function handleNoteOn(note, device, velocity, channel) {
 	}
 	
 	if (keysSound2?.checked) {
-		const keysPadName = keysSelectedEle2.selectedIndex  == 89 ? "0890_FluidR3_GM_sf2_file" : "0940_FluidR3_GM_sf2_file";	
-		envelope2 = keysPlayer.queueWaveTable(audioContext, keysMaster.input, window["_tone_" + keysPadName], 0, note.number, 3600, (velocity * midiVolumeEle[1].value / 100));
+		envelope2 = warmPad;
+		warmPad.output.setVolume(midiVolumeEle[1].value / 100 * 127);		
+		warmPad.start({ note: parseInt(note.number), velocity: velocity * 127 }); 	
 	}	
 	
 	midiNotes.set(note.number, {inputDeviceType, note, device, velocity, channel, envelope1, envelope2});		
@@ -5773,7 +5767,7 @@ function stopPads() {
 		if (firstChord instanceof Array && firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 2, {velocity: getVelocity()}); 
 		
 	} else {
-		for (let envelope of padsEnvelopes)	envelope.cancel();		
+		for (let note of padsEnvelopes)	warmPad.stop({ stopId: note });		
 		padsEnvelopes = [];	
 	}
 }
@@ -5826,18 +5820,20 @@ function playPads(chords, opts) {
 	} else {
 		const keysPadName = keysSelectedEle2.selectedIndex  == 89 ? "0890_FluidR3_GM_sf2_file" : "0940_FluidR3_GM_sf2_file";
 		const keysDuration = 240 / tempo;		
-		padsEnvelopes = [];
+		
+		padsEnvelopes = [];	
+		warmPad.output.setVolume(midiVolumeEle[1].value / 100 * 127);	
 	
 		if (chords instanceof Array) 
 		{
-			for (note of chords) {
-				const envelope = keysPlayer.queueWaveTable(audioContext, keysMaster.input, window["_tone_" + keysPadName], 0, note, keysDuration, (opts.velocity * midiVolumeEle[1].value / 100));
-				padsEnvelopes.push(envelope);
+			for (note of chords) {	
+				warmPad.start({ note: parseInt(note), velocity: opts.velocity * 127 }); 
+				padsEnvelopes.push(note);
 			}
 			
 		} else {
-			const envelope = keysPlayer.queueWaveTable(audioContext, keysMaster.input, window["_tone_" + keysPadName], 0, chords, keysDuration, (opts.velocity * midiVolumeEle[1].value / 100));
-			padsEnvelopes.push(envelope);
+			warmPad.start({ note: parseInt(chords), velocity: opts.velocity * 127 });
+			padsEnvelopes.push(chords);
 		}		
 	}
 }
