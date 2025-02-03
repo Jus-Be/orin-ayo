@@ -58,7 +58,7 @@ The accompaniment music will be generated from MIDI style files used by Yamaha, 
 In order to play the GM MIDI notes in the style files, you would need to select a sound font. See feature [#7](#7---sound-font-file) for more details.
 
 ### Web Audio Loops
-The accompaniment music will be generated from WebAudio loops that have been played and recorded from a range of arranger keyboards that includes Ketron, Yamaha and Roland. See features #15, #16 and #17 below on how to select and load audio loops for drums, bass and chordal instruments.
+The accompaniment music will be generated from WebAudio loops that have been played and recorded from a range of arranger keyboards that includes Ketron, Yamaha and Roland. See features  [#15](#15---audio-chord), #16 and #17 below on how to select and load audio loops for drums, bass and chordal instruments.
 
 ### External Hardware
 The accompaniment music will be generated from MIDI messages passed live to an arranger keyboard or arranger module or a looper that can be controlled externally with MIDI. The following hardware devices are supported:
@@ -294,10 +294,12 @@ Toggle start action button to start and stop the strum pattern loop. The strum w
 
 Use this feature to mix the output of an external real instrument with Orin Ayo. The drop-down list will show all the input audio devices on your PC that are accessible to the web browser.
 Select the device you want and Orin Ayo will play the audio from this device instead of the default internal guitar sound.
+<br clear="left"/>
+
 It can be used in the following situations:
 - To enable a solo musician to play and mix the sounds from LiberLive C1 guitar with the selected music style in Orin Ayo
 - To enable a guitarist to play lead and riff melodies along with another person controlling the selected music style in OrinAyo
-<br clear="left"/>
+
 
 ## 14 - Audio Device Out
 <img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature14.png />
@@ -305,3 +307,26 @@ It can be used in the following situations:
 By default, all sounds coming out of Orin Ayo are sent by the web browser to the current selected output device by the underlying O/S. To use a different device, use this feature to select a device from the drop-down list
 This feature is very useful if you want to stream or sent the live music directly to an external application like a DAW using a virtual audio device like "Virtual Cable".
 <br clear="left"/>
+
+## 15 - Audio Chord
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature15.png />
+
+If you select **Web Audio Files** as your  [*Arranger Type*](#3---arranger-type), then you have to select an audio loop here that OrinAyo will use together with the bass and drums to give the music a style a groove. It could be a rhythmic guitar riff or  a keyboard chordal harmony.
+
+Audio loop styles in OrinAyo have fixed tempo. Orin Ayo will use the selection for the chord loop to pre-select corresponding bass and drum loops that have matching names or tempos.  You can manually change these selections to your taste.
+<br clear="left"/>
+
+## 16 - Audio Drum
+Select alternative drum loop to play at the current tempo from this drop-down selection list. Please note that mixing different tempos can produce undesirable results as OrinAyo does not stretch audio loops.  The selected loop choice will be saved and recalled when the page is re-opened.
+
+## 17 - Audio Bass
+Select alternative bass loops to play at the current tempo from this drop-down selection list. Please note that mixing different tempos can produce undesirable results as OrinAyo does not stretch audio loops. 
+The selected loop choice will be saved and recalled when the page is re-opened.
+
+## 18 - Chord Tracker
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature8.png />
+
+Select an input MIDI device to use with the OrinAyo ChordTraker feature.  This feature is implemented for the Yamaha Sonogenic SHS-500 Keytar and compatible devices.  OrinAyo well send the chords being played as Yamaha midi SYSEX messages to the selected device. The device is then able to ensure that only notes in the current key and in harmony with the current chord will be played by the device.
+<br clear="left"/>
+
+

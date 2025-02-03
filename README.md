@@ -36,12 +36,13 @@ See [User Guide](USER-GUIDE.md)
 # Audio Loops
 The audio loops used by the smart sampler for creating music styles are created by recording a demo song I wrote called "Orin Ayo" with arranger styles from various keyboards I used over the years.
 I have also provide the tools I used to create the compressed OGG files for OrinAyo in the [tools](./tools) folder.
-These loops are limited demos of what can be achieved with these arranger keyboards. You are limited to maj, min and sus chord types and advised to acquire these keyboards and additional styles to get the full quality (WAV files) and value of these styles for any serious use.
+
+These loops are limited demos of what can be achieved with these arranger keyboards. You are limited to a fixed tempo, maj, min and sus chord types and advised to acquire these keyboards and additional styles to get the full quality (WAV files) and value of these styles for any serious use.
 
 The keyboard and styles used in the demo audio loops by OrinAyo smart sampler include:
 
 ## Ketron
-- Ketron SD90 Arranger module
+- Ketron SD90 Arranger module internal styles
 - Ketron Event Arranger keyboard internal styles
 
 ## Yamaha
