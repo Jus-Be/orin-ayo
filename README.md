@@ -6,7 +6,7 @@ It was originally developed to turn a guitar games controller HID device into a 
 
 Now it can work standalone without depending on an external musical hardware device to create quality backing music to accompany a singer (including yourself) or a solo musician playing a melodic instrument.
 
-- It has an internal smart sampler that can play audio loops in like midi styles files. It can be extended with external OGG audio loop files in OrinAyo format.
+- It has an internal smart sampler that can play [audio loops](#audio-loops) like midi styles files. It can be extended with external OGG audio loop files in OrinAyo format.
 - It has an internal arranger engine that can play midi style files in Yamaha SFFx, Casio AC7 or Ketron KST format.
 - It uses WebAudio to implement the internal arranger synth engine (based on [sf2synth.js by GREE](https://github.com/gree/sf2synth.js/)) that can play the styles using sound font (sf2) files with WebAudio as well as notes from a standrd midi keyboard controller.
 - It has internal strumable acoustic and electric guitars using [WebAudioFont by Srgy Surkv](https://github.com/surikov/webaudiofont). It behaves just like RealGuitar does with a guitar hero controller.
@@ -32,3 +32,26 @@ https://github.com/user-attachments/assets/12c69505-3887-4a6f-af7a-124bebd15741
 
 # How to use
 See [User Guide](USER-GUIDE.md)
+
+# Audio Loops
+The audio loops used by the smart sampler for creating music styles are created by recording a demo song I wrote called "Orin Ayo" with arranger styles from various keyboards I used over the years.
+I have also provide the tools I used to create the compressed OGG files for OrinAyo in the [tools](./tools) folder.
+These loops are limited demos of what can be achieved with these arranger keyboards. You are limited to maj, min and sus chord types and advised to acquire these keyboards and additional styles to get the full quality (WAV files) and value of these styles for any serious use.
+
+The keyboard and styles used in the demo audio loops by OrinAyo smart sampler include:
+
+## Ketron
+- Ketron SD90 Arranger module
+- Ketron Event Arranger keyboard internal styles
+
+## Yamaha
+- PSR SX-600 Arranger keyboard internal styles
+
+## Roland
+- Go:Keys 5 Arranger keyboard
+
+## Additional Styles for the Ketron Event
+- Realdrum, Realbass and Realchord styles from https://store.sc-multimedia.nl/
+
+
+

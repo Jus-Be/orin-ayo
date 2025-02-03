@@ -290,3 +290,18 @@ Toggle start action button to start and stop the strum pattern loop. The strum w
 <br clear="left"/>
 
 ## 13 - Audio Device In
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature13.png />
+
+Use this feature to mix the output of an external real instrument with Orin Ayo. The drop-down list will show all the input audio devices on your PC that are accessible to the web browser.
+Select the device you want and Orin Ayo will play the audio from this device instead of the default internal guitar sound.
+It can be used in the following situations:
+- To enable a solo musician to play and mix the sounds from LiberLive C1 guitar with the selected music style in Orin Ayo
+- To enable a guitarist to play lead and riff melodies along with another person controlling the selected music style in OrinAyo
+<br clear="left"/>
+
+## 14 - Audio Device Out
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature14.png />
+
+By default, all sounds coming out of Orin Ayo are sent by the web browser to the current selected output device by the underlying O/S. To use a different device, use this feature to select a device from the drop-down list
+This feature is very useful if you want to stream or sent the live music directly to an external application like a DAW using a virtual audio device like "Virtual Cable".
+<br clear="left"/>
