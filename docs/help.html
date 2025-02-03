@@ -32,6 +32,11 @@
 <li><a href="#realguitar-out">11 - RealGuitar Out</a></li>
 <li><a href="#realguitar-strum">12 - RealGuitar Strum</a></li>
 <li><a href="#audio-device-in">13 - Audio Device In</a></li>
+<li><a href="#audio-device-out">14 - Audio Device Out</a></li>
+<li><a href="#audio-chord">15 - Audio Chord</a></li>
+<li><a href="#audio-drum">16 - Audio Drum</a></li>
+<li><a href="#audio-bass">17 - Audio Bass</a></li>
+<li><a href="#chord-tracker">18 - Chord Tracker</a></li>
 </ul>
 </li>
 </ul>
@@ -86,7 +91,7 @@
 <p>The accompaniment music will be generated from MIDI style files used by Yamaha, Ketron and Casio. See features <a href="#4---arranger-group">#4</a> and <a href="#5---arranger-style">#5</a> below on how to select and load a style file.</p>
 <p>In order to play the GM MIDI notes in the style files, you would need to select a sound font. See feature <a href="#7---sound-font-file">#7</a> for more details.</p>
 <h3 id="web-audio-loops">Web Audio Loops</h3>
-<p>The accompaniment music will be generated from WebAudio loops that have been played and recorded from a range of arranger keyboards that includes Ketron, Yamaha and Roland. See features #15, #16 and #17 below on how to select and load audio loops for drums, bass and chordal instruments.</p>
+<p>The accompaniment music will be generated from WebAudio loops that have been played and recorded from a range of arranger keyboards that includes Ketron, Yamaha and Roland. See features  <a href="#15---audio-chord">#15</a>, #16 and #17 below on how to select and load audio loops for drums, bass and chordal instruments.</p>
 <h3 id="external-hardware">External Hardware</h3>
 <p>The accompaniment music will be generated from MIDI messages passed live to an arranger keyboard or arranger module or a looper that can be controlled externally with MIDI. The following hardware devices are supported:</p>
 <ul>
@@ -546,6 +551,34 @@ If you select the LiberLive C1 guitar, it uses a modified 7 basic chord keys map
 <p>Toggle start action button to start and stop the strum pattern loop. The strum will play to the currently set tempo. Please note that this feature cannot be used with a music style. Make sure no style is selected when using this to prevent unexpected results.</p>
 <br clear="left">
 <h2 id="audio-device-in">13 - Audio Device In</h2>
+<img align="left" src="https://jus-be.github.io/orinayo/assets/screenshots/feature13.png">
+<p>Use this feature to mix the output of an external real instrument with Orin Ayo. The drop-down list will show all the input audio devices on your PC that are accessible to the web browser.<br>
+Select the device you want and Orin Ayo will play the audio from this device instead of the default internal guitar sound.<br>
+<br clear="left"></p>
+<p>It can be used in the following situations:</p>
+<ul>
+<li>To enable a solo musician to play and mix the sounds from LiberLive C1 guitar with the selected music style in Orin Ayo</li>
+<li>To enable a guitarist to play lead and riff melodies along with another person controlling the selected music style in OrinAyo</li>
+</ul>
+<h2 id="audio-device-out">14 - Audio Device Out</h2>
+<img align="left" src="https://jus-be.github.io/orinayo/assets/screenshots/feature14.png">
+<p>By default, all sounds coming out of Orin Ayo are sent by the web browser to the current selected output device by the underlying O/S. To use a different device, use this feature to select a device from the drop-down list<br>
+This feature is very useful if you want to stream or sent the live music directly to an external application like a DAW using a virtual audio device like “Virtual Cable”.<br>
+<br clear="left"></p>
+<h2 id="audio-chord">15 - Audio Chord</h2>
+<img align="left" src="https://jus-be.github.io/orinayo/assets/screenshots/feature15.png">
+<p>If you select <strong>Web Audio Files</strong> as your  <a href="#3---arranger-type"><em>Arranger Type</em></a>, then you have to select an audio loop here that OrinAyo will use together with the bass and drums to give the music a style a groove. It could be a rhythmic guitar riff or  a keyboard chordal harmony.</p>
+<p>Audio loop styles in OrinAyo have fixed tempo. Orin Ayo will use the selection for the chord loop to pre-select corresponding bass and drum loops that have matching names or tempos.  You can manually change these selections to your taste.<br>
+<br clear="left"></p>
+<h2 id="audio-drum">16 - Audio Drum</h2>
+<p>Select alternative drum loop to play at the current tempo from this drop-down selection list. Please note that mixing different tempos can produce undesirable results as OrinAyo does not stretch audio loops.  The selected loop choice will be saved and recalled when the page is re-opened.</p>
+<h2 id="audio-bass">17 - Audio Bass</h2>
+<p>Select alternative bass loops to play at the current tempo from this drop-down selection list. Please note that mixing different tempos can produce undesirable results as OrinAyo does not stretch audio loops.<br>
+The selected loop choice will be saved and recalled when the page is re-opened.</p>
+<h2 id="chord-tracker">18 - Chord Tracker</h2>
+<img align="left" src="https://jus-be.github.io/orinayo/assets/screenshots/feature8.png">
+<p>Select an input MIDI device to use with the OrinAyo ChordTraker feature.  This feature is implemented for the Yamaha Sonogenic SHS-500 Keytar and compatible devices.  OrinAyo well send the chords being played as Yamaha midi SYSEX messages to the selected device. The device is then able to ensure that only notes in the current key and in harmony with the current chord will be played by the device.<br>
+<br clear="left"></p>
 
     </div>
   </div>
