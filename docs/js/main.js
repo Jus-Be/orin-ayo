@@ -3110,7 +3110,54 @@ function handleNoteOff(note, device, velocity, channel) {
 function handleNoteOn(note, device, velocity, channel) {
 	console.debug("handleNoteOn", inputDeviceType, note, device, velocity, channel);
 	
-	const keysDuration = 240 / tempo;
+	if (note.number > 95) {		// only 76 key used for playing note. 77 - 88 are for arranger control
+	
+		if (note.number == 108) {			
+			sectionChange = 0;
+			
+			pad.buttons[YELLOW] = false;		
+			if (midiNotes.size > 0) pad.buttons[YELLOW] = true;	// play intro			
+			toggleStartStop();	
+		}	
+		else
+			
+		if (note.number == 96) {		// variation A
+			handleEncoderPress(8);
+		}
+		else
+			
+		if (note.number == 98) {		// variation B
+			handleEncoderPress(9);
+		}
+		else
+			
+		if (note.number == 100) {		// variation C
+			handleEncoderPress(10);
+		}
+		else
+			
+		if (note.number == 101) {		// variation D
+			handleEncoderPress(11);
+		}
+		else
+			
+		if (note.number == 97) {		// fill
+			handleButtonPress(1);
+		}
+		else
+			
+		if (note.number == 99) {		// break
+			handleButtonPress(9);
+		}	
+		else
+			
+		if (note.number > 101 && note.number < 108) {		// mute / unmute
+			handleEncoderPress(	note.number - 102);	
+		}	
+		
+		return;
+	}
+	
 	let envelope1, envelope2, thePiano = piano;
 	
 	if (keysSound1?.checked) {
@@ -5818,9 +5865,7 @@ function playPads(chords, opts) {
 		padsDevice.playNote(chords, 2, opts);	
 		
 	} else {
-		const keysPadName = keysSelectedEle2.selectedIndex  == 89 ? "0890_FluidR3_GM_sf2_file" : "0940_FluidR3_GM_sf2_file";
-		const keysDuration = 240 / tempo;		
-		
+		const keysPadName = keysSelectedEle2.selectedIndex  == 89 ? "0890_FluidR3_GM_sf2_file" : "0940_FluidR3_GM_sf2_file";		
 		padsEnvelopes = [];	
 		warmPad.output.setVolume(midiVolumeEle[1].value / 100 * 127);	
 	
