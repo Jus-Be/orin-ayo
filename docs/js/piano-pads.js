@@ -21,7 +21,7 @@ window.setupPianos = function(context, reverberator) {
 	window.epianos[2] = new ElectricPiano(context, {instrument: pianoNames[2]});
 	window.epianos[2].output.addEffect('reverb', reverberator, 0.25);
 
-	window.warmPad = new Soundfont2Sampler(context, { url: "../assets/pads/glass-pad.sf2",  createSoundfont: (data) => new SoundFont2(data), decayTime: 1.25});
+	window.warmPad = new Soundfont2Sampler(context, { url: "/../assets/pads/glass-pad.sf2",  createSoundfont: (data) => new SoundFont2(data), decayTime: 1.25});
 
 	warmPad.load.then(() => {
 	  console.debug("setupPianos pads", warmPad.instrumentNames);
