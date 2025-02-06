@@ -326,7 +326,16 @@ The selected loop choice will be saved and recalled when the page is re-opened.
 ## 18 - Chord Tracker
 <img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature8.png />
 
-Select an input MIDI device to use with the OrinAyo ChordTraker feature.  This feature is implemented for the Yamaha Sonogenic SHS-500 Keytar and compatible devices.  OrinAyo well send the chords being played as Yamaha midi SYSEX messages to the selected device. The device is then able to ensure that only notes in the current key and in harmony with the current chord will be played by the device.
+Select an input MIDI device to use with the OrinAyo ChordTracker feature.  This feature is implemented for the Yamaha Sonogenic SHS-500 Keytar and compatible devices.  OrinAyo well send the chords being played as Yamaha midi SYSEX messages to the selected device. The device is then able to ensure that only notes in the current key and in harmony with the current chord will be played by the device.
+<br clear="left"/>
+
+## 19 - Song Player
+<img align=left src=https://jus-be.github.io/orinayo/assets/screenshots/feature19.png />
+
+This feature enables OrinAyo to play song midi files that contain chord progressions that are compatible with Yamaha keyboards like the PSR-SX600 with a different style each time. The song lyrics and chord symbols can be viewed live just like karoke with the **Lyrics** action button.
+The user can uses the song like backing tracks and sing or play along live with the song.
+
+Select one of the internal midi files in the list or use the **Load** action button to load an external compatible midi file which will appear in the list to be selected. Click on the **Play** action button to start and stop playback of the song. 
 <br clear="left"/>
 
 
