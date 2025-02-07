@@ -15,21 +15,23 @@ Orinayo can be setup and accessed as follows:
 - Install it as a browser extension for Google Chrome and Microsoft Edge from https://chromewebstore.google.com/detail/orinayo/mhnemaeacdgnkmoibfeodelijegakklp
 - On Windows 10+ desktops, download orinayo.exe and run it directly from a desktop. It loads the above web page using webview2. See https://github.com/jchv/go-webview2. If you are using Windows 10+, the WebView2 runtime should already be installed. If you don't have it installed, you can download and install a copy from Microsoft's website - https://developer.microsoft.com/en-us/microsoft-edge/webview2/
 
-# Description
+# Desktop View
+<img src=https://jus-be.github.io/orinayo/assets/screenshots/orinayo_desktop.svg />
+
+# Mobile view
+<img src=https://jus-be.github.io/orinayo/assets/screenshots/orinayo_mobile.svg />
+
+# How To Use
 To use the application, you select a number of features you need, click on an action and watch the status display. For example, select web audio as your arranger type, select a web audio chord loop, click on play and watch the chords being displayed as you press the buttons of your guitar controller.
 
 To prevent un-desired results, make sure that unused and uneeded features are set to **NOT USED*
 
 The application views are roughly divided into three sections.
 - Feature Selections
-- Action buttons
-- Status displays
+- Dashboard
+- Action Buttons
 
-## Desktop View
-<img src=https://jus-be.github.io/orinayo/assets/screenshots/orinayo_desktop.svg />
-
-## Mobile view
-<img src=https://jus-be.github.io/orinayo/assets/screenshots/orinayo_mobile.svg />
+# Feature Selections
 
 ## 1 - The application logo/icon
 Clicking on this toggle between mobile view and desktop views as shown above. Mobile view gives you simple straightforward access to live playing of audio loop styles with a guitar controller or a numeric keypad. Desktop view gives you access to evrything else.
@@ -337,5 +339,23 @@ The user can uses the song like backing tracks and sing or play along live with 
 
 Select one of the internal midi files in the list or use the **Load** action button to load an external compatible midi file which will appear in the list to be selected. Click on the **Play** action button to start and stop playback of the song. 
 <br clear="left"/>
+
+# Dashboard
+This part of the application is the application dashboard showing the current status or values associated with the live music being created by OrinAyo.
+
+## 20 - Main Display
+<img src=https://jus-be.github.io/orinayo/assets/screenshots/dashboard20.png />
+
+- Displays the current song key and the current chord being played in that key.
+- The arranger style currently selected. OrinAyo supports an intro,  four main ( labelled A-D) and an end variation for each music style.
+- Which Pad style (numbered 1-5) is currently playing
+- If a RealGuitar strum is in effect, this shows what strum variation is in use
+- If OrinAyo is using recalled configuration settings, the slot number for the saved configuration  settings is shown here.
+
+## 21 - Guitar Buttons Display
+<img src=https://jus-be.github.io/orinayo/assets/screenshots/dashboard21.png />
+
+Displays which Guitar Controller buttons currently pressed and consequently what chord will be be display on the main display.
+
 
 
