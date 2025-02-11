@@ -22,9 +22,9 @@ Orinayo can be setup and accessed as follows:
 <img src=https://jus-be.github.io/orinayo/assets/screenshots/orinayo_mobile.svg />
 
 # How To Use
-To use the application, you select a number of features you need, click on an action and watch the status display. For example, select web audio as your arranger type, select a web audio chord loop, click on play and watch the chords being displayed as you press the buttons of your guitar controller.
+To use the application, you select a number of features you need, click on an action and watch the dashboard display. For example, select web audio as your arranger type, select a web audio chord loop, click on play and watch the chords being displayed as you press the buttons of your guitar controller.
 
-To prevent un-desired results, make sure that unused and uneeded features are set to **NOT USED*
+To prevent un-desired results, make sure that unused and uneeded features are set to **NOT USED**. For some features, you might need to refresh the screen with the *Refresh* action button to enable the selected feature.
 
 The application views are roughly divided into three sections.
 - Feature Selections

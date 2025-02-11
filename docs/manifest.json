@@ -3,7 +3,7 @@
 	"name": "OrinAyo",  
 	"short_name": "OrinAyo",
 	"description": "The Guitar Arranger",
-	"version": "0.9.17",
+	"version": "0.9.18",
 	"homepage_url": "https://jus-be.github.io/orinayo/help.html",
 	"background": {
 		"service_worker": "./js/background.js"

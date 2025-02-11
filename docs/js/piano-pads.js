@@ -24,9 +24,17 @@ window.setupPianos = function(context, reverberator) {
 	window.warmPad = new Soundfont2Sampler(context, { url: "./assets/pads/glass-pad.sf2",  createSoundfont: (data) => new SoundFont2(data), decayTime: 1.25});
 
 	warmPad.load.then(() => {
-	  console.debug("setupPianos pads", warmPad.instrumentNames);
+	  console.debug("setupPianos warm pad", warmPad.instrumentNames);
 	  warmPad.loadInstrument(warmPad.instrumentNames[0]);
+	  
+		window.stringPad = new Soundfont2Sampler(context, { url: "./assets/pads/ensemble-pad.sf2",  createSoundfont: (data) => new SoundFont2(data), decayTime: 1.25});
+
+		stringPad.load.then(() => {
+		  console.debug("setupPianos string pad", stringPad.instrumentNames);
+		  stringPad.loadInstrument(stringPad.instrumentNames[0]);
+		});		  
 	});	
+		
 	
 	// TODO epiano effects. sync with guitar and tempo
 	//epiano.tremolo.level(30);		

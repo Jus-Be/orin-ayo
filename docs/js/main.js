@@ -3158,10 +3158,10 @@ function handleNoteOn(note, device, velocity, channel) {
 		return;
 	}
 	
-	let envelope1, envelope2, thePiano = piano;
+	let envelope1, envelope2, thePiano = piano, thePad = warmPad;
 	
-	if (keysSound1?.checked) {
-		
+	if (keysSound1?.checked) 
+	{		
 		if (keysSelectedEle1.selectedIndex > 3) {
 			thePiano = epianos[keysSelectedEle1.selectedIndex - 4];
 		}
@@ -3171,10 +3171,15 @@ function handleNoteOn(note, device, velocity, channel) {
 		thePiano.start({ note: parseInt(note.number), velocity: velocity * 127 }); 		
 	}
 	
-	if (keysSound2?.checked) {
-		envelope2 = warmPad;
-		warmPad.output.setVolume(midiVolumeEle[1].value / 100 * 127);		
-		warmPad.start({ note: parseInt(note.number), velocity: velocity * 127 }); 	
+	if (keysSound2?.checked) 
+	{
+		if (keysSelectedEle2.selectedIndex != 89) {
+			thePad = stringPad;
+		}
+		
+		envelope2 = thePad;
+		thePad.output.setVolume(midiVolumeEle[1].value / 100 * 127);		
+		thePad.start({ note: parseInt(note.number), velocity: velocity * 127 }); 	
 	}	
 	
 	midiNotes.set(note.number, {inputDeviceType, note, device, velocity, channel, envelope1, envelope2});		
