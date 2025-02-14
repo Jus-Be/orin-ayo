@@ -334,8 +334,30 @@ function mysetTimeout(fn, delay) {
   return id;
 };
 
-function messageHandler(evt) {
-	console.debug("messageHandler", evt);	
+async function messageHandler(evt) {
+	console.debug("messageHandler", evt.data);	
+
+	playButton.innerText = "Wait..";
+	playButton.style.setProperty("--accent-fill-rest", "red");
+		
+	let url = location.origin + "/orinayo/cp2midi";
+	
+	if (location.origin.startsWith("chrome-extension") || location.origin.startsWith("https://jus-be.github.io/")) {
+		url = "https://pade.chat:5443/orinayo/cp2midi";
+	}
+	
+	const response = await fetch(url, {method: "POST", body: evt.data});
+	const blob = await response.blob();	
+	const buffer = await blob.arrayBuffer();		
+	const data = new Uint8Array(buffer);				
+	songSequence = parseMidi(data, "temp.mid");	
+	songSequence.name = "temp";		
+	setupSongSequence();
+
+	document.querySelector("#chord_pro").click();
+	document.querySelector("#show_lyrics").click();		
+	
+	toggleStartStop();
 }
 
 function handleLiberLive(selected) {
@@ -1812,7 +1834,7 @@ function saveConfig() {
 	config.realBass = realInstrument?.bassUrl;	
 	config.realdrumDevice = realdrumDevice ? realdrumDevice.deviceId : null;
 	config.guitarDeviceId = guitarDeviceId;
-	config.songName = songSequence ? songSequence.name : null;
+	config.songName = songSequence && songSequence.name != "temp" ? songSequence.name : null;
 	config.arrName = arrSequence ? arrSequence.name : null;
 	config.sf2Name = arrSynth ? arrSynth.name : null;
 	config.arrangerGroup = arrangerGroup;
@@ -4576,6 +4598,11 @@ async function setupUI(config,err) {
 		saveConfig();
 	});
 
+	songSeq.addEventListener("click", function()
+	{
+		songSequence = null;		
+	});
+	
 	songSeq.addEventListener("change", function()
 	{
 		songSequence = null;
