@@ -350,10 +350,11 @@ async function messageHandler(evt) {
 	const blob = await response.blob();	
 	const buffer = await blob.arrayBuffer();		
 	const data = new Uint8Array(buffer);				
-	songSequence = parseMidi(data, "temp.mid");	
-	songSequence.name = "temp";		
+	songSequence = parseMidi(data, "playback.mid");	
+	songSequence.name = "playback";		
 	setupSongSequence();
 
+	document.querySelector("#songSequence").selectedIndex = 1;
 	document.querySelector("#chord_pro").click();
 	document.querySelector("#show_lyrics").click();		
 	
@@ -1834,7 +1835,7 @@ function saveConfig() {
 	config.realBass = realInstrument?.bassUrl;	
 	config.realdrumDevice = realdrumDevice ? realdrumDevice.deviceId : null;
 	config.guitarDeviceId = guitarDeviceId;
-	config.songName = songSequence && songSequence.name != "temp" ? songSequence.name : null;
+	config.songName = (songSequence && songSequence.name != "playback") ? songSequence.name : null;
 	config.arrName = arrSequence ? arrSequence.name : null;
 	config.sf2Name = arrSynth ? arrSynth.name : null;
 	config.arrangerGroup = arrangerGroup;
@@ -4037,7 +4038,8 @@ async function setupUI(config,err) {
 		});
 		
 		songSeq.options[0] = new Option("NOT USED", "songSeq");
-
+		songSeq.options[1] = new Option("ChordPro Playback", "playback");
+		
 		for (var i=0; i<song_sequences.length; i++) {
 			let selectedSong = false;
 			const url = song_sequences[i];
@@ -4047,7 +4049,7 @@ async function setupUI(config,err) {
 				selectedSong = true;
 				songSequence = {name: url};				
 			}
-			songSeq.options[i + 1] = new Option(songName, url, selectedSong, selectedSong);
+			songSeq.options[i + 2] = new Option(songName, url, selectedSong, selectedSong);
 		}			
 	})		
 	
@@ -4596,11 +4598,6 @@ async function setupUI(config,err) {
 		realGuitarStyle = realguitar.value;
 		console.debug("selected realguitar style", realGuitarStyle, realguitar.value);				
 		saveConfig();
-	});
-
-	songSeq.addEventListener("click", function()
-	{
-		songSequence = null;		
 	});
 	
 	songSeq.addEventListener("change", function()
