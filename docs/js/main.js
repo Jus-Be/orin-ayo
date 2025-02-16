@@ -3185,8 +3185,8 @@ function handleNoteOn(note, device, velocity, channel) {
 	
 	if (keysSound1?.checked) 
 	{		
-		if (keysSelectedEle1.selectedIndex > 3) {
-			thePiano = epianos[keysSelectedEle1.selectedIndex - 4];
+		if (keysSelectedEle1.selectedIndex > 0) {
+			thePiano = epianos[keysSelectedEle1.selectedIndex - 1];
 		}
 		
 		envelope1 = thePiano;
@@ -3196,7 +3196,7 @@ function handleNoteOn(note, device, velocity, channel) {
 	
 	if (keysSound2?.checked) 
 	{
-		if (keysSelectedEle2.selectedIndex != 89) {
+		if (keysSelectedEle2.selectedIndex == 1) {
 			thePad = stringPad;
 		}
 		
@@ -5230,10 +5230,10 @@ function setupMidiChannels() {
 	config = getConfig();
 	
 	keysSelectedEle1 = document.getElementById("midi-channel-0");
-	keysSelectedEle1.selectedIndex = config["instrument" + 0];
+	keysSelectedEle1.selectedIndex = config["instrument0"];
 	
 	keysSelectedEle2 = document.getElementById("midi-channel-1");	
-	keysSelectedEle1.selectedIndex = config["instrument" + 0];	
+	keysSelectedEle2.selectedIndex = config["instrument1"];	
 	
 	drumCheckedEle = document.getElementById("arr-instrument-16");
 	bassCheckedEle = document.getElementById("arr-instrument-17");
