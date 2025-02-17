@@ -70,33 +70,41 @@ window.addDbKeysAndPads = function(context, f, h) {
 						
 						if (f == 0) {
 							const soundfont = new SoundFont2(new Uint8Array(data));
-							const instrument = new Soundfont2Sampler(context, {soundfont, decayTime: 1.25});
-							instrument.loadInstrument(instrument.instrumentNames[0]);							
+							const instrument = new Soundfont2Sampler(context, {soundfont, decayTime: 1.25});						
 							let keys = smplrKeys.length;
 							
 							for (let name of instrument.instrumentNames) {
 								smplrKeys[keys] = {name, sf2: true, instrument}
-								smplrKeys[keys].instrument.output.addEffect('reverb', reverberator, 0.25);
-								keys++;										
+								smplrKeys[keys].instrument.output.addEffect('reverb', reverberator, 0.25);									
 
 								const optn = document.createElement("option");
 								optn.textContent = name;
-								h.appendChild(optn);							
+								h.appendChild(optn);
+								
+								if (config["instrument" + f] == keys) {
+									h.selectedIndex = config["instrument" + f];
+									instrument.loadInstrument(name);									
+								}
+								keys++;	
 							}									
 						} else {
 							const soundfont = new SoundFont2(new Uint8Array(data));
-							const instrument = new Soundfont2Sampler(context, {soundfont, decayTime: 1.25});
-							instrument.loadInstrument(instrument.instrumentNames[0]);							
+							const instrument = new Soundfont2Sampler(context, {soundfont, decayTime: 1.25});							
 							let pads = smplrPads.length;
 							
 							for (let name of instrument.instrumentNames) {
 								smplrPads[pads] = {name, sf2: true, instrument}
 								smplrPads[pads].instrument.output.addEffect('reverb', reverberator, 0.25);
-								pads++;										
-
+								
 								const optn = document.createElement("option");
 								optn.textContent = name;
-								h.appendChild(optn);							
+								h.appendChild(optn);
+								
+								if (config["instrument" + f] == pads) {
+									h.selectedIndex = config["instrument" + f];								
+									instrument.loadInstrument(name);										
+								}
+								pads++;																		
 							}											
 						}
 						

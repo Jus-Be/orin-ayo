@@ -3140,6 +3140,11 @@ function handleNoteOn(note, device, velocity, channel) {
 	
 	if (note.number > 95) {		// only 76 key used for playing note. 77 - 88 are for arranger control
 	
+		if (note.number < 108 && !styleStarted) {
+			recallRegistration(note.number - 95);
+		}
+		else			
+	
 		if (note.number == 108) {			
 			sectionChange = 0;
 			
@@ -5030,7 +5035,8 @@ async function setupUI(config,err) {
 
 	if (config.songName) {	
 		songSequence = {name: config.songName};
-		getSongSequence(config.songName);		
+		getSongSequence(config.songName);
+		document.getElementById("song_control").style.display = "";		
 	}
 
 	if (config.arrName) {	
@@ -8295,6 +8301,7 @@ function setupSongSequence() {
 		playButton.style.setProperty("--accent-fill-rest", "red");
 		const bpm = Math.floor(60 /(songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
 		if (!registration || registration == 0) setTempo(bpm);	
+		document.getElementById("song_control").style.display = "";		
 	} 
 	else
 		
