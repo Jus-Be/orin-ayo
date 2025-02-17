@@ -2003,12 +2003,17 @@ var Soundfont2Sampler = class {
     this.options = options;
     __privateAdd(this, _instrumentNames, []);
     this.player = new RegionPlayer(context, options);
-    this.load = loadSoundfont(options).then((soundfont) => {
-      this.soundfont = soundfont;
-      __privateSet(this, _instrumentNames, soundfont.instruments.map(
-        (instrument) => instrument.header.name
-      ));
-    }).then(() => this);
+	
+	if (options.soundfont) {	// BAO
+		  this.soundfont = options.soundfont;	
+		__privateSet(this, _instrumentNames, this.soundfont.instruments.map((instrument) => instrument.header.name));		
+		
+	} else {
+		this.load = loadSoundfont(options).then((soundfont) => {
+		  this.soundfont = soundfont;
+		  __privateSet(this, _instrumentNames, soundfont.instruments.map((instrument) => instrument.header.name));
+		}).then(() => this);
+	}
   }
   get instrumentNames() {
     return __privateGet(this, _instrumentNames);

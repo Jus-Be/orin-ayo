@@ -25,6 +25,9 @@ const WHAMMY = 2;
 const LOGO = 12;
 const CONTROL = 100;
 
+var smplrKeys = [];
+var smplrPads = [];
+
 var mobileViewpoint = false;
 var desktopContainer = null;
 var mobileContainer = null;
@@ -1960,11 +1963,8 @@ async function onloadHandler() {
 	
 	mobileViewpoint = config.mobileViewpoint || mobileViewpoint;
     navigator.serviceWorker.register("./js/main-sw.js").then(res => console.debug("service worker registered")).catch(err => console.debug("service worker not registered", err));	
-		  
-	const reverberator = keysPlayer.createReverberator(audioContext);	
-	reverberator.output.connect(audioContext.destination);
-	reverberator.wet.gain.setTargetAtTime(0.25, 0, 0.0001);				
-	setupPianos(audioContext, reverberator);
+		  				
+	setupPianos(audioContext);
 	
 	let version = "1.0.0";
 	if (!!chrome.runtime?.getManifest) version = chrome.runtime.getManifest().version;
@@ -2654,7 +2654,7 @@ function handleFileContent(event) {
 
 		reader.onload = function(event)	
 		{
-			if (file.name.toLowerCase().endsWith(".mid") || file.name.toLowerCase().endsWith(".sf2") || file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs") || file.name.toLowerCase().endsWith(".ac7") || file.name.toLowerCase().endsWith(".sas") || file.name.toLowerCase().endsWith(".drum") || file.name.toLowerCase().endsWith(".chord")) {
+			if (file.name.toLowerCase().endsWith(".mid") || file.name.toLowerCase().endsWith(".sf2") || file.name.toLowerCase().endsWith(".kst") || file.name.toLowerCase().endsWith(".sty") || file.name.toLowerCase().endsWith(".prs") || file.name.toLowerCase().endsWith(".bcs") || file.name.toLowerCase().endsWith(".ac7") || file.name.toLowerCase().endsWith(".sas") || file.name.toLowerCase().endsWith(".drum") || file.name.toLowerCase().endsWith(".chord") || file.name.toLowerCase().endsWith(".keys") || file.name.toLowerCase().endsWith(".pads")) {
 				handleBinaryFile(file.name, event.target.result);
 			}	
 			else
@@ -2705,6 +2705,11 @@ function handleBinaryFile(filename, data) {
 		
 		if (filename.toLowerCase().endsWith(".sf2")) {		
 			arrSynth = {name: filename};
+		}
+		else
+			
+		if (filename.toLowerCase().endsWith(".keys") || filename.toLowerCase().endsWith(".pads")) {		
+			// do nothing. handle on reload
 		}
 		else
 			
@@ -3181,12 +3186,12 @@ function handleNoteOn(note, device, velocity, channel) {
 		return;
 	}
 	
-	let envelope1, envelope2, thePiano = piano, thePad = warmPad;
+	let envelope1, envelope2, thePiano = smplrKeys[0].instrument, thePad = smplrPads[0].instrument;
 	
 	if (keysSound1?.checked) 
 	{		
 		if (keysSelectedEle1.selectedIndex > 0) {
-			thePiano = epianos[keysSelectedEle1.selectedIndex - 1];
+			thePiano = smplrKeys[keysSelectedEle1.selectedIndex - 1].instrument;
 		}
 		
 		envelope1 = thePiano;
@@ -3197,7 +3202,7 @@ function handleNoteOn(note, device, velocity, channel) {
 	if (keysSound2?.checked) 
 	{
 		if (keysSelectedEle2.selectedIndex == 1) {
-			thePad = stringPad;
+			thePad = smplrPads[keysSelectedEle2.selectedIndex - 1].instrument;
 		}
 		
 		envelope2 = thePad;
@@ -5232,8 +5237,32 @@ function setupMidiChannels() {
 	keysSelectedEle1 = document.getElementById("midi-channel-0");
 	keysSelectedEle1.selectedIndex = config["instrument0"];
 	
+	if (keysSelectedEle1.selectedIndex && smplrKeys[keysSelectedEle1.selectedIndex]?.sf2) {
+		smplrKeys[keysSelectedEle1.selectedIndex].instrument.loadInstrument(smplrKeys[keysSelectedEle1.selectedIndex].name);
+	}
+		
+	keysSelectedEle1.addEventListener("change", function(event) {
+		console.debug("Switching keys SF", smplrKeys[keysSelectedEle1.selectedIndex]);
+		
+		if (smplrKeys[keysSelectedEle1.selectedIndex]?.sf2)	{
+			smplrKeys[keysSelectedEle1.selectedIndex].instrument.loadInstrument(smplrKeys[keysSelectedEle1.selectedIndex].name);
+		}
+	});		
+	
 	keysSelectedEle2 = document.getElementById("midi-channel-1");	
 	keysSelectedEle2.selectedIndex = config["instrument1"];	
+	
+	if (keysSelectedEle2.selectedIndex && smplrPads[keysSelectedEle2.selectedIndex]?.sf2) {
+		smplrPads[keysSelectedEle2.selectedIndex].instrument.loadInstrument(smplrPads[keysSelectedEle2.selectedIndex].name);
+	}
+		
+	keysSelectedEle2.addEventListener("change", function(event) {
+		console.debug("Switching pads SF", smplrPads[keysSelectedEle2.selectedIndex]);		
+		
+		if (smplrPads[keysSelectedEle2.selectedIndex]?.sf2) {			
+			smplrPads[keysSelectedEle2.selectedIndex].instrument.loadInstrument(smplrPads[keysSelectedEle2.selectedIndex].name);
+		}
+	});			
 	
 	drumCheckedEle = document.getElementById("arr-instrument-16");
 	bassCheckedEle = document.getElementById("arr-instrument-17");
@@ -5843,7 +5872,7 @@ function stopPads() {
 		if (firstChord instanceof Array && firstChord.length == 4) padsDevice.stopNote(firstChord[0] + 24, 2, {velocity: getVelocity()}); 
 		
 	} else {
-		for (let note of padsEnvelopes)	warmPad.stop({ stopId: note });		
+		for (let note of padsEnvelopes)	smplrPads[0].instrument.stop({ stopId: note });		
 		padsEnvelopes = [];	
 	}
 }
@@ -5896,17 +5925,17 @@ function playPads(chords, opts) {
 	} else {
 		const keysPadName = keysSelectedEle2.selectedIndex  == 89 ? "0890_FluidR3_GM_sf2_file" : "0940_FluidR3_GM_sf2_file";		
 		padsEnvelopes = [];	
-		warmPad.output.setVolume(midiVolumeEle[1].value / 100 * 127);	
+		smplrPads[0].instrument.output.setVolume(midiVolumeEle[1].value / 100 * 127);	
 	
 		if (chords instanceof Array) 
 		{
 			for (note of chords) {	
-				warmPad.start({ note: parseInt(note), velocity: opts.velocity * 127 }); 
+				smplrPads[0].instrument.start({ note: parseInt(note), velocity: opts.velocity * 127 }); 
 				padsEnvelopes.push(note);
 			}
 			
 		} else {
-			warmPad.start({ note: parseInt(chords), velocity: opts.velocity * 127 });
+			smplrPads[0].instrument.start({ note: parseInt(chords), velocity: opts.velocity * 127 });
 			padsEnvelopes.push(chords);
 		}		
 	}
@@ -8532,7 +8561,12 @@ function setupRealInstruments() {
 
 function soundsLoaded(cached) {
 	console.debug("audio loaded ok");
-	if (!cached) loopWait+=2000;
+	
+	if (cached) {
+		loopWait+=2000;
+	} else {
+		loopWait+=3000;		
+	}
 }
 
 function eventStatus(event, id) {
