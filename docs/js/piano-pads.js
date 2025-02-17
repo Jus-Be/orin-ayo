@@ -52,7 +52,8 @@ window.setupPianos = function(context) {
 
 
 window.addDbKeysAndPads = function(context, f, h) {
-	console.debug("addDbKeysAndPads", f, h);
+	const config = getConfig();	
+	console.debug("addDbKeysAndPads", f, h, config);
 	
 	indexedDB.databases().then(function (databases) 
 	{

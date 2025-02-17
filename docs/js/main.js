@@ -28,6 +28,7 @@ const CONTROL = 100;
 var smplrKeys = [];
 var smplrPads = [];
 
+var speechObject = null;
 var mobileViewpoint = false;
 var desktopContainer = null;
 var mobileContainer = null;
@@ -1963,7 +1964,7 @@ async function onloadHandler() {
 	
 	mobileViewpoint = config.mobileViewpoint || mobileViewpoint;
     navigator.serviceWorker.register("./js/main-sw.js").then(res => console.debug("service worker registered")).catch(err => console.debug("service worker not registered", err));	
-		  				
+	  				
 	setupPianos(audioContext);
 	
 	let version = "1.0.0";
@@ -2110,7 +2111,7 @@ async function onloadHandler() {
 	document.body.addEventListener('click', function(event) 	{
 		// TODO
 		if (inputDeviceType == "liberlivec1") initLiberLive();
-		if (inputDeviceType == "lavagenie") initLavaGenie();		
+		if (inputDeviceType == "lavagenie") initLavaGenie();			
 	})
 	
 	
@@ -2340,6 +2341,17 @@ async function onloadHandler() {
 		const tmpo = +event.target.value; 
 		setTempo(tmpo);
 		saveConfig();
+	});
+	
+	document.querySelector("#voice-commands").addEventListener("change", function(event) {
+		console.debug("voice command", event.target.checked); 		
+		if (!speechObject) setupVoiceCommands();	
+
+		if ( event.target.checked) {
+			//speechObject.start();
+		} else {
+			//speechObject.stop();
+		}
 	});
 	
 	document.addEventListener('keyup', (event) => {
@@ -9036,4 +9048,15 @@ function hideChat(ev) {
 		domain = "localhost";
 	}	
 	_converse.api.rooms.open('lobby@conference.' + domain, {'bring_to_foreground': true}, true);	
+}
+
+// -------------------------------------------------------
+//
+//  Voice Commands
+//
+// -------------------------------------------------------
+
+function setupVoiceCommands() {
+	console.debug("setupVoiceCommands", speechObjectActive);	
+		
 }
