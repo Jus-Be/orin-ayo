@@ -110,6 +110,11 @@ function parseSmf(parser, arrName) {
 				
 			if (event.type == "timeSignature") {
 				events.Hdr.timeSignature = event;
+			}
+			else
+				
+			if (event.type == "keySignature") {
+				events.Hdr.keySignature = event;
 			}			
 		}					
 	}
@@ -677,6 +682,8 @@ function readEvent(p) {
             if (length != 2) throw "Expected length for keySignature event is 2, got " + length
             event.key = p.readInt8()
             event.scale = p.readUInt8()
+			event.tonic = convertKey(event.key)
+			event.symbol = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][event.tonic]
 			//console.debug(event.type, event.deltaTime);				
             return event
           case 0x7f:
@@ -766,6 +773,24 @@ function readEvent(p) {
 		  return null;
       }
     }
+}
+
+function convertKey(key) {
+	if (key == 1) return 7;	
+	if (key == 2) return 2;	
+	if (key == 3) return 9;
+	if (key == 4) return 4;
+	if (key == 5) return 11;
+	if (key == 6) return 6;	
+
+	if (key == -1) return 5;	
+	if (key == -2) return 10;	
+	if (key == -3) return 3;
+	if (key == -4) return 8;
+	if (key == -5) return 1;
+	if (key == -6) return 6;	
+	
+	return 0;	
 }
 
 function Parser(data) {

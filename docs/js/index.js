@@ -361,7 +361,8 @@ async function messageHandler(evt) {
 	document.querySelector("#songSequence").selectedIndex = 1;
 	document.querySelector("#chord_pro").click();
 	document.querySelector("#show_lyrics").click();		
-	
+
+	pad.buttons[YELLOW] = true;	
 	toggleStartStop();
 }
 
@@ -7932,32 +7933,35 @@ function getChordType(type) {
 
 function getNoteName(chordRoot) {	
 	let note = BASE;
-	let shape = "C";
+		
+	if (chordRoot == 33) { note = BASE - 1} // b
 	
-	if (false) note = BASE;	
-	else if (chordRoot == 33) { note = BASE - 1;  shape = "B"; } // b
-	else if (chordRoot == 34) { note = BASE + 1;  shape = "Db"; } // db	
-	else if (chordRoot == 35) { note = BASE + 3;  shape = "Eb"; } // eb
-	else if (chordRoot == 36) { note = BASE + 4;  shape = "E"; } // e				
-	else if (chordRoot == 37) { note = BASE + 6;  shape = "Gb"; } // gb				
-	else if (chordRoot == 38) { note = BASE + 8;  shape = "Ab"; } // ab			
-	else if (chordRoot == 39) { note = BASE + 10; shape = "Bb"; } // bb				
+	else if (chordRoot == 34) { note = BASE + 1 } // db	
+	else if (chordRoot == 35) { note = BASE + 3 } // eb
+	else if (chordRoot == 36) { note = BASE + 4 } // e				
+	else if (chordRoot == 37) { note = BASE + 6 } // gb				
+	else if (chordRoot == 38) { note = BASE + 8 } // ab			
+	else if (chordRoot == 39) { note = BASE + 10} // bb				
 	
-	else if (chordRoot == 49) { note = BASE;  	  shape = "C"; } // c
-	else if (chordRoot == 50) { note = BASE + 2;  shape = "D"; } // d	
-	else if (chordRoot == 51) { note = BASE + 4;  shape = "E"; } // e
-	else if (chordRoot == 52) { note = BASE + 5;  shape = "F"; } // f	
-	else if (chordRoot == 53) { note = BASE + 7;  shape = "G"; } // g	
-	else if (chordRoot == 54) { note = BASE + 9;  shape = "A"; } // a
-	else if (chordRoot == 55) { note = BASE + 11; shape = "B"; } // b			
+	else if (chordRoot == 49) { note = BASE }     // c
+	else if (chordRoot == 50) { note = BASE + 2 } // d	
+	else if (chordRoot == 51) { note = BASE + 4 } // e
+	else if (chordRoot == 52) { note = BASE + 5 } // f	
+	else if (chordRoot == 53) { note = BASE + 7 } // g	
+	else if (chordRoot == 54) { note = BASE + 9 } // a
+	else if (chordRoot == 55) { note = BASE + 11} // b			
 
-	else if (chordRoot == 65) { note = BASE + 1;  shape = "C#"; } // c#
-	else if (chordRoot == 66) { note = BASE + 3;  shape = "D#"; } // d#	
-	else if (chordRoot == 67) { note = BASE + 5;  shape = "F"; } // f
-	else if (chordRoot == 68) { note = BASE + 6;  shape = "F#"; } // f#				
-	else if (chordRoot == 69) { note = BASE + 8;  shape = "G#"; } // g#				
-	else if (chordRoot == 70) { note = BASE + 10; shape = "A#"; } // a#	
+	else if (chordRoot == 65) { note = BASE + 1 } // c#
+	else if (chordRoot == 66) { note = BASE + 3 } // d#	
+	else if (chordRoot == 67) { note = BASE + 5 } // f
+	else if (chordRoot == 68) { note = BASE + 6 } // f#				
+	else if (chordRoot == 69) { note = BASE + 8 } // g#				
+	else if (chordRoot == 70) { note = BASE + 10} // a#	
 	
+	if (songSequence.data?.Hdr?.keySignature?.tonic) {
+		note = note + keyChange - songSequence.data.Hdr.keySignature.tonic;
+	}
+	const shape = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][note % 12];
 	return {note, shape};
 }
 
@@ -8008,7 +8012,8 @@ function scheduleSongNote() {
 			}
 			
 			if (event.section == 0x20 || event.section == 0x21 || event.section == 0x22 || event.section == 0x23) {			
-	
+				pad.buttons[YELLOW] = true;
+				toggleStartStop();
 			}	
 		}
 		else
@@ -8149,7 +8154,7 @@ function scheduleArrNote() {
 	
 	if (arrSequence) {
 		let event = arrSequence.data[currentSffVar][currentPlayNote];
-		//console.debug("scheduleSongNote", event);
+		//console.debug("scheduleArrNote", event);
 
 		const secondsPerBeat = 60.0 / tempo; 
 		const beatTime = (0.25 * secondsPerBeat); 		
@@ -8323,7 +8328,9 @@ function setupSongSequence() {
 		playButton.style.setProperty("--accent-fill-rest", "red");
 		const bpm = Math.floor(60 /(songSequence.data.Hdr.setTempo.microsecondsPerBeat / 1000000))
 		if (!registration || registration == 0) setTempo(bpm);	
-		document.getElementById("song_control").style.display = "";		
+		document.getElementById("song_control").style.display = "";	
+
+		keyChange = songSequence.data.Hdr.keySignature.tonic;		
 	} 
 	else
 		
@@ -8341,7 +8348,7 @@ function setupSongSequence() {
 		}			
 	}
 	
-    dokeyChange();
+	dokeyChange();
 
 	//document.querySelector("#sequencer").style.display = flag ? "" : "none";
 	//document.querySelector("#sequencer2").style.display = flag ? "" : "none";
