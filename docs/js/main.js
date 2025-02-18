@@ -3219,7 +3219,7 @@ function handleNoteOn(note, device, velocity, channel) {
 	if (keysSound2?.checked) 
 	{
 		if (keysSelectedEle2.selectedIndex == 1) {
-			thePad = smplrPads[keysSelectedEle2.selectedIndex].instrument;
+			thePad = f[keysSelectedEle2.selectedIndex].instrument;
 		}
 		
 		envelope2 = thePad;
@@ -5245,7 +5245,7 @@ function arrSequenceLoaded() {
 }
 
 function setupMidiChannels() {
-	if (!document.getElementById("arr-instrument-18")) {
+	if (!document.getElementById("arr-instrument-18") || smplrPads.length < 2) {
 		setTimeout(setupMidiChannels, 1000);
 		return;
 	}
