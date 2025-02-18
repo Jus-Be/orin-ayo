@@ -3208,7 +3208,7 @@ function handleNoteOn(note, device, velocity, channel) {
 	if (keysSound1?.checked) 
 	{		
 		if (keysSelectedEle1.selectedIndex > 0) {
-			thePiano = smplrKeys[keysSelectedEle1.selectedIndex - 1].instrument;
+			thePiano = smplrKeys[keysSelectedEle1.selectedIndex].instrument;
 		}
 		
 		envelope1 = thePiano;
@@ -3219,7 +3219,7 @@ function handleNoteOn(note, device, velocity, channel) {
 	if (keysSound2?.checked) 
 	{
 		if (keysSelectedEle2.selectedIndex == 1) {
-			thePad = smplrPads[keysSelectedEle2.selectedIndex - 1].instrument;
+			thePad = smplrPads[keysSelectedEle2.selectedIndex].instrument;
 		}
 		
 		envelope2 = thePad;
