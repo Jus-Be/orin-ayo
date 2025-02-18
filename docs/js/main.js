@@ -1769,6 +1769,11 @@ function handleChordaMidiMessage(evt) {
 }
 
 function loadMidiSynth() {
+	if (smplrPads.length < 2) {
+		setTimeout(loadMidiSynth, 1000);	// we need to wait until smplrkeys and smplrPads (ch1 & ch2) are loaded.
+		return;
+	}
+	
 	var xhr = new XMLHttpRequest();
 
 	xhr.open('GET', "./assets/gmgsx.sf2", true);
@@ -5245,7 +5250,7 @@ function arrSequenceLoaded() {
 }
 
 function setupMidiChannels() {
-	if (!document.getElementById("arr-instrument-18") || smplrPads.length < 2) {
+	if (!document.getElementById("arr-instrument-18")) {
 		setTimeout(setupMidiChannels, 1000);
 		return;
 	}
@@ -5443,6 +5448,11 @@ function getArrSequence(arrName, callback) {
 }
 
 function getArrSynth(sf2Name) {
+	if (smplrPads.length < 2) {
+		setTimeout(() => getArrSynth(sf2Name), 1000);	// we need to wait until smplrkeys and smplrPads (ch1 & ch2) are loaded.
+		return;
+	}
+	
 	console.debug("getArrSynth", sf2Name);
 	arrSynth = {name: sf2Name};
 	
